@@ -16,6 +16,8 @@
 - [Repository gap analysis](gap-analysis.md)
 - [Execution plan](execution-plan.md)
 - [Technology decision package](technology-decision-package.md)
+- [Walking-skeleton specification](../../specifications/m1-secure-walking-skeleton.md)
+- [Evidence plan](evidence-plan.md)
 - [M1 initiation record](initiation-record.md)
 
 ## Governing controls
