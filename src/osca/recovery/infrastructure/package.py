@@ -142,6 +142,8 @@ def validate_cleartext_package(package: Path) -> BackupManifest:
     try:
         with zipfile.ZipFile(package) as archive:
             infos = archive.infolist()
+            if sum(info.file_size for info in infos) > _MAX_ARCHIVE_BYTES:
+                raise RecoveryPackageError("recovery.package.expanded_size_too_large")
             paths = [info.filename for info in infos]
             expected = {_MANIFEST_PATH, *_ALLOWED_PAYLOADS}
             if len(paths) != len(set(paths)) or set(paths) != expected:
