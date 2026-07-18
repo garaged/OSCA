@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy import DateTime, String, Text, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-from osca.operations.api import AuditRecord
+from osca.operations.api import AuditRecord, WorkflowJobEvent
 
 
 class AuditBase(DeclarativeBase):
@@ -51,3 +51,30 @@ class SqliteAuditRepository:
         )
         return None if row is None else AuditRecord.model_validate_json(row.payload)
 
+
+class WorkflowEventRow(AuditBase):
+    __tablename__ = "operations_workflow_events"
+    event_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    correlation_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    run_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    action: Mapped[str] = mapped_column(String(100), nullable=False)
+    payload: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class SqliteWorkflowEventRepository:
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
+    def add(self, event: WorkflowJobEvent) -> None:
+        self._session.add(
+            WorkflowEventRow(
+                event_id=str(event.event_id),
+                occurred_at=event.occurred_at,
+                correlation_id=str(event.correlation_id.value),
+                run_id=str(event.run_id),
+                action=event.action,
+                payload=event.model_dump_json(),
+            )
+        )
+        self._session.flush()
