@@ -5,13 +5,14 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0016
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0017
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
 ## Public contract candidates
 
-- `osca.instrument.reference` 1.0.0;
+- `osca.instrument.reference` 1.0.0 — accepted and supported;
+- `osca.instrument.provider-mapping` 1.0.0 — accepted and supported;
 - `osca.provider.capability` 1.0.0;
 - `osca.market-data.daily-bar` 1.0.0;
 - `osca.market-data.retrieval-request` 1.0.0;
@@ -19,7 +20,7 @@
 - `osca.data-quality.finding` 1.0.0;
 - `osca.cache.cleanup-plan` 1.0.0.
 
-Exact semantic and structural schemas must be accepted before implementation. Unknown major versions fail closed.
+The Instrument-owned semantic and structural schemas are accepted in the [contract catalog](../governance/contract-catalog.md) and implemented by `osca.instrument.api`. Remaining candidate families must be accepted before their implementation. Unknown major versions fail closed.
 
 ## Behavioral specification
 
@@ -94,4 +95,4 @@ Instrument, Provider, and Market Data each own schemas. Catalog receives typed p
 
 ## Entry blockers
 
-Reference provider selection, payload persistence, exact schemas, threat/risk approval, licensing policy, deterministic fixtures, performance observations, and migration/recovery profile must be accepted before implementation.
+ADR-0017 resolves payload persistence. The exact Instrument reference and mapping schemas are accepted for M2.1. Remaining contract families, provider selection, provider-specific licensing policy, deterministic adapter fixtures, performance observations, and migration/recovery evidence remain gated before their applicable increments.
