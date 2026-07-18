@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from osca.catalog.api import CatalogResultReference
 from osca.shared_kernel.api import CorrelationId
 
 CONTRACT_FAMILY: Literal["osca.workflow.diagnostic-run"] = "osca.workflow.diagnostic-run"
@@ -43,18 +44,13 @@ class DiagnosticInput(BaseModel):
 
 class DiagnosticCheckpoint(BaseModel):
     model_config = ConfigDict(frozen=True)
-    family: Literal["osca.workflow.diagnostic-checkpoint"] = "osca.workflow.diagnostic-checkpoint"
-    version: Literal["1.0.0"] = "1.0.0"
+    family: str = "osca.workflow.diagnostic-checkpoint"
+    version: str = Field(default="1.0.0", pattern=r"^\d+\.\d+\.\d+$")
     phase: int = Field(ge=0, le=3)
     completed_phases: tuple[str, ...] = ()
 
 
-class DiagnosticResult(BaseModel):
-    model_config = ConfigDict(frozen=True)
-    family: Literal["osca.catalog.result-reference"] = "osca.catalog.result-reference"
-    version: Literal["1.0.0"] = "1.0.0"
-    result_id: UUID
-    media_type: str = "application/json"
+DiagnosticResult = CatalogResultReference
 
 
 class DiagnosticRunError(BaseModel):
