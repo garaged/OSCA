@@ -1,0 +1,116 @@
+manifest_version: 1
+baseline: M0
+governing_sources:
+  - ADR-0001
+  - ADR-0002
+  - ADR-0003
+  - ADR-0004
+  - ADR-0005
+  - ADR-0006
+  - ADR-0007
+  - ADR-0008
+  - ADR-0009
+  - ADR-0010
+checks:
+  - id: VAL-001
+    title: Authoritative requirement traceability
+    owner: quality-authority
+    method: inspection
+    authority: ADR-0001
+    evidence: docs/governance/traceability-register.md
+  - id: VAL-002
+    title: ADR status and index consistency
+    owner: architecture-authority
+    method: metadata-and-index-inspection
+    authority: engineering/architecture-evolution-policy.md
+    evidence: docs/decisions/README.md
+  - id: VAL-003
+    title: Capability ownership and acyclic dependency model
+    owner: architecture-authority
+    method: model-inspection
+    authority: ADR-0002
+    evidence: docs/architecture/dependency-rules.md
+  - id: VAL-004
+    title: Boundary enforcement obligations defined
+    owner: architecture-authority
+    method: policy-inspection
+    authority: ADR-0003
+    evidence: docs/quality/architecture-fitness-program.md
+  - id: VAL-005
+    title: Public seam ownership and compatibility
+    owner: architecture-authority
+    method: catalog-and-seam-inspection
+    authority: ADR-0004
+    evidence: docs/governance/contract-catalog.md
+  - id: VAL-006
+    title: Risk-tiered gate model is actionable
+    owner: quality-authority
+    method: policy-and-checklist-inspection
+    authority: ADR-0005
+    evidence: engineering/bootstrap/m1-initiation-checklist.md
+  - id: VAL-007
+    title: Interaction semantics are consistent
+    owner: architecture-authority
+    method: cross-document-inspection
+    authority: ADR-0006
+    evidence: engineering/decision-matrix.md
+  - id: VAL-008
+    title: Event reliability obligations are complete
+    owner: architecture-authority
+    method: adr-and-reference-walkthrough
+    authority: ADR-0007
+    evidence: docs/handbook/reference-capability.md
+  - id: VAL-009
+    title: Extension trust and permission boundaries are complete
+    owner: security-authority
+    method: seam-and-security-inspection
+    authority: ADR-0008
+    evidence: docs/seams/extension-seam.md
+  - id: VAL-010
+    title: Persistence ownership is unambiguous
+    owner: architecture-authority
+    method: model-and-pattern-inspection
+    authority: ADR-0009
+    evidence: docs/handbook/patterns-and-antipatterns.md
+  - id: VAL-011
+    title: Observability, audit, and health are distinguished
+    owner: architecture-authority
+    method: adr-and-security-inspection
+    authority: ADR-0010
+    evidence: docs/security/security-architecture.md
+  - id: VAL-012
+    title: Security and recovery obligations cover public seams
+    owner: security-authority
+    method: cross-document-inspection
+    authority: docs/security/security-architecture.md
+    evidence: docs/operations/resilience-and-recovery.md
+  - id: VAL-013
+    title: Deferred decisions have accurate triggers and disposition
+    owner: architecture-authority
+    method: register-inspection
+    authority: docs/governance/deferred-decisions.md
+    evidence: docs/governance/deferred-decisions.md
+  - id: VAL-014
+    title: Governed artifact lifecycle and authority are registered
+    owner: architecture-authority
+    method: registry-validation
+    authority: engineering/architecture-evolution-policy.md
+    evidence: engineering/architecture-registry.yaml
+  - id: VAL-015
+    title: Documentation navigation has no known stale baseline claims
+    owner: repository-maintainers
+    method: link-and-content-inspection
+    authority: docs/governance/document-control.md
+    evidence: docs/milestones/m0x/gap-analysis.md
+  - id: VAL-016
+    title: Reference vertical slice covers intent through evidence
+    owner: architecture-authority
+    method: walkthrough
+    authority: engineering/constitution.md
+    evidence: docs/handbook/reference-capability.md
+  - id: VAL-017
+    title: Architecture exceptions are explicit and expiring
+    owner: architecture-authority
+    method: register-inspection
+    authority: ADR-0005
+    evidence: docs/governance/architecture-exceptions.md
