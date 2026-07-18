@@ -1,8 +1,8 @@
 # M2 Execution Plan
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Architecture authority
-- **Product approval:** Required
+- **Product approval:** Accepted 2026-07-18
 - **Authoritative sources:** M2 intent/scope, REQ-0021–REQ-0040, accepted M2 specification and decisions
 - **Last reviewed:** 2026-07-18
 
