@@ -1469,7 +1469,73 @@ Provider adapters degrade safely when access methods or terms change. Users can 
 
 OSCA does not grant rights to third-party data. Commercial or multi-user deployment requires a separate provider-license review.
 
-## 34. Engineering-quality direction
+## 34. Primary research lifecycle
+
+OSCA provides a guided but non-linear lifecycle. Users may revisit, branch, compare, or skip stages when applicable requirements and promotion gates permit.
+
+### 34.1 Configure
+
+Establish secure deployment, providers, credentials, storage, resource budgets, recovery, and notifications.
+
+### 34.2 Frame
+
+Create a project and record its objective, investment horizon, hypotheses, assumptions, constraints, and success criteria.
+
+### 34.3 Define
+
+Select or create the instrument universe, benchmarks, intervals, provider policies, data requirements, and quality gates.
+
+### 34.4 Acquire and validate
+
+Resolve cached data, retrieve missing ranges, inspect provenance, address quality findings, and pin dataset revisions.
+
+### 34.5 Explore
+
+Visualize markets, calculate metrics, compare instruments, investigate events, and form observations.
+
+### 34.6 Compose and evaluate
+
+Build analysis graphs, generate signals and findings, and evaluate historical outcomes.
+
+### 34.7 Model
+
+Define features and labels, train candidates, run evaluations, and compare ML methods against appropriate baselines.
+
+### 34.8 Backtest
+
+Perform vectorized research, robustness analysis, and authoritative event-driven validation.
+
+### 34.9 Review and promote
+
+Review evidence, contradictions, assumptions, risk, data quality, and promotion gates. A successful-looking backtest cannot automatically activate paper trading.
+
+### 34.10 Paper deploy
+
+Connect an explicitly approved strategy or recommendation policy to a paper account under deterministic risk rules.
+
+### 34.11 Monitor
+
+Track data and operational health, thesis state, model drift, portfolio risk, execution differences, costs, and recovery posture.
+
+### 34.12 Learn
+
+Compare expected and realized outcomes, document findings, revise hypotheses, and create subsequent experiments.
+
+### 34.13 Report and preserve
+
+Generate evidence-backed reports, export or archive projects, and retain reproducibility manifests.
+
+### 34.14 Lifecycle experience
+
+Each stage exposes prerequisites, outputs, unresolved findings, and recommended next actions. Material assumption changes can branch a project.
+
+The web interface offers both lifecycle guidance and direct expert-tool access. CLI and API workflows use the same stage and gate concepts without requiring an interactive wizard.
+
+Templates are inspectable and editable. Ad hoc exploration can be promoted into a governed project with captured dependencies. The project timeline records decisions, dataset revisions, experiments, promotions, and outcome reviews.
+
+LLM assistance remains context-aware and bounded at every stage.
+
+## 35. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1485,11 +1551,10 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 35. PRD sections pending discovery
+## 36. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
-- User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
 - Backtest fidelity levels
 - Availability, performance, scalability, and cost objectives
@@ -1497,7 +1562,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 36. Document governance
+## 37. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
