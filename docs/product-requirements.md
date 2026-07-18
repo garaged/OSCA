@@ -1082,7 +1082,90 @@ Threat modeling, dependency and secret scanning, security tests, and secure conf
 
 A future multi-user edition must replace rather than stretch single-owner identity assumptions.
 
-## 27. Engineering-quality direction
+## 27. Backup, restore, and disaster recovery
+
+### 27.1 Policy-aware backup profiles
+
+OSCA provides:
+
+- **Lightweight backup:** required user state, configuration, identity mappings, journals, manifests, locks, schedules, and audit metadata
+- **Standard backup:** lightweight content plus protected artifacts and selected datasets
+- **Archival backup:** the maximum self-contained reproducible set permitted by storage, security, and provider licensing
+
+Ephemeral data, in-progress downloads, transient caches, and secrets are excluded. Packages report all exclusions and identify content that must be re-fetched or reconfigured.
+
+Backups are encrypted using user-controlled recovery material, contain integrity manifests and compatibility versions, and support scheduled retention policies and failure alerts.
+
+### 27.2 Consistent recovery points
+
+Backup creation produces a consistent logical recovery point. Running jobs either continue through supported snapshot semantics or pause at documented safe boundaries.
+
+Paper-account journal boundaries, project references, catalog revisions, model deployments, extension locks, and artifact dependencies must remain mutually consistent.
+
+### 27.3 Restore
+
+Restore supports:
+
+- Preview and compatibility assessment
+- Integrity and authenticity verification
+- Selective recovery by project, paper account, model, or artifact
+- Restore to a new location before optional activation
+- Explicit conflict policies
+- Versioned schema migration
+- Journal reconciliation
+- Catalog and dependency validation
+- Artifact checksum verification
+- Reporting of unavailable or reproducible-from-source payloads
+
+Restored state does not become active until required validation succeeds or the user explicitly accepts documented degraded recovery.
+
+### 27.4 Disaster-recovery program
+
+OSCA maintains a disaster-recovery program appropriate to workstation and personal-server deployment. It covers at least:
+
+- Storage-device loss
+- Database or catalog corruption
+- Accidental deletion or invalid cleanup
+- Failed application or schema upgrade
+- Compromised or lost server
+- Lost certificate or credential material
+- Extension-caused corruption
+- Interrupted backup, restore, or storage relocation
+- Provider data becoming unavailable
+- Loss of a protected model or experiment artifact
+
+The program defines recovery-point objectives, recovery-time objectives, restoration priority, dependencies, roles, escalation, validation, and acceptable degraded operation.
+
+Recovery priority is:
+
+1. Security and identity configuration
+2. Catalog, canonical identities, and system configuration
+3. Paper-account journal and audit history
+4. Research projects, intent, and reproducibility manifests
+5. Extension locks, model registry, and protected artifacts
+6. Reconstructable canonical and derived data
+7. Ephemeral content
+
+At least one backup copy can be stored off-device through authenticated encrypted transport. Archival policy should support separation from the active storage failure domain.
+
+Operational documentation includes scenario-specific runbooks, recovery-material handling, certificate renewal and replacement, clean-system restoration, and post-recovery verification.
+
+### 27.5 Recovery verification
+
+Backup success alone is insufficient. OSCA supports:
+
+- Automated package integrity checks
+- Periodic restore tests into isolated storage
+- Scheduled disaster-recovery exercises
+- Reconciliation and smoke tests after restoration
+- Recorded exercise results, duration, failures, and remediation
+- Alerts for missed backups, failed verification, expired recovery material, or objectives at risk
+
+Recovery tests must not mutate the active environment.
+
+The exact default recovery objectives and exercise frequency are recorded as explicit product decisions and remain configurable.
+
+## 28. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1098,7 +1181,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 28. PRD sections pending discovery
+## 29. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1109,12 +1192,11 @@ The following areas are intentionally incomplete:
 - Portfolio and risk functionality
 - Alerting and scheduled operation
 - Availability, performance, scalability, and cost objectives
-- Import, export, backup, and recovery
 - Milestone decomposition
 - Product success metrics
 - Risks and mitigations
 
-## 29. Document governance
+## 30. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
