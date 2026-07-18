@@ -384,3 +384,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will target a scalable single-node workstation or personal server with minimum, recommended, and heavy-research profiles, explicit responsiveness and benchmark objectives, a 99.5 percent personal-server software availability target, and configurable resource and monetary budgets.
 - **Rationale:** The product requires substantial personal research capacity without prematurely adopting distributed SaaS architecture.
 - **Consequences:** Core features require no GPU or paid cloud; large data remains lazy and incremental; paper work receives priority; failures are isolated; benchmark changes require evidence; cost limits fail predictably; and distributed workers or service extraction require demonstrated need.
+
+
+## D-045 — Living risk governance
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will maintain a living, version-controlled, traceable risk register integrated with milestone entry and exit gates.
+- **Rationale:** Static or informal risk lists do not demonstrate that controls remain effective as data sources, models, extensions, security boundaries, and operational behavior evolve.
+- **Consequences:** Risks have owners, triggers, controls, residual exposure, evidence, and review dates; critical risks block milestone completion without treatment; realized risks produce incidents and corrective actions; and review occurs before milestone approval and at least quarterly during active development.
