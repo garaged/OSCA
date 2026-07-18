@@ -452,6 +452,41 @@ Storage-root relocation must copy or move data, verify integrity, and switch ato
 
 Storage management must make stable disk usage achievable without routine manual intervention. Defaults should be safe for a personal workstation, while users can adjust budgets and policies for larger personal-server deployments.
 
+### 14.1 Retrieval triggers
+
+Retrieval may be initiated on demand, by schedule, manually, as a workflow dependency, by detected gaps or invalidation, by provider revision or schema migration, or through a supported real-time feed.
+
+### 14.2 Data requirement contracts
+
+A request declares, as applicable:
+
+- Instrument universe
+- Data capability
+- Interval and date range
+- Required completion state
+- Maximum acceptable staleness
+- Provider or routing policy
+- Adjustment policy
+- Required quality level
+- Whether partial results are allowed
+- Whether stale data may be returned while refreshing
+- Whether network access is allowed
+- Whether the caller must wait for completion
+
+Callers can select policies equivalent to `require_fresh`, `accept_stale`, `stale_while_revalidate`, and `offline_only`.
+
+### 14.3 Resolution semantics
+
+Cache resolution returns data references together with structured status. Status distinguishes at least fresh, stale, partial, unavailable, invalid, and refreshing.
+
+Freshness evaluation considers data type, interval, market calendar, session state, provider behavior, and revision policy. Historical completed bars do not expire only because time passes, but may be revised or invalidated. In-progress bars are explicitly provisional.
+
+Concurrent equivalent requests share one retrieval job. Retrieval is idempotent, supports resumable range backfills, and repairs missing ranges rather than downloading complete datasets unnecessarily.
+
+Every analysis records the actual immutable dataset revision used, regardless of the freshness policy requested. Scheduled refresh prioritization should be configurable and may favor watched instruments and active paper portfolios.
+
+Polling and streaming provider adapters must expose compatible normalized data-capability contracts.
+
 Detailed cache and storage policy remains an open design area and will receive its own specification after product requirements are settled.
 
 ## 15. Backtesting and paper trading — initial requirements
