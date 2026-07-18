@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: baseline
+  status: m1-implementation
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:
@@ -47,16 +47,16 @@ artifact_types:
     review_authority: quality-authority
 
 adrs:
-  - { id: ADR-0001, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0002, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0003, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0004, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0005, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0006, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0007, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0008, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0009, status: baseline, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0010, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0001, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0002, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0003, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0004, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0005, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0006, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0007, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0008, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0009, status: frozen, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0010, status: frozen, tier: foundational, owner: architecture-authority }
   - { id: ADR-0011, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0012, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0013, status: accepted, tier: implementation, owner: workflow-capability-owner }
