@@ -16,7 +16,7 @@
 | DD-009 | Workflow engine | Resolved for M1 by ADR-0013 | Embedded database-backed single-node executor | Workflow owner and architecture authority |
 | DD-010 | Numeric RTO, RPO, availability, and performance budgets | Unsupported numbers would be fictional at M0 | Deployment topology, workload forecasts, business impact analysis, measured baselines | Product, operations, and architecture authorities |
 | DD-011 | Serialization and API protocols | Resolved for M1 by ADR-0014; later streaming/binary needs remain trigger-bound | Pydantic, JSON Schema, OpenAPI 3.1, versioned JSON | Contract owners and architecture authority |
-| DD-012 | Identity provider and cryptographic implementation | Partially resolved for M1 local profile by ADR-0015; backup format and future hosted identity remain deferred | OS credential store via keyring; fail-closed remote-profile skeleton | Security authority |
+| DD-012 | Identity provider and cryptographic implementation | Resolved for the M1 local profile by ADR-0015 and M1 backup format by ADR-0016; future hosted identity remains deferred | OS credential store via keyring; fail-closed remote-profile skeleton; age v1 X25519 recovery container | Security authority |
 
 ## Disposition note
 
