@@ -79,7 +79,7 @@ class JobService:
                 **updates,
             }
         )
-        changed = JobRun.model_validate(changed)
+        changed = JobRun.model_validate(changed.model_dump())
         if not self._repository.replace_job(changed, job.revision):
             raise ConcurrentTransition(str(job.job_id))
         return changed
