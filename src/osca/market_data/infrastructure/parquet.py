@@ -83,10 +83,7 @@ class ImmutablePayloadStore:
         self._root = root.resolve()
 
     def publish(self, object_key: str, payload: bytes) -> Path:
-        relative = PurePosixPath(object_key)
-        if relative.is_absolute() or ".." in relative.parts or relative.suffix != ".parquet":
-            raise ValueError("object_key must be a safe relative Parquet path")
-        destination = self._root.joinpath(*relative.parts)
+        destination = self._destination(object_key)
         destination.parent.mkdir(parents=True, exist_ok=True)
         resolved_parent = destination.parent.resolve()
         if not resolved_parent.is_relative_to(self._root):
@@ -112,6 +109,22 @@ class ImmutablePayloadStore:
                 os.close(directory_descriptor)
         finally:
             temporary.unlink(missing_ok=True)
+        return destination
+
+    def delete(self, object_key: str) -> None:
+        destination = self._destination(object_key)
+        if not destination.is_file():
+            raise FileNotFoundError("payload object is not available for cleanup")
+        destination.unlink()
+
+    def _destination(self, object_key: str) -> Path:
+        relative = PurePosixPath(object_key)
+        if relative.is_absolute() or ".." in relative.parts or relative.suffix != ".parquet":
+            raise ValueError("object_key must be a safe relative Parquet path")
+        destination = self._root.joinpath(*relative.parts)
+        resolved_parent = destination.parent.resolve()
+        if not resolved_parent.is_relative_to(self._root):
+            raise ValueError("object_key escapes the configured payload root")
         return destination
 
 
