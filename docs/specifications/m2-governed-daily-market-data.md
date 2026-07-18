@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0023
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0024
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -44,7 +44,7 @@ ADR-0023 prohibits incomplete observations from accepted canonical datasets. Per
 
 ### Source and canonical layers
 
-ADR-0022 retains immutable checksummed source evidence by default only when the exact provider-policy revision explicitly permits retention. Prohibited or uncertain retention stores no payload and records intentional non-retention with policy evidence. Normalization is deterministic and versioned. Corrections create new canonical revisions. Provider symbols never replace canonical identity. Catalog metadata survives payload cleanup.
+ADR-0022 retains immutable checksummed source evidence by default only when the exact provider-policy revision explicitly permits retention. Prohibited or uncertain retention stores no payload and records intentional non-retention with policy evidence. Normalization is deterministic and versioned. ADR-0024 reuses an existing canonical revision only when governed normalized content, source evidence, mapping, parser/normalizer, configuration, policy, and schema identity are equivalent. Any governed fingerprint change creates a new immutable revision; execution-only metadata does not. Provider symbols never replace canonical identity. Catalog metadata survives payload cleanup.
 
 ### Retrieval and freshness
 
