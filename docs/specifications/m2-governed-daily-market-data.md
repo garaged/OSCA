@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0021
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0022
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -44,7 +44,7 @@ M2 does not implement adjusted bars, corporate actions, intraday sessions, or cr
 
 ### Source and canonical layers
 
-Permitted source evidence is immutable and checksummed. When retention is prohibited, metadata records intentional non-retention and policy. Normalization is deterministic and versioned. Corrections create new canonical revisions. Provider symbols never replace canonical identity. Catalog metadata survives payload cleanup.
+ADR-0022 retains immutable checksummed source evidence by default only when the exact provider-policy revision explicitly permits retention. Prohibited or uncertain retention stores no payload and records intentional non-retention with policy evidence. Normalization is deterministic and versioned. Corrections create new canonical revisions. Provider symbols never replace canonical identity. Catalog metadata survives payload cleanup.
 
 ### Retrieval and freshness
 
