@@ -285,3 +285,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will provide encrypted lightweight, standard, and archival backup profiles with dependency-aware selective restore, plus a disaster-recovery program with explicit objectives, prioritized restoration, runbooks, off-device capability, automated verification, and recovery exercises.
 - **Rationale:** Creating backup files does not establish recoverability. Robust operation requires consistent recovery points, independent copies, validated restore paths, failure-scenario planning, and evidence that recovery objectives can be met.
 - **Consequences:** Secrets remain separate; packages report exclusions; restores validate before activation; paper journals and catalogs reconcile; recovery follows declared priority; backup copies can leave the active failure domain securely; and periodic isolated restore tests and disaster-recovery exercises are release and operational requirements.
+
+
+## D-034 — Tiered recovery objectives
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use tiered RPO and RTO targets, with a default one-hour RPO and four-hour RTO for critical state and an optional hardened 15-minute RPO and one-hour RTO.
+- **Rationale:** Paper journals and system identity require substantially stronger recovery than reconstructable market caches or ephemeral data.
+- **Consequences:** Active research defaults to four-hour RPO and eight-hour RTO; protected artifacts to 24 hours each; reconstructable payloads have no backup guarantee; objective risk is visible; paper automation remains paused during unsafe recovery; isolated restore tests run monthly; and broader recovery exercises run at least quarterly.
