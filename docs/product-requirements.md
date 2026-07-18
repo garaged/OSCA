@@ -835,13 +835,45 @@ LLM-generated chart requests compile into validated visualization specifications
 
 ## 22. Backtesting and paper trading — initial requirements
 
+The platform must support fair, reproducible comparison of strategies and models through named fidelity profiles and a dual-stage execution model.
+
+### 22.1 Fidelity profiles
+
+#### F0 — Signal study
+
+Evaluates whether a signal predicts a defined future outcome without simulating orders or a portfolio. It enforces information availability, identifies the prediction horizon, compares baselines, and evaluates statistical significance and stability.
+
+#### F1 — Vectorized portfolio estimate
+
+Approximates positions, returns, rebalancing, exposure, fees, slippage, and risk through vectorized computation. F1 is fast and explicitly non-authoritative.
+
+#### F2 — Event-driven bar simulation
+
+Provides authoritative historical validation for initial OSCA scope using completed-bar events, typed order intents, order lifecycle, calendars, deterministic risk, accounting, costs, latency, liquidity constraints, partial fills, corporate actions, and multi-asset or multi-currency behavior.
+
+F2 is bar-based and cannot claim tick-level execution accuracy.
+
+#### F3 — Forward paper evaluation
+
+Evaluates an approved candidate using data as it becomes available, including actual provider latency, outages, provisional and revised data, durable paper accounting, operational failures, missed schedules, drift, and realized outcomes.
+
+F3 is forward evaluation rather than a historical backtest.
+
+A possible future F4 microstructure profile using tick, quote, or order-book data remains outside initial scope.
+
+Every result names its fidelity profile and versioned assumption set. Comparisons require compatible profiles and assumptions or disclose semantic differences. Asset- and market-specific defaults support optimistic, base, and stressed scenarios plus sensitivity analysis.
+
+Unsupported behavior is reported rather than approximated silently. Higher fidelity does not compensate for leaked or invalid data. Promotion to paper trading requires F2 validation.
+
+### 22.2 Dual-stage execution model
+
 The platform must support fair, reproducible comparison of strategies and models through a dual-stage execution model.
 
-### 22.1 Research/vectorized mode
+### 22.3 Research/vectorized mode
 
 Research mode provides fast evaluation for compatible factor studies, signal evaluation, screening, and broad parameter exploration. Its outputs are labeled research estimates rather than authoritative execution simulations.
 
-### 22.2 Event-driven simulation mode
+### 22.4 Event-driven simulation mode
 
 Event-driven mode is the authoritative strategy simulation. It uses the same event, order, fill, fee, portfolio, and deterministic risk concepts as paper trading.
 
@@ -1639,7 +1671,6 @@ The following process requirements are accepted in principle and will be specifi
 
 The following areas are intentionally incomplete:
 
-- Backtest fidelity levels
 - Availability, performance, scalability, and cost objectives
 - Milestone decomposition
 - Risks and mitigations
