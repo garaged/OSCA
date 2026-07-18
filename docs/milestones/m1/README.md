@@ -20,7 +20,7 @@
 - [Evidence plan](evidence-plan.md)
 - [M1.7 gap analysis](m1-7-gap-analysis.md)
 - [M1.8 exit gap analysis](exit-gap-analysis.md)
-- [M1 exit review record — proposed](exit-review.md)
+- [M1 exit review record — accepted](exit-review.md)
 - [Run and operate M1](operations-guide.md)
 - [Durable diagnostic jobs usage](diagnostic-jobs.md)
 - [Protected backup and isolated restore](recovery.md)
