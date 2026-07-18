@@ -1421,7 +1421,55 @@ Paper automation rejects inputs violating active risk or quality policy. LLMs ma
 
 Quality dashboards show trends by provider, instrument, interval, rule, severity, and revision.
 
-## 33. Engineering-quality direction
+## 33. Data-source access and licensing governance
+
+### 33.1 Supported acquisition mechanisms
+
+OSCA supports governed acquisition through:
+
+- Open public APIs
+- Authenticated free or paid APIs
+- User-authorized account exports
+- Downloaded datasets and files
+- Licensed feeds
+- Provider-supported webhooks or streams
+- Permitted browser or workflow automation
+- User-supplied data
+- Independently distributed provider extensions
+
+Official APIs and exports are preferred when available. Automation cannot bypass authentication, paywalls, access controls, CAPTCHAs, rate limits, or technical restrictions.
+
+User credentials authorize only the access allowed by the user's provider entitlement.
+
+### 33.2 Provider policy metadata
+
+Provider definitions record, where known:
+
+- Terms and policy references
+- License and attribution
+- Authentication model
+- Rate limits and quotas
+- Permitted caching and retention
+- Permitted transformation
+- Export and backup restrictions
+- Redistribution and commercial-use restrictions
+- Effective date and review status
+
+Policy metadata is versioned. Uncertainty creates visible warnings and can block persistence, export, backup inclusion, or redistribution.
+
+### 33.3 Enforcement and lineage
+
+Raw retention can be disabled while transient processing remains permitted. Projects, backups, exports, reports, extensions, and shared artifacts enforce applicable restrictions.
+
+Derived outputs retain license lineage where restrictions continue to apply. Required attribution remains attached.
+
+Quotas and rate limits are enforced centrally across concurrent workflows. Provider health includes access-method stability and policy-review state.
+
+Provider adapters degrade safely when access methods or terms change. Users can configure legitimate choices but cannot disable provider restrictions.
+
+OSCA does not grant rights to third-party data. Commercial or multi-user deployment requires a separate provider-license review.
+
+## 34. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1437,7 +1485,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 34. PRD sections pending discovery
+## 35. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1449,7 +1497,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 35. Document governance
+## 36. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
