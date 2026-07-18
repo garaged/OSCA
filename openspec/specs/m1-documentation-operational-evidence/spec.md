@@ -1,4 +1,10 @@
-## ADDED Requirements
+# m1-documentation-operational-evidence Specification
+
+## Purpose
+
+Index the verified M1 version-matched operational guidance, executable-example disposition, navigation, and retained traceability governed by REQ-0019, REQ-0020, ADR-0005, and the accepted M1 specification.
+
+## Requirements
 
 ### Requirement: Version-matched operational entry path
 
