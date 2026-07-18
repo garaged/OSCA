@@ -16,7 +16,7 @@
 - [x] 3.1 Propose high-risk evidence plan and license-safe fixture policy.
 - [x] 3.2 Propose named M2 risk treatments, owners, and triggers.
 - [x] 3.3 Reconcile traceability, milestone navigation, architecture activity, and registry.
-- [ ] 3.4 Run strict OpenSpec and repository validation.
+- [x] 3.4 Run strict OpenSpec and repository validation.
 
 ## 4. Approval and closure
 
