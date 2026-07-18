@@ -1225,7 +1225,52 @@ Diagnostic bundles preview included content before export.
 
 Advanced deployments may export telemetry through open, documented interfaces. External observability is optional and cannot be required for understanding the basic health of a local installation.
 
-## 29. Engineering-quality direction
+## 29. Scheduling and durable workflows
+
+### 29.1 Embedded scheduler
+
+OSCA manages schedules and durable workflow runs internally while allowing external schedulers and automation to invoke the same capabilities through the CLI or API.
+
+Triggers include:
+
+- Fixed time and interval
+- Calendar expression
+- Exchange-session events
+- Before or after market open or close
+- Data arrival or revision
+- Cache invalidation or detected gap
+- Upstream workflow completion
+- Threshold or analytical event
+- Manual invocation
+- External webhook or API request
+
+Time-based triggers declare timezone and daylight-saving behavior. Market triggers use explicit exchange calendars, while cryptocurrency schedules support continuous 24/7 operation.
+
+### 29.2 Durable workflow semantics
+
+Every workflow and run has a stable typed identity. Unrelated workflow types cannot share ambiguous latest-run state.
+
+Workflows declare typed inputs, outputs, dependencies, input revisions, idempotency, concurrency behavior, checkpoints, and resource requirements.
+
+Concurrency policies include allow, queue, replace, and reject. Long-running work supports progress, pause, resume, cancellation, safe shutdown, and resumability where possible.
+
+### 29.3 Failure and missed-run behavior
+
+Retries depend on error category and use provider-aware backoff and quota handling. Work requiring intervention enters a visible blocked or dead-letter state.
+
+Missed-run policies include skip, run once, bounded catch-up, and require approval. Recovery cannot automatically replay financially meaningful paper actions.
+
+### 29.4 Resource and notification controls
+
+Schedules respect configurable CPU, memory, storage, provider quota, and monetary budgets. Priorities prevent lower-value background work from blocking critical operations.
+
+Notifications support grouping, batching, and digest policies so routine successful executions do not overwhelm users.
+
+Imported schedules remain disabled until reviewed. Run history retains lineage, status transitions, resource use, and structured diagnostics.
+
+The initial modular monolith may add optional execution workers later without requiring distributed deployment.
+
+## 30. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1241,7 +1286,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 30. PRD sections pending discovery
+## 31. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1250,13 +1295,12 @@ The following areas are intentionally incomplete:
 - Detailed cache semantics
 - Backtest fidelity levels
 - Portfolio and risk functionality
-- Alerting and scheduled operation
 - Availability, performance, scalability, and cost objectives
 - Milestone decomposition
 - Product success metrics
 - Risks and mitigations
 
-## 31. Document governance
+## 32. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
