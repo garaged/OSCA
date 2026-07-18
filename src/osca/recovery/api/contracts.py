@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from osca.configuration.api import ValidatedConfiguration
 from osca.security.api import AuthorizationContext, SecretReference
 from osca.shared_kernel.api import CorrelationId
 
@@ -156,7 +157,7 @@ class CreateBackup(BaseModel):
     destination: str
     recipient: str
     recipient_fingerprint: str
-    configuration_snapshot: dict[str, Any]
+    configuration_snapshot: ValidatedConfiguration
     configuration_revision: UUID
     source_build: str
     source_schema: str
