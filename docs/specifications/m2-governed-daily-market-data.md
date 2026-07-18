@@ -13,14 +13,16 @@
 
 - `osca.instrument.reference` 1.0.0 — accepted and supported;
 - `osca.instrument.provider-mapping` 1.0.0 — accepted and supported;
-- `osca.provider.capability` 1.0.0;
+- `osca.provider.capability` 1.0.0 — accepted and supported;
+- `osca.provider.daily-request` 1.0.0 — accepted and supported;
+- `osca.provider.daily-result` 1.0.0 — accepted and supported;
 - `osca.market-data.daily-bar` 1.0.0;
 - `osca.market-data.retrieval-request` 1.0.0;
 - `osca.market-data.resolution` 1.0.0;
 - `osca.data-quality.finding` 1.0.0;
 - `osca.cache.cleanup-plan` 1.0.0.
 
-The Instrument-owned semantic and structural schemas are accepted in the [contract catalog](../governance/contract-catalog.md) and implemented by `osca.instrument.api`. Remaining candidate families must be accepted before their implementation. Unknown major versions fail closed.
+The Instrument- and Provider-owned semantic and structural schemas are accepted in the [contract catalog](../governance/contract-catalog.md) and implemented by `osca.instrument.api` and `osca.provider.api`. Remaining candidate families must be accepted before their implementation. Unknown major versions fail closed.
 
 ## Behavioral specification
 
@@ -95,4 +97,4 @@ Instrument, Provider, and Market Data each own schemas. Catalog receives typed p
 
 ## Entry blockers
 
-ADR-0017 resolves payload persistence. The exact Instrument reference and mapping schemas are accepted for M2.1. Remaining contract families, provider selection, provider-specific licensing policy, deterministic adapter fixtures, performance observations, and migration/recovery evidence remain gated before their applicable increments.
+ADR-0017 resolves payload persistence. The exact Instrument and provider capability/acquisition schemas are accepted through M2.2. Production provider promotion, provider-specific licensing policy, remaining Market Data contract families, performance observations, and migration/recovery evidence remain gated before their applicable increments.

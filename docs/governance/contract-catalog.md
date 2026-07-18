@@ -145,4 +145,15 @@ Instrument contracts are immutable Pydantic values. Unknown major versions fail 
 
 A mapping can become active only when verified, its canonical instrument exists, its validity interval is coherent, and no verified mapping for the same provider/symbol/scope/venue overlaps another canonical identity. Unverified or ambiguous mappings fail before canonical market-data writes. Conformance evidence includes exact-revision round trips, stock/pair validation, duplicate identity rejection, and time-overlap ambiguity rejection.
 
+
+## M2 provider contract families
+
+| Family | Owner | Purpose | Compatibility | Current version | Status | Structural schema |
+|---|---|---|---|---|---|---|
+| `osca.provider.capability` | Provider | Machine-readable asset, interval, history, timestamp, adjustment, authentication, quota, rights, endpoint, health, and quality limits | Additive-minor with explicit negotiation; existing semantic fields and failure codes are never repurposed | 1.0.0 | Supported | `osca.provider.api.ProviderCapability` |
+| `osca.provider.daily-request` | Provider | Bounded mapped-symbol daily acquisition request | Additive-minor; range is start-inclusive/end-exclusive and interval meaning cannot change | 1.0.0 | Supported | `osca.provider.api.DailyProviderRequest` |
+| `osca.provider.daily-result` | Provider | Deterministic observations or one typed safe failure | Additive-minor; success/failure exclusivity, decimal/time meaning, ordering, and codes cannot change | 1.0.0 | Supported | `osca.provider.api.ProviderResult` |
+
+Provider results contain exactly one of ordered unique observations or a typed failure. Failures distinguish authentication, policy, quota, transport, schema, mapping, quality, and compatibility. Credentials are represented only by named references in capability metadata. Provider-specific behavior is capability/policy data and cannot redefine canonical Instrument or Market Data meaning.
+
 Conformance fixtures, structural schemas, security classifications, supported producer/consumer revisions, and exact error-code catalogs must be delivered with the first implementation of each family.
