@@ -10,7 +10,7 @@
 
 An ADR records a consequential technical or engineering-governance choice that constrains multiple components, is expensive to reverse, establishes a compatibility or operational contract, resolves a material tradeoff, or creates an architecture fitness obligation.
 
-ADRs cannot change product scope or weaken an baseline product requirement.
+ADRs cannot change product scope or weaken a baseline product requirement.
 
 ## Lifecycle
 
@@ -30,10 +30,15 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0008](ADR-0008-tiered-extension-isolation-model.md) | Tiered extension isolation model | Baseline |
 | [ADR-0009](ADR-0009-persistence-ownership-model.md) | Persistence ownership model | Baseline |
 | [ADR-0010](ADR-0010-unified-observability-architecture.md) | Unified observability architecture | Baseline |
+| [ADR-0011](ADR-0011-python-runtime-build-and-repository-model.md) | Python runtime, build, and repository model | Accepted |
+| [ADR-0012](ADR-0012-m1-metadata-persistence-and-migration.md) | M1 metadata persistence and migration | Accepted |
+| [ADR-0013](ADR-0013-embedded-durable-job-executor.md) | Embedded durable job executor | Accepted |
+| [ADR-0014](ADR-0014-m1-contract-and-interface-representation.md) | M1 contract and interface representation | Accepted |
+| [ADR-0015](ADR-0015-local-security-secrets-and-telemetry-profile.md) | Local security, secrets, and telemetry profile | Accepted |
 
 ## Baseline status
 
-The foundational ADR set is baseline and pending M0.6 validation. It enters Baseline after validation and becomes Frozen when M1 begins.
+ADR-0001 through ADR-0010 are the validated M0 Baseline. They become Frozen when M1 implementation begins. ADR-0011 through ADR-0015 are accepted M1 decisions and remain governed by the architecture evolution policy.
 
 ## Template
 
