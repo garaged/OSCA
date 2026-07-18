@@ -2,7 +2,7 @@
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies.
 
-The product requirements and M0 architecture foundation are approved and merged. M0.x operationalizes that foundation through handbook guidance, validation, governance mechanics, and engineering-system bootstrap in preparation for M1.
+The M0 architecture foundation and M0.x operational controls are authoritative. M1.1–M1.7 implement and evidence the secure walking skeleton; the M1.8 exit review remains before milestone acceptance.
 
 ## Start here
 
@@ -14,7 +14,8 @@ The product requirements and M0 architecture foundation are approved and merged.
 6. [Architecture decisions](docs/decisions/README.md)
 7. [Engineering constitution](engineering/constitution.md)
 8. [M1 milestone](docs/milestones/m1/README.md)
-9. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
+9. [Run and operate M1](docs/milestones/m1/operations-guide.md)
+10. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
 
 ## Governing baseline
 
