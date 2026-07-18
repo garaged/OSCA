@@ -393,3 +393,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will maintain a living, version-controlled, traceable risk register integrated with milestone entry and exit gates.
 - **Rationale:** Static or informal risk lists do not demonstrate that controls remain effective as data sources, models, extensions, security boundaries, and operational behavior evolve.
 - **Consequences:** Risks have owners, triggers, controls, residual exposure, evidence, and review dates; critical risks block milestone completion without treatment; realized risks produce incidents and corrective actions; and review occurs before milestone approval and at least quarterly during active development.
+
+
+## D-046 — Risk-ordered vertical milestones
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use the M0 through M12 risk-ordered vertical milestone sequence, with a universal evidence-based exit gate.
+- **Rationale:** Horizontal infrastructure milestones delay usable outcomes, while feature-first delivery can bypass foundational correctness and governance.
+- **Consequences:** Every milestone produces an end-to-end outcome with specifications, traceability, tests, observability, documentation, accessibility, risk evidence, and no untreated critical risks. M0 establishes governance; later milestones progress through secure platform, governed data, analytics, extensions, F0–F3 evaluation, ML, LLM, analytical breadth, and release hardening.
