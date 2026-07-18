@@ -1181,7 +1181,51 @@ Objectives apply while OSCA and its configured destination are operational. The 
 
 Default verification includes monthly isolated restore tests and at least quarterly disaster-recovery exercises. Retention supports configurable hourly, daily, weekly, and monthly recovery points. Relaxed, standard, and hardened profiles make their protection and risks visible.
 
-## 28. Engineering-quality direction
+## 28. Observability and operational health
+
+### 28.1 Built-in health center
+
+OSCA provides an integrated health experience covering:
+
+- Application, catalog, and persistence health
+- Background jobs, queues, retries, and failures
+- Provider availability, quotas, latency, and authentication
+- Data freshness, gaps, revisions, and quality
+- Cache usage, storage pressure, reclamation, and capacity trends
+- Extension compatibility, health, and resource use
+- Backtest and paper-engine status
+- Paper-account reconciliation
+- ML drift, evaluation, and deployment health
+- LLM cost, latency, grounding, schema, and tool failures
+- Authentication, secret-vault, trust-store, and certificate health
+- Backup status, restore verification, and recovery-objective risk
+- Scheduled analysis and notification delivery
+
+Health states include healthy, degraded, blocked, recovering, and unavailable. User-facing findings explain impact and link to affected resources, remediation guidance, and runbooks.
+
+### 28.2 Structured telemetry
+
+OSCA produces structured logs, metrics, traces, job events, and audit records. Correlation identities connect API requests, retrieval jobs, analysis graphs, model inference, order intents, and journal events.
+
+Health checks distinguish component availability from analytical correctness.
+
+### 28.3 Alerts and notifications
+
+Operational alerts support configurable thresholds, grouping, deduplication, suppression, acknowledgement, escalation, and recovery notices. Background-job failures cannot remain silent.
+
+OSCA includes a built-in notification inbox and supports pluggable destinations such as email, messaging systems, webhooks, and operating-system notifications.
+
+### 28.4 Security and privacy
+
+Secrets, sensitive payloads, prompts, and licensed data are redacted according to policy. Audit records are distinct from diagnostic logs and receive stronger integrity and retention controls.
+
+Diagnostic bundles preview included content before export.
+
+### 28.5 External observability
+
+Advanced deployments may export telemetry through open, documented interfaces. External observability is optional and cannot be required for understanding the basic health of a local installation.
+
+## 29. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1197,7 +1241,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 29. PRD sections pending discovery
+## 30. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1212,7 +1256,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 30. Document governance
+## 31. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
