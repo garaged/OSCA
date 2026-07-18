@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-07-18
+goal: Implement and verify submission, idempotency, leases, heartbeats,
+  checkpoints, cancellation, retry, and restart recovery under ADR-0013.
