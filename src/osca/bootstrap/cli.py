@@ -9,6 +9,11 @@ from osca.bootstrap.runtime import readiness_snapshot
 app = typer.Typer(no_args_is_help=True, help="OSCA operator command line.")
 
 
+@app.callback()
+def cli() -> None:
+    """Operate and inspect a local or personal-server OSCA installation."""
+
+
 @app.command()
 def readiness() -> None:
     """Report the validated local readiness snapshot."""
@@ -22,4 +27,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
