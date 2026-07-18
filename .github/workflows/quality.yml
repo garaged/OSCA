@@ -17,6 +17,7 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          python-version: "3.13"
       - name: Install locked Python environment
         run: uv sync --locked
       - name: Install pinned age interoperability fixture
