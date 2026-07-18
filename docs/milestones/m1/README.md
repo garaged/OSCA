@@ -18,6 +18,7 @@
 - [Technology decision package](technology-decision-package.md)
 - [Walking-skeleton specification](../../specifications/m1-secure-walking-skeleton.md)
 - [Evidence plan](evidence-plan.md)
+- [M1.4 OpenSpec pilot](../../../openspec/changes/m1-4-durable-diagnostic-jobs/README.md)
 - [M1 initiation record](initiation-record.md)
 
 ## Governing controls
