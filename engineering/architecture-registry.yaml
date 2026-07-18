@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: m1-implementation
+  status: m1-complete
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:

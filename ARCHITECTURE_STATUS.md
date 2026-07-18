@@ -7,7 +7,8 @@
 - **Tier-1 ADRs:** Frozen at M1 implementation entry
 - **Architecture review:** Approved
 - **M0.x operationalization:** Complete
-- **Current activity:** M1 secure walking-skeleton implementation
+- **M1 secure walking skeleton:** Accepted
+- **Current activity:** Post-M1 milestone transition
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -30,9 +31,9 @@ M0.x does not redesign M0. It supplies application guidance, validation evidence
 - [x] Executable-architecture backlog
 - [x] Corrected navigation and stale baseline references
 
-## M1 entry boundary
+## M1 completion boundary
 
-M0.x is ready for review. Before product implementation begins, M1 planning must select the first vertical slice, assign its exact `REQ-NNNN` requirements, resolve any deferred decisions triggered by that slice, approve its specification, and complete the [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md). These are deliberate M1 entry activities, not incomplete M0 architecture.
+M1 is accepted through its governed exit review. M1.1–M1.8 provide the secure walking skeleton and retained evidence. Subsequent product work must begin with a new milestone intent, exact requirement allocation, triggered decisions, accepted specification, and proportional evidence plan; M1 acceptance does not authorize implementing later PRD scope early.
 
 ## Key navigation
 
