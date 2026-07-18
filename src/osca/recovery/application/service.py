@@ -25,7 +25,9 @@ from osca.recovery.api import (
 )
 from osca.recovery.application.ports import (
     EncryptionContainer,
+    NullRecoveryObserver,
     RecoveryCatalog,
+    RecoveryObserver,
     RecoveryOperationRepository,
 )
 from osca.recovery.domain import RecoveryAction
@@ -59,12 +61,14 @@ class RecoveryService:
         catalog: RecoveryCatalog,
         audit: AuditRepository,
         operations: RecoveryOperationRepository,
+        observer: RecoveryObserver | None = None,
     ) -> None:
         self._container = container
         self._vault = vault
         self._catalog = catalog
         self._audit = audit
         self._operations = operations
+        self._observer = observer or NullRecoveryObserver()
 
     def create(self, command: CreateBackup) -> BackupRecord:
         _require(command.authorization, Capability.RECOVERY_BACKUP)
@@ -265,9 +269,10 @@ class RecoveryService:
         try:
             yield
         except Exception:
-            self._operations.complete(
+            completed = self._operations.complete(
                 operation, succeeded=False, code="recovery.operation.failed"
             )
+            self._observer.record(completed)
             if action in {RecoveryAction.CREATE, RecoveryAction.EXECUTE}:
                 self._audit_outcome(
                     authorization,
@@ -279,9 +284,10 @@ class RecoveryService:
                 )
             raise
         else:
-            self._operations.complete(
+            completed = self._operations.complete(
                 operation, succeeded=True, code="recovery.operation.succeeded"
             )
+            self._observer.record(completed)
 
     def _post_restore_validations(
         self, database: Path, expected_schema: str
