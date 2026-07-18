@@ -780,7 +780,60 @@ The first usable foundation includes:
 
 Deeper fundamental, macroeconomic, news and sentiment, crypto and on-chain, and specialized ML functionality can arrive as subsequent built-in or independent packs without changing the analytical output model.
 
-## 21. Backtesting and paper trading — initial requirements
+## 21. Visualization and dashboards
+
+### 21.1 Declarative visualization specifications
+
+Analyses normally return typed, versioned, serializable visualization specifications rendered by OSCA. Specifications reference governed analytical results rather than arbitrary internal database queries.
+
+The standard visualization grammar supports, as it evolves:
+
+- Price and candlestick charts
+- Indicators and overlays
+- Volume and market-profile views
+- Line, area, bar, and stacked charts
+- Scatter and bubble plots
+- Distributions and box plots
+- Correlation and return heatmaps
+- Drawdown and underwater charts
+- Equity curves
+- Rolling risk and performance charts
+- Portfolio allocation and exposure
+- Factor exposure and feature importance
+- Prediction, confusion, and calibration diagnostics
+- Event and catalyst timelines
+- Backtest trades and annotations
+- Tables with conditional formatting
+- Structured evidence and thesis panels
+
+### 21.2 Interactive dashboards
+
+Users can assemble reusable dashboard panels and save interactive views without mutating underlying analyses.
+
+Dashboards support, where meaningful:
+
+- Filters and scoped parameters
+- Linked selections and cross-filtering
+- Drill-down
+- Comparable instruments, portfolios, analyses, or experiments
+- Synchronized time ranges
+- Inspection of provenance, effective time, units, freshness, and quality
+
+Large datasets use disclosed aggregation or downsampling. Users must be able to distinguish displayed approximations from full-resolution analytical inputs.
+
+### 21.3 Export, reporting, and accessibility
+
+Visualizations export images, tabular data, and reproduction metadata. The system supports static report rendering without the interactive client.
+
+Visualizations provide keyboard operation, screen-reader descriptions, non-color encodings, and accessible summary tables as appropriate.
+
+### 21.4 Governed custom views
+
+Specialized extensions may provide custom frontend views only through a separately governed, permissioned, and compatibility-versioned interface. Custom views cannot access unrelated application state or bypass data contracts.
+
+LLM-generated chart requests compile into validated visualization specifications rather than executable frontend code.
+
+## 22. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -803,7 +856,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 22. Engineering-quality direction
+## 23. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -819,7 +872,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 23. PRD sections pending discovery
+## 24. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -829,7 +882,6 @@ The following areas are intentionally incomplete:
 - Model and experiment lifecycle
 - Backtest fidelity levels
 - Portfolio and risk functionality
-- Visualization and reporting experience
 - Alerting and scheduled operation
 - Security and credential handling
 - Availability, performance, scalability, and cost objectives
@@ -838,7 +890,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 24. Document governance
+## 25. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
