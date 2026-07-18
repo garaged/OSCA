@@ -36,4 +36,5 @@ The product baseline was merged through PR #1 at commit `14f537b7ce359007a776730
 - [Architecture evolution policy](engineering/architecture-evolution-policy.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
 - [Engineering bootstrap](engineering/bootstrap/README.md)
+- [OpenSpec integration policy](docs/governance/openspec-integration.md)
 - [Architecture validation](docs/validation/README.md)
