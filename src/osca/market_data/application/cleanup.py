@@ -28,11 +28,16 @@ def preview_cleanup(
     manifests: tuple[DatasetManifest, ...],
     *,
     eligible_manifest_ids: frozenset[UUID],
+    protected_manifest_ids: frozenset[UUID] = frozenset(),
 ) -> CleanupPlan:
     actions: list[CleanupAction] = []
     protected_bytes = 0
     for manifest in manifests:
-        if manifest.layer is DatasetLayer.CANONICAL or manifest.protected:
+        if (
+            manifest.layer is DatasetLayer.CANONICAL
+            or manifest.protected
+            or manifest.manifest_id in protected_manifest_ids
+        ):
             protected_bytes += manifest.byte_size
             continue
         if manifest.manifest_id not in eligible_manifest_ids:
