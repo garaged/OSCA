@@ -1,0 +1,16 @@
+{
+  "name": "osca-engineering-tools",
+  "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "openspec": "openspec",
+    "openspec:doctor": "openspec doctor",
+    "openspec:list": "openspec list",
+    "openspec:validate": "openspec validate --all --strict"
+  },
+  "devDependencies": {
+    "@fission-ai/openspec": "1.6.0"
+  }
+}

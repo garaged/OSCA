@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "osca"
+version = "0.1.0.dev0"
+description = "Local-first market intelligence and quantitative research platform"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "alembic>=1.16,<2",
+  "fastapi>=0.116,<1",
+  "jinja2>=3.1,<4",
+  "keyring>=25.6,<26",
+  "opentelemetry-api>=1.35,<2",
+  "opentelemetry-sdk>=1.35,<2",
+  "pydantic>=2.11,<3",
+  "sqlalchemy>=2.0,<3",
+  "typer>=0.16,<1",
+  "uvicorn>=0.35,<1",
+]
+
+[dependency-groups]
+dev = [
+  "hypothesis>=6.135,<7",
+  "httpx2>=2,<3",
+  "mypy>=1.16,<2",
+  "pytest>=8.4,<9",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+osca = "osca.bootstrap.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/osca"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+packages = ["osca"]
+mypy_path = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"

@@ -48,3 +48,8 @@ Prefer small, traceable vertical slices. Update specifications and tests before 
 ## Review focus
 
 Reviewers should concentrate on intent alignment, ownership, contract evolution, failure behavior, security boundaries, telemetry completeness, recovery impact, and the credibility of verification evidence—not merely code style.
+
+
+## OpenSpec pilot
+
+When an active change is managed by OpenSpec, an AI contributor must read its proposal, delta specs, design, and tasks together with the governing OSCA artifacts. Task completion is an evidence assertion. OpenSpec cannot invent authority, waive gates, or replace the required delivery report. See the [integration policy](../docs/governance/openspec-integration.md).

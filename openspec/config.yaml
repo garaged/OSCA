@@ -1,0 +1,32 @@
+schema: spec-driven
+
+context: |
+  OSCA is governed by the approved PRD, REQ-NNNN catalog, Frozen ADR-0001
+  through ADR-0010, accepted implementation ADRs, contract catalog, milestone
+  specifications, and risk-tiered evidence policy. OpenSpec is a change-execution
+  layer only. It cannot create or approve normative requirements, ADRs, public
+  contract families, architecture exceptions, or milestone exit evidence.
+
+  Current stack: CPython 3.13, uv, Pydantic v2, FastAPI, Typer, SQLAlchemy 2,
+  Alembic, SQLite WAL, keyring, OpenTelemetry, pytest, Hypothesis, Ruff, mypy.
+  Architecture: single-user modular monolith with capability-owned state and
+  published application contracts. All work follows Intent -> Requirements ->
+  Architecture -> Specification -> Validation -> Evidence.
+
+rules:
+  proposal:
+    - Reference the governing milestone intent and exact REQ-NNNN identifiers.
+    - Identify owning capabilities, affected contract families, governing ADRs, risk class, and explicit non-goals.
+    - Do not introduce product scope or resolve a consequential decision implicitly.
+  specs:
+    - Treat OSCA milestone specifications as normative; delta specs may narrow or clarify a change but cannot weaken them.
+    - Use SHALL or MUST only when directly derived from an active requirement or accepted specification.
+    - Include failure, security, compatibility, observability, migration, recovery, and evidence scenarios as applicable.
+  design:
+    - State capability ownership, dependency direction, interaction classification, persistence ownership, and public-contract impact.
+    - Reference governing ADRs and record any unresolved consequential choice as a blocker rather than selecting it silently.
+    - Include rollout, rollback or forward recovery, telemetry, and architecture-fitness impact.
+  tasks:
+    - Order tasks as specification, tests, implementation, validation, documentation, traceability, and retained evidence.
+    - Keep tasks independently reviewable and leave the repository buildable and diagnosable.
+    - Never mark a task complete unless its evidence was actually produced.

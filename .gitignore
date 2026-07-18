@@ -1,0 +1,26 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Node development tooling
+node_modules/
+
+# Local OSCA state
+*.db
+*.db-shm
+*.db-wal
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store

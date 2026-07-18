@@ -1,6 +1,6 @@
 # ADR-0009: Persistence Ownership Model
 
-- **Status:** Baseline
+- **Status:** Frozen
 - **Tier:** Foundational
 - **Date:** 2026-07-17
 

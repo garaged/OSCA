@@ -13,7 +13,8 @@ The product requirements and M0 architecture foundation are approved and merged.
 5. [Architecture handbook](docs/handbook/README.md)
 6. [Architecture decisions](docs/decisions/README.md)
 7. [Engineering constitution](engineering/constitution.md)
-8. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
+8. [M1 milestone](docs/milestones/m1/README.md)
+9. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
 
 ## Governing baseline
 
@@ -36,4 +37,5 @@ The product baseline was merged through PR #1 at commit `14f537b7ce359007a776730
 - [Architecture evolution policy](engineering/architecture-evolution-policy.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
 - [Engineering bootstrap](engineering/bootstrap/README.md)
+- [OpenSpec integration policy](docs/governance/openspec-integration.md)
 - [Architecture validation](docs/validation/README.md)

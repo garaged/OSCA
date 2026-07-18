@@ -119,3 +119,17 @@ Removal is prohibited while protected artifacts, active extensions, workflows, o
 The owning module controls semantics and publishes the contract. Consumers may propose changes but cannot redefine owner meaning locally.
 
 Cross-module contract families must still have one authoritative owner. A neutral namespace does not imply shared mutable ownership.
+
+
+## M1 contract families
+
+| Family | Owner | Purpose | Compatibility | Current version | Status | Specification |
+|---|---|---|---|---|---|---|
+| `osca.readiness.snapshot` | Operations | Cross-interface immutable readiness result | Additive-minor with explicit unknown-field behavior | 1.0.0 | Accepted | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
+| `osca.error.envelope` | Platform | Stable structured public failure semantics | Additive-minor; codes are never repurposed | 1.0.0 | Accepted | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
+| `osca.workflow.diagnostic-run` | Workflow | Diagnostic submission, lifecycle, checkpoint, and result | Additive-minor; transitions are semantic invariants | 1.0.0 | Supported | [M1 specification](../specifications/m1-secure-walking-skeleton.md) and [evidence](../../evidence/m1/m1-4-durable-diagnostic-jobs.md) |
+| `osca.catalog.metadata-reference` | Catalog | Typed stable identity, revision, lineage, and availability | Additive-minor; identity/time meaning cannot change | 1.0.0 | Accepted | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
+| `osca.recovery.backup-manifest` | Recovery | Backup contents, exclusions, integrity, and compatibility | Read-compatible within major; exact revision retained | 1.0.0 | Accepted | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
+| `osca.recovery.restore-plan` | Recovery | Previewed isolated restore actions and conflicts | Additive-minor; execution requires exact accepted plan revision | 1.0.0 | Accepted | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
+
+Conformance fixtures, structural schemas, security classifications, supported producer/consumer revisions, and exact error-code catalogs must be delivered with the first implementation of each family.

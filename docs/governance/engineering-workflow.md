@@ -176,3 +176,8 @@ Each implementation pull request must state, as applicable:
 An exception records the rule, necessity, alternatives, owner, approver, risk, expiration or removal trigger, and automated detection where practical.
 
 Undocumented deviation is a defect rather than an exception.
+
+
+## OpenSpec change execution
+
+OpenSpec may organize an accepted change's proposal, delta scenarios, local design, tasks, validation, and archive under the [OpenSpec integration policy](openspec-integration.md). It does not replace intent approval, requirement identity, ADR governance, normative specifications, risk gates, traceability, or retained OSCA evidence.
