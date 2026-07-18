@@ -214,3 +214,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will support market and technical, fundamental and valuation, quantitative and statistical, portfolio and risk, macroeconomic and cross-market, event and catalyst, news and sentiment, crypto-specific, ML, LLM synthesis, and strategy-outcome analysis through versioned capability packs.
 - **Rationale:** The product requires broad analytical coverage without coupling every specialist method and data dependency to the core release.
 - **Consequences:** A smaller cross-asset analytical foundation ships first. Packs declare data requirements and degradation behavior, use governed contracts and structured outputs, and include methodology, tests, limitations, and usage documentation. Equivalent methods may coexist and be evaluated comparatively.
+
+
+## D-026 — Visualization extension model
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use versioned declarative visualization specifications rendered by the application, with separately governed custom views for specialized interactions.
+- **Rationale:** Analytical extensions need rich presentation without requiring arbitrary frontend code or direct internal-data access.
+- **Consequences:** Specifications consume typed results, support interactive dashboards and static rendering, retain provenance, disclose downsampling, export data and reproduction metadata, and meet accessibility requirements. Custom views require additional trust, permissions, and compatibility governance.
