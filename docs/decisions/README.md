@@ -23,6 +23,7 @@ ADR statuses are Proposed, Accepted, Superseded, Rejected, and Deprecated. Accep
 | [ADR-0001](ADR-0001-requirements-authority-and-traceability-model.md) | Requirements authority and traceability model | Accepted |
 | [ADR-0002](ADR-0002-modular-monolith-decomposition-model.md) | Modular-monolith decomposition model | Accepted |
 | [ADR-0003](ADR-0003-module-boundary-enforcement-model.md) | Module-boundary enforcement model | Accepted |
+| [ADR-0004](ADR-0004-public-contract-versioning-strategy.md) | Public contract versioning strategy | Accepted |
 
 ## Template
 
