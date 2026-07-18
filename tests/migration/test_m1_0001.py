@@ -24,6 +24,7 @@ def test_initial_migration_upgrades_and_downgrades_clean_database(tmp_path: Path
         "configuration_snapshots",
         "operations_audit_records",
         "operations_workflow_events",
+        "recovery_operations",
         "workflow_diagnostic_runs",
     ]
 
