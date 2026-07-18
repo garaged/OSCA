@@ -232,3 +232,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will provide fast vectorized research mode and authoritative event-driven simulation mode. Paper trading shares the event-driven domain model.
 - **Rationale:** Vectorized evaluation supports efficient exploration but cannot faithfully represent every temporal, order, fill, liquidity, and portfolio behavior required for realistic validation.
 - **Consequences:** Strategies declare compatible modes and produce typed decisions or order intents. Research results are labeled estimates. Candidates pass through event-driven validation before paper trading. Cross-engine fixtures, visible result differences, point-in-time enforcement, reproducible assumptions, and promotion gates are required.
+
+
+## D-028 — Paper-accounting authority
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** Paper accounts will use immutable order events and an append-only double-entry journal as accounting authority, with rebuildable portfolio projections.
+- **Rationale:** Mutable balance snapshots cannot fully explain or reconcile cash, positions, fees, corporate actions, multi-currency effects, and corrections.
+- **Consequences:** Corrections use reversals; every economic event produces balanced entries; orders and fills retain analytical and market-data lineage; valuations retain price and FX sources; projections and performance snapshots remain regenerable; and tax output is initially analytical rather than authoritative.
