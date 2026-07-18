@@ -580,7 +580,69 @@ Visualizations consume typed results rather than arbitrary internal tables. LLM 
 
 The exact extension runtime, package format, isolation mechanism, signing implementation, and public registry design remain architectural decisions to be specified later.
 
-## 16. Backtesting and paper trading — initial requirements
+## 16. Product interfaces
+
+### 16.1 Web-primary experience
+
+The web application is OSCA's primary interactive product experience. It covers market discovery, dashboards, analysis composition, experiment comparison, cache and storage management, paper trading, reports, alerts, and extension administration.
+
+### 16.2 Versioned application API
+
+Web, CLI, notebook, LLM, and future clients use shared, versioned application capabilities. Business rules must not be independently implemented in presentation clients.
+
+Long-running operations return durable job identities and progress state. Local mode may optimize transport, but observable behavior remains compatible with personal-server operation.
+
+### 16.3 Command-line interface
+
+The CLI is mandatory for automation, scheduled workflows, bulk operations, diagnostics, backup and recovery, cache administration, extension development, and headless personal-server management. It need not reproduce interactions that are intrinsically visual.
+
+### 16.4 Notebook integration
+
+Notebooks access governed datasets through supported query interfaces and publish durable results through artifact interfaces. Direct database access is not a supported normal workflow.
+
+### 16.5 Language-model interface
+
+LLMs interact through approved application tools with the same validation, provenance, and structured error behavior as other clients.
+
+### 16.6 Cross-interface requirements
+
+All interfaces receive consistent validation, security enforcement, provenance, and errors. Visualizations can export underlying data and reproduction metadata. API compatibility is explicitly versioned.
+
+## 17. Usage and operational documentation
+
+Documentation is a required product capability and a release-blocking part of the definition of done.
+
+Version-matched documentation must include, as applicable:
+
+- Installation and upgrades
+- Local and personal-server deployment
+- Initial configuration and onboarding
+- Instrument discovery and registration
+- Provider configuration, capabilities, credentials, quotas, and limitations
+- Data freshness, quality, provenance, and revision interpretation
+- Cache inspection, storage budgets, cleanup, relocation, and recovery
+- Analysis composition and execution
+- Metric and indicator interpretation
+- ML and LLM capability limitations
+- Backtesting methodology and bias controls
+- Paper-trading assumptions and workflows
+- Portfolio and risk metric interpretation
+- Visualization, reporting, export, and reproducibility
+- Scheduled jobs and alerts
+- CLI reference and task-oriented examples
+- API reference, schemas, compatibility, and examples
+- Notebook integration
+- Extension development, packaging, testing, publishing, permissions, installation, and troubleshooting
+- Backup, restore, diagnostics, and disaster recovery
+- Security and credential-management guidance
+- Known limitations and troubleshooting
+- A domain glossary
+
+User-facing behavior is incomplete until its task-oriented usage documentation is available. Examples and commands should be executable or automatically validated where practical. Documentation must identify the product version it describes and be updated in the same change as affected behavior.
+
+Generated reference material may supplement but cannot replace conceptual guidance, tutorials, operational runbooks, and realistic end-to-end examples. Contextual help in the web application should link to the relevant versioned documentation.
+
+## 18. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -603,7 +665,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 17. Engineering-quality direction
+## 19. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -619,7 +681,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 18. PRD sections pending discovery
+## 20. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -638,7 +700,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 19. Document governance
+## 21. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
