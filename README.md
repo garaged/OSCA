@@ -16,6 +16,7 @@ The M0 architecture foundation and M0.x operational controls are authoritative. 
 8. [M1 milestone](docs/milestones/m1/README.md)
 9. [Run and operate M1](docs/milestones/m1/operations-guide.md)
 10. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
+11. [M2 initiation](docs/milestones/m2/README.md)
 
 ## Governing baseline
 
