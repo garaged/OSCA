@@ -19,6 +19,8 @@
 - [Walking-skeleton specification](../../specifications/m1-secure-walking-skeleton.md)
 - [Evidence plan](evidence-plan.md)
 - [M1.7 gap analysis](m1-7-gap-analysis.md)
+- [M1.8 exit gap analysis](exit-gap-analysis.md)
+- [M1 exit review record — proposed](exit-review.md)
 - [Run and operate M1](operations-guide.md)
 - [Durable diagnostic jobs usage](diagnostic-jobs.md)
 - [Protected backup and isolated restore](recovery.md)
@@ -40,4 +42,4 @@
 
 ## Implementation state
 
-M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation is complete with retained evidence. M1.8 exit review remains and is the only authority that can accept the milestone.
+M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation is complete with retained evidence. M1.8 exit review is active and remains the only authority process that can accept the milestone.
