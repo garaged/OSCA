@@ -23,6 +23,7 @@ _ALLOWED_PAYLOADS = {
 _MAX_ENTRY_BYTES = 256 * 1024 * 1024
 _MAX_ARCHIVE_BYTES = 512 * 1024 * 1024
 _ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+_READABLE_SCHEMAS = {f"m1_{revision:04d}" for revision in range(1, 7)}
 
 
 class RecoveryPackageError(RuntimeError):
@@ -157,6 +158,8 @@ def validate_cleartext_package(package: Path) -> BackupManifest:
             manifest = BackupManifest.model_validate_json(archive.read(_MANIFEST_PATH))
             if not manifest.verify_integrity():
                 raise RecoveryPackageError("recovery.manifest.integrity_invalid")
+            if manifest.source_schema not in _READABLE_SCHEMAS:
+                raise RecoveryPackageError("recovery.manifest.schema_incompatible")
             for entry in manifest.entries:
                 content = archive.read(entry.path)
                 if len(content) != entry.size or _bytes_digest(content) != entry.digest:
