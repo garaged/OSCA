@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
-from uuid import uuid4
 
+from osca.catalog.application import ResultCatalog
 from osca.workflow.api import (
     DiagnosticCheckpoint,
-    DiagnosticResult,
     DiagnosticRun,
     DiagnosticRunError,
     DiagnosticRunState,
@@ -53,11 +52,13 @@ class EmbeddedExecutor:
         repository: DiagnosticRunRepository,
         *,
         owner: str,
+        result_catalog: ResultCatalog,
         lease_seconds: int = 30,
         max_attempts: int = 3,
         observer: WorkflowEventObserver | None = None,
     ) -> None:
         self._observer = observer or NullWorkflowObserver()
+        self._result_catalog = result_catalog
         self._repository, self._service = repository, WorkflowService(repository, self._observer)
         self._handler, self._owner = DiagnosticHandler(), owner
         self._lease_seconds, self._max_attempts, self._stopping = lease_seconds, max_attempts, False
@@ -113,8 +114,9 @@ class EmbeddedExecutor:
                 message="Checkpoint major version is unsupported",
             )
             return self._service.transition(run, DiagnosticRunState.BLOCKED, error=error)
+        result = self._result_catalog.register(current.run_id.value, current.correlation_id)
         with_result = current.model_copy(
-            update={"result": DiagnosticResult(result_id=uuid4()), "revision": current.revision + 1}
+            update={"result": result, "revision": current.revision + 1}
         )
         if not self._repository.replace(with_result, current.revision):
             raise ConcurrentTransition(str(run.run_id.value))
