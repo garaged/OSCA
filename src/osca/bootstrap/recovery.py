@@ -37,22 +37,26 @@ def _age_executable() -> Path:
 def recovery_service() -> Iterator[RecoveryService]:
     engine = recovery_engine()
     operation_session = Session(engine, expire_on_commit=False)
-    evidence_session = Session(engine, expire_on_commit=False)
+    catalog_session = Session(engine, expire_on_commit=False)
+    audit_session = Session(engine, expire_on_commit=False)
     try:
         yield RecoveryService(
             container=AgeProcessContainer(_age_executable()),
             vault=KeyringVault(),
-            catalog=SqliteResultCatalog(evidence_session),
-            audit=SqliteAuditRepository(evidence_session),
+            catalog=SqliteResultCatalog(catalog_session),
+            audit=SqliteAuditRepository(audit_session),
             operations=SqliteRecoveryOperationRepository(operation_session),
             observer=RecoveryTelemetryObserver(
                 telemetry=configure_telemetry(service_version=__version__)
             ),
         )
-        evidence_session.commit()
+        catalog_session.commit()
+        audit_session.commit()
     except Exception:
-        evidence_session.rollback()
+        catalog_session.rollback()
+        audit_session.commit()
         raise
     finally:
-        evidence_session.close()
+        catalog_session.close()
+        audit_session.close()
         operation_session.close()
