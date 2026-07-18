@@ -20,7 +20,7 @@
 - [Evidence plan](evidence-plan.md)
 - [Durable diagnostic jobs usage](diagnostic-jobs.md)
 - [M1.4 retained evidence](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
-- [M1.4 OpenSpec pilot](../../../openspec/changes/m1-4-durable-diagnostic-jobs/README.md)
+- [Archived M1.4 OpenSpec pilot](../../../openspec/changes/archive/2026-07-18-m1-4-durable-diagnostic-jobs/README.md)
 - [M1 initiation record](initiation-record.md)
 
 ## Governing controls
