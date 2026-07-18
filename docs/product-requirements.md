@@ -1,16 +1,36 @@
 # OSCA Product Requirements Document
 
-**Status:** Review candidate  
+**Status:** Approved  
 **Product phase:** Product definition  
 **Last updated:** 2026-07-17
 
 ## 1. Document purpose
 
-This document defines the product requirements for OSCA before detailed architecture and implementation specifications are created. It is a living document: accepted decisions are normative, proposed material is provisional, and unresolved matters remain explicitly recorded.
+This document defines the approved product requirements for OSCA before detailed architecture and implementation specifications are created. Accepted decisions are normative. Future changes follow the governance rules in this document and the decision log.
 
-OSCA will use specification-driven development, intent-driven development, and test-driven development. Product requirements established here will later be decomposed into traceable architecture decisions, specifications, milestones, acceptance criteria, and tests.
+OSCA uses specification-driven development, intent-driven development, and test-driven development. The product is decomposed into risk-ordered milestones; each milestone will be refined into traceable intents, architecture decisions, specifications, acceptance criteria, tests, and documentation.
 
-## 2. Working product definition
+### 1.1 Requirement language
+
+- **Must** and **requires** identify mandatory product behavior.
+- **Should** identifies a recommended default that may be changed only with documented rationale.
+- **May** identifies optional or conditional behavior.
+- Descriptive future tense does not override an explicit mandatory requirement.
+
+### 1.2 Intelligence terminology
+
+- **ML** means machine learning used for quantitative prediction, classification, ranking, detection, or related statistical tasks.
+- **LLM** means a language model used for synthesis, explanation, structured extraction, interaction, or bounded tool orchestration.
+- **AI** is an umbrella term only. Requirements use ML or LLM when the distinction affects behavior.
+- **LM** is not used because it is ambiguous.
+
+## 2. Problem statement and product definition
+
+Market research commonly fragments provider downloads, caches, notebooks, indicators, models, backtests, charts, and portfolio records across disconnected tools. This fragmentation causes repeated retrieval, ambiguous dataset identity, inconsistent symbol mapping, hidden data revisions, weak lineage, irreproducible experiments, unrealistic validation, and unsafe transitions from research conclusions to simulated action.
+
+Existing tools also tend to couple analysis to a particular provider or implementation, treat storage as an incidental cache, mix facts with generated interpretation, or make advanced extensibility dependent on modifying the application itself.
+
+OSCA addresses these problems through a local-first, modular, governed research lifecycle that connects data acquisition, validation, analysis, ML, LLM assistance, backtesting, paper trading, monitoring, and outcome learning without surrendering deterministic financial correctness.
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies. It acquires and governs data from multiple sources, supports extensible analytics and AI models, produces explainable market and portfolio insights, and evaluates strategies through reproducible backtesting and realistic paper trading.
 
@@ -20,17 +40,17 @@ The initial product is a research and decision-support system with paper trading
 
 Enable an individual investor or quantitative researcher to investigate markets, construct and compare analytical methods, evaluate machine-learning models and strategies, and understand the evidence behind recommendations without being locked into a particular data provider, model family, visualization technology, or deployment environment.
 
-The platform should evolve safely from a personal research environment into a broader product without sacrificing reproducibility, data lineage, or modularity.
+The platform must evolve safely from a personal research environment into a broader product without sacrificing reproducibility, data lineage, or modularity.
 
 ## 4. Product principles
 
-1. **Evidence before recommendation.** Every conclusion should be traceable to data, transformations, models, parameters, and execution time.
+1. **Evidence before recommendation.** Every conclusion must be traceable to data, transformations, models, parameters, and execution time.
 2. **Determinism where correctness matters.** Price calculations, indicators, accounting, risk rules, backtesting, and cache invalidation must not depend on generative-model judgment.
 3. **AI as a bounded capability.** Machine learning and language models produce predictions, rankings, interpretations, and recommendations with explicit confidence and provenance.
 4. **Provider independence.** Data providers and model vendors are replaceable adapters behind stable contracts.
 5. **Reproducibility by default.** Analyses and experiments must be repeatable using versioned inputs, configuration, code, and artifacts.
 6. **Modularity with purpose.** Boundaries follow product capabilities and change patterns; distributable services are not required prematurely.
-7. **Local ownership.** The initial platform should preserve user control of data, credentials, models, and costs.
+7. **Local ownership.** The initial platform must preserve user control of data, credentials, models, and costs.
 8. **Transparent uncertainty.** Missing, stale, conflicting, revised, or low-quality information must be visible.
 9. **Safe evolution.** New metrics, analyses, visualizations, providers, and models must be addable without destabilizing unrelated capabilities.
 10. **No implied profitability.** The product evaluates evidence and uncertainty; it does not promise returns.
@@ -77,9 +97,9 @@ The platform should evolve safely from a personal research environment into a br
 
 OSCA will use a local-first core with an optional personal-server deployment.
 
-The initial implementation should be a single-user modular monolith with background workers. User interfaces and automation clients communicate through stable application interfaces. Internal modules remain independently testable and may be extracted into services only when supported by operational evidence.
+The initial implementation will be a single-user modular monolith with background workers. User interfaces and automation clients communicate through stable application interfaces. Internal modules remain independently testable and may be extracted into services only when supported by operational evidence.
 
-The platform should support:
+The platform must support:
 
 - Workstation deployment for private research and local models
 - Personal-server deployment for remote access and scheduled operation
@@ -131,13 +151,13 @@ The initial default universe includes:
 
 Options, futures, perpetual contracts, leveraged tokens, foreign exchange, bonds, and non-US equities are not part of the initial default universe.
 
-The domain model must not assume that all instruments are US-based or denominated in US dollars. Future markets and asset classes should be addable without redefining existing instrument identities.
+The domain model must not assume that all instruments are US-based or denominated in US dollars. Future markets and asset classes must be addable without redefining existing instrument identities.
 
 ### 8.2 Extending the supported universe
 
 Users must be able to add instruments within an already supported asset class without changing application code, provided at least one configured data provider can supply the required capabilities.
 
-Instrument addition should support:
+Instrument addition must support:
 
 - Discovery through provider search
 - Registration from provider metadata
@@ -171,7 +191,7 @@ The same ticker text may refer to different instruments, and the same instrument
 
 Each data-source adapter resolves between its remote identifiers and OSCA canonical identities through explicit, time-aware mappings.
 
-A mapping should contain:
+A mapping must contain:
 
 - Canonical instrument identifier
 - Provider identifier
@@ -217,7 +237,7 @@ Language models may support:
 - Hypothesis generation
 - Comparison of analyses and model results
 
-Language-model output must not be used as a numerical source of truth. Claims should reference the data or artifacts used to produce them.
+Language-model output must not be used as a numerical source of truth. Claims must reference the data or artifacts used to produce them.
 
 ### 9.3 Deterministic responsibilities
 
@@ -270,7 +290,7 @@ Datasets, scans, features, models, predictions, reports, backtests, and paper-tr
 
 A mutable pointer such as `latest` may exist only as a convenience. It must resolve to an immutable, typed artifact and cannot be the artifact's primary identity.
 
-Every material artifact should expose, as applicable:
+Every material artifact must expose, as applicable:
 
 - Artifact type and schema version
 - Stable unique identifier
@@ -513,7 +533,7 @@ OSCA supports:
 1. **Declarative composition:** users assemble registered capabilities into versioned analysis definitions and dependency graphs without implementing new code.
 2. **Code extensions:** developers implement genuinely new capabilities through governed extension interfaces.
 
-Analyses should be represented as inspectable dependency graphs so reusable nodes can be cached, independent work can execute concurrently, and invalidation can target affected outputs.
+Analyses must be represented as inspectable dependency graphs so reusable nodes can be cached, independent work can execute concurrently, and invalidation can target affected outputs.
 
 ### 15.3 Independent packaging and import
 
@@ -638,9 +658,9 @@ Version-matched documentation must include, as applicable:
 - Known limitations and troubleshooting
 - A domain glossary
 
-User-facing behavior is incomplete until its task-oriented usage documentation is available. Examples and commands should be executable or automatically validated where practical. Documentation must identify the product version it describes and be updated in the same change as affected behavior.
+User-facing behavior is incomplete until its task-oriented usage documentation is available. Examples and commands must be executable or automatically validated where practical. Documentation must identify the product version it describes and be updated in the same change as affected behavior.
 
-Generated reference material may supplement but cannot replace conceptual guidance, tutorials, operational runbooks, and realistic end-to-end examples. Contextual help in the web application should link to the relevant versioned documentation.
+Generated reference material may supplement but cannot replace conceptual guidance, tutorials, operational runbooks, and realistic end-to-end examples. Contextual help in the web application must link to the relevant versioned documentation.
 
 ## 18. Research organization
 
@@ -893,7 +913,7 @@ Candidates are promoted from research mode to event-driven validation before pap
 
 The platform must support fair, reproducible comparison of strategies and models.
 
-It should eventually include:
+It must include by the applicable milestone:
 
 - Point-in-time data handling
 - Prevention and detection of look-ahead bias
@@ -1069,7 +1089,7 @@ OSCA has one logical owner initially while retaining internal capability and sco
 
 Local-only mode binds to loopback or a protected local channel by default and relies on the operating-system user boundary. Binding to another network interface requires explicit configuration.
 
-Personal-server access requires authenticated sessions and secure transport. Unsafe public exposure should be detected and rejected where practical.
+Personal-server access requires authenticated sessions and secure transport. Unsafe public exposure must be detected and rejected where practical.
 
 Automation credentials are scoped, individually revocable, and expiring where practical. Extensions and LLM tools receive explicitly approved capabilities rather than unrestricted owner authority.
 
@@ -1178,7 +1198,7 @@ Recovery priority is:
 6. Reconstructable canonical and derived data
 7. Ephemeral content
 
-At least one backup copy can be stored off-device through authenticated encrypted transport. Archival policy should support separation from the active storage failure domain.
+The product must support at least one off-device backup copy through authenticated encrypted transport. Archival policy must support separation from the active storage failure domain.
 
 Operational documentation includes scenario-specific runbooks, recovery-material handling, certificate renewal and replacement, clean-system restoration, and post-recovery verification.
 
@@ -1798,6 +1818,7 @@ OSCA uses risk-ordered vertical milestones. Each milestone delivers an end-to-en
 - Approved PRD and glossary
 - Context and domain models
 - Module boundaries and dependency rules
+- Draft provider, analysis, visualization, model, and extension seams used by subsequent milestones
 - Initial architecture decisions
 - SDD, IDD, and TDD workflows
 - Requirement, specification, test, and documentation traceability
@@ -1830,7 +1851,7 @@ Product implementation is limited to architectural spikes required to resolve ge
 
 - Canonical instrument registry
 - Provider mappings and discovery
-- One stock and one crypto provider adapter
+- One stock and one crypto provider adapter implemented against the draft provider-extension contract
 - Capability routing and quotas
 - Source and canonical layers
 - Daily OHLCV ingestion
@@ -1861,7 +1882,7 @@ Product implementation is limited to architectural spikes required to resolve ge
 - Global catalog
 - Core analytical foundation
 - Structured analytical outputs
-- Declarative analysis graphs and visualization specifications
+- Declarative analysis graphs and visualization specifications implemented against draft extension contracts
 - Dashboards, comparison, drill-down, and export
 - Evidence-backed reports
 - Ad hoc exploration promoted into a project
@@ -1879,7 +1900,7 @@ Product implementation is limited to architectural spikes required to resolve ge
 - One externally packaged provider extension
 - One externally packaged analytical extension
 
-This milestone arrives early enough to prevent later capabilities from assuming core-only implementation.
+M0 defines the extension seams and M2–M4 exercise their internal contracts. M5 makes those contracts independently packageable and proves that core-repository changes are unnecessary.
 
 ### M6 — F0 and F1 strategy research
 
@@ -1999,6 +2020,19 @@ Every milestone requires:
 
 ## 40. Document governance
 
-Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
+Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded.
 
-Detailed architecture and technology selection are deferred until the relevant product requirements and quality attributes are accepted.
+Changes to approved requirements require a decision-log entry that identifies the reason, affected requirements and milestones, migration or compatibility impact, and whether the change supersedes an earlier decision. Unresolved questions cannot be silently converted into requirements.
+
+Detailed architecture and technology selection remain deferred to M0 and later milestone specifications unless a technology choice is already required by an accepted product constraint.
+
+### 40.1 Approval record
+
+- **Review completed:** 2026-07-17
+- **Decision coverage:** D-001 through D-047
+- **Structural validation:** 40 sequential top-level sections
+- **Milestone coverage:** M0 through M12
+- **Disposition:** Approved for M0 intent and specification work
+- **Remaining product-discovery blockers:** None
+
+Approval does not freeze the product permanently; it establishes the governed baseline against which future changes are evaluated.
