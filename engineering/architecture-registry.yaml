@@ -1,32 +1,70 @@
-registry_version: 1
+registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: accepted-pending-validation
+  status: baseline
+  validated_by: docs/validation/m0x-validation-record.md
+
+authorities:
+  product-authority: product requirements and scope
+  architecture-authority: architecture decisions and boundaries
+  security-authority: security requirements and risk disposition
+  quality-authority: verification strategy and evidence sufficiency
+  repository-maintainers: repository policy and automated enforcement
 
 artifact_types:
   adr:
+    owner: architecture-authority
     lifecycle: [draft, reviewed, accepted, baseline, frozen, superseded, rejected, deprecated]
+    review_authority: architecture-authority
   requirement:
-    lifecycle: [draft, accepted, changed, retired]
+    owner: product-authority
+    lifecycle: [draft, active, superseded, retired, deferred]
+    review_authority: product-authority
   contract:
-    lifecycle: [draft, active, deprecated, retired]
+    owner: owning-capability
+    lifecycle: [draft, proposed, accepted, supported, deprecated, retired]
+    review_authority: architecture-authority
   capability:
+    owner: architecture-authority
     lifecycle: [proposed, active, deprecated, retired]
+    review_authority: architecture-authority
   workflow:
+    owner: owning-capability
     lifecycle: [proposed, active, deprecated, retired]
+    review_authority: architecture-authority
+  specification:
+    owner: owning-capability
+    lifecycle: [draft, proposed, accepted, superseded, retired]
+    review_authority: architecture-authority
+  exception:
+    owner: named-exception-owner
+    lifecycle: [proposed, active, expired, closed, revoked]
+    review_authority: governing-authority
+  evidence:
+    owner: quality-authority
+    lifecycle: [draft, complete, accepted, invalidated, retained]
+    review_authority: quality-authority
 
 adrs:
-  - { id: ADR-0001, title: Requirements authority and traceability model, status: accepted, tier: foundational }
-  - { id: ADR-0002, title: Modular-monolith decomposition model, status: accepted, tier: foundational }
-  - { id: ADR-0003, title: Module-boundary enforcement model, status: accepted, tier: foundational }
-  - { id: ADR-0004, title: Public contract versioning strategy, status: accepted, tier: foundational }
-  - { id: ADR-0005, title: Risk-tiered quality gate enforcement, status: accepted, tier: foundational }
-  - { id: ADR-0006, title: Inter-module communication model, status: accepted, tier: foundational }
-  - { id: ADR-0007, title: Event reliability and delivery model, status: accepted, tier: foundational }
-  - { id: ADR-0008, title: Tiered extension isolation model, status: accepted, tier: foundational }
-  - { id: ADR-0009, title: Persistence ownership model, status: accepted, tier: foundational }
-  - { id: ADR-0010, title: Unified observability architecture, status: accepted, tier: foundational }
+  - { id: ADR-0001, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0002, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0003, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0004, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0005, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0006, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0007, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0008, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0009, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0010, status: baseline, tier: foundational, owner: architecture-authority }
+
+governed_indexes:
+  requirements: docs/governance/requirements-catalog.md
+  contracts: docs/governance/contract-catalog.md
+  deferred_decisions: docs/governance/deferred-decisions.md
+  exceptions: docs/governance/architecture-exceptions.md
+  traceability: docs/governance/traceability-register.md
+  validation: docs/validation/checks.yaml
 
 relationship_types:
   - derives_from
@@ -45,5 +83,10 @@ relationship_types:
 validation:
   unique_ids_required: true
   dangling_references_forbidden: true
+  lifecycle_value_must_be_declared: true
+  owner_required: true
+  review_authority_required: true
   frozen_artifacts_require_supersession: true
   public_contract_owner_required: true
+  active_exceptions_require_expiry_or_removal_trigger: true
+  evidence_requires_source_revision: true
