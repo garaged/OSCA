@@ -1,6 +1,6 @@
 # M1 Intent — Secure Walking Skeleton
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Product authority
 - **Architecture approval:** Architecture authority
 - **Purpose:** Establish a minimal, secure, observable, recoverable OSCA product that exercises every primary interface through shared application capabilities.
