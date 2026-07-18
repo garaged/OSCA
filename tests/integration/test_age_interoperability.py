@@ -21,7 +21,7 @@ def test_age_reference_cli_interoperability(tmp_path: Path) -> None:
         stderr=subprocess.DEVNULL,
     )
     recipient = subprocess.run(
-        (str(keygen), "--y", str(identity)),
+        (str(keygen), "-y", str(identity)),
         check=True,
         capture_output=True,
         text=True,
