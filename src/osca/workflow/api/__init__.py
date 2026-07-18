@@ -11,9 +11,19 @@ from osca.workflow.api.contracts import (
     ListDiagnosticRuns,
     SubmitDiagnosticRun,
 )
+from osca.workflow.api.jobs import (
+    CancelJob,
+    GetJob,
+    JobError,
+    JobResultReference,
+    JobRun,
+    JobState,
+    SubmitJob,
+)
 
 __all__ = [
     "CancelDiagnosticRun",
+    "CancelJob",
     "DiagnosticCheckpoint",
     "DiagnosticInput",
     "DiagnosticResult",
@@ -22,6 +32,12 @@ __all__ = [
     "DiagnosticRunId",
     "DiagnosticRunState",
     "GetDiagnosticRun",
+    "GetJob",
+    "JobError",
+    "JobResultReference",
+    "JobRun",
+    "JobState",
     "ListDiagnosticRuns",
     "SubmitDiagnosticRun",
+    "SubmitJob",
 ]
