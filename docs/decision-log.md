@@ -250,3 +250,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use a governed experiment and model registry with pluggable training workflows, immutable model versions, explicit promotion gates, champion/challenger paper deployment, and drift monitoring.
 - **Rationale:** Diverse ML methods require extensible training while model comparison, reproducibility, deployment, and monitoring require consistent lifecycle governance.
 - **Consequences:** Training captures exact inputs and environment; features declare temporal availability; baselines are mandatory; evaluation separates selection and held-out periods; retraining does not imply promotion; deployments are reversible pointers; unsafe imports can be quarantined; and RL remains bounded by deterministic risk rules.
+
+
+## D-030 — Governed LLM gateway
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use a provider-neutral LLM gateway with bounded typed tools, versioned prompts and schemas, structured-output validation, evidence grounding, privacy controls, resource budgets, and dedicated evaluations.
+- **Rationale:** Direct provider coupling or broad autonomous access would weaken reproducibility, privacy, cost control, prompt-injection resistance, and deterministic system boundaries.
+- **Consequences:** LLMs cannot query internal databases or place live orders; state-changing tools require policy or confirmation; retained workflows pin versions; untrusted content remains data; sensitive disclosure is controlled; and evaluation covers grounding, citations, numerical consistency, tools, injection resistance, task completion, cost, and latency.
