@@ -742,7 +742,45 @@ Composite scores are optional summary fields rather than complete analytical out
 
 LLMs may generate narrative explanations, but referenced evidence and deterministically calculated values remain authoritative.
 
-## 20. Backtesting and paper trading — initial requirements
+## 20. Analysis families and capability packs
+
+OSCA treats the following as first-class analysis families:
+
+- **Market and technical:** price, volume, trends, momentum, volatility, support and resistance, patterns, and market structure
+- **Fundamental and valuation:** financial statements, growth, profitability, quality, leverage, cash flow, valuation multiples, estimates, and revisions
+- **Quantitative and statistical:** returns, distributions, correlations, factor exposures, seasonality, anomalies, regime detection, and statistical tests
+- **Portfolio and risk:** allocation, exposure, drawdown, concentration, diversification, liquidity, stress testing, and scenarios
+- **Macroeconomic and cross-market:** rates, inflation, currencies, commodities, indices, liquidity conditions, and intermarket relationships
+- **Events and catalysts:** earnings, dividends, splits, listings, regulatory events, economic releases, and project-specific events
+- **News and sentiment:** classification, entity extraction, source comparison, narrative shifts, and sentiment
+- **Crypto-specific:** on-chain metrics, token supply, network activity, exchange flows, liquidity, funding, open interest, liquidation conditions, and tokenomics
+- **Machine learning:** forecasting, classification, ranking, anomaly detection, feature importance, and calibrated uncertainty
+- **LLM synthesis:** evidence summaries, comparisons, explanations, research assistance, and hypothesis generation
+- **Strategy and outcome:** signal effectiveness, execution assumptions, trade distributions, robustness, and regime-specific performance
+
+Implementations are delivered through versioned built-in or independently distributed capability packs. Equivalent methods may coexist and be compared.
+
+Every analysis declares required provider capabilities, supported instruments and intervals, methodology, assumptions, degradation behavior, and structured outputs. Missing optional or premium data disables only dependent capabilities.
+
+Capability packs include appropriate fixtures, tests, references, methodology documentation, limitations, and usage guidance. They access data through governed contracts rather than privileged internal storage.
+
+### 20.1 Initial built-in analytical foundation
+
+The first usable foundation includes:
+
+- Data-quality analysis
+- Returns and benchmark comparisons
+- Core technical indicators
+- Volatility and drawdown
+- Correlation and diversification
+- Portfolio exposure and risk
+- Screening and ranking
+- Backtest performance metrics
+- Structured findings and reports
+
+Deeper fundamental, macroeconomic, news and sentiment, crypto and on-chain, and specialized ML functionality can arrive as subsequent built-in or independent packs without changing the analytical output model.
+
+## 21. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -765,7 +803,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 21. Engineering-quality direction
+## 22. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -781,7 +819,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 22. PRD sections pending discovery
+## 23. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -800,7 +838,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 23. Document governance
+## 24. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
