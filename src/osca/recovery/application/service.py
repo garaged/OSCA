@@ -9,6 +9,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from osca.catalog.api import MetadataAvailability, RecoveryRecordKind
+from osca.configuration.application.ports import ConfigurationRepository
 from osca.operations.api import AuditOutcome, AuditRecord
 from osca.operations.application.ports import AuditRepository
 from osca.recovery.api import (
@@ -61,6 +62,8 @@ class RecoveryService:
         catalog: RecoveryCatalog,
         audit: AuditRepository,
         operations: RecoveryOperationRepository,
+        configuration: ConfigurationRepository,
+        source_database: Path,
         observer: RecoveryObserver | None = None,
     ) -> None:
         self._container = container
@@ -68,6 +71,8 @@ class RecoveryService:
         self._catalog = catalog
         self._audit = audit
         self._operations = operations
+        self._configuration = configuration
+        self._source_database = source_database.resolve()
         self._observer = observer or NullRecoveryObserver()
 
     def create(self, command: CreateBackup) -> BackupRecord:
@@ -81,6 +86,9 @@ class RecoveryService:
             return self._create(command)
 
     def _create(self, command: CreateBackup) -> BackupRecord:
+        persisted = self._configuration.get(command.configuration_revision)
+        if persisted != command.configuration_snapshot:
+            raise RecoveryPackageError("recovery.configuration.not_persisted")
         destination = Path(command.destination).resolve()
         if destination.exists():
             raise RecoveryPackageError("recovery.destination.exists")
@@ -89,7 +97,7 @@ class RecoveryService:
         ) as temporary:
             cleartext = Path(temporary) / "backup.fixture.zip"
             manifest = build_cleartext_package(
-                source_database=Path(command.source_database),
+                source_database=self._source_database,
                 destination=cleartext,
                 configuration_snapshot=command.configuration_snapshot.model_dump(mode="json"),
                 configuration_revision=command.configuration_revision,
@@ -221,7 +229,13 @@ class RecoveryService:
             finally:
                 cleartext.unlink(missing_ok=True)
             database = destination / "state/osca.db"
-            validations.extend(self._post_restore_validations(database, manifest.source_schema))
+            validations.extend(
+                self._post_restore_validations(
+                    database,
+                    manifest.source_schema,
+                    str(manifest.configuration_revision),
+                )
+            )
             if not all(validation.passed for validation in validations):
                 raise RecoveryPackageError("recovery.restore.integrity_failed")
         except Exception:
@@ -292,7 +306,7 @@ class RecoveryService:
             self._observer.record(completed)
 
     def _post_restore_validations(
-        self, database: Path, expected_schema: str
+        self, database: Path, expected_schema: str, configuration_revision: str
     ) -> tuple[RestoreValidation, ...]:
         connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
         try:
@@ -308,6 +322,15 @@ class RecoveryService:
             ).fetchone()
             foreign_keys = connection.execute("PRAGMA foreign_key_check").fetchall()
             smoke = connection.execute("SELECT 1").fetchone()
+            configuration_row = (
+                connection.execute(
+                    "SELECT revision_id FROM configuration_snapshots "
+                    "WHERE revision_id = ? LIMIT 1",
+                    (configuration_revision,),
+                ).fetchone()
+                if "configuration_snapshots" in tables
+                else None
+            )
         except sqlite3.Error as error:
             raise RecoveryPackageError("recovery.restore.validation_failed") from error
         finally:
@@ -316,7 +339,7 @@ class RecoveryService:
         catalog_ok = {
             "catalog_result_metadata",
             "catalog_recovery_metadata",
-        }.issubset(tables) and not foreign_keys
+        }.issubset(tables) and not foreign_keys and configuration_row is not None
         audit_ok = "operations_audit_records" in tables
         return (
             RestoreValidation(
