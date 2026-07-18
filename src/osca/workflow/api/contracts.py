@@ -9,7 +9,14 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from osca.catalog.api import CatalogResultReference
+from osca import __version__
+from osca.catalog.api import (
+    CatalogResultReference,
+    MetadataAvailability,
+    RetentionClass,
+    metadata_digest,
+)
+from osca.security.api import AuthorizationContext
 from osca.shared_kernel.api import CorrelationId
 
 CONTRACT_FAMILY: Literal["osca.workflow.diagnostic-run"] = "osca.workflow.diagnostic-run"
@@ -82,11 +89,21 @@ class DiagnosticRun(BaseModel):
     next_attempt_at: datetime | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    producer_build: str = __version__
+    lineage: tuple[UUID, ...] = ()
+    availability: MetadataAvailability = MetadataAvailability.AVAILABLE
+    retention: RetentionClass = RetentionClass.MILESTONE_EVIDENCE
+    integrity_digest: str = ""
+
+    def verify_integrity(self) -> bool:
+        return self.integrity_digest == metadata_digest(
+            self.model_dump(mode="json", exclude={"integrity_digest"})
+        )
 
 
 class SubmitDiagnosticRun(BaseModel):
     model_config = ConfigDict(frozen=True)
-    actor: str
+    authorization: AuthorizationContext
     correlation_id: CorrelationId
     idempotency_key: str = Field(min_length=1, max_length=200)
     input: DiagnosticInput
@@ -94,17 +111,19 @@ class SubmitDiagnosticRun(BaseModel):
 
 class CancelDiagnosticRun(BaseModel):
     model_config = ConfigDict(frozen=True)
-    actor: str
+    authorization: AuthorizationContext
     correlation_id: CorrelationId
     run_id: DiagnosticRunId
 
 
 class GetDiagnosticRun(BaseModel):
     model_config = ConfigDict(frozen=True)
+    authorization: AuthorizationContext
     run_id: DiagnosticRunId
 
 
 class ListDiagnosticRuns(BaseModel):
     model_config = ConfigDict(frozen=True)
+    authorization: AuthorizationContext
     states: tuple[DiagnosticRunState, ...] = ()
     limit: int = Field(default=100, ge=1, le=500)
