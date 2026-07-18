@@ -27,6 +27,7 @@
 - [M1.4 retained evidence](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
 - [M1.5–M1.6 recovery evidence](../../../evidence/m1/m1-5-6-recovery-skeleton.md)
 - [M1.7 retained evidence](../../../evidence/m1/m1-7-documentation-operational-evidence.md)
+- [M1 integrated exit evidence](../../../evidence/m1/m1-exit-evidence.md)
 - [Archived M1.4 OpenSpec pilot](../../../openspec/changes/archive/2026-07-18-m1-4-durable-diagnostic-jobs/README.md)
 - [Archived M1 recovery OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
 - [Archived M1.7 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-7-documentation-operational-evidence/README.md)
