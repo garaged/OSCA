@@ -14,7 +14,7 @@
 4. Reference stock and crypto providers and their permitted acquisition/retention/fixture use.
 5. Quota, retry, endpoint, timeout, and credential-reference profiles.
 6. Daily expected-date policy sufficient for M2 without claiming the M3 calendar engine.
-7. Recovery inclusion/exclusion for registry, mappings, policies, catalog metadata, source evidence, and canonical payloads.
+7. Recovery inclusion/exclusion for registry, mappings, policies, catalog metadata, source evidence, and canonical payloads — decided by ADR-0018.
 8. Bounded M2 performance observations; DD-010 production budgets remain deferred.
 
 ## Reference-provider selection criteria
@@ -48,6 +48,10 @@ The M2 choice must:
 - avoid preselecting M3 intraday/analytical behavior.
 
 [ADR-0017](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md) selects capability-owned SQLite metadata plus immutable, manifest-governed Parquet source/canonical payloads. M2.1 may implement the owned metadata schemas. M2.3 payload work remains subject to the ADR's schema, coordination, migration, and recovery fitness obligations.
+
+## Recovery profile
+
+[ADR-0018](../../decisions/ADR-0018-m2-market-data-recovery-profile.md) requires backups to include governed metadata and accepted canonical payloads. Retained source payloads are included only when the exact provider-policy revision explicitly permits backup; exclusions and reproducibility limitations remain visible through backup inspection and isolated restore.
 
 ## Decision gate
 
