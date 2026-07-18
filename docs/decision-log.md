@@ -241,3 +241,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** Paper accounts will use immutable order events and an append-only double-entry journal as accounting authority, with rebuildable portfolio projections.
 - **Rationale:** Mutable balance snapshots cannot fully explain or reconcile cash, positions, fees, corporate actions, multi-currency effects, and corrections.
 - **Consequences:** Corrections use reversals; every economic event produces balanced entries; orders and fills retain analytical and market-data lineage; valuations retain price and FX sources; projections and performance snapshots remain regenerable; and tax output is initially analytical rather than authoritative.
+
+
+## D-029 — Machine-learning lifecycle
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use a governed experiment and model registry with pluggable training workflows, immutable model versions, explicit promotion gates, champion/challenger paper deployment, and drift monitoring.
+- **Rationale:** Diverse ML methods require extensible training while model comparison, reproducibility, deployment, and monitoring require consistent lifecycle governance.
+- **Consequences:** Training captures exact inputs and environment; features declare temporal availability; baselines are mandatory; evaluation separates selection and held-out periods; retraining does not imply promotion; deployments are reversible pointers; unsafe imports can be quarantined; and RL remains bounded by deterministic risk rules.
