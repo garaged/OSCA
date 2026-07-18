@@ -1,6 +1,6 @@
 # M2 — Instruments, Providers, and Cache Vertical Slice
 
-- **Status:** Initiation package accepted; entry decisions in progress
+- **Status:** Initiation accepted; M2.0 entry decisions in progress
 - **Governing role:** Product authority
 - **Architecture, security, data, licensing, and quality review:** Required
 - **Authoritative outcome:** PRD M2
@@ -19,7 +19,8 @@
 - [Active risk register](risk-register.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
-- [Active M2 initiation OpenSpec change](../../../openspec/changes/m2-initiation/proposal.md)
+- [M2 initiation record](initiation-record.md)
+- [Archived M2 initiation OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-initiation/README.md)
 
 ## Required initiation sequence
 
