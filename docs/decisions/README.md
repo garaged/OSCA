@@ -29,6 +29,7 @@ Accepted ADRs remain authoritative within their declared scope until explicitly 
 | ADR | Title | Status |
 |---|---|---|
 | [ADR-0001](ADR-0001-requirements-authority-and-traceability-model.md) | Requirements authority and traceability model | Accepted |
+| [ADR-0002](ADR-0002-modular-monolith-decomposition-model.md) | Modular-monolith decomposition model | Accepted |
 
 ## Template
 
