@@ -1,0 +1,57 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python-and-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install locked Python environment
+        run: uv sync --locked
+      - name: Ruff
+        run: uv run ruff check .
+      - name: Strict mypy
+        run: uv run mypy
+      - name: Tests, contracts, migrations, links, and architecture
+        run: uv run pytest
+
+  openspec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install locked OpenSpec tooling
+        run: npm ci --ignore-scripts
+        env:
+          DO_NOT_TRACK: "1"
+      - name: OpenSpec doctor
+        run: npm run openspec:doctor
+        env:
+          DO_NOT_TRACK: "1"
+      - name: Strict OpenSpec validation
+        run: npm run openspec:validate
+        env:
+          DO_NOT_TRACK: "1"
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
