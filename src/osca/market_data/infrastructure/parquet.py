@@ -4,8 +4,8 @@ import tempfile
 from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
 
-import pyarrow as pa
-import pyarrow.parquet as pq
+import pyarrow as pa  # type: ignore[import-untyped]
+import pyarrow.parquet as pq  # type: ignore[import-untyped]
 
 from osca.market_data.api import CanonicalDailyBar
 
