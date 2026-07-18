@@ -1,4 +1,4 @@
-"""Create Workflow-owned durable diagnostic run storage.
+"""Create Workflow run storage and Catalog-owned result metadata.
 
 Revision ID: m1_0003
 Revises: m1_0002
@@ -31,8 +31,27 @@ def upgrade() -> None:
         sa.UniqueConstraint("actor", "idempotency_key", name="uq_workflow_actor_idempotency"),
     )
     op.create_index("ix_workflow_diagnostic_runs_state", "workflow_diagnostic_runs", ["state"])
+    op.create_table(
+        "catalog_result_metadata",
+        sa.Column("result_id", sa.String(36), primary_key=True),
+        sa.Column("producing_run_id", sa.String(36), nullable=False),
+        sa.Column("correlation_id", sa.String(36), nullable=False),
+        sa.Column("registered_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("media_type", sa.String(100), nullable=False),
+        sa.Column("payload", sa.Text(), nullable=False),
+    )
+    op.create_index(
+        "ix_catalog_result_metadata_producing_run_id",
+        "catalog_result_metadata",
+        ["producing_run_id"],
+    )
 
 
 def downgrade() -> None:
+    op.drop_index(
+        "ix_catalog_result_metadata_producing_run_id",
+        table_name="catalog_result_metadata",
+    )
+    op.drop_table("catalog_result_metadata")
     op.drop_index("ix_workflow_diagnostic_runs_state", table_name="workflow_diagnostic_runs")
     op.drop_table("workflow_diagnostic_runs")
