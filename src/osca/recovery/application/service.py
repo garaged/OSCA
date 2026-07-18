@@ -91,7 +91,7 @@ class RecoveryService:
             manifest = build_cleartext_package(
                 source_database=Path(command.source_database),
                 destination=cleartext,
-                configuration_snapshot=command.configuration_snapshot,
+                configuration_snapshot=command.configuration_snapshot.model_dump(mode="json"),
                 configuration_revision=command.configuration_revision,
                 source_build=command.source_build,
                 source_schema=command.source_schema,
