@@ -71,6 +71,7 @@ adrs:
   - { id: ADR-0022, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0023, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0024, status: accepted, tier: implementation, owner: architecture-authority }
+  - { id: ADR-0025, status: accepted, tier: implementation, owner: architecture-authority }
 
 governed_indexes:
   requirements: docs/governance/requirements-catalog.md

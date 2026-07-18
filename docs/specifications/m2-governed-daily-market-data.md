@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0024
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0025
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -48,7 +48,7 @@ ADR-0022 retains immutable checksummed source evidence by default only when the 
 
 ### Retrieval and freshness
 
-Requests declare canonical instrument, daily interval, inclusive/exclusive range semantics, freshness, completeness, provider constraints, and idempotency context. Resolution returns a typed dataset revision or a structured state: fresh, stale, partial, invalid, corrupt, unavailable, refreshing, quota-blocked, or policy-blocked.
+Requests declare canonical instrument, daily interval, inclusive/exclusive range semantics, freshness, completeness, provider constraints, and idempotency context. ADR-0025 lets unpinned requests resolve the latest accepted satisfying revision while exact pinned requests never silently substitute another revision. Every success returns the exact dataset/revision identity. Resolution otherwise returns a structured state: fresh, stale, partial, invalid, corrupt, unavailable, refreshing, quota-blocked, or policy-blocked.
 
 Equivalent work deduplicates through durable workflow semantics. Provider latency and quota are visible. Retry is bounded and only for declared categories. Cancellation and restart never publish a partial result as complete.
 
