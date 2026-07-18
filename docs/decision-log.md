@@ -303,3 +303,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will provide a built-in operational health center backed by structured logs, metrics, traces, job events, and protected audit records, with optional standards-based external telemetry export.
 - **Rationale:** Local deployments need understandable health and remediation without requiring external infrastructure, while advanced personal servers benefit from integration with broader observability systems.
 - **Consequences:** Telemetry is correlated across workflows; health separates availability from analytical correctness; alerts deduplicate and report recovery; failures are not silent; sensitive data is redacted; audit retention is stronger than diagnostic logging; and exported diagnostics require preview.
+
+
+## D-036 — Embedded durable scheduling
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will include an embedded durable workflow scheduler with market-aware, calendar, dependency, data, analytical, manual, and external triggers, while permitting CLI and API invocation.
+- **Rationale:** Core local-first workflows require consistent scheduling, dependencies, retries, progress, lineage, and missed-run behavior without mandating an external orchestrator.
+- **Consequences:** Workflows have typed identities and inputs; equivalent work deduplicates; schedules declare timezone and market semantics; failures and missed runs follow explicit policies; resources and provider quotas are budgeted; imports remain disabled pending review; and recovery cannot silently replay paper actions.
