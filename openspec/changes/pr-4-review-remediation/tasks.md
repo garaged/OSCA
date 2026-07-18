@@ -13,5 +13,5 @@
 
 - [x] 3.1 Add locked quality and secret-scanning GitHub workflows.
 - [x] 3.2 Run all local gates and strict OpenSpec validation.
-- [ ] 3.3 Update M1.4 evidence and PR review disposition.
+- [x] 3.3 Update M1.4 evidence and PR review disposition.
 - [ ] 3.4 Sync/archive after review and required GitHub checks pass.
