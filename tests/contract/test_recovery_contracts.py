@@ -1,3 +1,4 @@
+import json
 from uuid import uuid4
 
 import pytest
@@ -34,6 +35,12 @@ def test_manifest_integrity_is_deterministic() -> None:
     manifest = _manifest().with_integrity()
     assert manifest.verify_integrity()
     assert manifest.with_integrity().integrity_digest == manifest.integrity_digest
+
+
+def test_recovery_schemas_are_deterministic() -> None:
+    first = json.dumps(BackupManifest.model_json_schema(), sort_keys=True)
+    second = json.dumps(BackupManifest.model_json_schema(), sort_keys=True)
+    assert first == second
 
 
 @pytest.mark.parametrize(
