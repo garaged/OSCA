@@ -57,6 +57,11 @@ adrs:
   - { id: ADR-0008, status: baseline, tier: foundational, owner: architecture-authority }
   - { id: ADR-0009, status: baseline, tier: foundational, owner: architecture-authority }
   - { id: ADR-0010, status: baseline, tier: foundational, owner: architecture-authority }
+  - { id: ADR-0011, status: accepted, tier: implementation, owner: architecture-authority }
+  - { id: ADR-0012, status: accepted, tier: implementation, owner: architecture-authority }
+  - { id: ADR-0013, status: accepted, tier: implementation, owner: workflow-capability-owner }
+  - { id: ADR-0014, status: accepted, tier: implementation, owner: architecture-authority }
+  - { id: ADR-0015, status: accepted, tier: implementation, owner: security-authority }
 
 governed_indexes:
   requirements: docs/governance/requirements-catalog.md
