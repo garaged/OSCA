@@ -57,6 +57,7 @@ class SqliteManifestRepository:
             (ManifestState.STAGING, ManifestState.READY),
             (ManifestState.STAGING, ManifestState.QUARANTINED),
             (ManifestState.READY, ManifestState.DELETING),
+            (ManifestState.QUARANTINED, ManifestState.DELETING),
             (ManifestState.DELETING, ManifestState.DELETED),
         }
         if (expected, target) not in allowed:
