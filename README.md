@@ -2,7 +2,7 @@
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies.
 
-The M0 architecture foundation and M0.x operational controls are authoritative. M1.1–M1.7 implement and evidence the secure walking skeleton; the M1.8 exit review remains before milestone acceptance.
+The M0 architecture foundation and M0.x operational controls are authoritative. M1.1–M1.8 implement, evidence, and accept the secure walking skeleton. Later product scope requires a new governed milestone intent.
 
 ## Start here
 
