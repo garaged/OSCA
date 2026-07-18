@@ -276,3 +276,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** All non-local network transfer uses modern encrypted transport, validated server identity, and client authentication. Controlled machine-to-machine channels support or require mutual TLS according to their security profile; external services use the strongest client-authentication mechanism they support.
 - **Rationale:** Confidentiality alone is insufficient: OSCA must authenticate remote endpoints and callers, reject invalid trust, and support deployment policies aligned with applicable organizational or regulatory controls.
 - **Consequences:** Plaintext and certificate-validation bypasses are prohibited; TLS and trust failures fail closed; credentials rotate and revoke; remote browsers use TLS plus application sessions; remote automation can combine mTLS with scoped credentials; and certificate lifecycle requires health checks, documentation, and runbooks.
+
+
+## D-033 — Policy-aware backup and disaster recovery
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will provide encrypted lightweight, standard, and archival backup profiles with dependency-aware selective restore, plus a disaster-recovery program with explicit objectives, prioritized restoration, runbooks, off-device capability, automated verification, and recovery exercises.
+- **Rationale:** Creating backup files does not establish recoverability. Robust operation requires consistent recovery points, independent copies, validated restore paths, failure-scenario planning, and evidence that recovery objectives can be met.
+- **Consequences:** Secrets remain separate; packages report exclusions; restores validate before activation; paper journals and catalogs reconcile; recovery follows declared priority; backup copies can leave the active failure domain securely; and periodic isolated restore tests and disaster-recovery exercises are release and operational requirements.
