@@ -366,3 +366,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use a balanced product scorecard centered on research integrity, data effectiveness, model and backtest rigor, safety, operational robustness, user effectiveness, and extensibility. Financial returns and raw engagement volume are not primary product KPIs.
 - **Rationale:** Product correctness is distinct from market outcomes, and activity counts can reward noise, overfitting, and unnecessary complexity.
 - **Consequences:** Milestones define measurable outcome thresholds; zero tolerance applies to unexplained accounting discrepancies, unauthorized risk bypass, silent canonical mutation, and secret disclosure; negative research results retain value; telemetry remains local by default; and measurement definitions are versioned.
+
+
+## D-043 — Backtest fidelity profiles
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will distinguish F0 signal studies, F1 vectorized portfolio estimates, F2 event-driven bar simulations, and F3 forward paper evaluations. Tick-level F4 microstructure simulation is deferred.
+- **Rationale:** The term backtest otherwise hides materially different assumptions, accuracy, costs, and limitations.
+- **Consequences:** Results name profile and assumption versions; incompatible comparisons disclose differences; F2 is required before F3 promotion; scenarios and sensitivity analysis are supported; unsupported behaviors are not silently approximated; and F2 cannot claim tick-level fidelity.
