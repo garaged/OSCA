@@ -17,7 +17,7 @@ The validation inspected the complete M0 merge file set and the M0.x corrections
 
 | Check | Result | Evidence or disposition |
 |---|---|---|
-| VAL-001 | Pass | Requirements catalog and corrected traceability register distinguish approved authority from future implementation evidence. |
+| VAL-001 | Pass with limitation | Product authority is explicit and the corrected register makes exact `REQ-NNNN` extraction a hard pre-implementation gate. No product implementation exists, so no implementation trace is falsely claimed. |
 | VAL-002 | Pass | ADR index, registry, and evolution policy consistently place ADR-0001–0010 at Baseline after this validation. |
 | VAL-003 | Pass | Modular-monolith and dependency rules define ownership and acyclic build dependencies. |
 | VAL-004 | Pass with limitation | Enforcement obligations exist; tool selection remains DD-001/DD-002-triggered and is tracked in automation backlog. |
@@ -37,7 +37,7 @@ The validation inspected the complete M0 merge file set and the M0.x corrections
 
 ## Findings disposition
 
-The audit findings were corrected on this branch. No open failure, unowned debt, or architecture exception remains. Technology-dependent automation is deferred by explicit decisions, has owners/triggers in the backlog, and is not a blocker to beginning specification-first M1 work.
+The audit findings were corrected on this branch. No open M0.x failure, unowned debt, or architecture exception remains. Requirement extraction for the selected slice and technology-dependent automation are explicit M1 entry gates with owners and triggers; neither is falsely claimed as completed.
 
 ## Authority conclusion
 
