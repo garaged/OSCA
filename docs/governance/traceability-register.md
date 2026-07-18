@@ -49,5 +49,6 @@ Implementation, test-result, documentation, and risk-disposition links are added
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0021–REQ-0040 | PRD sections 8, 10–14, 37–39; D-012–D-018, D-040 | [M2 intent](../milestones/m2/intent.md) | [M2 governed daily market data](../specifications/m2-governed-daily-market-data.md) | M2-AC-001–M2-AC-020 | [M2 evidence plan](../milestones/m2/evidence-plan.md) | [M2 index](../milestones/m2/README.md) | ADR-0001–ADR-0017; provider/licensing decisions pending | Accepted planning; M2.1 authorized |
+| REQ-0021–REQ-0024 | D-012; accepted M2 intent | [M2 intent](../milestones/m2/intent.md) | [M2 governed daily market data](../specifications/m2-governed-daily-market-data.md) | M2-AC-001, M2-AC-002; partial M2-AC-017 | [M2.1 evidence](../../evidence/m2/m2-1-instrument-registry.md) | [Contract catalog](contract-catalog.md) | ADR-0003, ADR-0004, ADR-0005, ADR-0009, ADR-0012, ADR-0017 | Verified M2.1 |
 
 No M2 verification is claimed. ADR-0017 resolves M2 persistence and authorizes M2.1 metadata implementation. Production-visible provider adapters remain gated by provider-specific licensing and policy decisions; no M2 verification is yet claimed.
