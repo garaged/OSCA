@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: m2-initiation
+  status: m2-entry-decisions
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:
@@ -63,6 +63,7 @@ adrs:
   - { id: ADR-0014, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0015, status: accepted, tier: implementation, owner: security-authority }
   - { id: ADR-0016, status: accepted, tier: implementation, owner: security-authority }
+  - { id: ADR-0017, status: accepted, tier: implementation, owner: architecture-authority }
 
 governed_indexes:
   requirements: docs/governance/requirements-catalog.md

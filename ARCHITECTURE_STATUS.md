@@ -8,7 +8,7 @@
 - **Architecture review:** Approved
 - **M0.x operationalization:** Complete
 - **M1 secure walking skeleton:** Accepted
-- **Current activity:** M2 governed initiation
+- **Current activity:** M2.0 entry decisions; persistence accepted, provider/licensing selection pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -34,6 +34,10 @@ M0.x does not redesign M0. It supplies application guidance, validation evidence
 ## M1 completion boundary
 
 M1 is accepted through its governed exit review. M1.1–M1.8 provide the secure walking skeleton and retained evidence. Subsequent product work must begin with a new milestone intent, exact requirement allocation, triggered decisions, accepted specification, and proportional evidence plan; M1 acceptance does not authorize implementing later PRD scope early.
+
+## M2 entry state
+
+The M2 initiation package is accepted. [ADR-0017](docs/decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md) selects capability-owned SQLite metadata and manifest-governed Parquet daily payloads, authorizing M2.1 metadata work. Production-visible provider adapters remain gated by provider-specific licensing and policy approval.
 
 ## Key navigation
 
