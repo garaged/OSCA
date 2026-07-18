@@ -1,8 +1,8 @@
 # Specification — M2 Governed Daily Market Data
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Architecture authority
-- **Approval roles:** Product, security, data, licensing, and quality authorities
+- **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
 - **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0016
