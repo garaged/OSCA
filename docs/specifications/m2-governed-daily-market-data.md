@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0020
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0021
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -68,7 +68,7 @@ Treat provider metadata and payloads as untrusted structured input. Enforce sche
 
 ## Persistence, migration, and recovery
 
-Instrument, Provider, and Market Data each own schemas. Catalog receives typed public metadata only. Payload storage is physically replaceable and cannot reuse another capability's private tables. Migrations retain every released revision and prove upgrade/downgrade policy. ADR-0018 protects governed metadata and accepted canonical payloads. Retained source payloads are backed up only when the exact provider-policy revision permits it; intentional exclusions and their reproducibility implications remain explicit.
+Instrument, Provider, and Market Data each own schemas. Catalog receives typed public metadata only. Payload storage is physically replaceable and cannot reuse another capability's private tables. Migrations retain every released revision and prove upgrade/downgrade policy. ADR-0021 publishes one immutable Parquet object per layer, instrument, provider/source context, dataset revision, and bounded range through ADR-0017's staged manifest protocol. ADR-0018 protects governed metadata and accepted canonical payloads. Retained source payloads are backed up only when the exact provider-policy revision permits it; intentional exclusions and their reproducibility implications remain explicit.
 
 ## Acceptance criteria
 
