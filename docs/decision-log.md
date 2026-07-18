@@ -259,3 +259,20 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use a provider-neutral LLM gateway with bounded typed tools, versioned prompts and schemas, structured-output validation, evidence grounding, privacy controls, resource budgets, and dedicated evaluations.
 - **Rationale:** Direct provider coupling or broad autonomous access would weaken reproducibility, privacy, cost control, prompt-injection resistance, and deterministic system boundaries.
 - **Consequences:** LLMs cannot query internal databases or place live orders; state-changing tools require policy or confirmation; retained workflows pin versions; untrusted content remains data; sensitive disclosure is controlled; and evaluation covers grounding, citations, numerical consistency, tools, injection resistance, task completion, cost, and latency.
+
+
+## D-031 — Deployment-aware identity and secret security
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use loopback-safe local operation, authenticated personal-server access, scoped automation credentials, internal capability enforcement, and vault-backed secrets.
+- **Rationale:** A single-user product still protects valuable credentials, data, models, and portfolio information while local workflows should not incur unnecessary login friction.
+- **Consequences:** Network exposure is explicit; remote operations authenticate; automation access is revocable and scoped; extensions and LLM tools receive bounded capabilities; secrets are excluded from logs and portable artifacts; and future multi-user identity requires a deliberate redesign.
+
+## D-032 — Authenticated encrypted network transport
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** All non-local network transfer uses modern encrypted transport, validated server identity, and client authentication. Controlled machine-to-machine channels support or require mutual TLS according to their security profile; external services use the strongest client-authentication mechanism they support.
+- **Rationale:** Confidentiality alone is insufficient: OSCA must authenticate remote endpoints and callers, reject invalid trust, and support deployment policies aligned with applicable organizational or regulatory controls.
+- **Consequences:** Plaintext and certificate-validation bypasses are prohibited; TLS and trust failures fail closed; credentials rotate and revoke; remote browsers use TLS plus application sessions; remote automation can combine mTLS with scoped credentials; and certificate lifecycle requires health checks, documentation, and runbooks.
