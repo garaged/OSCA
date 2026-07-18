@@ -116,3 +116,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** Cache and artifact storage will have configurable locations, budgets, retention policies, inspection, cleanup, and safe automatic reclamation.
 - **Rationale:** Intraday histories, derived datasets, models, and experiments can otherwise consume unbounded disk space and destabilize workstation or personal-server deployments.
 - **Consequences:** OSCA must report usage, forecast pressure, support scoped and dry-run cleanup, protect pinned content, and avoid silently deleting inputs required for retained reproducible experiments.
+
+
+## D-015 — Storage reclamation policy
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use tiered, value-aware retention with protected, canonical, source, derived, and ephemeral storage classes.
+- **Rationale:** Age and recent access alone do not capture analytical value, reproducibility needs, provider recovery cost, or the disproportionate size of high-frequency data.
+- **Consequences:** Reclamation considers storage class, interval, age, recomputation cost, provider availability, dependencies, and user pinning. Protected records cannot be automatically deleted; lightweight manifests and lineage survive payload eviction; ingestion pauses safely when protected content exhausts the budget.
