@@ -1,6 +1,6 @@
 # ADR-0004 — Public Contract Versioning Strategy
 
-- **Status:** Accepted
+- **Status:** Baseline
 - **Date:** 2026-07-17
 - **Decision owners:** Architecture authority and product authority
 - **Related:** ADR-0001, ADR-0002, ADR-0003, public seam specifications
