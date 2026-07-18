@@ -7,12 +7,13 @@ from sqlalchemy.orm import Session
 from osca.shared_kernel.api import CorrelationId
 from osca.workflow.api import (
     CancelDiagnosticRun,
+    DiagnosticCheckpoint,
     DiagnosticInput,
     DiagnosticRunError,
     DiagnosticRunState,
     SubmitDiagnosticRun,
 )
-from osca.workflow.application.handlers import IdempotencyConflict, WorkflowService
+from osca.workflow.application.handlers import IdempotencyConflict, MissingResult, WorkflowService
 from osca.workflow.infrastructure import SqliteDiagnosticRunRepository, WorkflowBase
 from osca.workflow.infrastructure.executor import EmbeddedExecutor
 
@@ -53,10 +54,11 @@ def test_atomic_claim_lease_heartbeat_and_expiry_recovery(session: Session) -> N
     assert second.claim(now) is None
     heartbeaten = first.heartbeat(claimed, now + timedelta(seconds=1))
     assert heartbeaten.lease_expires_at == now + timedelta(seconds=6)
-    assert (
-        second.recover_expired(now + timedelta(seconds=7))[0].state
-        == DiagnosticRunState.INTERRUPTED
-    )
+    interrupted = second.recover_expired(now + timedelta(seconds=7))[0]
+    assert interrupted.state == DiagnosticRunState.INTERRUPTED
+    second.resume(interrupted)
+    reclaimed = second.claim(now + timedelta(seconds=7))
+    assert reclaimed is not None and reclaimed.lease_owner == "two"
 
 
 def test_checkpoint_resume_result_before_success_retry_and_cancellation(session: Session) -> None:
@@ -86,3 +88,50 @@ def test_checkpoint_resume_result_before_success_retry_and_cancellation(session:
         )
     )
     assert cancelled.state == DiagnosticRunState.CANCELLED
+
+
+def test_safe_shutdown_checkpoint_compatibility_and_result_invariant(session: Session) -> None:
+    repository = SqliteDiagnosticRunRepository(session)
+    service = WorkflowService(repository)
+    executor = EmbeddedExecutor(repository, owner="one")
+    service.submit(command("shutdown"))
+    claimed = executor.claim()
+    assert claimed is not None
+    executor.stop()
+    assert executor.execute(claimed).state == DiagnosticRunState.INTERRUPTED
+
+    service.submit(command("checkpoint"))
+    incompatible = EmbeddedExecutor(repository, owner="one").claim()
+    assert incompatible is not None
+    invalid = DiagnosticCheckpoint.model_construct(
+        family="osca.workflow.diagnostic-checkpoint",
+        version="2.0.0",
+        phase=1,
+        completed_phases=("validate",),
+    )
+    incompatible = incompatible.model_copy(update={"checkpoint": invalid})
+    assert repository.replace(incompatible, incompatible.revision)
+    blocked = EmbeddedExecutor(repository, owner="one").execute(incompatible)
+    assert blocked.state == DiagnosticRunState.BLOCKED
+    assert blocked.error is not None and blocked.error.code == "checkpoint.incompatible"
+
+    service.submit(command("result"))
+    without_result = EmbeddedExecutor(repository, owner="one").claim()
+    assert without_result is not None
+    with pytest.raises(MissingResult):
+        service.transition(without_result, DiagnosticRunState.SUCCEEDED)
+
+
+def test_retry_exhaustion_and_compare_and_transition_guard(session: Session) -> None:
+    repository = SqliteDiagnosticRunRepository(session)
+    service = WorkflowService(repository)
+    service.submit(command("exhaust"))
+    executor = EmbeddedExecutor(repository, owner="one", max_attempts=1)
+    claimed = executor.claim()
+    assert claimed is not None
+    failed = executor.fail(
+        claimed,
+        DiagnosticRunError(code="temporary", message="retry exhausted", retryable=True),
+    )
+    assert failed.state == DiagnosticRunState.FAILED
+    assert not repository.replace(failed.model_copy(update={"revision": 99}), claimed.revision)
