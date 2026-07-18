@@ -375,3 +375,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will distinguish F0 signal studies, F1 vectorized portfolio estimates, F2 event-driven bar simulations, and F3 forward paper evaluations. Tick-level F4 microstructure simulation is deferred.
 - **Rationale:** The term backtest otherwise hides materially different assumptions, accuracy, costs, and limitations.
 - **Consequences:** Results name profile and assumption versions; incompatible comparisons disclose differences; F2 is required before F3 promotion; scenarios and sensitivity analysis are supported; unsupported behaviors are not silently approximated; and F2 cannot claim tick-level fidelity.
+
+
+## D-044 — Initial performance and scale envelope
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will target a scalable single-node workstation or personal server with minimum, recommended, and heavy-research profiles, explicit responsiveness and benchmark objectives, a 99.5 percent personal-server software availability target, and configurable resource and monetary budgets.
+- **Rationale:** The product requires substantial personal research capacity without prematurely adopting distributed SaaS architecture.
+- **Consequences:** Core features require no GPU or paid cloud; large data remains lazy and incremental; paper work receives priority; failures are isolated; benchmark changes require evidence; cost limits fail predictably; and distributed workers or service extraction require demonstrated need.
