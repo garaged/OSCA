@@ -153,7 +153,6 @@ class CreateBackup(BaseModel):
     model_config = ConfigDict(frozen=True)
     authorization: AuthorizationContext
     correlation_id: CorrelationId
-    source_database: str
     destination: str
     recipient: str
     recipient_fingerprint: str
