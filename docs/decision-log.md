@@ -99,3 +99,20 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** Instruments within supported asset classes can be registered without code changes. OSCA uses provider-neutral canonical instrument identities with explicit provider-symbol mappings.
 - **Rationale:** Tickers are neither globally unique nor permanent, and providers frequently use different identifiers or pair notation for the same economic instrument.
 - **Consequences:** OSCA requires an instrument registry, provider mapping records, ambiguity detection, capability metadata, lifecycle handling, and provider-assisted or manual registration. Provider symbols are aliases rather than database primary keys.
+
+
+## D-013 — Initial time-series resolutions
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will support multi-timeframe OHLCV bars from the beginning, initially covering 1d, 1h, 15m, 5m, and 1m intervals where provider availability and use justify them.
+- **Rationale:** Daily and intraday workflows must coexist without embedding daily-only assumptions. Bar data provides the required flexibility without prematurely introducing tick and order-book scale.
+- **Consequences:** Calendar-aware gap detection, completed-bar semantics, resampling lineage, provider capability reporting, and interval-specific retention are required. Tick, quote, and order-book data are deferred.
+
+## D-014 — Configurable bounded storage
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** Cache and artifact storage will have configurable locations, budgets, retention policies, inspection, cleanup, and safe automatic reclamation.
+- **Rationale:** Intraday histories, derived datasets, models, and experiments can otherwise consume unbounded disk space and destabilize workstation or personal-server deployments.
+- **Consequences:** OSCA must report usage, forecast pressure, support scoped and dry-run cleanup, protect pinned content, and avoid silently deleting inputs required for retained reproducible experiments.
