@@ -1,7 +1,7 @@
 # M1.4 durable diagnostic jobs evidence
 
 - **Status:** Complete
-- **Source checkpoint:** `db73be9436c8aeaeb4e4595b5892df743baf3693`
+- **Source checkpoint:** `d44ee32adc8edfec6ff5432be4429dfc9fee15ce`
 - **Branch:** `agent/m1-secure-walking-skeleton`
 - **Requirements:** REQ-0011–REQ-0015
 - **Decision:** ADR-0013
@@ -19,7 +19,7 @@
 - Observable interruption followed by explicit policy-controlled resume.
 - Versioned, duplicate-aware named-phase checkpoints.
 - Cooperative cancellation, bounded deterministic retry, and safe shutdown.
-- Typed durable result reference required before success.
+- Catalog-owned result metadata registered durably before its typed reference permits success.
 - Shared versioned HTTP and CLI application handlers.
 - Correlated safe telemetry, Operations-owned cancellation audit, and failure findings.
 - Workflow-owned schema and repositories with no private cross-capability imports.
@@ -37,7 +37,7 @@
 | Telemetry redaction and audit tests | Pass |
 | Architecture boundary tests | Pass |
 | Ruff | Pass |
-| Strict mypy | Pass — 51 source files |
+| Strict mypy | Pass — 58 source files |
 | Alembic upgrade/downgrade/upgrade through `m1_0003` | Pass |
 | CLI smoke test | Pass — all four diagnostic commands registered |
 | Strict OpenSpec validation | Pass — 1 change, 0 failures |
