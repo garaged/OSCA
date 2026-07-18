@@ -79,3 +79,7 @@ The web-shell choice remains explicitly provisional adapter guidance rather than
 ## Approval record
 
 The recommended coherent set was accepted by the product and architecture authority on 2026-07-18 and formalized as ADR-0011 through ADR-0015.
+
+## M1 exit clarification
+
+MkDocs Material and an OCI personal-server verification profile were recommendations in the coherent technology package, not obligations formalized by ADR-0011 through ADR-0016. M1 delivered versioned repository Markdown with executable link/example gates and a fail-closed personal-server configuration skeleton. Documentation-site generation and OCI packaging remain trigger-bound future work; their absence does not redefine or block the accepted M1 scope.
