@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import DateTime, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-from osca.catalog.api import CatalogResultReference
+from osca.catalog.api import CatalogResultReference, metadata_digest
 from osca.shared_kernel.api import CorrelationId
 
 
@@ -30,12 +30,22 @@ class SqliteResultCatalog:
         self,
         producing_run_id: UUID,
         correlation_id: CorrelationId,
+        producer_build: str,
         media_type: str = "application/json",
     ) -> CatalogResultReference:
         reference = CatalogResultReference(
             producing_run_id=producing_run_id,
             correlation_id=correlation_id,
+            producer_build=producer_build,
+            lineage=(producing_run_id,),
             media_type=media_type,
+        )
+        reference = reference.model_copy(
+            update={
+                "integrity_digest": metadata_digest(
+                    reference.model_dump(mode="json", exclude={"integrity_digest"})
+                )
+            }
         )
         self._session.add(
             CatalogResultRow(
