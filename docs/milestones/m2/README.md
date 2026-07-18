@@ -10,6 +10,15 @@
 ## Current artifacts
 
 - [Repository-backed initiation gap analysis](gap-analysis.md)
+- [Proposed intent](intent.md)
+- [Proposed scope](scope.md)
+- [Proposed specification](../../specifications/m2-governed-daily-market-data.md)
+- [Proposed evidence plan](evidence-plan.md)
+- [Proposed execution plan](execution-plan.md)
+- [Proposed entry decisions](entry-decisions.md)
+- [Proposed risk register](risk-register.md)
+- [Requirements catalog](../../governance/requirements-catalog.md)
+- [Traceability register](../../governance/traceability-register.md)
 
 ## Required initiation sequence
 
