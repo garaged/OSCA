@@ -3,53 +3,43 @@
 ## Current state
 
 - **Product baseline:** Approved
-- **M0 intent and architecture foundation:** Complete
-- **Tier-1 ADRs:** Accepted
-- **Architecture review:** Approved by architecture authority
-- **Merge readiness:** Ready for pull request
-- **Next milestone:** M0.5 — Architecture Handbook
-- **Freeze point:** Tier-1 ADRs become frozen when M1 begins
+- **M0 architecture foundation:** Merged through PR #2
+- **Tier-1 ADRs:** Baseline after M0.6 validation
+- **Architecture review:** Approved
+- **M0.x operationalization:** Complete on `agent/m0x-operationalization`
+- **Next activity:** Select and specify the first M1 vertical slice
+- **Freeze point:** Tier-1 ADRs become Frozen when M1 implementation begins
 
 ## Governing baseline
 
-The accepted Tier-1 architecture consists of ADR-0001 through ADR-0010. These decisions remain authoritative until superseded according to the [architecture evolution policy](engineering/architecture-evolution-policy.md).
+ADR-0001 through ADR-0010 are authoritative and have passed the [M0.6 validation program](docs/validation/m0x-validation-record.md). They remain governed by the [architecture evolution policy](engineering/architecture-evolution-policy.md).
 
-No architecture artifact is frozen yet. Until M1 starts, corrections that preserve accepted intent may be applied as maintenance. Consequential changes require a new or superseding ADR.
+M0.x does not redesign M0. It supplies application guidance, validation evidence, lifecycle/exception mechanics, and repeatable M1 initiation controls.
 
-## M0 completion evidence
+## M0.x completion evidence
 
-- [x] Authoritative product requirements and immutable requirement identifiers
-- [x] Traceability model and register
-- [x] Ubiquitous language glossary
-- [x] System context and conceptual domain model
-- [x] Architecture principles and modular-monolith model
-- [x] Module-boundary enforcement policy
-- [x] Public seam specifications
-- [x] Public-contract versioning policy and catalog
-- [x] Communication, event reliability, extension, persistence, and observability decisions
-- [x] Engineering workflow and AI contributor contract
-- [x] Verification strategy and risk-tiered quality gates
-- [x] Security, resilience, and recovery baselines
-- [x] Architecture fitness program
-- [x] Deferred-decision governance
-- [x] Architecture authority review completed
+- [x] Repository-backed gap analysis
+- [x] Non-duplicative architecture handbook
+- [x] Technology-neutral reference capability
+- [x] Repeatable validation procedure and check manifest
+- [x] Validation record and findings disposition
+- [x] Harmonized lifecycle and expanded architecture registry
+- [x] Architecture exception register
+- [x] M1 initiation and review controls
+- [x] Evidence record template
+- [x] Executable-architecture backlog
+- [x] Corrected navigation and stale baseline references
 
-## Open work
+## M1 entry boundary
 
-Remaining work is intentionally post-M0 and does not block this merge:
-
-1. Complete the M0.5 handbook chapters and reference capability.
-2. Execute the repeatable M0.6 validation program.
-3. Baseline lifecycle, registry, and governance mechanics in M0.7.
-4. Complete engineering-system automation planning in M0.8.
-5. Select and specify the first M1 vertical slice.
+M0.x is ready for review. Before product implementation begins, M1 planning must select the first vertical slice, assign its exact `REQ-NNNN` requirements, resolve any deferred decisions triggered by that slice, approve its specification, and complete the [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md). These are deliberate M1 entry activities, not incomplete M0 architecture.
 
 ## Key navigation
 
-- [Repository overview](README.md)
-- [Architecture overview](docs/architecture/README.md)
-- [Architecture decisions](docs/decisions/README.md)
-- [Engineering constitution](engineering/constitution.md)
-- [M0 readiness and exit criteria](docs/milestones/m0/readiness-and-exit-criteria.md)
+- [M0.x index](docs/milestones/m0x/README.md)
+- [Gap analysis](docs/milestones/m0x/gap-analysis.md)
+- [Architecture handbook](docs/handbook/README.md)
+- [Validation record](docs/validation/m0x-validation-record.md)
+- [Architecture registry](engineering/architecture-registry.yaml)
+- [Engineering bootstrap](engineering/bootstrap/README.md)
 - [M0.x roadmap](docs/milestones/m0x-roadmap.md)
-- [Deferred decisions](docs/governance/deferred-decisions.md)
