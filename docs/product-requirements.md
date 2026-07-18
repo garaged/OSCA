@@ -287,7 +287,53 @@ Every material artifact should expose, as applicable:
 
 Artifact lookup must be type-aware so, for example, a training run cannot be mistaken for a scan merely because both belong to an intraday workflow.
 
-## 12. Cache and data lifecycle — initial requirements
+## 12. Data-provider routing
+
+### 12.1 Capability-based selection
+
+OSCA will route data requests by capability rather than using one globally preferred provider. Independently configurable capabilities may include:
+
+- Instrument reference data
+- Historical bars by interval
+- Current quotes
+- Corporate actions
+- Fundamentals and financial statements
+- Analyst estimates
+- News and sentiment inputs
+- On-chain metrics
+- Cryptocurrency market structure
+- Macroeconomic and benchmark data
+
+Each route has an ordered provider policy. Routing may consider instrument support, interval and history availability, freshness, measured quality, latency, monetary cost, quota state, licensing restrictions, and user preference.
+
+### 12.2 Provider contracts
+
+A provider adapter must declare machine-readable capabilities and limitations, including:
+
+- Supported asset classes, venues, and instruments
+- Data categories and intervals
+- Available historical depth
+- Expected freshness or delay
+- Adjustment and timestamp semantics
+- Authentication requirements
+- Rate and quota constraints
+- Licensing, persistence, and redistribution constraints
+- Known quality limitations
+- Health and availability state
+
+Credentials must remain outside portable project configuration and exportable research artifacts.
+
+### 12.3 Fallback and reconciliation
+
+A request normally uses one selected source. Ordered fallback is allowed, but provider selection and fallback events become part of provenance.
+
+A fallback cannot silently extend an existing logical series as if its values came from the primary provider. Provider transitions must remain visible as dataset segments or pass through an explicit, versioned reconciliation process.
+
+Cross-provider comparison may detect gaps, conflicts, anomalies, or quality changes. It must not silently overwrite or average observations. Any merge, selection, or conflict-resolution method must be declared, deterministic, versioned, and reproducible.
+
+Backtests and retained experiments must be able to pin provider, dataset identity, and revision.
+
+## 13. Cache and data lifecycle — initial requirements
 
 The cache is a first-class product capability rather than an incidental HTTP optimization.
 
@@ -341,7 +387,7 @@ Storage management must make stable disk usage achievable without routine manual
 
 Detailed cache and storage policy remains an open design area and will receive its own specification after product requirements are settled.
 
-## 13. Backtesting and paper trading — initial requirements
+## 14. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -364,7 +410,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 14. Engineering-quality direction
+## 15. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -380,13 +426,12 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 15. PRD sections pending discovery
+## 16. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
-- Data-source classes and licensing constraints
 - Detailed cache semantics
 - Analysis and metric extension model
 - Model and experiment lifecycle
@@ -402,7 +447,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 16. Document governance
+## 17. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
