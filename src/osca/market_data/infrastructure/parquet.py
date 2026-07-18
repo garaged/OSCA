@@ -113,3 +113,8 @@ class ImmutablePayloadStore:
         finally:
             temporary.unlink(missing_ok=True)
         return destination
+
+
+class PyArrowCanonicalCodec:
+    def encode(self, bars: Sequence[CanonicalDailyBar]) -> bytes:
+        return serialize_daily_bars(bars)
