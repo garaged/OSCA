@@ -1,6 +1,6 @@
 # ADR-0003 — Module-Boundary Enforcement Model
 
-- **Status:** Accepted
+- **Status:** Baseline
 - **Date:** 2026-07-17
 - **Decision owners:** Architecture authority and quality authority
 - **Scope:** Repository structure, build graph, module visibility, architecture tests, CI evidence, and public/private contracts
