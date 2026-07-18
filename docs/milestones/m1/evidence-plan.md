@@ -64,7 +64,7 @@ Retained slice records:
 - [M1.2–M1.3 persistence, security, and telemetry](../../../evidence/m1/m1-2-3-persistence-security-telemetry.md)
 - [M1.4 durable diagnostic jobs](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
 - [M1.5–M1.6 recovery skeleton](../../../evidence/m1/m1-5-6-recovery-skeleton.md)
-- M1.7 documentation and operational evidence — pending final validated source revision
+- [M1.7 documentation and operational evidence](../../../evidence/m1/m1-7-documentation-operational-evidence.md)
 
 ## Merge policy
 
