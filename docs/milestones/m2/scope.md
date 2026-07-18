@@ -1,8 +1,8 @@
 # M2 Scope — Instruments, Providers, and Daily Cache
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Product authority
-- **Architecture approval:** Required
+- **Architecture approval:** Accepted 2026-07-18
 - **Authoritative sources:** [M2 intent](intent.md); PRD M2; D-012–D-018; D-040
 - **Last reviewed:** 2026-07-18
 
