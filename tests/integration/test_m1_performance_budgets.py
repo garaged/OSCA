@@ -5,7 +5,6 @@ import sys
 from statistics import quantiles
 from time import perf_counter
 
-import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -102,4 +101,3 @@ def test_reference_environment_m1_performance_budgets() -> None:
     assert observations["visibility_seconds"] < 5
     assert observations["progress_seconds"] < 2
     assert observations["cancellation_seconds"] < 2
-    pytest.record_property("m1_performance_observations", observations)  # type: ignore[attr-defined]
