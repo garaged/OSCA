@@ -1,8 +1,8 @@
 # M2 Entry Decision Package
 
-- **Status:** Proposed; selections pending evidence
+- **Status:** Accepted decision criteria; provider and persistence selections pending evidence
 - **Governing role:** Architecture authority
-- **Product, security, data, licensing, and quality approval:** Required
+- **Product, security, data, licensing, and quality approval:** Accepted for the criteria 2026-07-18
 - **Authoritative sources:** M2 intent/scope; D-012–D-018; D-040; DD-003, DD-010
 - **Last reviewed:** 2026-07-18
 
