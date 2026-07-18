@@ -1163,7 +1163,23 @@ Backup success alone is insufficient. OSCA supports:
 
 Recovery tests must not mutate the active environment.
 
-The exact default recovery objectives and exercise frequency are recorded as explicit product decisions and remain configurable.
+### 27.6 Default recovery objectives
+
+OSCA uses tiered recovery classes:
+
+| Recovery class | Examples | Default RPO | Default RTO |
+|---|---|---:|---:|
+| Critical state | Paper journals, canonical identities, configuration, project manifests, schedules | 1 hour | 4 hours |
+| Active research | Project definitions, notes, findings, and experiment metadata | 4 hours | 8 hours |
+| Protected artifacts | Promoted models, pinned datasets, reports, and extension locks | 24 hours | 24 hours |
+| Reconstructable data | Downloadable canonical data and reproducible derivations | No payload guarantee | Catalog within 4 hours; payloads restored on demand |
+| Ephemeral data | Temporary downloads and intermediates | None | None |
+
+An optional hardened profile targets a 15-minute RPO and one-hour RTO for critical state when continuously reachable off-device storage is configured.
+
+Objectives apply while OSCA and its configured destination are operational. The platform reports objectives currently at risk. Recovery can restore a safe degraded mode before all reconstructable data is available, but paper automation remains paused until journal reconciliation, required data, credentials, and risk controls are healthy.
+
+Default verification includes monthly isolated restore tests and at least quarterly disaster-recovery exercises. Retention supports configurable hourly, daily, weekly, and monthly recovery points. Relaxed, standard, and hardened profiles make their protection and risks visible.
 
 ## 28. Engineering-quality direction
 
