@@ -84,9 +84,7 @@ class SqliteDiagnosticRunRepository:
             select(DiagnosticRunRow)
             .where(
                 and_(
-                    DiagnosticRunRow.state.in_(
-                        [DiagnosticRunState.PENDING.value, DiagnosticRunState.INTERRUPTED.value]
-                    ),
+                    DiagnosticRunRow.state.in_([DiagnosticRunState.PENDING.value]),
                     or_(
                         DiagnosticRunRow.next_attempt_at.is_(None),
                         DiagnosticRunRow.next_attempt_at <= now,
