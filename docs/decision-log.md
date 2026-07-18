@@ -170,3 +170,20 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use built-in, verified, local-trusted, and untrusted/quarantined extension tiers. Imports may originate from local bundles, development directories, immutable Git references, digest-pinned package URLs, and a future registry.
 - **Rationale:** Independent distribution must support private development and open publishing without treating all executable packages as equally trusted.
 - **Consequences:** Installation and activation are separate; manifests declare permissions; credentials are not granted automatically; permission changes require renewed approval; packages and environments are integrity-pinned; and declared dependencies cannot silently install themselves.
+
+
+## D-021 — Product interface model
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will be web-primary, backed by versioned shared application capabilities with first-class CLI, notebook, and LLM integration.
+- **Rationale:** A coherent application experience is required without sacrificing automation and quantitative exploration.
+- **Consequences:** Business logic is not duplicated in clients; long-running operations use durable jobs; direct database access is unsupported for normal workflows; and CLI coverage prioritizes automation and operations rather than visual parity.
+
+## D-022 — Usage documentation as a release requirement
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** Version-matched usage, operations, API, analytical-methodology, and extension documentation is a release-blocking part of OSCA's definition of done.
+- **Rationale:** The platform's analytical, data-governance, storage, extensibility, and operational behavior cannot be used safely or effectively without clear documentation.
+- **Consequences:** Behavior changes and their documentation ship together. Task-oriented guides, examples, references, runbooks, limitations, and troubleshooting are maintained and validated where practical; generated references alone are insufficient.
