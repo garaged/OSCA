@@ -1,6 +1,6 @@
 # ADR-0010: Unified Observability Architecture
 
-- **Status:** Baseline
+- **Status:** Frozen
 - **Tier:** Foundational
 - **Date:** 2026-07-17
 
