@@ -2,38 +2,31 @@
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies.
 
-The product requirements are approved and the M0 intent and architecture foundation is complete and approved for merge. The initial product boundary includes multi-source data acquisition, extensible analytics, machine learning and language-model capabilities, reproducible backtesting, and realistic paper trading.
+The product requirements and M0 architecture foundation are approved and merged. M0.x operationalizes that foundation through handbook guidance, validation, governance mechanics, and engineering-system bootstrap in preparation for M1.
 
 ## Start here
 
 1. [Architecture status](ARCHITECTURE_STATUS.md)
 2. [Product requirements](docs/product-requirements.md)
-3. [M0 overview](docs/milestones/m0/README.md)
-4. [Architecture overview](docs/architecture/README.md)
-5. [Architecture decisions](docs/decisions/README.md)
-6. [Engineering constitution](engineering/constitution.md)
-7. [M0.x roadmap](docs/milestones/m0x-roadmap.md)
+3. [M0 architecture overview](docs/architecture/README.md)
+4. [M0.x operationalization](docs/milestones/m0x/README.md)
+5. [Architecture handbook](docs/handbook/README.md)
+6. [Architecture decisions](docs/decisions/README.md)
+7. [Engineering constitution](engineering/constitution.md)
+8. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
 
-## Product documentation
+## Governing baseline
 
 - [Product requirements](docs/product-requirements.md)
-- [Decision log](docs/decision-log.md)
-
-The approved product baseline is the content merged into `main` by PR #1 at commit `14f537b7ce359007a7767301b41a6b5aac776aec`. Accepted decisions remain authoritative until explicitly superseded.
-
-## M0 documentation
-
+- [Product decision log](docs/decision-log.md)
 - [M0 overview](docs/milestones/m0/README.md)
-- [M0 intent](docs/milestones/m0/intent.md)
-- [M0 scope](docs/milestones/m0/scope.md)
-- [M0 execution plan](docs/milestones/m0/execution-plan.md)
-- [M0 readiness and exit criteria](docs/milestones/m0/readiness-and-exit-criteria.md)
-- [M0 architecture review record](docs/milestones/m0/architecture-review-record.md)
+- [M0 architecture review](docs/milestones/m0/architecture-review-record.md)
+- [Architecture decisions](docs/decisions/README.md)
 - [Document control](docs/governance/document-control.md)
 - [Requirements catalog](docs/governance/requirements-catalog.md)
 - [Traceability model](docs/governance/traceability-model.md)
-- [Architecture decisions](docs/decisions/README.md)
-- [Architecture handbook](docs/handbook/README.md)
+
+The product baseline was merged through PR #1 at commit `14f537b7ce359007a7767301b41a6b5aac776aec`. The M0 foundation was merged through PR #2 at commit `30746da69162777000fec6e686dcee29df6345b2`. Accepted decisions remain authoritative until explicitly superseded.
 
 ## Engineering system
 
@@ -42,5 +35,5 @@ The approved product baseline is the content merged into `main` by PR #1 at comm
 - [AI contributor contract](engineering/ai-contributor-contract.md)
 - [Architecture evolution policy](engineering/architecture-evolution-policy.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
-- [Knowledge graph model](engineering/knowledge-graph-model.md)
-- [Metrics framework](engineering/metrics-framework.md)
+- [Engineering bootstrap](engineering/bootstrap/README.md)
+- [Architecture validation](docs/validation/README.md)
