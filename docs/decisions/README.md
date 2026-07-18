@@ -36,10 +36,11 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0014](ADR-0014-m1-contract-and-interface-representation.md) | M1 contract and interface representation | Accepted |
 | [ADR-0015](ADR-0015-local-security-secrets-and-telemetry-profile.md) | Local security, secrets, and telemetry profile | Accepted |
 | [ADR-0016](ADR-0016-m1-backup-encryption-container.md) | M1 backup encryption container | Accepted |
+| [ADR-0017](ADR-0017-m2-metadata-and-daily-payload-persistence.md) | M2 metadata and daily-payload persistence | Accepted |
 
 ## Baseline status
 
-ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions and remain governed by the architecture evolution policy.
+ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 is the accepted M2 persistence decision. All remain governed by the architecture evolution policy.
 
 ## Template
 
