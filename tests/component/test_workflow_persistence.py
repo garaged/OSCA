@@ -1,9 +1,11 @@
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
+from osca.catalog.infrastructure import CatalogBase, SqliteResultCatalog
 from osca.shared_kernel.api import CorrelationId
 from osca.workflow.api import (
     CancelDiagnosticRun,
@@ -22,6 +24,7 @@ from osca.workflow.infrastructure.executor import EmbeddedExecutor
 def session() -> Session:
     engine = create_engine("sqlite://")
     WorkflowBase.metadata.create_all(engine)
+    CatalogBase.metadata.create_all(engine)
     with Session(engine) as value, value.begin():
         yield value
 
@@ -32,6 +35,20 @@ def command(key: str = "key", probe: str = "storage") -> SubmitDiagnosticRun:
         correlation_id=CorrelationId.new(),
         idempotency_key=key,
         input=DiagnosticInput(probe=probe),
+    )
+
+
+def executor(
+    repository: SqliteDiagnosticRunRepository,
+    session: Session,
+    owner: str,
+    **options: Any,
+) -> EmbeddedExecutor:
+    return EmbeddedExecutor(
+        repository,
+        owner=owner,
+        result_catalog=SqliteResultCatalog(session),
+        **options,
     )
 
 
@@ -47,8 +64,8 @@ def test_atomic_claim_lease_heartbeat_and_expiry_recovery(session: Session) -> N
     repository = SqliteDiagnosticRunRepository(session)
     run = WorkflowService(repository).submit(command())
     now = datetime.now(UTC)
-    first = EmbeddedExecutor(repository, owner="one", lease_seconds=5)
-    second = EmbeddedExecutor(repository, owner="two", lease_seconds=5)
+    first = executor(repository, session, "one", lease_seconds=5)
+    second = executor(repository, session, "two", lease_seconds=5)
     claimed = first.claim(now)
     assert claimed is not None and claimed.run_id == run.run_id
     assert second.claim(now) is None
@@ -64,19 +81,20 @@ def test_atomic_claim_lease_heartbeat_and_expiry_recovery(session: Session) -> N
 def test_checkpoint_resume_result_before_success_retry_and_cancellation(session: Session) -> None:
     repository = SqliteDiagnosticRunRepository(session)
     service = WorkflowService(repository)
-    executor = EmbeddedExecutor(repository, owner="one")
+    worker = executor(repository, session, "one")
     service.submit(command())
-    claimed = executor.claim()
+    claimed = worker.claim()
     assert claimed is not None
-    completed = executor.execute(claimed)
+    completed = worker.execute(claimed)
     assert completed.state == DiagnosticRunState.SUCCEEDED
     assert completed.result is not None
+    assert session.scalar(text("SELECT COUNT(*) FROM catalog_result_metadata")) == 1
     assert completed.checkpoint is not None and completed.checkpoint.phase == 3
 
     retry_run = service.submit(command("retry"))
-    retry_claim = executor.claim()
+    retry_claim = worker.claim()
     assert retry_claim is not None and retry_claim.run_id == retry_run.run_id
-    retry = executor.fail(
+    retry = worker.fail(
         retry_claim, DiagnosticRunError(code="temporary", message="retry", retryable=True)
     )
     assert retry.state == DiagnosticRunState.PENDING and retry.next_attempt_at is not None
@@ -93,17 +111,18 @@ def test_checkpoint_resume_result_before_success_retry_and_cancellation(session:
 def test_safe_shutdown_checkpoint_compatibility_and_result_invariant(session: Session) -> None:
     repository = SqliteDiagnosticRunRepository(session)
     service = WorkflowService(repository)
-    executor = EmbeddedExecutor(repository, owner="one")
+    worker = executor(repository, session, "one")
     service.submit(command("shutdown"))
-    claimed = executor.claim()
+    claimed = worker.claim()
     assert claimed is not None
-    executor.stop()
-    assert executor.execute(claimed).state == DiagnosticRunState.INTERRUPTED
+    worker.stop()
+    assert worker.execute(claimed).state == DiagnosticRunState.INTERRUPTED
 
     service.submit(command("checkpoint"))
-    incompatible = EmbeddedExecutor(repository, owner="one").claim()
+    incompatible_worker = executor(repository, session, "one")
+    incompatible = incompatible_worker.claim()
     assert incompatible is not None
-    invalid = DiagnosticCheckpoint.model_construct(
+    invalid = DiagnosticCheckpoint(
         family="osca.workflow.diagnostic-checkpoint",
         version="2.0.0",
         phase=1,
@@ -111,12 +130,12 @@ def test_safe_shutdown_checkpoint_compatibility_and_result_invariant(session: Se
     )
     incompatible = incompatible.model_copy(update={"checkpoint": invalid})
     assert repository.replace(incompatible, incompatible.revision)
-    blocked = EmbeddedExecutor(repository, owner="one").execute(incompatible)
+    blocked = incompatible_worker.execute(incompatible)
     assert blocked.state == DiagnosticRunState.BLOCKED
     assert blocked.error is not None and blocked.error.code == "checkpoint.incompatible"
 
     service.submit(command("result"))
-    without_result = EmbeddedExecutor(repository, owner="one").claim()
+    without_result = executor(repository, session, "one").claim()
     assert without_result is not None
     with pytest.raises(MissingResult):
         service.transition(without_result, DiagnosticRunState.SUCCEEDED)
@@ -126,10 +145,10 @@ def test_retry_exhaustion_and_compare_and_transition_guard(session: Session) -> 
     repository = SqliteDiagnosticRunRepository(session)
     service = WorkflowService(repository)
     service.submit(command("exhaust"))
-    executor = EmbeddedExecutor(repository, owner="one", max_attempts=1)
-    claimed = executor.claim()
+    worker = executor(repository, session, "one", max_attempts=1)
+    claimed = worker.claim()
     assert claimed is not None
-    failed = executor.fail(
+    failed = worker.fail(
         claimed,
         DiagnosticRunError(code="temporary", message="retry exhausted", retryable=True),
     )
