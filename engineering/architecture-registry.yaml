@@ -1,0 +1,49 @@
+registry_version: 1
+project:
+  id: OSCA
+  architecture_baseline: M0
+  status: accepted-pending-validation
+
+artifact_types:
+  adr:
+    lifecycle: [draft, reviewed, accepted, baseline, frozen, superseded, rejected, deprecated]
+  requirement:
+    lifecycle: [draft, accepted, changed, retired]
+  contract:
+    lifecycle: [draft, active, deprecated, retired]
+  capability:
+    lifecycle: [proposed, active, deprecated, retired]
+  workflow:
+    lifecycle: [proposed, active, deprecated, retired]
+
+adrs:
+  - { id: ADR-0001, title: Requirements authority and traceability model, status: accepted, tier: foundational }
+  - { id: ADR-0002, title: Modular-monolith decomposition model, status: accepted, tier: foundational }
+  - { id: ADR-0003, title: Module-boundary enforcement model, status: accepted, tier: foundational }
+  - { id: ADR-0004, title: Public contract versioning strategy, status: accepted, tier: foundational }
+  - { id: ADR-0005, title: Risk-tiered quality gate enforcement, status: accepted, tier: foundational }
+  - { id: ADR-0006, title: Inter-module communication model, status: accepted, tier: foundational }
+  - { id: ADR-0007, title: Event reliability and delivery model, status: accepted, tier: foundational }
+  - { id: ADR-0008, title: Tiered extension isolation model, status: accepted, tier: foundational }
+  - { id: ADR-0009, title: Persistence ownership model, status: accepted, tier: foundational }
+  - { id: ADR-0010, title: Unified observability architecture, status: accepted, tier: foundational }
+
+relationship_types:
+  - derives_from
+  - satisfies
+  - constrained_by
+  - owned_by
+  - exposes
+  - consumes
+  - produces
+  - implemented_by
+  - verified_by
+  - observed_by
+  - migrates
+  - supersedes
+
+validation:
+  unique_ids_required: true
+  dangling_references_forbidden: true
+  frozen_artifacts_require_supersession: true
+  public_contract_owner_required: true
