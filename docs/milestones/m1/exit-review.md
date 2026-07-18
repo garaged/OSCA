@@ -1,7 +1,7 @@
 # M1 Exit Review Record
 
 - **Milestone:** M1 — Secure Walking Skeleton
-- **Review status:** Proposed; technical validation pending
+- **Review status:** Technically ready; authority acceptance pending
 - **Decision authorities:** Product, architecture, security, and quality authorities
 - **Baseline under review:** `c16119dbaf19004a92128d9db83f81846d4fd062`
 - **Requirements:** REQ-0001–REQ-0020
@@ -33,8 +33,8 @@ This record consolidates evidence for the M1 acceptance decision. It does not re
 | M1-AC-016 | Pass | [M1.2–M1.3](../../../evidence/m1/m1-2-3-persistence-security-telemetry.md), [M1.5–M1.6](../../../evidence/m1/m1-5-6-recovery-skeleton.md) | Revisions `m1_0001`–`m1_0006` retained |
 | M1-AC-017 | Pass | [M1.4](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md), [M1.5–M1.6](../../../evidence/m1/m1-5-6-recovery-skeleton.md) | Major-version rejection is fail closed |
 | M1-AC-018 | Pass | [M1.7](../../../evidence/m1/m1-7-documentation-operational-evidence.md) | Credential examples remain operator supplied |
-| M1-AC-019 | Pending final CI | `tests/integration/test_m1_performance_budgets.py` | Reference observations only; not production SLOs |
-| M1-AC-020 | Pending final reconciliation | This record and [traceability register](../../governance/traceability-register.md) | Must name final source and CI identity |
+| M1-AC-019 | Pass | `tests/integration/test_m1_performance_budgets.py` | Reference observations only; not production SLOs |
+| M1-AC-020 | Pass | [Integrated exit evidence](../../../evidence/m1/m1-exit-evidence.md) and [traceability register](../../governance/traceability-register.md) | Authority acceptance remains distinct from technical traceability |
 
 ## M1-AC-019 observation policy
 
