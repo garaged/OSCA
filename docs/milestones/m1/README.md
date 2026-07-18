@@ -24,7 +24,7 @@
 - [Protected backup and isolated restore](recovery.md)
 - [M1.4 retained evidence](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
 - [M1.5–M1.6 recovery evidence](../../../evidence/m1/m1-5-6-recovery-skeleton.md)
-- M1.7 retained evidence — pending final validation
+- [M1.7 retained evidence](../../../evidence/m1/m1-7-documentation-operational-evidence.md)
 - [Archived M1.4 OpenSpec pilot](../../../openspec/changes/archive/2026-07-18-m1-4-durable-diagnostic-jobs/README.md)
 - [Archived M1 recovery OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
 - [Active M1.7 OpenSpec change](../../../openspec/changes/m1-7-documentation-operational-evidence/proposal.md)
@@ -40,4 +40,4 @@
 
 ## Implementation state
 
-M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation is active. M1.8 exit review remains and is the only authority that can accept the milestone.
+M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation is complete with retained evidence. M1.8 exit review remains and is the only authority that can accept the milestone.
