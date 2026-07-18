@@ -1,9 +1,12 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
+from uuid import uuid4
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from osca.market_data.api import RetrievalRequest
+from osca.market_data.application import MarketDataJobService
 from osca.security.api import AuthorizationContext, Capability
 from osca.shared_kernel.api import CorrelationId
 from osca.workflow.api import CancelJob, JobResultReference, JobState, SubmitJob
@@ -73,3 +76,21 @@ def test_pending_job_can_be_cancelled_without_execution() -> None:
             )
         )
         assert cancelled.state is JobState.CANCELLED
+
+
+def test_market_data_submission_requires_domain_and_generic_job_capabilities() -> None:
+    engine = create_engine("sqlite://")
+    WorkflowBase.metadata.create_all(engine)
+    request = RetrievalRequest(
+        instrument_id=uuid4(),
+        start_date=date(2024, 1, 1),
+        end_date_exclusive=date(2024, 1, 2),
+        maximum_age_seconds=3600,
+        idempotency_key="market-retrieve-1",
+    )
+    with Session(engine) as session, session.begin():
+        service = MarketDataJobService(JobService(SqliteJobRepository(session)))
+        context = authorization(Capability.JOB_SUBMIT, Capability.MARKET_DATA_RETRIEVE)
+        job = service.submit_retrieval(context, CorrelationId.new(), request)
+        assert job.kind == "market-data.retrieve"
+        assert job.input_family == request.family
