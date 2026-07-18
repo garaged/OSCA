@@ -42,10 +42,11 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0020](ADR-0020-m2-bounded-daily-expected-date-policy.md) | M2 bounded daily expected-date policy | Accepted |
 | [ADR-0021](ADR-0021-m2-parquet-object-granularity-and-publication.md) | M2 Parquet object granularity and publication | Accepted |
 | [ADR-0022](ADR-0022-m2-source-evidence-retention-default.md) | M2 source-evidence retention default | Accepted |
+| [ADR-0023](ADR-0023-m2-incomplete-daily-observation-publication.md) | M2 incomplete daily-observation publication | Accepted |
 
 ## Baseline status
 
-ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0022 are the accepted M2 persistence, recovery, numeric, expected-date, Parquet-layout, and source-retention decisions. All remain governed by the architecture evolution policy.
+ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0023 are the accepted M2 persistence, recovery, numeric, expected-date, Parquet-layout, source-retention, and incomplete-observation decisions. All remain governed by the architecture evolution policy.
 
 ## Template
 
