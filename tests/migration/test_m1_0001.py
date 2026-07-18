@@ -21,6 +21,7 @@ def test_initial_migration_upgrades_and_downgrades_clean_database(tmp_path: Path
         "alembic_version",
         "configuration_snapshots",
         "operations_audit_records",
+        "workflow_diagnostic_runs",
     ]
 
     command.downgrade(config, "base")
