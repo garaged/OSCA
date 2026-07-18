@@ -20,11 +20,11 @@
 ## 4. Exit evidence
 
 - [x] 4.1 Retain final source, environment, tools, gates, criteria, risks, limitations, and CI identity.
-- [ ] 4.2 Update M1, architecture, registry, and root navigation only when supported.
-- [ ] 4.3 Obtain product, architecture, security, and quality authority acceptance.
+- [x] 4.2 Update M1, architecture, registry, and root navigation only when supported.
+- [x] 4.3 Obtain product, architecture, security, and quality authority acceptance.
 
 ## 5. Closure
 
-- [ ] 5.1 Review, synchronize, and archive the OpenSpec change.
+- [x] 5.1 Review, synchronize, and archive the OpenSpec change.
 - [ ] 5.2 Rerun all affected gates against the archival head.
 - [ ] 5.3 Merge only with no blocking finding; do not begin M2 early.
