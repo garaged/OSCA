@@ -339,3 +339,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use versioned contextual quality rules, explicit validity and degradation states, quarantine, traceable repair revisions, and workflow-specific acceptance policies.
 - **Rationale:** Rejecting all imperfect real-world data sacrifices availability, while permissive warnings allow defects to contaminate models, backtests, and recommendations.
 - **Consequences:** Quality findings preserve evidence and impact; repairs never silently rewrite data; provider comparison does not automatically establish truth; downstream artifacts retain accepted policy; regressions trigger impact analysis; and paper automation enforces strict risk-linked quality gates.
+
+
+## D-040 — Governed data acquisition and licensing
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will support open, authenticated, licensed, exported, file-based, user-supplied, and permitted automated data acquisition through versioned provider policy metadata and enforcement.
+- **Rationale:** Technical retrievability does not establish permission to retain, transform, export, back up, or redistribute third-party data.
+- **Consequences:** Official mechanisms are preferred; automation cannot bypass controls; quotas are centralized; provider rights constrain storage and portability; derived outputs retain applicable lineage; uncertainty can block use; and commercial or multi-user operation requires separate license review.
