@@ -79,3 +79,14 @@ def test_unavailable_executable_is_safely_classified(tmp_path: Path) -> None:
 def test_executable_must_be_absolute() -> None:
     with pytest.raises(ValueError, match="absolute"):
         AgeProcessContainer(Path(os.curdir) / "age")
+
+
+def test_timeout_leaves_no_output(tmp_path: Path) -> None:
+    executable = tmp_path / "slow-age"
+    executable.write_text("#!/bin/sh\nsleep 2\n")
+    executable.chmod(0o700)
+    output = tmp_path / "output"
+    adapter = AgeProcessContainer(executable.resolve(), timeout_seconds=0.01)
+    with pytest.raises(RecoveryPackageError, match=r"encryption\.failed"):
+        adapter.encrypt(tmp_path / "input", output, _RECIPIENT)
+    assert not output.exists()
