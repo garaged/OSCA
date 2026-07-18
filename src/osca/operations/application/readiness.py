@@ -21,7 +21,11 @@ def build_readiness(
     correlation_id: CorrelationId,
 ) -> ReadinessSnapshot:
     required_states = [item.state for item in components if item.required]
-    state = max(required_states, key=_PRIORITY.get, default=HealthState.HEALTHY)
+    state = max(
+        required_states,
+        key=lambda item: _PRIORITY[item],
+        default=HealthState.HEALTHY,
+    )
     return ReadinessSnapshot(
         correlation_id=correlation_id,
         configuration_revision=configuration.revision_id,
@@ -29,4 +33,3 @@ def build_readiness(
         state=state,
         components=components,
     )
-
