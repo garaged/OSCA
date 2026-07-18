@@ -157,3 +157,17 @@ A mapping can become active only when verified, its canonical instrument exists,
 Provider results contain exactly one of ordered unique observations or a typed failure. Failures distinguish authentication, policy, quota, transport, schema, mapping, quality, and compatibility. Credentials are represented only by named references in capability metadata. Provider-specific behavior is capability/policy data and cannot redefine canonical Instrument or Market Data meaning.
 
 Conformance fixtures, structural schemas, security classifications, supported producer/consumer revisions, and exact error-code catalogs must be delivered with the first implementation of each family.
+
+
+## M2 Market Data contract families
+
+| Family | Owner | Purpose | Compatibility | Current version | Status | Structural schema |
+|---|---|---|---|---|---|---|
+| `osca.market-data.daily-bar` | Market Data | Exact complete canonical daily OHLCV observation | Additive-minor; identity, decimal, time, units, completion, and provenance meaning cannot change | 1.0.0 | Supported | `osca.market_data.api.CanonicalDailyBar` |
+| `osca.market-data.dataset-manifest` | Market Data | Immutable payload publication, revision, lineage, integrity, availability, retention, and protection metadata | Additive-minor; dataset/revision identity, range, digest, state, and protection meaning cannot change | 1.0.0 | Supported | `osca.market_data.api.DatasetManifest` |
+| `osca.market-data.retrieval-request` | Market Data | Canonical bounded daily request with freshness, completeness, provider constraints, pinning, and idempotency | Additive-minor; ranges remain start-inclusive/end-exclusive and exact pins never substitute | 1.0.0 | Supported | `osca.market_data.api.RetrievalRequest` |
+| `osca.market-data.resolution` | Market Data | Exact revision resolution with explicit freshness, completeness, integrity, availability, and remediation | Additive-minor; states and exact dataset/revision identity are semantic invariants | 1.0.0 | Supported | `osca.market_data.api.RetrievalResolution` |
+| `osca.data-quality.finding` | Market Data | Visible deterministic date/quality classification and repair eligibility | Additive-minor; classifications and repair eligibility cannot be weakened | 1.0.0 | Supported | `osca.market_data.api.DateFinding` |
+| `osca.cache.cleanup-plan` | Market Data | Preview-only scoped cleanup actions and protected/reclaimable accounting | Additive-minor; a plan never grants deletion authority and protected material cannot become selectable | 1.0.0 | Supported | `osca.market_data.application.CleanupPlan` |
+
+Unknown major versions fail validation. Canonical daily bars reject binary floats, non-finite or out-of-range decimals, invalid OHLC relationships, negative values, non-UTC timestamps, and incomplete observations. Dataset manifests are immutable; accepted canonical manifests are protected throughout M2 under ADR-0026. Resolution returns the exact selected manifest identity, and an unavailable exact pin never falls back. Cleanup execution is outside the plan contract and requires separate authorization plus race-safe revalidation.
