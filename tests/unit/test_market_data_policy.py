@@ -1,8 +1,10 @@
 from datetime import UTC, date, datetime, timedelta
-from uuid import uuid4
+from decimal import Decimal
+from uuid import UUID, uuid4
 
 from osca.instrument.api import AssetClass
 from osca.market_data.api import (
+    CanonicalDailyBar,
     DatasetLayer,
     DatasetManifest,
     ManifestState,
@@ -11,8 +13,10 @@ from osca.market_data.api import (
 from osca.market_data.application import (
     classify_dates,
     contiguous_missing_ranges,
+    inspect_storage,
     preview_cleanup,
     resolve_retrieval,
+    validate_daily_series,
 )
 
 
@@ -83,6 +87,53 @@ def test_cleanup_defaults_are_not_implicit() -> None:
     plan = preview_cleanup((source,), eligible_manifest_ids=frozenset())
     assert plan.actions == ()
     assert plan.protected_bytes == 100
+
+
+def test_cleanup_protects_explicit_pins_and_inspection_accounts_usage() -> None:
+    source = manifest(DatasetLayer.SOURCE, protected=False, byte_size=100)
+    plan = preview_cleanup(
+        (source,),
+        eligible_manifest_ids=frozenset({source.manifest_id}),
+        protected_manifest_ids=frozenset({source.manifest_id}),
+    )
+    assert plan.actions == ()
+    assert plan.protected_bytes == 100
+    inspection = inspect_storage((source,))
+    assert inspection.usage[0].object_count == 1
+    assert inspection.usage[0].byte_size == 100
+    assert inspection.manifests == (source,)
+
+
+def test_series_quality_finds_duplicates_and_identity_mismatch() -> None:
+    instrument_id = uuid4()
+    other_instrument_id = uuid4()
+    request_id = uuid4()
+
+    def bar(bar_instrument_id: UUID) -> CanonicalDailyBar:
+        return CanonicalDailyBar(
+            instrument_id=bar_instrument_id,
+            effective_date=date(2024, 1, 1),
+            source_timestamp=datetime(2024, 1, 2, tzinfo=UTC),
+            open=Decimal("10"),
+            high=Decimal("12"),
+            low=Decimal("9"),
+            close=Decimal("11"),
+            volume=Decimal("100"),
+            currency="USD",
+            volume_unit="shares",
+            provider_id="synthetic",
+            source_identity="source-1",
+            request_id=request_id,
+            normalization_revision="1.0.0",
+        )
+
+    findings = validate_daily_series(
+        (bar(instrument_id), bar(other_instrument_id)),
+        instrument_id=instrument_id,
+        start_date=date(2024, 1, 1),
+        end_date_exclusive=date(2024, 1, 2),
+    )
+    assert {finding.classification for finding in findings} == {"duplicate", "invalid"}
 
 
 def test_retrieval_reports_fresh_stale_and_exact_pinning() -> None:
