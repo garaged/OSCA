@@ -72,7 +72,7 @@ The constitution, workflow, contributor contract, decision matrix, and metrics f
 | Architecture lifecycle | Root status says M0 is complete and approved; `docs/architecture/README.md` says Draft and claims repository structure, enforcement, and public seams are pending. | Mark the index as accepted baseline and link existing boundary, seam, fitness, and deferred-decision artifacts. |
 | Quality lifecycle | M0 review says verification and fitness baselines are complete; both quality documents remain Draft. | Move normative policies to Accepted; keep execution evidence separately lifecycle-controlled. |
 | Governance lifecycle | M0 completion asserts traceability and workflow baselines, while document control, workflow, traceability model/register, and contract catalog remain Draft. | Accept the governing policies where M0 approval already covered them; describe genuinely unpopulated registers as active baseline registers rather than draft policy. |
-| Traceability register | It states that no requirements are approved, contradicting the approved requirements catalog and M0 completion evidence. | Replace the stale statement with current baseline coverage and reserve implementation/specification links for M1. |
+| Requirements and traceability | ADR-0001 requires stable IDs before implementation, but the requirements catalog and traceability register contain no numbered entries even though M0 status overstates immutable-ID completion. | Keep product authority explicit, correct the overstatement, and make selected `REQ-NNNN` extraction a hard M1 implementation-entry gate. |
 | Deferred decisions | DD-004, DD-005, and DD-006 describe communication, event, and extension models as unresolved even though ADR-0006, ADR-0007, and ADR-0008 selected those architecture models. | Mark those entries resolved by the ADRs, while retaining technology selections as separately deferred concerns. |
 | Baseline status | The registry says `accepted-pending-validation`, which is correct before M0.6, while other pages loosely use “baseline” for accepted M0 content. | Distinguish “authoritative accepted M0 foundation” from lifecycle state `baseline`; promote ADRs only after recorded M0.6 validation. |
 | Engineering loop terminology | The constitution includes Implementation and Operational review; the requested core workflow emphasizes Intent → Requirements → Architecture → Specification → Validation → Evidence. | Document the core governance chain and its implementation/operation expansion without treating them as competing workflows. |
@@ -99,7 +99,7 @@ Where a handbook chapter needs a rule, it should summarize it briefly and link t
 - `ARCHITECTURE_STATUS.md` still says “Ready for pull request” after PR #2 was merged.
 - `README.md` says M0 is “approved for merge” rather than merged.
 - The M0.x roadmap says M0 repository validation is pending, but does not link to the future validation evidence location.
-- The traceability register claims no approved requirements.
+- The requirements catalog and traceability register correctly disclose that no numbered entries exist, but this conflicts with the prior M0 status claim that immutable requirement identifiers were complete.
 - Deferred decisions DD-004 through DD-006 overlap decisions already settled by accepted ADRs.
 
 ## Navigation improvements
@@ -115,7 +115,7 @@ Where a handbook chapter needs a rule, it should summarize it briefly and link t
 1. **Correct authoritative navigation and stale status** so later work links to accurate sources.
 2. **Complete M0.5** with a non-duplicative handbook, patterns/anti-patterns, review playbook, and reference capability.
 3. **Complete M0.7 governance mechanics needed by validation**: harmonize lifecycle language, expand the registry, and add exception controls.
-4. **Execute M0.6 validation** using the corrected repository and governance model; record every finding and disposition; promote eligible ADRs to Baseline.
+4. **Execute M0.6 validation** using the corrected repository and governance model; record every finding and disposition; promote eligible ADRs to Baseline while preserving requirement extraction as an explicit pre-implementation gate.
 5. **Complete M0.8 bootstrap** with M1 initiation/review/evidence templates and the executable-architecture backlog.
 6. **Run final M1-readiness validation**, update indexes/status, and freeze Tier-1 ADRs only when M1 actually begins.
 
