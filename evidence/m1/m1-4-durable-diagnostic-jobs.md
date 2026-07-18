@@ -1,7 +1,7 @@
 # M1.4 durable diagnostic jobs evidence
 
 - **Status:** Complete
-- **Source checkpoint:** `8a019b8e593ed0f4e725c6c10dca14d3dcad2c6b`
+- **Source checkpoint:** `c602b2017cf8e746b826bfb0cac27b2f4cb9ec56`
 - **Branch:** `agent/m1-secure-walking-skeleton`
 - **Requirements:** REQ-0011–REQ-0015
 - **Decision:** ADR-0013
@@ -61,3 +61,5 @@ M1.4 implementation and retained validation are complete. No blocker remains wit
 ## PR #4 review remediation
 
 Review identified four blockers: caller-controlled actor identity, incomplete REQ-0014 observability, incomplete REQ-0013 retained metadata, and absent required PR automation. Change `pr-4-review-remediation` added trusted capability context, spoofing/denial tests, correlated spans/metrics/job-event persistence, governed metadata and integrity verification, migration `m1_0004`, locked quality checks, Markdown link validation, and secret scanning. Local gates pass; GitHub check results are retained on PR #4.
+
+GitHub Actions run `29646139394` passed all required jobs on the source head: `python-and-architecture`, `openspec`, and `secret-scan`.
