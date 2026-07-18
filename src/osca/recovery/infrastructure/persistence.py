@@ -42,7 +42,7 @@ class SqliteRecoveryOperationRepository:
             target=target,
         )
         self._session.add(self._row(operation))
-        self._session.flush()
+        self._session.commit()
         return operation
 
     def complete(
@@ -63,7 +63,7 @@ class SqliteRecoveryOperationRepository:
         row.revision = changed.revision
         row.completed_at = changed.completed_at
         row.payload = changed.model_dump_json()
-        self._session.flush()
+        self._session.commit()
         return changed
 
     @staticmethod
