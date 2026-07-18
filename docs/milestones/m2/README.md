@@ -25,6 +25,7 @@
 - [Accepted M2 expected-date ADR](../../decisions/ADR-0020-m2-bounded-daily-expected-date-policy.md)
 - [Accepted M2 Parquet layout ADR](../../decisions/ADR-0021-m2-parquet-object-granularity-and-publication.md)
 - [Accepted M2 source-retention ADR](../../decisions/ADR-0022-m2-source-evidence-retention-default.md)
+- [Accepted M2 incomplete-observation ADR](../../decisions/ADR-0023-m2-incomplete-daily-observation-publication.md)
 - [M2.1 instrument registry evidence](../../../evidence/m2/m2-1-instrument-registry.md)
 - [Archived M2.1 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-instrument-registry/README.md)
 - [Active risk register](risk-register.md)
