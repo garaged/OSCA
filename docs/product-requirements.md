@@ -977,7 +977,59 @@ Model import and export use manifests and security validation. Unsafe or unsuppo
 
 Reinforcement-learning models follow the same governance and remain bounded by deterministic portfolio and risk rules.
 
-## 25. Engineering-quality direction
+## 25. Language-model lifecycle and gateway
+
+### 25.1 Provider-neutral gateway
+
+OSCA uses a governed provider-neutral gateway for local and remote LLMs. Routing may consider task capability, privacy, user preference, context limits, latency, availability, and cost.
+
+Provider or model upgrades cannot silently replace the exact version used by a retained workflow.
+
+### 25.2 Bounded application tools
+
+LLMs access narrow, typed application capabilities rather than internal databases. Tool permissions follow user, project, extension, and data-source policy.
+
+Read operations and state-changing operations are distinct. State-changing operations are disabled by default for imported workflows and require explicit policy or confirmation. No LLM tool can place a live order.
+
+Paper-trading actions initiated through an LLM retain the initiating request, model and prompt identities, tool calls, applicable policy, recommendation, and resulting state changes.
+
+### 25.3 Versioned and validated interactions
+
+OSCA versions:
+
+- Prompt templates and system instructions
+- Tool definitions and schemas
+- Retrieval and context-selection policies
+- Model and provider configuration
+- Structured output schemas
+- Workflow definitions
+
+Structured output is schema-validated before use. Generated claims reference governed observations or identified external sources. Unsupported claims are labeled as generated hypotheses.
+
+### 25.4 Privacy, untrusted content, and resource budgets
+
+Sensitive-data disclosure is controllable and previewable by provider and task. Local models may be preferred for private workloads.
+
+External news, filings, web content, provider text, and extension output are treated as untrusted data rather than privileged instructions.
+
+LLM operations support configurable token, monetary, latency, and tool-call budgets. Response caching considers model version, prompt version, context digest, permissions, provider policy, and privacy classification.
+
+### 25.5 LLM evaluation
+
+Evaluation covers, as applicable:
+
+- Factual grounding
+- Evidence and citation correctness
+- Numerical consistency
+- Structured-output validity
+- Refusal and boundary behavior
+- Prompt-injection resistance
+- Tool selection and argument correctness
+- Task completion
+- Cost and latency
+- Stability across supported model changes
+
+## 26. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -993,7 +1045,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 26. PRD sections pending discovery
+## 27. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1010,7 +1062,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 27. Document governance
+## 28. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
