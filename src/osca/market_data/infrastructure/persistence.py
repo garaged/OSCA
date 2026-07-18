@@ -46,6 +46,33 @@ class SqliteManifestRepository:
         )
         return None if row is None else DatasetManifest.model_validate_json(row.payload)
 
+    def transition(
+        self,
+        manifest_id: UUID,
+        *,
+        expected: ManifestState,
+        target: ManifestState,
+    ) -> DatasetManifest:
+        allowed = {
+            (ManifestState.STAGING, ManifestState.READY),
+            (ManifestState.STAGING, ManifestState.QUARANTINED),
+            (ManifestState.READY, ManifestState.DELETING),
+            (ManifestState.DELETING, ManifestState.DELETED),
+        }
+        if (expected, target) not in allowed:
+            raise ValueError("manifest state transition is not allowed")
+        row = self._session.get(DatasetManifestRow, str(manifest_id))
+        if row is None:
+            raise LookupError("manifest does not exist")
+        manifest = DatasetManifest.model_validate_json(row.payload)
+        if manifest.state is not expected:
+            raise ValueError("manifest state changed before transition")
+        transitioned = manifest.model_copy(update={"state": target})
+        row.state = target
+        row.payload = transitioned.model_dump_json()
+        self._session.flush()
+        return transitioned
+
     def ready(self, dataset_id: UUID) -> tuple[DatasetManifest, ...]:
         rows = self._session.scalars(
             select(DatasetManifestRow)
