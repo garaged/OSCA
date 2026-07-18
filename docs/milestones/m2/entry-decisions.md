@@ -1,6 +1,6 @@
 # M2 Entry Decision Package
 
-- **Status:** Accepted decision criteria and persistence selection; provider selections pending licensing evidence
+- **Status:** Accepted persistence and staged provider strategy; M2.7 candidates pending provider-specific licensing evidence
 - **Governing role:** Architecture authority
 - **Product, security, data, licensing, and quality approval:** Accepted for the criteria 2026-07-18
 - **Authoritative sources:** M2 intent/scope; D-012–D-018; D-040; DD-003, DD-010
@@ -32,7 +32,7 @@ A candidate is eligible only if:
 - failure modes can be reproduced without live-network CI;
 - no mandatory paid cloud service is introduced.
 
-Provider popularity alone is not evidence. No provider is selected by this proposal.
+Provider popularity alone is not evidence. [The accepted staged provider strategy](provider-strategy.md) keeps M2.2 synthetic-fixture-first and provider-neutral. Twelve Data (stock) and Kraken Spot (crypto) are conditional M2.7 candidates; neither is production-approved until every provider-specific promotion gate passes.
 
 ## Persistence selection criteria
 
@@ -51,4 +51,4 @@ The M2 choice must:
 
 ## Decision gate
 
-M2.1 is authorized against ADR-0017 and the accepted requirements/contracts/risks. Production-visible M2.7 adapters remain gated until provider-specific licensing and policy approval; deterministic fixture adapters may be built earlier against the accepted contract.
+M2.1 is authorized against ADR-0017 and the accepted requirements/contracts/risks. M2.2 deterministic synthetic fixture adapters are authorized against the common contract. Production-visible M2.7 Twelve Data and Kraken adapters remain gated until their provider-specific licensing, security, quota, semantic, and conformance evidence is accepted.
