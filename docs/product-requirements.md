@@ -1787,11 +1787,215 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 39. PRD sections pending discovery
+## 39. Milestone decomposition
 
-The following areas are intentionally incomplete:
+OSCA uses risk-ordered vertical milestones. Each milestone delivers an end-to-end outcome through the appropriate interfaces, persistence, documentation, observability, and tests.
 
-- Milestone decomposition
+### M0 — Product and engineering foundation
+
+**Outcome:** implementation-ready governance and architecture foundation.
+
+- Approved PRD and glossary
+- Context and domain models
+- Module boundaries and dependency rules
+- Initial architecture decisions
+- SDD, IDD, and TDD workflows
+- Requirement, specification, test, and documentation traceability
+- Coding, testing, migration, documentation, and review standards
+- Threat model and initial risk register
+- CI quality gates
+- Reference datasets and benchmark methodology
+- Milestone specification template
+- Repository and contribution guidance
+
+Product implementation is limited to architectural spikes required to resolve genuine uncertainty.
+
+### M1 — Secure walking skeleton
+
+**Outcome:** OSCA runs locally as a coherent minimal product.
+
+- Web shell, versioned API, and CLI
+- Local-owner security boundary and personal-server configuration skeleton
+- Vault-backed secret abstraction
+- Durable job framework
+- Metadata catalog foundation
+- Structured observability and health center
+- Configuration validation
+- Basic backup and restore skeleton
+- Documentation site and executable-example pipeline
+
+### M2 — Instruments, providers, and cache vertical slice
+
+**Outcome:** users can register stock and crypto instruments and retrieve governed daily data.
+
+- Canonical instrument registry
+- Provider mappings and discovery
+- One stock and one crypto provider adapter
+- Capability routing and quotas
+- Source and canonical layers
+- Daily OHLCV ingestion
+- Policy-driven freshness
+- Gap detection and incremental repair
+- Basic storage inspection and cleanup
+- Initial quality rules and provenance
+
+### M3 — Multi-timeframe governed data engine
+
+**Outcome:** selected intraday data remains correct, bounded, repairable, and reproducible.
+
+- Initial intraday intervals
+- Calendars, sessions, timezones, and provisional bars
+- Derived and artifact layers
+- Dependency lineage
+- Tiered retention, quotas, and storage relocation
+- Quarantine and repair revisions
+- Corporate actions and adjustment views
+- Provider fallback and reconciliation
+- Representative performance benchmarks
+
+### M4 — Research projects, analytics, and visualization
+
+**Outcome:** users can complete a governed exploratory research project.
+
+- Projects, timelines, intent, hypotheses, and branching
+- Global catalog
+- Core analytical foundation
+- Structured analytical outputs
+- Declarative analysis graphs and visualization specifications
+- Dashboards, comparison, drill-down, and export
+- Evidence-backed reports
+- Ad hoc exploration promoted into a project
+
+### M5 — Extension SDK and external-package proof
+
+**Outcome:** independent developers can add capabilities without modifying OSCA.
+
+- Declarative composition
+- Typed provider, metric, analysis, and visualization contracts
+- Manifests, compatibility, permissions, integrity, and lockfiles
+- Local and immutable-Git imports
+- Trust tiers and conformance test kit
+- Safe activation, update, disable, and uninstall
+- One externally packaged provider extension
+- One externally packaged analytical extension
+
+This milestone arrives early enough to prevent later capabilities from assuming core-only implementation.
+
+### M6 — F0 and F1 strategy research
+
+**Outcome:** users can evaluate signals and fast portfolio estimates rigorously.
+
+- Strategy and recommendation-policy definitions
+- F0 signal studies and F1 vectorized portfolio estimates
+- Baselines
+- Point-in-time and leakage controls
+- Walk-forward and sensitivity analysis
+- Comparable performance and risk metrics
+- Parameter-search lineage
+- Explicit assumption profiles and candidate review
+
+### M7 — F2 event-driven validation
+
+**Outcome:** strategies receive authoritative bar-based historical validation.
+
+- Event-driven engine
+- Typed order intents and lifecycle
+- Fill, fee, spread, slippage, latency, and liquidity models
+- Deterministic layered risk engine
+- Double-entry journal and multi-currency valuation
+- Corporate-action processing
+- Reconciliation and rebuildable projections
+- Cross-engine conformance and promotion gates
+
+### M8 — F3 paper evaluation and automation
+
+**Outcome:** approved candidates operate safely against forward data.
+
+- Independent paper accounts
+- Forward paper evaluation
+- Durable market-aware schedules
+- Data and operational health gates
+- Account pause and system kill switch
+- Alerts, notification inbox, digests, and delivery adapters
+- Backtest-versus-forward comparison
+- Outcome and thesis lifecycle
+- Safe restart and non-replay recovery
+
+### M9 — Governed ML lifecycle
+
+**Outcome:** ML candidates can be trained, compared, promoted, and monitored.
+
+- Feature and label registry
+- Pluggable training workflows
+- Experiment and model registry
+- Immutable versions
+- Evaluation and calibration
+- Event-driven validation integration
+- Champion and challenger paper deployments
+- Drift and outcome monitoring
+- Retraining without automatic promotion
+- Secure model import and export
+
+### M10 — Governed LLM research assistant
+
+**Outcome:** users receive evidence-grounded conversational research assistance.
+
+- Provider-neutral local and remote gateway
+- Prompt, tool, and retrieval registries
+- Bounded typed tools and structured outputs
+- Project-context and privacy controls
+- Citations and evidence grounding
+- Token and monetary budgets
+- Prompt-injection defenses
+- LLM evaluation suite
+- No live-order capability
+
+### M11 — Analytical breadth and portfolio intelligence
+
+**Outcome:** OSCA expands into a broad intelligence platform.
+
+- Fundamental and valuation pack
+- Macro and cross-market pack
+- Events and catalysts
+- News and sentiment
+- Crypto market-structure and on-chain pack
+- Advanced portfolio and scenario analysis
+- Specialized ML and visualization packs
+- Cross-family evidence synthesis
+- Method comparison and outcome calibration
+
+M11 can be decomposed into smaller milestones when its specifications are written.
+
+### M12 — Resilience and release readiness
+
+**Outcome:** the integrated product meets its first production-quality release bar.
+
+- Security hardening and adversarial testing
+- Performance, capacity, storage-pressure, and corruption testing
+- Backup profiles and selective restore
+- RPO and RTO validation
+- Monthly restore-test automation and a disaster-recovery exercise
+- Upgrade, migration, rollback, and compatibility testing
+- Accessibility and full-workflow validation
+- Documentation completeness
+- Risk-register review
+- Release packaging and operational runbooks
+
+### Universal milestone exit gate
+
+Every milestone requires:
+
+- Approved intent and specifications
+- Traceability from PRD requirement to specification, acceptance criterion, test, and documentation
+- Test-driven development evidence appropriate to the change
+- Unit, integration, contract, end-to-end, property, security, and performance tests according to risk
+- Migration and rollback behavior where state changes
+- Observability and failure handling
+- Usage and operational documentation
+- Accessibility review for user-facing behavior
+- Risk-treatment evidence
+- No unresolved critical defect or untreated critical risk
+- A demonstrable user outcome rather than only completed infrastructure
 
 ## 40. Document governance
 
