@@ -7,6 +7,7 @@ from osca.catalog.api import (
     MetadataAvailability,
     RecoveryRecordKind,
 )
+from osca.recovery.domain import RecoveryAction, RecoveryOperation
 from osca.shared_kernel.api import CorrelationId
 
 
@@ -31,3 +32,18 @@ class RecoveryCatalog(Protocol):
         lineage: tuple[UUID, ...],
         availability: MetadataAvailability,
     ) -> CatalogRecoveryReference: ...
+
+
+class RecoveryOperationRepository(Protocol):
+    def start(
+        self,
+        *,
+        correlation_id: CorrelationId,
+        actor: str,
+        action: RecoveryAction,
+        target: str,
+    ) -> RecoveryOperation: ...
+
+    def complete(
+        self, operation: RecoveryOperation, *, succeeded: bool, code: str
+    ) -> RecoveryOperation: ...
