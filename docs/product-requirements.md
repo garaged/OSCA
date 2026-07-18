@@ -489,7 +489,75 @@ Polling and streaming provider adapters must expose compatible normalized data-c
 
 Detailed cache and storage policy remains an open design area and will receive its own specification after product requirements are settled.
 
-## 15. Backtesting and paper trading — initial requirements
+## 15. Extensible analysis and extension distribution
+
+### 15.1 Capability taxonomy
+
+OSCA distinguishes at least:
+
+- Metrics
+- Indicators
+- Model features and labels
+- Analyses and screeners
+- Strategies
+- Models
+- Visualizations
+- Data-provider adapters
+
+Each category has a typed, versioned contract appropriate to its behavior.
+
+### 15.2 Extension levels
+
+OSCA supports:
+
+1. **Declarative composition:** users assemble registered capabilities into versioned analysis definitions and dependency graphs without implementing new code.
+2. **Code extensions:** developers implement genuinely new capabilities through governed extension interfaces.
+
+Analyses should be represented as inspectable dependency graphs so reusable nodes can be cached, independent work can execute concurrently, and invalidation can target affected outputs.
+
+### 15.3 Independent packaging and import
+
+Code extensions do not need to reside in or be released with the OSCA application repository. Users and third parties can design, package, publish, import, update, disable, and uninstall extensions independently.
+
+An extension package must provide a manifest containing, as applicable:
+
+- Globally unique extension identity
+- Name, publisher identity, and version
+- Extension category and entry points
+- OSCA compatibility range
+- Input, output, and parameter schemas
+- Supported asset classes and intervals
+- Dependencies
+- Required permissions and external access
+- Determinism and random-seed behavior
+- Lookback and warm-up requirements
+- Missing and provisional data behavior
+- Leakage-safety metadata for model features
+- Resource requirements or limits
+- Integrity information
+- License and provenance
+
+Import creates an installation record containing the exact package identity, version, source, integrity digest, resolved dependencies, granted permissions, and activation state. Retained analyses and artifacts continue to reference the exact extension versions that produced them.
+
+Installing a newer version must not silently reinterpret a retained analysis. Compatibility is validated before activation. Disabling or uninstalling an extension must preview impacted definitions and retained reproducibility requirements.
+
+### 15.4 Extension safety and conformance
+
+Extensions must:
+
+- Receive data through approved contracts
+- Avoid direct mutation of canonical data
+- Return typed results and structured diagnostics
+- Attach provenance automatically
+- Supply conformance tests or compatible fixtures
+- Fail without corrupting unrelated workflows
+- Respect declared resource and access constraints
+
+Visualizations consume typed results rather than arbitrary internal tables. LLM tools invoke approved application capabilities rather than extension internals.
+
+The exact extension runtime, package format, isolation mechanism, signing policy, and public registry design remain architectural decisions to be specified later.
+
+## 16. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -512,7 +580,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 16. Engineering-quality direction
+## 17. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -528,14 +596,13 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 17. PRD sections pending discovery
+## 18. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
 - Detailed cache semantics
-- Analysis and metric extension model
 - Model and experiment lifecycle
 - Backtest fidelity levels
 - Portfolio and risk functionality
@@ -544,12 +611,11 @@ The following areas are intentionally incomplete:
 - Security and credential handling
 - Availability, performance, scalability, and cost objectives
 - Import, export, backup, and recovery
-- Plugin and extension governance
 - Milestone decomposition
 - Product success metrics
 - Risks and mitigations
 
-## 18. Document governance
+## 19. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
