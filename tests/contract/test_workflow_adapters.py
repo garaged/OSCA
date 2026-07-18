@@ -55,3 +55,15 @@ def test_http_rejects_caller_controlled_identity(tmp_path: Path, monkeypatch: ob
         },
     )
     assert response.status_code == 422
+
+
+def test_recovery_cli_commands_are_registered() -> None:
+    result = CliRunner().invoke(cli_app, ["--help"])
+    assert result.exit_code == 0
+    for command_name in (
+        "backup-create",
+        "backup-verify",
+        "restore-preview",
+        "restore-isolated",
+    ):
+        assert command_name in result.stdout
