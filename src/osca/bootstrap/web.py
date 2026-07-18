@@ -5,8 +5,10 @@ from fastapi.responses import HTMLResponse
 
 from osca.bootstrap.runtime import readiness_snapshot
 from osca.operations.api import ReadinessSnapshot
+from osca.workflow.api.http import router as workflow_router
 
 app = FastAPI(title="OSCA", version="0.1.0", openapi_version="3.1.0")
+app.include_router(workflow_router)
 
 
 @app.get("/api/v1/readiness", response_model=ReadinessSnapshot)
@@ -25,4 +27,3 @@ def web_readiness() -> str:
         f"State: {snapshot.state.value}</p><p>Version: {snapshot.product_version}</p>"
         "</main></body></html>"
     )
-
