@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
+from osca.bootstrap.authorization import local_authorization_context
 from osca.catalog.infrastructure import CatalogBase, SqliteResultCatalog
 from osca.shared_kernel.api import CorrelationId
 from osca.workflow.api import (
@@ -31,7 +32,7 @@ def session() -> Session:
 
 def command(key: str = "key", probe: str = "storage") -> SubmitDiagnosticRun:
     return SubmitDiagnosticRun(
-        actor="operator",
+        authorization=local_authorization_context(),
         correlation_id=CorrelationId.new(),
         idempotency_key=key,
         input=DiagnosticInput(probe=probe),
@@ -88,7 +89,13 @@ def test_checkpoint_resume_result_before_success_retry_and_cancellation(session:
     completed = worker.execute(claimed)
     assert completed.state == DiagnosticRunState.SUCCEEDED
     assert completed.result is not None
+    assert completed.result.verify_integrity()
+    assert completed.result.producer_build == completed.producer_build
+    assert completed.result.lineage == (completed.run_id.value,)
     assert session.scalar(text("SELECT COUNT(*) FROM catalog_result_metadata")) == 1
+    retained = repository.get(completed.run_id)
+    assert retained is not None and retained.verify_integrity()
+    assert retained.lineage == (retained.run_id.value,)
     assert completed.checkpoint is not None and completed.checkpoint.phase == 3
 
     retry_run = service.submit(command("retry"))
@@ -102,7 +109,9 @@ def test_checkpoint_resume_result_before_success_retry_and_cancellation(session:
     pending = service.submit(command("cancel"))
     cancelled = service.cancel(
         CancelDiagnosticRun(
-            actor="operator", correlation_id=CorrelationId.new(), run_id=pending.run_id
+            authorization=local_authorization_context(),
+            correlation_id=CorrelationId.new(),
+            run_id=pending.run_id,
         )
     )
     assert cancelled.state == DiagnosticRunState.CANCELLED
