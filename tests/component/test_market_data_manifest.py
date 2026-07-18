@@ -88,4 +88,7 @@ def test_manifest_is_idempotent_by_fingerprint_and_canonical_is_protected() -> N
         assert repository.by_fingerprint(fingerprint) == manifest
         assert repository.ready(manifest.dataset_id) == (manifest,)
     with pytest.raises(ValidationError):
-        DatasetManifest(**manifest.model_dump(exclude={"manifest_id"}), protected=False)
+        DatasetManifest(
+            **manifest.model_dump(exclude={"manifest_id", "protected"}),
+            protected=False,
+        )
