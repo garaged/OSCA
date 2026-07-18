@@ -29,6 +29,7 @@ def test_initial_migration_upgrades_and_downgrades_clean_database(tmp_path: Path
         "operations_workflow_events",
         "recovery_operations",
         "workflow_diagnostic_runs",
+        "workflow_job_runs",
     ]
 
     command.downgrade(config, "base")
