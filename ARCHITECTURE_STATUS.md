@@ -8,7 +8,7 @@
 - **Architecture review:** Approved
 - **M0.x operationalization:** Complete
 - **M1 secure walking skeleton:** Accepted
-- **Current activity:** Post-M1 milestone transition
+- **Current activity:** M2 governed initiation
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
