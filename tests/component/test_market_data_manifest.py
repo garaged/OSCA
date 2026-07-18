@@ -92,3 +92,43 @@ def test_manifest_is_idempotent_by_fingerprint_and_canonical_is_protected() -> N
             **manifest.model_dump(exclude={"manifest_id", "protected"}),
             protected=False,
         )
+
+
+def test_manifest_publication_transition_is_compare_and_set() -> None:
+    engine = create_engine("sqlite://")
+    MarketDataBase.metadata.create_all(engine)
+    manifest = DatasetManifest(
+        revision=1,
+        fingerprint="sha256:" + "b" * 64,
+        layer=DatasetLayer.CANONICAL,
+        state=ManifestState.STAGING,
+        instrument_id=uuid4(),
+        provider_id="synthetic",
+        source_context="fixture",
+        start_date=date(2024, 1, 2),
+        end_date_exclusive=date(2024, 1, 3),
+        schema_revision="1.0.0",
+        row_count=1,
+        byte_size=100,
+        content_digest="sha256:" + "a" * 64,
+        object_key="canonical/aa/staged.parquet",
+        retention_policy_revision="synthetic-v1",
+        backup_permitted=True,
+        protected=True,
+    )
+    with Session(engine) as session, session.begin():
+        repository = SqliteManifestRepository(session)
+        repository.add(manifest)
+        ready = repository.transition(
+            manifest.manifest_id,
+            expected=ManifestState.STAGING,
+            target=ManifestState.READY,
+        )
+        assert ready.state is ManifestState.READY
+        assert repository.ready(manifest.dataset_id) == (ready,)
+        with pytest.raises(ValueError, match="changed"):
+            repository.transition(
+                manifest.manifest_id,
+                expected=ManifestState.STAGING,
+                target=ManifestState.READY,
+            )
