@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 from pathlib import Path
 from uuid import UUID
 
@@ -10,7 +9,7 @@ import typer
 
 from osca import __version__
 from osca.bootstrap.authorization import local_authorization_context
-from osca.bootstrap.recovery import recovery_service
+from osca.bootstrap.recovery import persist_configuration_snapshot, recovery_service
 from osca.bootstrap.runtime import readiness_snapshot
 from osca.bootstrap.workflow import workflow_service
 from osca.configuration.api.contracts import RawConfiguration
@@ -95,12 +94,11 @@ def diagnostic_cancel(run_id: UUID) -> None:
 def backup_create(destination: Path, recipient: str) -> None:
     """Create an encrypted age v1 backup of governed M1 state."""
     configuration = validate_configuration(RawConfiguration())
-    database = Path(os.environ.get("OSCA_DATABASE_PATH", "osca.db"))
+    persist_configuration_snapshot(configuration)
     fingerprint = "sha256:" + hashlib.sha256(recipient.encode()).hexdigest()
     command = CreateBackup(
         authorization=local_authorization_context(),
         correlation_id=CorrelationId.new(),
-        source_database=str(database),
         destination=str(destination),
         recipient=recipient,
         recipient_fingerprint=fingerprint,
