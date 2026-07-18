@@ -321,6 +321,22 @@ It must eventually support:
 - Detection and recovery from interrupted cleanup
 - No silent deletion of inputs required by a retained reproducible experiment
 
+Storage reclamation will use tiered, value-aware retention rather than pure time-to-live or least-recently-used eviction.
+
+Storage classes include:
+
+1. **Protected:** pinned datasets, promoted models, retained experiments, paper-trading records, manifests, and audit metadata.
+2. **Canonical:** normalized market history that is costly or time-consuming to reconstruct.
+3. **Source:** raw provider responses retained where licensing and policy permit.
+4. **Derived:** indicators, features, resampled bars, temporary datasets, and intermediate artifacts.
+5. **Ephemeral:** incomplete downloads, previews, scratch results, and failed-run intermediates.
+
+Reclamation must consider class, age, interval, recomputation cost, provider availability, rate limits, lineage dependencies, and user pinning. It should normally evict reproducible derived data before expensive or irreproducible source data.
+
+The system must retain lightweight identity, manifest, and lineage metadata when a large payload is evicted. Evicted artifacts must be visibly marked as unavailable or reproducible from identified sources. Automatic ingestion must pause safely when protected content alone exhausts the configured budget.
+
+Storage-root relocation must copy or move data, verify integrity, and switch atomically enough to avoid silently losing the active store.
+
 Storage management must make stable disk usage achievable without routine manual intervention. Defaults should be safe for a personal workstation, while users can adjust budgets and policies for larger personal-server deployments.
 
 Detailed cache and storage policy remains an open design area and will receive its own specification after product requirements are settled.
