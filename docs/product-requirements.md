@@ -89,11 +89,40 @@ The platform should support:
 
 Initial milestones will not attempt multi-tenancy or synchronization between independent installations.
 
-## 7. Intelligence model
+## 7. Target users and personas
+
+### 7.1 Primary persona: technical individual investor/researcher
+
+The primary user is technically capable, conducts personal market and portfolio research, and wants to combine configurable quantitative methods, ML, LLM assistance, backtesting, and paper trading. The user may work through the web application, CLI, API, or notebooks and expects inspectable evidence rather than opaque recommendations.
+
+The primary experience must support sophisticated work without requiring the user to operate a distributed system or build every analytical capability from code.
+
+### 7.2 Secondary persona: analytical investor
+
+This user primarily consumes dashboards, reports, comparisons, alerts, and explanations. The user may configure analyses and paper portfolios but does not normally implement extensions.
+
+The product should progressively disclose advanced controls and explain technical results without weakening their rigor.
+
+### 7.3 Secondary persona: extension developer
+
+This user adds or maintains data providers, metrics, analyses, feature transformations, models, strategies, and visualizations through documented extension contracts.
+
+Extension development must have stable interfaces, validation, isolated testing, compatibility rules, and observable failure behavior.
+
+### 7.4 Initial persona exclusions
+
+OSCA is not initially optimized for:
+
+- Completely passive users seeking unexplained buy or sell signals
+- Institutional trading desks requiring team workflows and enterprise governance
+- SaaS administrators managing tenants, billing, or organizational access
+- Live-trading operators requiring production order execution
+
+## 8. Intelligence model
 
 OSCA uses both machine learning and language models, with explicit separation of responsibilities.
 
-### 7.1 Machine learning
+### 8.1 Machine learning
 
 Machine learning may support:
 
@@ -108,7 +137,7 @@ Machine learning may support:
 - Strategy parameter exploration
 - Position-sizing recommendations for simulation
 
-### 7.2 Language models
+### 8.2 Language models
 
 Language models may support:
 
@@ -123,7 +152,7 @@ Language models may support:
 
 Language-model output must not be used as a numerical source of truth. Claims should reference the data or artifacts used to produce them.
 
-### 7.3 Deterministic responsibilities
+### 8.3 Deterministic responsibilities
 
 Deterministic components remain authoritative for:
 
@@ -138,7 +167,7 @@ Deterministic components remain authoritative for:
 - Experiment identity and artifact resolution
 - Data-quality rules
 
-## 8. Artifact identity and lineage
+## 9. Artifact identity and lineage
 
 Datasets, scans, features, models, predictions, reports, backtests, and paper-trading runs must have unambiguous identities.
 
@@ -161,7 +190,7 @@ Every material artifact should expose, as applicable:
 
 Artifact lookup must be type-aware so, for example, a training run cannot be mistaken for a scan merely because both belong to an intraday workflow.
 
-## 9. Cache and data lifecycle — initial requirements
+## 10. Cache and data lifecycle — initial requirements
 
 The cache is a first-class product capability rather than an incidental HTTP optimization.
 
@@ -186,7 +215,7 @@ It must eventually support:
 
 Detailed cache policy remains an open design area and will receive its own specification after product requirements are settled.
 
-## 10. Backtesting and paper trading — initial requirements
+## 11. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -209,7 +238,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 11. Engineering-quality direction
+## 12. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -225,11 +254,10 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 12. PRD sections pending discovery
+## 13. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
-- Target users and personas
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
 - Market and asset coverage
@@ -250,7 +278,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 13. Document governance
+## 14. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
