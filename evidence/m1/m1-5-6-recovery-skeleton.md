@@ -1,7 +1,9 @@
 # M1.5–M1.6 recovery skeleton evidence
 
-- **Status:** Draft — final source revision and CI run pending
+- **Status:** Complete
+- **Source checkpoint:** `4892e88ad8e1711e9bbbe51d296f3460eb9ea3ee`
 - **Branch:** `agent/m1-recovery-skeleton`
+- **GitHub Actions run:** `29652513765`
 - **Requirements:** REQ-0010, REQ-0013, REQ-0017, REQ-0018, REQ-0020
 - **Decisions:** ADR-0009, ADR-0015, ADR-0016
 - **Schema revisions:** `m1_0005`, `m1_0006`
@@ -28,12 +30,19 @@
 | Ruff for changed slices | Pass |
 | Strict OpenSpec validation | Pass — 2 items, 0 failures |
 
-## Pending retained evidence
+## Retained CI evidence
 
-- Full locked Python 3.13 pytest, Ruff, and strict mypy CI results.
-- Reference age executable interoperability.
-- Final source checkpoint and workflow run identity.
-- Secret scan and documentation-link validation.
+GitHub Actions run `29652513765` passed on the source checkpoint:
+
+- locked CPython 3.13.14 environment;
+- Ruff;
+- strict mypy — 74 source files;
+- pytest — 67 tests, including pinned age v1.3.1 bidirectional interoperability;
+- migration, contract, architecture-boundary, and documentation-link checks;
+- strict OpenSpec validation;
+- secret scan.
+
+The single pytest warning is the intentional duplicate-ZIP-entry malicious fixture and does not indicate product behavior.
 
 ## Residual risks and limitations
 
