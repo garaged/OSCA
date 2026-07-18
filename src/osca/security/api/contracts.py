@@ -30,3 +30,17 @@ class VaultProbeResult(BaseModel):
     code: str
     remediation: str | None = None
 
+
+class Capability(StrEnum):
+    WORKFLOW_SUBMIT = "workflow.diagnostic.submit"
+    WORKFLOW_READ = "workflow.diagnostic.read"
+    WORKFLOW_CANCEL = "workflow.diagnostic.cancel"
+
+
+class AuthorizationContext(BaseModel):
+    """Identity and capabilities established by a trusted adapter boundary."""
+
+    model_config = ConfigDict(frozen=True)
+    actor: str = Field(min_length=1, max_length=200)
+    capabilities: frozenset[Capability]
+    authentication_method: str
