@@ -1323,7 +1323,50 @@ Policy versions are pinned to backtests and retained paper decisions. Policy cha
 
 Stress and scenario analysis evaluates adverse price, volatility, correlation, liquidity, and provider-failure conditions.
 
-## 31. Engineering-quality direction
+## 31. Price adjustments and instrument lifecycle events
+
+### 31.1 Canonical raw observations
+
+OSCA preserves raw provider price and volume observations. Adjusted values do not overwrite raw observations.
+
+Provider-adjusted series and adjustment factors may be retained with explicit provider provenance for comparison and validation.
+
+### 31.2 Lifecycle events
+
+Equity lifecycle and corporate-action events include, as applicable:
+
+- Splits and reverse splits
+- Cash and stock dividends
+- Spin-offs
+- Mergers and acquisitions
+- Rights
+- Listing and venue changes
+- Symbol changes
+- Suspensions and delistings
+
+Events preserve announcement, ex-date, record, payable, effective, and information-availability timestamps where relevant.
+
+Crypto-specific events include redenominations, token migrations, forks, airdrops, symbol changes, and material network lifecycle changes through analogous typed events rather than equity-only semantics.
+
+### 31.3 Versioned adjustment views
+
+OSCA supports explicitly selected price views:
+
+- Raw traded prices
+- Split-adjusted prices
+- Split-and-distribution-adjusted prices
+- Total-return series
+- Identified provider-defined adjusted series
+
+Every adjusted result identifies its methodology, event revisions, input datasets, calculation version, and volume-adjustment behavior. Analyses, indicators, and charts disclose the selected view. Incompatible adjustment policies cannot be joined silently.
+
+### 31.4 Backtesting and revision behavior
+
+Event-driven backtests use raw tradable prices and apply corporate actions as explicit portfolio and accounting events. Total-return benchmarks may use adjusted series with visible semantics.
+
+Point-in-time tests use only lifecycle information available at simulated time. Revised or late events create new dataset revisions and identify affected analyses, models, and backtests.
+
+## 32. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1339,7 +1382,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 32. PRD sections pending discovery
+## 33. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1352,7 +1395,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 33. Document governance
+## 34. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
