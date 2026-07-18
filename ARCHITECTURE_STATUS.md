@@ -4,11 +4,11 @@
 
 - **Product baseline:** Approved
 - **M0 architecture foundation:** Merged through PR #2
-- **Tier-1 ADRs:** Baseline after M0.6 validation
+- **Tier-1 ADRs:** Frozen at M1 implementation entry
 - **Architecture review:** Approved
 - **M0.x operationalization:** Complete
-- **Next activity:** Select and specify the first M1 vertical slice
-- **Freeze point:** Tier-1 ADRs become Frozen when M1 implementation begins
+- **Current activity:** M1 secure walking-skeleton implementation
+- **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
 
