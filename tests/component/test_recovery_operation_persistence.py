@@ -9,7 +9,7 @@ from osca.shared_kernel.api import CorrelationId
 def test_recovery_operation_is_persisted_before_completion() -> None:
     engine = create_engine("sqlite://")
     RecoveryBase.metadata.create_all(engine)
-    with Session(engine) as session, session.begin():
+    with Session(engine) as session:
         repository = SqliteRecoveryOperationRepository(session)
         running = repository.start(
             correlation_id=CorrelationId.new(),
