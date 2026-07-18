@@ -161,3 +161,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will combine declarative analysis composition with typed, versioned code-extension contracts. Extensions can be packaged, published, imported, updated, disabled, and uninstalled independently of the OSCA repository.
 - **Rationale:** Common analyses should be composable without code, while new analytical and provider capabilities must evolve without requiring inclusion in core application releases.
 - **Consequences:** OSCA requires category-specific contracts, manifests, compatibility checks, integrity verification, installation records, dependency and permission declarations, conformance tests, version pinning, impact previews, and reproducible references to exact extension versions.
+
+
+## D-020 — Extension trust and import policy
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use built-in, verified, local-trusted, and untrusted/quarantined extension tiers. Imports may originate from local bundles, development directories, immutable Git references, digest-pinned package URLs, and a future registry.
+- **Rationale:** Independent distribution must support private development and open publishing without treating all executable packages as equally trusted.
+- **Consequences:** Installation and activation are separate; manifests declare permissions; credentials are not granted automatically; permission changes require renewed approval; packages and environments are integrity-pinned; and declared dependencies cannot silently install themselves.
