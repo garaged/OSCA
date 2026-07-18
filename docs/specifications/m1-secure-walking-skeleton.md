@@ -186,7 +186,9 @@ On recommended hardware:
 
 Installation, developer setup, local/personal-server configuration, security model, vault behavior, readiness API/CLI/web, diagnostic jobs, backup/restore, telemetry, troubleshooting, limitations, schemas, and executable examples must ship with the behavior.
 
-## Open questions
+## Exit dispositions
 
-- Decide whether dual-stack loopback binding is one listener or platform-dependent listeners in the configuration specification.
-- Define exact supported operating systems for M1 credential-store conformance.
+- The validated IPv4 loopback path is the M1 reference realization. Additional IPv6 listener realization remains platform-dependent and must be revisited before a supported platform requires dual-stack binding.
+- M1 makes no named supported-operating-system claim for credential-store conformance. Target-platform keyring runs are required before publishing a supported-platform matrix.
+
+These dispositions narrow M1 support claims without changing the accepted behavior.
