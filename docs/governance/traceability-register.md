@@ -30,3 +30,12 @@ The register summarizes governed links and does not replace source metadata.
 ## M1 gate
 
 The first M1 intent may be drafted while requirement extraction is reviewed. M1 implementation cannot begin until its selected requirements have immutable IDs and links to the approved intent, specification, and acceptance criteria.
+
+
+## M1 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0001–REQ-0020 | Cited PRD sections and D-records in requirements catalog | [M1 intent](../milestones/m1/intent.md) | [Secure walking skeleton](../specifications/m1-secure-walking-skeleton.md) | M1-AC-001–M1-AC-020 | [M1 evidence plan](../milestones/m1/evidence-plan.md) | Required by REQ-0019; implementation links pending | ADR-0001–ADR-0015 | Planned |
+
+Implementation, test-result, documentation, and risk-disposition links are added incrementally. “Planned” does not claim verification completion.
