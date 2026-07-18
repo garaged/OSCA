@@ -1,6 +1,6 @@
 # M2 — Instruments, Providers, and Cache Vertical Slice
 
-- **Status:** M2.1 instrument registry implemented; provider/licensing decisions remain pending
+- **Status:** M2.2 provider contract and synthetic fixtures implemented; provider promotion remains pending
 - **Governing role:** Product authority
 - **Architecture, security, data, licensing, and quality review:** Required
 - **Authoritative outcome:** PRD M2
@@ -17,6 +17,7 @@
 - [Accepted execution plan](execution-plan.md)
 - [Accepted entry decisions](entry-decisions.md)
 - [Accepted staged provider strategy](provider-strategy.md)
+- [M2.2 provider contract evidence](../../../evidence/m2/m2-2-provider-contract-fixtures.md)
 - [Accepted M2 persistence ADR](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md)
 - [M2.1 instrument registry evidence](../../../evidence/m2/m2-1-instrument-registry.md)
 - [Archived M2.1 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-instrument-registry/README.md)
