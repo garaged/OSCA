@@ -321,3 +321,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will enforce versioned deterministic risk policies at system, paper-account, portfolio, strategy, and final order-intent levels, with the strictest applicable constraint winning.
 - **Rationale:** Strategies, ML models, LLMs, and imported extensions cannot be responsible for approving exceptions to their own proposed actions.
 - **Consequences:** Event-driven backtests and paper trading share risk semantics; controls cover exposure, concentration, liquidity, loss, data quality, and operational health; decisions are explainable; overrides are scoped and audited; leverage is off by default; and account pause plus a system-wide paper kill switch are required.
+
+
+## D-038 — Raw prices and versioned adjustment views
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will preserve canonical raw price and volume observations, model corporate actions and crypto lifecycle changes explicitly, and provide versioned selectable adjustment views.
+- **Rationale:** Adjusted series are useful for analysis but cannot replace actual historical tradable observations or explicit accounting events.
+- **Consequences:** Analyses disclose adjustment policy; incompatible views do not mix silently; event-driven backtests apply actions to raw prices; point-in-time tests enforce information availability; and event revisions create new dataset revisions with impact analysis.
