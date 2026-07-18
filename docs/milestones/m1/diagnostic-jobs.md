@@ -4,7 +4,7 @@
 - **Governing requirements:** REQ-0011–REQ-0015
 - **Governing decision:** ADR-0013
 - **Public contract:** `osca.workflow.diagnostic-run` 1.0.0
-- **Schema revision:** `m1_0003`
+- **Schema revision:** `m1_0004`
 
 ## Prepare the database
 
@@ -25,7 +25,7 @@ uv run osca diagnostic-get <run-uuid>
 uv run osca diagnostic-cancel <run-uuid>
 ```
 
-Submission requires a probe and idempotency key. Repeating an equivalent submission for the same actor returns the existing run. Reusing the key with different input is rejected.
+Submission requires a probe and idempotency key. Actor identity and capabilities are derived from the trusted local operating-system boundary; HTTP bodies and CLI options cannot assert them. Repeating an equivalent submission for the same actor returns the existing run. Reusing the key with different input is rejected.
 
 ## HTTP API
 
@@ -34,7 +34,7 @@ The versioned endpoints are:
 - `POST /api/v1/diagnostic-runs`
 - `GET /api/v1/diagnostic-runs`
 - `GET /api/v1/diagnostic-runs/{run_id}`
-- `POST /api/v1/diagnostic-runs/{run_id}/cancel?actor=<actor>`
+- `POST /api/v1/diagnostic-runs/{run_id}/cancel`
 
 HTTP and CLI adapters use the same application handlers and return the same run semantics.
 
