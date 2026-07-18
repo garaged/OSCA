@@ -18,6 +18,7 @@
 - [Accepted entry decisions](entry-decisions.md)
 - [Accepted staged provider strategy](provider-strategy.md)
 - [M2.2 provider contract evidence](../../../evidence/m2/m2-2-provider-contract-fixtures.md)
+- [Archived M2.2 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-provider-contract/README.md)
 - [Accepted M2 persistence ADR](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md)
 - [M2.1 instrument registry evidence](../../../evidence/m2/m2-1-instrument-registry.md)
 - [Archived M2.1 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-instrument-registry/README.md)
