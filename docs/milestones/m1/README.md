@@ -27,7 +27,7 @@
 - [M1.7 retained evidence](../../../evidence/m1/m1-7-documentation-operational-evidence.md)
 - [Archived M1.4 OpenSpec pilot](../../../openspec/changes/archive/2026-07-18-m1-4-durable-diagnostic-jobs/README.md)
 - [Archived M1 recovery OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
-- [Active M1.7 OpenSpec change](../../../openspec/changes/m1-7-documentation-operational-evidence/proposal.md)
+- [Archived M1.7 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-7-documentation-operational-evidence/README.md)
 - [M1 initiation record](initiation-record.md)
 
 ## Governing controls
