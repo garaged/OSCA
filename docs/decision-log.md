@@ -348,3 +348,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will support open, authenticated, licensed, exported, file-based, user-supplied, and permitted automated data acquisition through versioned provider policy metadata and enforcement.
 - **Rationale:** Technical retrievability does not establish permission to retain, transform, export, back up, or redistribute third-party data.
 - **Consequences:** Official mechanisms are preferred; automation cannot bypass controls; quotas are centralized; provider rights constrain storage and portability; derived outputs retain applicable lineage; uncertainty can block use; and commercial or multi-user operation requires separate license review.
+
+
+## D-041 — Guided research lifecycle
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will provide a guided but non-linear lifecycle from secure configuration and research framing through governed data, exploration, modeling, dual-stage backtesting, promotion, paper deployment, monitoring, outcome learning, and preservation.
+- **Rationale:** Independent tools provide flexibility but do not ensure that intent, evidence, assumptions, promotion, and realized outcomes remain connected.
+- **Consequences:** Stages expose prerequisites and outputs; projects can branch; ad hoc work can be governed later; timelines retain decisions and revisions; the web UI combines guidance with expert access; CLI and API share lifecycle semantics; and LLM assistance cannot bypass gates.
