@@ -42,3 +42,12 @@ The first M1 intent may be drafted while requirement extraction is reviewed. M1 
 | REQ-0019, REQ-0020 | Cited PRD sections and D-records in requirements catalog | [M1 intent](../milestones/m1/intent.md) | [Secure walking skeleton](../specifications/m1-secure-walking-skeleton.md) | M1-AC-001, M1-AC-003, M1-AC-018, M1-AC-020 | [M1.7 evidence](../../evidence/m1/m1-7-documentation-operational-evidence.md) | [Run and operate M1](../milestones/m1/operations-guide.md) | ADR-0001, ADR-0004, ADR-0005, ADR-0009, ADR-0010 | Verified |
 
 Implementation, test-result, documentation, and risk-disposition links are added incrementally. “Planned” does not claim verification completion.
+
+
+## M2 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0021–REQ-0040 | PRD sections 8, 10–14, 37–39; D-012–D-018, D-040 | [M2 intent](../milestones/m2/intent.md) | [M2 governed daily market data](../specifications/m2-governed-daily-market-data.md) | M2-AC-001–M2-AC-020 | [M2 evidence plan](../milestones/m2/evidence-plan.md) | [M2 index](../milestones/m2/README.md) | ADR-0001–ADR-0016 plus triggered M2 decisions pending | Accepted planning; implementation gated |
+
+No M2 verification is claimed. Implementation remains gated by the accepted entry package, including provider licensing and persistence decisions.
