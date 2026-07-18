@@ -87,7 +87,13 @@ Exact revision begins at `1.0.0`. Unknown fields are ignored only where the fami
 ### Diagnostic job
 
 1. `SubmitDiagnosticRun` accepts a versioned input, idempotency key, and correlation context and returns a stable run identity within one second on the reference environment.
-2. A run persists before execution and follows only specified lifecycle transitions.
+2. A run persists before execution and follows only specified lifecycle transitions:
+   - pending to running or cancelled;
+   - running to blocked, succeeded, failed, cancelling, or interrupted;
+   - blocked to pending or cancelled;
+   - cancelling to cancelled or interrupted;
+   - interrupted to pending, failed, or cancelled;
+   - succeeded, failed, and cancelled are terminal.
 3. Claim uses a lease and heartbeat. Expired running leases become interrupted and eligible for policy-controlled resume.
 4. The handler checkpoints named phases and is duplicate-aware.
 5. Cancellation is cooperative, persisted, and acknowledged within the PRD target before safe termination.
