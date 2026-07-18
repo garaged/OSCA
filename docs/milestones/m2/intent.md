@@ -1,8 +1,8 @@
 # M2 Intent — Governed Daily Market Data
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Product authority
-- **Architecture, security, data, licensing, and quality approval:** Required
+- **Architecture, security, data, licensing, and quality approval:** Accepted 2026-07-18
 - **Purpose:** Deliver the smallest user-visible path from canonical instrument registration to governed daily OHLCV retrieval.
 - **Authoritative sources:** PRD sections 4, 5, 8, 10–14, 35–39; D-012–D-018; D-040
 - **Baseline:** Accepted M1 secure walking skeleton
