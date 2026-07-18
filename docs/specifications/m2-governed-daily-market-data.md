@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0018
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0019
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -38,7 +38,7 @@ Reference adapters must be replaceable, deterministic under recorded fixtures, b
 
 ### Daily observations
 
-A daily bar contains canonical instrument identity, `1d` interval, source timestamp/session label, normalized effective date, completion state, open/high/low/close, volume, currency/unit semantics, provider/source identity, retrieval identity, schema revision, and integrity identity. Numeric representation must not introduce silent binary-float ambiguity in retained canonical meaning.
+A daily bar contains canonical instrument identity, `1d` interval, source timestamp/session label, normalized effective date, completion state, open/high/low/close, volume, currency/unit semantics, provider/source identity, retrieval identity, schema revision, and integrity identity. ADR-0019 requires open, high, low, close, and volume to use exact DECIMAL(38,18) semantics in the canonical contract and Parquet schema. Excess precision/range and binary-float-derived ambiguity fail rather than round silently.
 
 M2 does not implement adjusted bars, corporate actions, intraday sessions, or cross-provider reconciliation.
 
