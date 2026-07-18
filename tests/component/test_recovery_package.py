@@ -67,3 +67,20 @@ def test_traversal_entry_is_rejected(tmp_path: Path) -> None:
         archive.writestr("../escape", b"unsafe")
     with pytest.raises(RecoveryPackageError, match="entries_invalid"):
         validate_cleartext_package(package)
+
+
+def test_incompatible_schema_is_rejected_before_restore(tmp_path: Path) -> None:
+    source = tmp_path / "source.db"
+    package = tmp_path / "future.fixture.zip"
+    _source_database(source)
+    build_cleartext_package(
+        source_database=source,
+        destination=package,
+        configuration_snapshot={"profile": "local"},
+        configuration_revision=uuid4(),
+        source_build="future",
+        source_schema="m9_0001",
+        recipient_fingerprints=("recipient",),
+    )
+    with pytest.raises(RecoveryPackageError, match="schema_incompatible"):
+        validate_cleartext_package(package)
