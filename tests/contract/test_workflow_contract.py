@@ -1,5 +1,6 @@
 import json
 
+from osca.bootstrap.authorization import local_authorization_context
 from osca.shared_kernel.api import CorrelationId
 from osca.workflow.api import DiagnosticInput, DiagnosticRun, SubmitDiagnosticRun
 from osca.workflow.api.contracts import GOVERNING_DECISION, GOVERNING_REQUIREMENTS
@@ -16,7 +17,7 @@ def test_contract_trace_and_schema_are_deterministic() -> None:
 
 def test_version_1_semantic_fixture_round_trips() -> None:
     fixture = SubmitDiagnosticRun(
-        actor="operator",
+        authorization=local_authorization_context(),
         correlation_id=CorrelationId.new(),
         idempotency_key="fixture",
         input=DiagnosticInput(probe="storage", parameters={"scope": "metadata"}),
