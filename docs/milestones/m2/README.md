@@ -15,7 +15,8 @@
 - [Accepted specification](../../specifications/m2-governed-daily-market-data.md)
 - [Accepted evidence plan](evidence-plan.md)
 - [Accepted execution plan](execution-plan.md)
-- [Accepted entry-decision criteria](entry-decisions.md)
+- [Accepted entry decisions](entry-decisions.md)
+- [Accepted M2 persistence ADR](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md)
 - [Active risk register](risk-register.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
@@ -26,4 +27,4 @@
 
 Intent → Requirements → Architecture → Specification → Validation → Evidence
 
-M2 implementation has not begun. Provider selection, payload persistence, public contracts, risk treatment, and acceptance evidence remain governed entry decisions.
+ADR-0017 authorizes M2.1 metadata implementation and governs later Parquet payload work. Provider selection and production-visible adapters remain gated by provider-specific licensing and policy approval. Deterministic fixture-first contract work may proceed.
