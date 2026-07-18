@@ -8,6 +8,7 @@ import pytest
 from osca.operations.api import AuditRecord
 from osca.recovery.api import CreateBackup, ExecuteRestore, PreviewRestore, VerifyBackup
 from osca.recovery.application.service import RecoveryAuthorizationDenied, RecoveryService
+from osca.recovery.domain import RecoveryAction, RecoveryOperation
 from osca.recovery.infrastructure.package import file_digest
 from osca.security.api import AuthorizationContext, Capability, SecretReference
 from osca.shared_kernel.api import CorrelationId
@@ -55,6 +56,32 @@ class RecordingAudit:
         return None
 
 
+class RecordingOperations:
+    def __init__(self) -> None:
+        self.completed: list[bool] = []
+
+    def start(
+        self,
+        *,
+        correlation_id: CorrelationId,
+        actor: str,
+        action: RecoveryAction,
+        target: str,
+    ) -> RecoveryOperation:
+        return RecoveryOperation(
+            correlation_id=correlation_id,
+            actor=actor,
+            action=action,
+            target=target,
+        )
+
+    def complete(
+        self, operation: RecoveryOperation, *, succeeded: bool, code: str
+    ) -> RecoveryOperation:
+        self.completed.append(succeeded)
+        return operation
+
+
 def _authorization(*capabilities: Capability) -> AuthorizationContext:
     return AuthorizationContext(
         actor="local-owner",
@@ -89,7 +116,11 @@ def test_create_verify_preview_and_isolated_restore_leave_active_unchanged(
     catalog = RecordingCatalog()
     audit = RecordingAudit()
     service = RecoveryService(
-        container=CopyContainer(), vault=MemoryVault(), catalog=catalog, audit=audit
+        container=CopyContainer(),
+        vault=MemoryVault(),
+        catalog=catalog,
+        audit=audit,
+        operations=RecordingOperations(),
     )
     correlation = CorrelationId.new()
     configuration_revision = uuid4()
@@ -149,6 +180,7 @@ def test_missing_capability_fails_before_backup_creation(tmp_path: Path) -> None
         vault=MemoryVault(),
         catalog=RecordingCatalog(),
         audit=RecordingAudit(),
+        operations=RecordingOperations(),
     )
     with pytest.raises(RecoveryAuthorizationDenied):
         service.create(
