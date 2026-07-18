@@ -47,3 +47,12 @@ class RecoveryOperationRepository(Protocol):
     def complete(
         self, operation: RecoveryOperation, *, succeeded: bool, code: str
     ) -> RecoveryOperation: ...
+
+
+class RecoveryObserver(Protocol):
+    def record(self, operation: RecoveryOperation) -> None: ...
+
+
+class NullRecoveryObserver:
+    def record(self, operation: RecoveryOperation) -> None:
+        pass
