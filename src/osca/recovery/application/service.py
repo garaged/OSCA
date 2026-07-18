@@ -207,17 +207,19 @@ class RecoveryService:
             if identity is None:
                 raise RecoveryPackageError("recovery.identity.missing")
             cleartext = destination / ".package.zip"
-            self._container.decrypt(package, cleartext, identity.encode())
-            manifest = validate_cleartext_package(cleartext)
-            if manifest.backup_id != command.plan.backup_id:
-                raise RecoveryPackageError("recovery.plan.backup_changed")
-            with zipfile.ZipFile(cleartext) as archive:
-                for entry in manifest.entries:
-                    target = destination / entry.path
-                    target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                    target.write_bytes(archive.read(entry.path))
-                    os.chmod(target, 0o600)
-            cleartext.unlink()
+            try:
+                self._container.decrypt(package, cleartext, identity.encode())
+                manifest = validate_cleartext_package(cleartext)
+                if manifest.backup_id != command.plan.backup_id:
+                    raise RecoveryPackageError("recovery.plan.backup_changed")
+                with zipfile.ZipFile(cleartext) as archive:
+                    for entry in manifest.entries:
+                        target = destination / entry.path
+                        target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+                        target.write_bytes(archive.read(entry.path))
+                        os.chmod(target, 0o600)
+            finally:
+                cleartext.unlink(missing_ok=True)
             database = destination / "state/osca.db"
             validations.extend(self._post_restore_validations(database, manifest.source_schema))
             if not all(validation.passed for validation in validations):
