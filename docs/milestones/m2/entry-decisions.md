@@ -13,7 +13,7 @@
 3. Daily payload persistence and replaceable access boundary — decided by ADR-0017.
 4. Reference stock and crypto providers and their permitted acquisition/retention/fixture use.
 5. Quota, retry, endpoint, timeout, and credential-reference profiles.
-6. Daily expected-date policy sufficient for M2 without claiming the M3 calendar engine.
+6. Daily expected-date policy sufficient for M2 without claiming the M3 calendar engine — decided by ADR-0020.
 7. Recovery inclusion/exclusion for registry, mappings, policies, catalog metadata, source evidence, and canonical payloads — decided by ADR-0018.
 8. Bounded M2 performance observations; DD-010 production budgets remain deferred.
 
