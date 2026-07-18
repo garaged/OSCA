@@ -1,6 +1,6 @@
 # ADR-0007: Event Reliability and Delivery Model
 
-- **Status:** Baseline
+- **Status:** Frozen
 - **Tier:** Foundational
 - **Date:** 2026-07-17
 
