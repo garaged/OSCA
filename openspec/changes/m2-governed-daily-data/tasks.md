@@ -1,13 +1,13 @@
 ## 1. Specification and contracts
 
 - [x] 1.1 Accept persistence, retention, numeric, expected-date, publication, incomplete-observation, revision, selection, and canonical-history decisions.
-- [ ] 1.2 Register remaining Market Data contract families and compatibility semantics.
+- [x] 1.2 Register remaining Market Data contract families and compatibility semantics.
 - [x] 1.3 Add contract, normalization, manifest, date-policy, retrieval, and cleanup specification tests.
 
 ## 2. Governed ingestion and persistence
 
 - [x] 2.1 Add exact canonical daily-bar normalization and immutable dataset manifests.
-- [ ] 2.2 Add deterministic bounded Parquet serialization and staged atomic publication.
+- [x] 2.2 Add deterministic bounded Parquet serialization and staged atomic publication.
 - [x] 2.3 Add owned SQLite migration, integrity, lineage, and canonical-history protection.
 
 ## 3. Retrieval, repair, and quality
@@ -19,8 +19,8 @@
 ## 4. Inspection and cleanup
 
 - [x] 4.1 Add preview-only cleanup selection with explicit policy eligibility.
-- [ ] 4.2 Add usage/provenance inspection and protected/pinned/reproducibility accounting.
-- [ ] 4.3 Add authorized cleanup execution with race-safe revalidation and evidence.
+- [x] 4.2 Add usage/provenance inspection and protected/pinned/reproducibility accounting.
+- [x] 4.3 Add authorized cleanup execution with race-safe revalidation and evidence.
 
 ## 5. Reference providers
 
