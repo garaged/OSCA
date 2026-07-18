@@ -17,8 +17,11 @@ def test_initial_migration_upgrades_and_downgrades_clean_database(tmp_path: Path
 
     command.upgrade(config, "head")
     engine = create_engine(f"sqlite:///{database_path}")
-    assert inspect(engine).get_table_names() == ["alembic_version", "configuration_snapshots"]
+    assert inspect(engine).get_table_names() == [
+        "alembic_version",
+        "configuration_snapshots",
+        "operations_audit_records",
+    ]
 
     command.downgrade(config, "base")
     assert inspect(engine).get_table_names() == ["alembic_version"]
-
