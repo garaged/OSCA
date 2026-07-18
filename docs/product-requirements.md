@@ -1,6 +1,6 @@
 # OSCA Product Requirements Document
 
-**Status:** Discovery draft  
+**Status:** Review candidate  
 **Product phase:** Product definition  
 **Last updated:** 2026-07-17
 
