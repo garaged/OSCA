@@ -234,7 +234,37 @@ Deterministic components remain authoritative for:
 - Experiment identity and artifact resolution
 - Data-quality rules
 
-## 10. Artifact identity and lineage
+## 10. Time horizons and market-data granularity
+
+### 10.1 Initial bar intervals
+
+OSCA will support multi-timeframe OHLCV bar data from the beginning. The initial interval set is:
+
+- One day (`1d`)
+- One hour (`1h`)
+- Fifteen minutes (`15m`)
+- Five minutes (`5m`)
+- One minute (`1m`) when available and justified
+
+The time-series model must support additional validated intervals without embedding this initial set as a permanent closed enumeration. Weekly, monthly, and other intervals may be derived from sufficiently granular canonical data when the derivation is valid.
+
+Tick, quote, and order-book data are outside the initial product boundary.
+
+### 10.2 Temporal correctness
+
+The platform must:
+
+- Preserve source interval and timestamp semantics
+- Distinguish completed bars from in-progress bars
+- Represent exchange calendars, sessions, holidays, timezones, and daylight-saving transitions explicitly
+- Support continuous 24/7 cryptocurrency markets
+- Detect missing expected bars using the relevant market calendar and session policy
+- Record resampling rules and upstream lineage
+- Prevent silent substitution of an unavailable interval
+- Allow strategies and analyses to declare interval, lookback, freshness, and session requirements
+- Expose provider-specific interval availability and history limits
+
+## 11. Artifact identity and lineage
 
 Datasets, scans, features, models, predictions, reports, backtests, and paper-trading runs must have unambiguous identities.
 
@@ -257,7 +287,7 @@ Every material artifact should expose, as applicable:
 
 Artifact lookup must be type-aware so, for example, a training run cannot be mistaken for a scan merely because both belong to an intraday workflow.
 
-## 11. Cache and data lifecycle — initial requirements
+## 12. Cache and data lifecycle — initial requirements
 
 The cache is a first-class product capability rather than an incidental HTTP optimization.
 
@@ -279,10 +309,23 @@ It must eventually support:
 - Concurrency control and idempotent retrieval
 - Provenance and audit events
 - Protection against silently mixing incompatible revisions
+- Configurable storage locations
+- Global and category-specific storage budgets
+- Retention policies based on data type, interval, age, recomputation cost, and user importance
+- Storage-usage reporting by provider, asset, interval, layer, and artifact type
+- Space forecasting and configurable warning thresholds
+- Cleanup previews that show affected data and downstream artifacts
+- Dry-run cleanup
+- User-pinned data and artifacts protected from automatic eviction
+- Safe automatic reclamation under explicit policies
+- Detection and recovery from interrupted cleanup
+- No silent deletion of inputs required by a retained reproducible experiment
 
-Detailed cache policy remains an open design area and will receive its own specification after product requirements are settled.
+Storage management must make stable disk usage achievable without routine manual intervention. Defaults should be safe for a personal workstation, while users can adjust budgets and policies for larger personal-server deployments.
 
-## 12. Backtesting and paper trading — initial requirements
+Detailed cache and storage policy remains an open design area and will receive its own specification after product requirements are settled.
+
+## 13. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -305,7 +348,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 13. Engineering-quality direction
+## 14. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -321,13 +364,12 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 14. PRD sections pending discovery
+## 15. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
-- Temporal resolutions and operating cadence
 - Data-source classes and licensing constraints
 - Detailed cache semantics
 - Analysis and metric extension model
@@ -344,7 +386,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 15. Document governance
+## 16. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
