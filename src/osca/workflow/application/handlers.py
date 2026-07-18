@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from osca.security.api import AuthorizationContext, Capability
 from osca.workflow.api import (
     CancelDiagnosticRun,
     DiagnosticRun,
     DiagnosticRunError,
+    DiagnosticRunId,
     DiagnosticRunState,
     GetDiagnosticRun,
     ListDiagnosticRuns,
@@ -35,6 +37,15 @@ class MissingResult(ValueError):
     pass
 
 
+class AuthorizationDenied(PermissionError):
+    pass
+
+
+def require_capability(context: AuthorizationContext, capability: Capability) -> None:
+    if capability not in context.capabilities:
+        raise AuthorizationDenied(f"missing capability: {capability.value}")
+
+
 class WorkflowService:
     def __init__(
         self,
@@ -45,13 +56,15 @@ class WorkflowService:
         self._observer = observer or NullWorkflowObserver()
 
     def submit(self, command: SubmitDiagnosticRun) -> DiagnosticRun:
-        existing = self._repository.find_idempotent(command.actor, command.idempotency_key)
+        require_capability(command.authorization, Capability.WORKFLOW_SUBMIT)
+        actor = command.authorization.actor
+        existing = self._repository.find_idempotent(actor, command.idempotency_key)
         if existing is not None:
             if existing.input.model_dump(mode="json") != command.input.model_dump(mode="json"):
                 raise IdempotencyConflict("idempotency key is already bound to different input")
             return existing
         run = DiagnosticRun(
-            actor=command.actor,
+            actor=actor,
             correlation_id=command.correlation_id,
             idempotency_key=command.idempotency_key,
             input=command.input,
@@ -61,7 +74,8 @@ class WorkflowService:
         return run
 
     def cancel(self, command: CancelDiagnosticRun) -> DiagnosticRun:
-        run = self.get(GetDiagnosticRun(run_id=command.run_id))
+        require_capability(command.authorization, Capability.WORKFLOW_CANCEL)
+        run = self._get(command.run_id)
         if run.state in {
             DiagnosticRunState.SUCCEEDED,
             DiagnosticRunState.FAILED,
@@ -78,12 +92,17 @@ class WorkflowService:
         return cancelled
 
     def get(self, query: GetDiagnosticRun) -> DiagnosticRun:
-        run = self._repository.get(query.run_id)
+        require_capability(query.authorization, Capability.WORKFLOW_READ)
+        return self._get(query.run_id)
+
+    def _get(self, run_id: DiagnosticRunId) -> DiagnosticRun:
+        run = self._repository.get(run_id)
         if run is None:
-            raise RunNotFound(str(query.run_id.value))
+            raise RunNotFound(str(run_id.value))
         return run
 
     def list(self, query: ListDiagnosticRuns) -> tuple[DiagnosticRun, ...]:
+        require_capability(query.authorization, Capability.WORKFLOW_READ)
         return self._repository.list(query.states, query.limit)
 
     def transition(
