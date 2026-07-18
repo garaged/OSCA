@@ -1535,7 +1535,91 @@ Templates are inspectable and editable. Ad hoc exploration can be promoted into 
 
 LLM assistance remains context-aware and bounded at every stage.
 
-## 35. Engineering-quality direction
+## 35. Product success scorecard
+
+OSCA measures success through rigorous, reproducible, safe, and efficient research rather than promising financial returns.
+
+### 35.1 Research integrity
+
+Measures include:
+
+- Complete lineage coverage for retained results
+- Reproduction success
+- Point-in-time and leakage-control compliance
+- Baseline-comparison coverage
+- Structured evidence, contradiction, horizon, and invalidation coverage
+- Outcome-evaluation completion
+
+### 35.2 Data and cache effectiveness
+
+Measures include:
+
+- Avoided duplicate retrieval
+- Targeted-repair success
+- Quality-finding detection and resolution
+- Provider-fallback transparency
+- Storage-budget adherence
+- Recoverability of evicted derived data
+
+### 35.3 Backtesting and model quality
+
+Measures include:
+
+- Completion of event-driven and out-of-sample validation before promotion
+- Calibration, stability, and regime robustness
+- Difference between research estimates and event-driven results
+- Difference between backtests and forward paper outcomes
+- Champion and challenger evaluation completeness
+
+### 35.4 Safety and correctness
+
+Measures include:
+
+- Paper-account reconciliation
+- Unauthorized risk-policy bypass
+- Silent canonical-data mutation
+- Secret disclosure
+- Risk and data-quality gate effectiveness
+- Post-recovery reconciliation
+
+The intended targets for unexplained accounting discrepancies, unauthorized bypasses, silent canonical mutations, and secret disclosure are zero.
+
+### 35.5 Operational robustness
+
+Measures include:
+
+- Durable-job success and recovery
+- Failure visibility
+- RPO and RTO compliance
+- Backup verification and recovery-exercise success
+- Storage-pressure remediation
+- Time to diagnose and recover
+
+### 35.6 User effectiveness
+
+Measures include:
+
+- Time to first governed analysis
+- Time to reproduce a project
+- Time to compare candidates
+- Alert review or intentional suppression
+- Completion of core workflows without direct database access
+- Documentation-assisted task completion
+
+### 35.7 Extensibility
+
+Measures include:
+
+- Time and code required to add providers or analytical capabilities
+- Extension conformance
+- Version compatibility
+- Operation without privileged internal access
+
+Financial returns remain strategy-evaluation metrics, not product promises or primary product KPIs. Negative results are valuable when they correctly invalidate weak hypotheses.
+
+Milestones define measurable thresholds that tighten over time. Product-health measurement can remain local; external usage telemetry is opt-in. Metric definitions and calculation versions are governed and reproducible.
+
+## 36. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1551,18 +1635,16 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 36. PRD sections pending discovery
+## 37. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
-- Product goals, non-goals, and measurable outcomes
 - Backtest fidelity levels
 - Availability, performance, scalability, and cost objectives
 - Milestone decomposition
-- Product success metrics
 - Risks and mitigations
 
-## 37. Document governance
+## 38. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
