@@ -28,13 +28,34 @@ def upgrade() -> None:
         sa.Column("payload", sa.Text(), nullable=False),
         sa.UniqueConstraint("fingerprint", name="uq_market_data_fingerprint"),
     )
-    op.create_index("ix_market_data_manifests_dataset_id", "market_data_dataset_manifests", ["dataset_id"])
-    op.create_index("ix_market_data_manifests_state", "market_data_dataset_manifests", ["state"])
-    op.create_index("ix_market_data_manifests_instrument_id", "market_data_dataset_manifests", ["instrument_id"])
+    op.create_index(
+        "ix_market_data_manifests_dataset_id",
+        "market_data_dataset_manifests",
+        ["dataset_id"],
+    )
+    op.create_index(
+        "ix_market_data_manifests_state",
+        "market_data_dataset_manifests",
+        ["state"],
+    )
+    op.create_index(
+        "ix_market_data_manifests_instrument_id",
+        "market_data_dataset_manifests",
+        ["instrument_id"],
+    )
 
 
 def downgrade() -> None:
-    op.drop_index("ix_market_data_manifests_instrument_id", table_name="market_data_dataset_manifests")
-    op.drop_index("ix_market_data_manifests_state", table_name="market_data_dataset_manifests")
-    op.drop_index("ix_market_data_manifests_dataset_id", table_name="market_data_dataset_manifests")
+    op.drop_index(
+        "ix_market_data_manifests_instrument_id",
+        table_name="market_data_dataset_manifests",
+    )
+    op.drop_index(
+        "ix_market_data_manifests_state",
+        table_name="market_data_dataset_manifests",
+    )
+    op.drop_index(
+        "ix_market_data_manifests_dataset_id",
+        table_name="market_data_dataset_manifests",
+    )
     op.drop_table("market_data_dataset_manifests")
