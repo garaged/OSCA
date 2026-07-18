@@ -1,6 +1,6 @@
 # OSCA Governed Engineering Workflow
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Purpose:** Define the mandatory intent, specification, implementation, verification, review, and evidence flow for all OSCA milestones.
 - **Applies to:** Product behavior, architecture, contracts, migrations, security changes, operational changes, documentation, and implementation.
 

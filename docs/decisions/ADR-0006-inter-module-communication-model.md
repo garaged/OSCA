@@ -1,6 +1,6 @@
 # ADR-0006: Inter-Module Communication Model
 
-- **Status:** Accepted
+- **Status:** Baseline
 - **Tier:** Foundational
 - **Date:** 2026-07-17
 

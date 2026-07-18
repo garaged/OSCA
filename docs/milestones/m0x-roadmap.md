@@ -1,48 +1,48 @@
 # M0.x Architecture Operationalization Roadmap
 
+- **Status:** Complete
+- **Governing role:** Architecture authority
+- **Index:** [M0.x work products](m0x/README.md)
+- **Last reviewed:** 2026-07-18
+
 ## M0 — Architecture Foundation
 
 Defines the authoritative requirements model, foundational ADRs, capability boundaries, public seams, compatibility, security, recovery, quality, and operational architecture.
 
-**State:** Architecturally accepted; repository validation pending.
+**State:** Accepted, merged, and validated.
 
 ## M0.5 — Architecture Handbook
 
-Turns the baseline into practical authoring and review guidance. Produces the handbook, decision matrix, reference capability, AI contributor guidance, patterns, anti-patterns, and review playbooks.
+Turns the baseline into practical authoring and review guidance without duplicating normative authority.
 
-**Exit evidence:** A new contributor can design and review a compliant vertical slice using repository guidance alone.
+**State:** Complete.  
+**Evidence:** [Handbook](../handbook/README.md), [patterns](../handbook/patterns-and-antipatterns.md), and [reference capability](../handbook/reference-capability.md).
 
 ## M0.6 — Architecture Validation
 
-Performs an architecture acceptance test:
+Runs repeatable traceability, ADR consistency, boundary, contract, security, recovery, fitness, reference-walkthrough, and deferred-decision checks.
 
-- traceability audit;
-- ADR consistency review;
-- capability and dependency review;
-- public contract ownership and compatibility review;
-- security and recovery completeness review;
-- fitness-rule dry run;
-- reference-capability walkthrough;
-- deferred-decision trigger review.
-
-**Exit evidence:** Findings are closed, explicitly accepted as debt, or assigned to an owner with a trigger and deadline. The accepted M0 ADR set may then enter Baseline state.
+**State:** Complete.  
+**Evidence:** [Procedure](../validation/README.md), [manifest](../validation/checks.yaml), and [execution record](../validation/m0x-validation-record.md).
 
 ## M0.7 — Governance Baseline
 
-Finalizes lifecycle states, architecture freeze and supersession policy, registry identifiers, knowledge-graph relationships, maturity reporting, review authority, and governed exceptions.
+Harmonizes lifecycle, review authority, registry validation, and governed exception mechanics.
 
-**Exit evidence:** Every governed artifact type has an owner, identifier, lifecycle, review authority, and validation rule.
+**State:** Complete.  
+**Evidence:** [Document control](../governance/document-control.md), [registry](../../engineering/architecture-registry.yaml), and [exception register](../governance/architecture-exceptions.md).
 
 ## M0.8 — Engineering System Bootstrap
 
-Separates reusable engineering governance from product-specific architecture. Establishes constitution, architecture compass, engineering loop, AI contributor contract, review checklists, automation roadmap, metrics framework, and executable-architecture backlog.
+Provides repeatable M1 initiation, review, evidence, and executable-architecture controls.
 
-**Exit evidence:** M1 work can be initiated through a repeatable vertical-slice workflow with required inputs, outputs, gates, and evidence.
+**State:** Complete.  
+**Evidence:** [Bootstrap index](../../engineering/bootstrap/README.md) and [automation backlog](../../engineering/bootstrap/automation-backlog.md).
 
 ## Freeze point
 
-Foundational ADRs become Frozen when M1 begins. Subsequent changes use superseding ADRs rather than silent edits.
+Foundational ADRs are Baseline after M0.6 and become Frozen when M1 implementation begins. Later changes use superseding ADRs rather than silent edits.
 
 ## M1 planning rule
 
-M1 is organized as a thin end-to-end vertical slice, not as horizontal technology layers. It must exercise intent, requirements, specification, ownership, contracts, persistence, communication, security, observability, recovery, verification, and documentation while leaving the system deployable and diagnosable.
+M1 is one thin end-to-end vertical slice, not horizontal technology layers. Before implementation, it must select exact requirement IDs, resolve triggered deferred decisions, approve its specification, select risk-tiered gates, and complete the M1 initiation checklist.

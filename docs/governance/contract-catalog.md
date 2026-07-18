@@ -1,6 +1,6 @@
 # OSCA Contract Catalog
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Purpose:** Define the authoritative record for durable and independently consumed contract families.
 - **Decision basis:** ADR-0004
 

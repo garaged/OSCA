@@ -1,34 +1,44 @@
 # OSCA Architecture Foundation
 
-- **Status:** Draft
+- **Status:** Accepted baseline
 - **Governing role:** Architecture authority
-- **Approval roles:** Product authority, security authority, and quality authority where applicable
-- **Purpose:** Index the technology-neutral architecture artifacts that govern OSCA before production implementation.
-- **Authoritative sources:** Product requirements; decisions D-001 through D-047; accepted ADRs
-- **Downstream consumers:** Milestone specifications, module contracts, implementation structure, tests, threat model, CI gates, and operational documentation
-- **Review triggers:** Architecture decision, requirement change, module-boundary change, milestone entry or exit, or contradicting implementation evidence
+- **Approval roles:** Product, security, and quality authorities where applicable
+- **Purpose:** Index the technology-neutral M0 architecture that governs OSCA implementation.
+- **Authoritative sources:** Product requirements; decisions D-001 through D-047; ADR-0001 through ADR-0010
+- **Downstream consumers:** Milestone specifications, module contracts, implementation, tests, CI gates, and operations
+- **Review trigger:** Superseding ADR, requirement change, module-boundary change, or contradicting evidence
+- **Last reviewed:** 2026-07-18
 
-## Foundation artifacts
+## Foundation
 
 - [System context](system-context.md)
 - [Domain model](domain-model.md)
 - [Architecture principles](principles.md)
 - [Modular-monolith boundaries](modular-monolith.md)
 - [Dependency rules](dependency-rules.md)
-- Proposed repository structure — pending
+- [Why OSCA is built this way](why-osca-is-built-this-way.md)
 
-## Draft public seams
+Physical repository syntax remains intentionally deferred by DD-001 and DD-002. ADR-0003 and the dependency rules already define the required enforcement outcomes.
 
-The provider, analysis, visualization, model, and extension seams will be specified after the boundary-enforcement decision establishes how public and private contracts will be represented and verified.
+## Public seams
 
-## Decision records
+Provider, analysis, model, LLM, workflow, visualization, and extension seams are indexed in the [public seams catalog](../seams/README.md). ADR-0004 governs durable contract evolution.
 
-Accepted architecture decisions are indexed in [the ADR directory](../decisions/README.md).
+## Cross-cutting architecture
 
-## Current decision boundary
+- [Security architecture](../security/security-architecture.md)
+- [Resilience and recovery](../operations/resilience-and-recovery.md)
+- [Verification strategy](../quality/verification-strategy.md)
+- [Architecture fitness program](../quality/architecture-fitness-program.md)
+- [Contract catalog](../governance/contract-catalog.md)
+- [Architecture registry](../../engineering/architecture-registry.yaml)
 
-The logical module and dependency rules are technology-neutral. M0 now requires a decision on the physical and automated enforcement model for module boundaries before the final module catalog, repository structure, architecture fitness checks, and public seams are approved.
+## Application and validation
 
-## Model status
+- [Architecture handbook](../handbook/README.md)
+- [Decision matrix](../../engineering/decision-matrix.md)
+- [Reference capability](../handbook/reference-capability.md)
+- [Architecture validation](../validation/README.md)
+- [Tier-1 ADR index](../decisions/README.md)
 
-Architecture diagrams and domain relationships in M0 are conceptual governance models. They are not database schemas, network-deployment diagrams, framework component diagrams, or implementation class models.
+Architecture diagrams and domain relationships are conceptual governance models, not database schemas, deployment diagrams, framework components, or implementation classes.

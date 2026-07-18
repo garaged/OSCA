@@ -1,6 +1,6 @@
 # Requirements Catalog
 
-- **Status:** Draft
+- **Status:** Active baseline catalog
 - **Governing role:** Product authority
 - **Purpose:** Assign stable identifiers and engineering metadata to testable requirements derived without semantic change from the approved PRD and active decisions.
 - **Authoritative sources:** [Product requirements](../product-requirements.md), [decision log](../decision-log.md), [ADR-0001](../decisions/ADR-0001-requirements-authority-and-traceability-model.md)
@@ -52,8 +52,8 @@ Each catalog entry must contain:
 
 ## Population status
 
-The catalog structure is established by M0 Increment 1. Requirement extraction and reviewed allocation will proceed in later M0 increments after glossary and architecture terminology are stable enough to avoid accidental reinterpretation.
+The catalog policy is accepted. Exact numbered requirements are extracted and reviewed when a milestone selects their scope, keeping decomposition small and reviewable. ADR-0001 requires the selected entries and machine-validatable links before implementation depends on them.
 
 ## Catalog entries
 
-No numbered entries have been approved yet.
+No numbered entries are allocated before the first M1 vertical slice is selected. This is an explicit M1 entry gate, not permission to reference only broad prose during implementation.

@@ -1,6 +1,6 @@
 # Document Control
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Governing role:** Product authority
 - **Purpose:** Define authority, lifecycle, ownership, review, and change rules for governed OSCA documentation.
 - **Authoritative sources:** PRD sections 1 and 40; decisions D-022, D-045–D-047

@@ -1,5 +1,12 @@
 # Architecture Evolution and Freeze Policy
 
+- **Status:** Accepted
+- **Governing role:** Architecture authority
+- **Purpose:** Govern architecture lifecycle, baselining, freeze, supersession, and exceptions.
+- **Authoritative sources:** ADR-0001 through ADR-0010; document control
+- **Review trigger:** Baseline promotion, M1 entry, supersession, or exception
+- **Last reviewed:** 2026-07-18
+
 ## Lifecycle
 
 Governed architecture artifacts use these lifecycle states:
@@ -17,7 +24,7 @@ Rejected and Deprecated remain valid terminal or transitional states where appro
 
 ## Baseline and freeze
 
-M0 foundational ADRs become Baseline only after M0.6 architecture validation demonstrates consistency, traceability, owned contracts, and defined fitness obligations. They become Frozen when M1 implementation begins.
+M0 foundational ADRs entered Baseline after the recorded M0.6 architecture validation demonstrated consistency, traceability controls, owned contracts, and defined fitness obligations. They become Frozen when M1 implementation begins.
 
 Frozen ADRs are not rewritten to conceal architectural evolution. A proposed change creates a new ADR that:
 
@@ -35,7 +42,7 @@ Routine implementation that conforms to the baseline remains within the owning c
 
 ## Exceptions
 
-Architecture exceptions must be explicit, risk assessed, approved by the proper authority, traceable, narrow in scope, and time limited. An exception does not amend the baseline and must include an expiry or removal trigger.
+Architecture exceptions must be explicit, risk assessed, approved by the proper authority, traceable, narrow in scope, and time limited. An exception does not amend the baseline and must include an expiry or removal trigger. Active exceptions are recorded in the [architecture exception register](../docs/governance/architecture-exceptions.md).
 
 ## Lessons learned
 

@@ -1,6 +1,6 @@
 # Traceability Model
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Governing role:** Quality authority
 - **Approval roles:** Product authority and architecture authority
 - **Purpose:** Define how OSCA demonstrates that product authority flows into specifications, tests, documentation, risks, and implementation evidence.
