@@ -3,10 +3,16 @@ from osca.market_data.application.dates import classify_dates, contiguous_missin
 from osca.market_data.application.inspection import StorageInspection, inspect_storage
 from osca.market_data.application.normalize import IncompleteObservationError, normalize_daily
 from osca.market_data.application.quality import validate_daily_series
+from osca.market_data.application.publication import (
+    CanonicalPublicationIntent,
+    CanonicalPublisher,
+)
 from osca.market_data.application.retrieval import resolve_retrieval
 
 __all__ = [
     "CleanupPlan",
+    "CanonicalPublicationIntent",
+    "CanonicalPublisher",
     "IncompleteObservationError",
     "StorageInspection",
     "classify_dates",
