@@ -541,7 +541,30 @@ Import creates an installation record containing the exact package identity, ver
 
 Installing a newer version must not silently reinterpret a retained analysis. Compatibility is validated before activation. Disabling or uninstalling an extension must preview impacted definitions and retained reproducibility requirements.
 
-### 15.4 Extension safety and conformance
+### 15.4 Extension trust and import sources
+
+OSCA uses explicit extension trust tiers:
+
+1. **Built-in:** released and tested with OSCA.
+2. **Verified:** signed by an identified publisher and validated for compatibility and conformance.
+3. **Local trusted:** imported from a local package or source repository and explicitly trusted by the user.
+4. **Untrusted or quarantined:** inspectable and testable but inactive until the user approves its required permissions.
+
+Supported or planned import sources include:
+
+- Local extension bundles
+- Local development directories
+- Git repositories pinned to immutable commits or tags
+- Direct package URLs with expected integrity digests
+- A future OSCA extension registry
+
+Installation and activation are separate actions. An extension receives no provider credentials or sensitive capabilities automatically. Manifests declare required network access, credential scopes, filesystem access, subprocess behavior, compute resources, and model execution.
+
+Permission changes require renewed approval. Package digests and environment lockfiles support reproducibility. Analysis packages may declare required extensions but cannot silently install or activate them.
+
+Publisher signatures establish identity and package integrity; they are not an unconditional guarantee of safety. A registry can improve discovery and verification but is not required for the initial extension system.
+
+### 15.5 Extension safety and conformance
 
 Extensions must:
 
@@ -555,7 +578,7 @@ Extensions must:
 
 Visualizations consume typed results rather than arbitrary internal tables. LLM tools invoke approved application capabilities rather than extension internals.
 
-The exact extension runtime, package format, isolation mechanism, signing policy, and public registry design remain architectural decisions to be specified later.
+The exact extension runtime, package format, isolation mechanism, signing implementation, and public registry design remain architectural decisions to be specified later.
 
 ## 16. Backtesting and paper trading — initial requirements
 
