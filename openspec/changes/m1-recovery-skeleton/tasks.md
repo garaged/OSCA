@@ -32,7 +32,7 @@
 
 ## 6. Validation and evidence
 
-- [ ] 6.1 Run Python, migration, architecture, schema, security, adapter, and documentation gates.
-- [ ] 6.2 Run strict OpenSpec validation and reconcile every finding.
-- [ ] 6.3 Update traceability, milestone status, navigation, and retained M1 evidence.
+- [x] 6.1 Run Python, migration, architecture, schema, security, adapter, and documentation gates.
+- [x] 6.2 Run strict OpenSpec validation and reconcile every finding.
+- [x] 6.3 Update traceability, milestone status, navigation, and retained M1 evidence.
 - [ ] 6.4 Review, sync, and archive the OpenSpec change before PR merge.
