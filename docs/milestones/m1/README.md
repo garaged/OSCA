@@ -23,6 +23,7 @@
 - [M1.4 retained evidence](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
 - [M1.5–M1.6 recovery evidence](../../../evidence/m1/m1-5-6-recovery-skeleton.md)
 - [Archived M1.4 OpenSpec pilot](../../../openspec/changes/archive/2026-07-18-m1-4-durable-diagnostic-jobs/README.md)
+- [Archived M1 recovery OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
 - [M1 initiation record](initiation-record.md)
 
 ## Governing controls
