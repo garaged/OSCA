@@ -3,6 +3,7 @@ import json
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import StrEnum
+from itertools import pairwise
 from typing import Annotated, Any, Literal, Self
 from uuid import UUID, uuid4
 
@@ -120,7 +121,7 @@ class RepairRequest(BaseModel):
         ordered = tuple(sorted(self.ranges, key=lambda item: item.start_date))
         if any(
             current.start_date < previous.end_date_exclusive
-            for previous, current in zip(ordered, ordered[1:], strict=False)
+            for previous, current in pairwise(ordered)
         ):
             raise ValueError("repair ranges must not overlap")
         return self
