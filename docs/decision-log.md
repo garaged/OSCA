@@ -312,3 +312,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will include an embedded durable workflow scheduler with market-aware, calendar, dependency, data, analytical, manual, and external triggers, while permitting CLI and API invocation.
 - **Rationale:** Core local-first workflows require consistent scheduling, dependencies, retries, progress, lineage, and missed-run behavior without mandating an external orchestrator.
 - **Consequences:** Workflows have typed identities and inputs; equivalent work deduplicates; schedules declare timezone and market semantics; failures and missed runs follow explicit policies; resources and provider quotas are budgeted; imports remain disabled pending review; and recovery cannot silently replay paper actions.
+
+
+## D-037 — Layered deterministic risk policies
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will enforce versioned deterministic risk policies at system, paper-account, portfolio, strategy, and final order-intent levels, with the strictest applicable constraint winning.
+- **Rationale:** Strategies, ML models, LLMs, and imported extensions cannot be responsible for approving exceptions to their own proposed actions.
+- **Consequences:** Event-driven backtests and paper trading share risk semantics; controls cover exposure, concentration, liquidity, loss, data quality, and operational health; decisions are explainable; overrides are scoped and audited; leverage is off by default; and account pause plus a system-wide paper kill switch are required.
