@@ -16,6 +16,7 @@
 - [Accepted evidence plan](evidence-plan.md)
 - [Accepted execution plan](execution-plan.md)
 - [Accepted entry decisions](entry-decisions.md)
+- [Accepted staged provider strategy](provider-strategy.md)
 - [Accepted M2 persistence ADR](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md)
 - [M2.1 instrument registry evidence](../../../evidence/m2/m2-1-instrument-registry.md)
 - [Archived M2.1 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-instrument-registry/README.md)
