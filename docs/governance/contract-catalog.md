@@ -166,8 +166,18 @@ Conformance fixtures, structural schemas, security classifications, supported pr
 | `osca.market-data.daily-bar` | Market Data | Exact complete canonical daily OHLCV observation | Additive-minor; identity, decimal, time, units, completion, and provenance meaning cannot change | 1.0.0 | Supported | `osca.market_data.api.CanonicalDailyBar` |
 | `osca.market-data.dataset-manifest` | Market Data | Immutable payload publication, revision, lineage, integrity, availability, retention, and protection metadata | Additive-minor; dataset/revision identity, range, digest, state, and protection meaning cannot change | 1.0.0 | Supported | `osca.market_data.api.DatasetManifest` |
 | `osca.market-data.retrieval-request` | Market Data | Canonical bounded daily request with freshness, completeness, provider constraints, pinning, and idempotency | Additive-minor; ranges remain start-inclusive/end-exclusive and exact pins never substitute | 1.0.0 | Supported | `osca.market_data.api.RetrievalRequest` |
+| `osca.market-data.repair-request` | Market Data | Explicit disjoint confirmed-gap ranges and idempotent repair identity | Additive-minor; ranges remain start-inclusive/end-exclusive and cannot overlap | 1.0.0 | Supported | `osca.market_data.api.RepairRequest` |
 | `osca.market-data.resolution` | Market Data | Exact revision resolution with explicit freshness, completeness, integrity, availability, and remediation | Additive-minor; states and exact dataset/revision identity are semantic invariants | 1.0.0 | Supported | `osca.market_data.api.RetrievalResolution` |
 | `osca.data-quality.finding` | Market Data | Visible deterministic date/quality classification and repair eligibility | Additive-minor; classifications and repair eligibility cannot be weakened | 1.0.0 | Supported | `osca.market_data.api.DateFinding` |
 | `osca.cache.cleanup-plan` | Market Data | Preview-only scoped cleanup actions and protected/reclaimable accounting | Additive-minor; a plan never grants deletion authority and protected material cannot become selectable | 1.0.0 | Supported | `osca.market_data.application.CleanupPlan` |
 
 Unknown major versions fail validation. Canonical daily bars reject binary floats, non-finite or out-of-range decimals, invalid OHLC relationships, negative values, non-UTC timestamps, and incomplete observations. Dataset manifests are immutable; accepted canonical manifests are protected throughout M2 under ADR-0026. Resolution returns the exact selected manifest identity, and an unavailable exact pin never falls back. Cleanup execution is outside the plan contract and requires separate authorization plus race-safe revalidation.
+
+
+## Generic Workflow job contract
+
+| Family | Owner | Purpose | Compatibility | Current version | Status | Structural schema |
+|---|---|---|---|---|---|---|
+| `osca.workflow.job-run` | Workflow | Capability-neutral durable identity, versioned input, idempotency, lifecycle, lease, checkpoint, error, and result reference | Additive-minor; state transitions, actor/kind/idempotency identity, input digest, and terminal-result rules cannot change | 1.0.0 | Supported | `osca.workflow.api.JobRun` |
+
+The generic contract is additive and does not replace or reinterpret `osca.workflow.diagnostic-run`. Generic and diagnostic rows remain separately readable. At-least-once execution requires idempotent or duplicate-aware handlers. Unknown input or job contract major versions fail before handler execution.
