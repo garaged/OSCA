@@ -145,3 +145,11 @@ class EmbeddedExecutor:
             if run.lease_expires_at is not None and run.lease_expires_at <= current:
                 recovered.append(self._service.transition(run, DiagnosticRunState.INTERRUPTED))
         return tuple(recovered)
+
+    def resume(self, run: DiagnosticRun) -> DiagnosticRun:
+        """Apply the local policy decision that makes interrupted work claimable again."""
+        if run.state != DiagnosticRunState.INTERRUPTED:
+            raise ConcurrentTransition("only interrupted work can be resumed")
+        resumed = self._service.transition(run, DiagnosticRunState.PENDING)
+        self._observer.record("recovery_resumed", resumed)
+        return resumed
