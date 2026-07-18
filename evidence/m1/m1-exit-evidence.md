@@ -1,6 +1,6 @@
 # M1 integrated exit evidence
 
-- **Status:** Technically complete; authority acceptance pending
+- **Status:** Accepted
 - **Validated source checkpoint:** `9d3c06e0d06711a700fdfc3f278493b2ddef03f8`
 - **Branch:** `agent/m1-exit-review`
 - **GitHub Actions run:** `29653971594`
@@ -14,7 +14,7 @@
 
 The retained M1.1–M1.7 records and the [M1 exit review](../../docs/milestones/m1/exit-review.md) provide complete technical traceability from intent through requirements, architecture, specification, validation, documentation, and evidence. No failed criterion, active exception, incompatible contract revision, destructive migration, secret finding, or architectural drift is known.
 
-This evidence supports authority review. It does not itself grant product, architecture, security, or quality acceptance.
+Product, architecture, security, and quality authorities accepted this evidence package on 2026-07-18 against technical head `e109b7027af3f8ac9e8dbb31137a3382adafa352`.
 
 ## Final technical gates
 
