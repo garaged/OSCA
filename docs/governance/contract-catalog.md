@@ -133,4 +133,16 @@ Cross-module contract families must still have one authoritative owner. A neutra
 | `osca.recovery.backup-manifest` | Recovery | Backup contents, exclusions, integrity, and compatibility | Read-compatible within major; exact revision retained | 1.0.0 | Supported | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
 | `osca.recovery.restore-plan` | Recovery | Previewed isolated restore actions and conflicts | Additive-minor; execution requires exact accepted plan revision | 1.0.0 | Supported | [M1 specification](../specifications/m1-secure-walking-skeleton.md) |
 
+
+## M2 instrument contract families
+
+| Family | Owner | Purpose | Compatibility | Current version | Status | Structural schema |
+|---|---|---|---|---|---|---|
+| `osca.instrument.reference` | Instrument | Provider-neutral stock or spot-crypto-pair canonical identity | Additive-minor only; identity key, asset class, venue, currency, and lifecycle meaning cannot change | 1.0.0 | Supported | `osca.instrument.api.InstrumentReference` |
+| `osca.instrument.provider-mapping` | Instrument | Time-aware, evidenced provider alias bound to one canonical identity | Additive-minor only; alias scope, validity, verification, and capability meaning cannot change | 1.0.0 | Supported | `osca.instrument.api.ProviderMapping` |
+
+Instrument contracts are immutable Pydantic values. Unknown major versions fail validation. A stock identity key is asset class + listing venue + currency + stable external identity (or display symbol only when no stable external identity exists). A crypto-pair identity key is asset class + venue/scope + currency + base asset + quote asset. Provider identifiers and symbols are aliases and never enter either canonical primary key.
+
+A mapping can become active only when verified, its canonical instrument exists, its validity interval is coherent, and no verified mapping for the same provider/symbol/scope/venue overlaps another canonical identity. Unverified or ambiguous mappings fail before canonical market-data writes. Conformance evidence includes exact-revision round trips, stock/pair validation, duplicate identity rejection, and time-overlap ambiguity rejection.
+
 Conformance fixtures, structural schemas, security classifications, supported producer/consumer revisions, and exact error-code catalogs must be delivered with the first implementation of each family.
