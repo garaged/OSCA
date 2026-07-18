@@ -1,8 +1,8 @@
 ## 1. Authority and contracts
 
 - [x] 1.1 Approve ADR-0016 and reconcile DD-012.
-- [ ] 1.2 Add versioned backup manifest, metadata, verification, restore-plan, and error contracts.
-- [ ] 1.3 Register public contract families and deterministic schemas.
+- [x] 1.2 Add versioned backup manifest, metadata, verification, restore-plan, and error contracts.
+- [x] 1.3 Register public contract families and deterministic schemas.
 
 ## 2. Specification-first tests
 
@@ -14,8 +14,8 @@
 ## 3. Persistence and catalog
 
 - [ ] 3.1 Add Recovery-owned operation state and retained Alembic migration.
-- [ ] 3.2 Complete Catalog-owned backup and restore metadata through public ports.
-- [ ] 3.3 Prove schema ownership, integrity digests, lineage, availability, and retention.
+- [x] 3.2 Complete Catalog-owned backup and restore metadata through public ports.
+- [x] 3.3 Prove schema ownership, integrity digests, lineage, availability, and retention.
 
 ## 4. Recovery implementation
 
