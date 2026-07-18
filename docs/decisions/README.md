@@ -24,6 +24,7 @@ ADR statuses are Proposed, Accepted, Superseded, Rejected, and Deprecated. Accep
 | [ADR-0002](ADR-0002-modular-monolith-decomposition-model.md) | Modular-monolith decomposition model | Accepted |
 | [ADR-0003](ADR-0003-module-boundary-enforcement-model.md) | Module-boundary enforcement model | Accepted |
 | [ADR-0004](ADR-0004-public-contract-versioning-strategy.md) | Public contract versioning strategy | Accepted |
+| [ADR-0005](ADR-0005-risk-tiered-quality-gate-enforcement.md) | Risk-tiered quality gate enforcement | Accepted |
 
 ## Template
 
