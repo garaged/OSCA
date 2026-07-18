@@ -878,7 +878,44 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 23. Engineering-quality direction
+## 23. Paper-accounting model
+
+### 23.1 Order-event history
+
+Paper accounts retain immutable order lifecycle events, including creation, acceptance, rejection, partial fill, fill, cancellation, expiration, and applicable validation or risk decisions.
+
+Orders link to their originating strategy decision, recommendation, project, model, and evidence where available. Fills link to the market observation and fill-model version used.
+
+### 23.2 Immutable accounting journal
+
+Every simulated economic event creates balanced, append-only journal entries. Corrections use reversals and replacement entries rather than rewriting prior history.
+
+Journaled events include, as applicable:
+
+- Simulated funding deposits and withdrawals
+- Trade fills
+- Fees and other costs
+- Dividends and distributions
+- Splits, mergers, symbol changes, and delistings
+- Interest
+- Foreign-exchange effects
+- Manual adjustments
+
+Crypto-specific events such as staking rewards and network distributions can be added through typed event extensions.
+
+### 23.3 Multi-currency valuation
+
+Each paper account has an explicit base currency while holding cash and instruments in other currencies. Valuations record the price sources, foreign-exchange rates, effective times, and revisions used.
+
+### 23.4 Rebuildable projections and reconciliation
+
+Cash balances, positions, lots, cost basis, realized and unrealized profit or loss, exposure, equity curves, performance, and risk metrics are rebuildable projections rather than independent sources of truth.
+
+Performance snapshots may accelerate reads but must be regenerable. Reconciliation verifies balanced journal entries and consistency between orders, fills, corporate actions, journal records, and projections.
+
+Paper-account history does not change because a strategy, extension, or model is upgraded. Tax reporting is not initially authoritative, although lot and cost-basis information is retained for future analysis.
+
+## 24. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -894,7 +931,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 24. PRD sections pending discovery
+## 25. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -912,7 +949,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 25. Document governance
+## 26. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
