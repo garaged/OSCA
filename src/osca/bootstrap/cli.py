@@ -104,7 +104,7 @@ def backup_create(destination: Path, recipient: str) -> None:
         destination=str(destination),
         recipient=recipient,
         recipient_fingerprint=fingerprint,
-        configuration_snapshot=configuration.model_dump(mode="json"),
+        configuration_snapshot=configuration,
         configuration_revision=configuration.revision_id,
         source_build=__version__,
         source_schema="m1_0006",
