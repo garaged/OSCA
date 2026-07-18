@@ -1,6 +1,6 @@
 # M1 — Secure Walking Skeleton
 
-- **Status:** Accepted
+- **Status:** Implementation in progress
 - **Governing role:** Product authority
 - **Architecture approval:** Architecture authority
 - **Purpose:** Index the intent, requirements, decisions, specifications, validation, and evidence for M1.
@@ -18,6 +18,8 @@
 - [Technology decision package](technology-decision-package.md)
 - [Walking-skeleton specification](../../specifications/m1-secure-walking-skeleton.md)
 - [Evidence plan](evidence-plan.md)
+- [Durable diagnostic jobs usage](diagnostic-jobs.md)
+- [M1.4 retained evidence](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
 - [M1.4 OpenSpec pilot](../../../openspec/changes/m1-4-durable-diagnostic-jobs/README.md)
 - [M1 initiation record](initiation-record.md)
 
@@ -29,6 +31,6 @@
 - [Traceability register](../../governance/traceability-register.md)
 - [Deferred decisions](../../governance/deferred-decisions.md)
 
-## Entry state
+## Implementation state
 
-M1 documentation and decision work may proceed. Product implementation remains blocked until the initiation record is accepted, the selected `REQ-NNNN` set is approved, triggered technology decisions are accepted, the walking-skeleton specification is approved, and Tier-1 ADRs move from Baseline to Frozen.
+M1 entry gates are satisfied. M1.1–M1.3 foundations and the M1.4 durable diagnostic-job slice are implemented with retained evidence. Recovery-package work and the remaining M1 exit gates are not complete.
