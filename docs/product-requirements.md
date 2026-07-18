@@ -333,7 +333,74 @@ Cross-provider comparison may detect gaps, conflicts, anomalies, or quality chan
 
 Backtests and retained experiments must be able to pin provider, dataset identity, and revision.
 
-## 13. Cache and data lifecycle — initial requirements
+## 13. Governed data layers and catalog
+
+OSCA will separate cached data and research outputs into four logical layers. These layers define governance and lifecycle semantics and do not require four separate database technologies.
+
+### 13.1 Source layer
+
+The source layer contains immutable provider payloads or faithful snapshots when provider terms permit retention.
+
+A retained source record includes its canonical request identity, provider, retrieval time, response metadata, checksum, parser compatibility, and applicable persistence restrictions. Source payloads are never silently modified.
+
+License-restricted or sensitive content may be processed without permanent source retention. The catalog must record that the source payload was intentionally not retained.
+
+### 13.2 Canonical layer
+
+The canonical layer contains validated and normalized observations expressed through OSCA instrument identities, temporal semantics, units, currencies, and versioned schemas.
+
+Corrections, improved parsing, provider revisions, and normalization changes create identifiable dataset revisions rather than silently rewriting data required by retained experiments.
+
+### 13.3 Derived layer
+
+The derived layer contains reproducible transformations, including:
+
+- Resampled bars
+- Indicators and metrics
+- Features and labels
+- Joined analytical datasets
+- Data-quality assessments
+- Screening and analysis outputs
+
+Every derived result identifies its transformation definition and version, parameters, and upstream inputs.
+
+### 13.4 Artifact layer
+
+The artifact layer contains durable research and product outputs, including:
+
+- Trained models
+- Model evaluations and comparisons
+- Prompt and LLM evaluation artifacts
+- Backtests
+- Paper-trading runs
+- Reports and chart specifications
+- Exported research packages
+
+Artifacts reference their datasets and dependencies but are not treated as canonical market observations.
+
+### 13.5 Cross-layer metadata catalog
+
+A shared metadata and lineage catalog spans every layer and remains available even when a large payload is evicted.
+
+The catalog tracks, as applicable:
+
+- Stable identity and artifact type
+- Schema and revision
+- Provider and request provenance
+- Upstream and downstream dependencies
+- Quality findings
+- Storage class and physical location
+- Retention and pinning state
+- Reproduction requirements
+- Availability state
+- Licensing restrictions
+- Integrity checksums
+
+Availability states must distinguish at least `available`, `evicted`, `expired`, `invalid`, `corrupt`, `partial`, and `reproducible`.
+
+Promotion and transformation between layers must be explicit and observable. Cleanup uses dependency information and reports downstream impact before destructive execution.
+
+## 14. Cache and data lifecycle — initial requirements
 
 The cache is a first-class product capability rather than an incidental HTTP optimization.
 
@@ -387,7 +454,7 @@ Storage management must make stable disk usage achievable without routine manual
 
 Detailed cache and storage policy remains an open design area and will receive its own specification after product requirements are settled.
 
-## 14. Backtesting and paper trading — initial requirements
+## 15. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -410,7 +477,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 15. Engineering-quality direction
+## 16. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -426,7 +493,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 16. PRD sections pending discovery
+## 17. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -447,7 +514,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 17. Document governance
+## 18. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
