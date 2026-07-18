@@ -7,6 +7,7 @@ from sqlalchemy import DateTime, Integer, String, Text, and_, or_, select, updat
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
+from osca.catalog.api import metadata_digest
 from osca.workflow.api import DiagnosticRun, DiagnosticRunId, DiagnosticRunState
 
 
@@ -32,7 +33,7 @@ class SqliteDiagnosticRunRepository:
         self._session = session
 
     def add(self, run: DiagnosticRun) -> None:
-        self._session.add(self._row(run))
+        self._session.add(self._row(self._seal(run)))
         self._session.flush()
 
     def get(self, run_id: DiagnosticRunId) -> DiagnosticRun | None:
@@ -56,6 +57,7 @@ class SqliteDiagnosticRunRepository:
         )
 
     def replace(self, run: DiagnosticRun, expected_revision: int) -> bool:
+        run = self._seal(run)
         result = cast(
             CursorResult[Any],
             self._session.execute(
@@ -122,3 +124,11 @@ class SqliteDiagnosticRunRepository:
             next_attempt_at=run.next_attempt_at,
             payload=run.model_dump_json(),
         )
+
+    @staticmethod
+    def _seal(run: DiagnosticRun) -> DiagnosticRun:
+        lineage = run.lineage or (run.run_id.value,)
+        with_lineage = run.model_copy(update={"lineage": lineage})
+        payload = with_lineage.model_dump(mode="json", exclude={"integrity_digest"})
+        digest = metadata_digest(payload)
+        return with_lineage.model_copy(update={"integrity_digest": digest})
