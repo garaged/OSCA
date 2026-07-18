@@ -835,6 +835,30 @@ LLM-generated chart requests compile into validated visualization specifications
 
 ## 22. Backtesting and paper trading — initial requirements
 
+The platform must support fair, reproducible comparison of strategies and models through a dual-stage execution model.
+
+### 22.1 Research/vectorized mode
+
+Research mode provides fast evaluation for compatible factor studies, signal evaluation, screening, and broad parameter exploration. Its outputs are labeled research estimates rather than authoritative execution simulations.
+
+### 22.2 Event-driven simulation mode
+
+Event-driven mode is the authoritative strategy simulation. It uses the same event, order, fill, fee, portfolio, and deterministic risk concepts as paper trading.
+
+The event-driven engine models, as applicable:
+
+- Clocks, sessions, and market events
+- Strategy decisions and typed order intents
+- Order validation and lifecycle states
+- Rejected, cancelled, partially filled, and filled orders
+- Fees, spreads, slippage, latency, and liquidity constraints
+- Corporate actions
+- Cash, positions, exposure, and deterministic risk rules
+
+Strategies declare supported execution modes. Compatible implementations use cross-engine conformance fixtures, and result differences between research and event-driven modes are visible and explainable.
+
+Candidates are promoted from research mode to event-driven validation before paper trading. Promotion policies may require minimum sample sizes, robustness, risk limits, walk-forward or out-of-sample performance, and comparison against baselines.
+
 The platform must support fair, reproducible comparison of strategies and models.
 
 It should eventually include:
@@ -842,17 +866,15 @@ It should eventually include:
 - Point-in-time data handling
 - Prevention and detection of look-ahead bias
 - Survivorship-bias controls where relevant
-- Configurable fees, spreads, slippage, latency, and liquidity assumptions
 - Market calendars and cryptocurrency 24/7 trading
-- Corporate-action handling
 - Walk-forward and rolling-window evaluation
 - Train, validation, test, and out-of-sample separation
 - Baseline strategies
-- Parameter-search tracking
+- Parameter-search tracking with nested, walk-forward, or otherwise leakage-resistant selection
 - Portfolio-level constraints
 - Deterministic seeds where applicable
 - Comparable metrics across runs
-- Backtest-to-paper-trading promotion
+- Explicit research-to-event-validation-to-paper-trading promotion
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
