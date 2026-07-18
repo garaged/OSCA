@@ -205,3 +205,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will represent observations, signals, findings, theses, recommendations, and alerts as distinct connected result types. Composite scores are optional summaries rather than complete outputs.
 - **Rationale:** Facts, method-specific interpretations, testable hypotheses, and proposed actions have different authority and lifecycle semantics. Collapsing them into one score obscures uncertainty and disagreement.
 - **Consequences:** Results retain horizon, confidence, evidence, contradictions, assumptions, quality, regime, invalidation, risk, provenance, state, and later outcome evaluation as applicable. LLM narratives cannot replace authoritative structured evidence.
+
+
+## D-025 — Analysis families and capability packs
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will support market and technical, fundamental and valuation, quantitative and statistical, portfolio and risk, macroeconomic and cross-market, event and catalyst, news and sentiment, crypto-specific, ML, LLM synthesis, and strategy-outcome analysis through versioned capability packs.
+- **Rationale:** The product requires broad analytical coverage without coupling every specialist method and data dependency to the core release.
+- **Consequences:** A smaller cross-asset analytical foundation ships first. Packs declare data requirements and degradation behavior, use governed contracts and structured outputs, and include methodology, tests, limitations, and usage documentation. Equivalent methods may coexist and be evaluated comparatively.
