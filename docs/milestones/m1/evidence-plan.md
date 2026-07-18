@@ -65,6 +65,7 @@ Retained slice records:
 - [M1.4 durable diagnostic jobs](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
 - [M1.5–M1.6 recovery skeleton](../../../evidence/m1/m1-5-6-recovery-skeleton.md)
 - [M1.7 documentation and operational evidence](../../../evidence/m1/m1-7-documentation-operational-evidence.md)
+- [M1 integrated exit evidence](../../../evidence/m1/m1-exit-evidence.md)
 
 ## Merge policy
 
