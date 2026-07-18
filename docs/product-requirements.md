@@ -1718,7 +1718,60 @@ Resource pressure pauses or reduces noncritical work. OSCA cannot silently reduc
 
 Single-node scaling is preferred initially. Optional workers or service extraction require profiling evidence and a recorded architectural decision.
 
-## 37. Engineering-quality direction
+## 37. Risk governance
+
+### 37.1 Living risk register
+
+OSCA maintains version-controlled risks with:
+
+- Stable identity and category
+- Description and affected capabilities
+- Likelihood and impact
+- Leading indicators and triggers
+- Preventive and detective controls
+- Contingency and recovery
+- Residual risk
+- Owner and review date
+- Related requirements, decisions, tests, controls, and incidents
+- Status: open, accepted, mitigated, transferred, avoided, or realized
+
+Criticality considers likelihood, impact, and demonstrated control effectiveness. Security, accounting, data integrity, and unauthorized live execution are critical by default.
+
+Milestones identify risks they introduce or reduce and cannot close while an applicable critical risk lacks accepted treatment and evidence.
+
+Risk acceptance requires explicit rationale, residual impact, owner, and expiration or review date. Realized risks become incident records with corrective action.
+
+The register is reviewed before milestone approval and at least quarterly during active development.
+
+### 37.2 Initial product risks
+
+| Risk | Primary treatment |
+|---|---|
+| Scope expansion delays a usable product | Vertical milestones, explicit non-goals, gates, and deferred-capability register |
+| Architecture becomes over-generalized | Modular monolith, evidence-based extraction, and working vertical slices |
+| Provider access or terms change | Capability routing, adapters, policy metadata, fallback, and monitoring |
+| Data licensing prevents persistence or export | License-aware catalog and enforcement plus separate commercial review |
+| Symbol mapping corrupts datasets | Canonical identities, time-aware mappings, ambiguity quarantine, and audits |
+| Poor or revised data invalidates results | Quality gates, immutable revisions, impact analysis, and reproducible reruns |
+| Look-ahead or survivorship bias inflates performance | Point-in-time contracts, historical universes, leakage tests, and fidelity promotion |
+| Overfitting or regime instability | Baselines, held-out periods, walk-forward tests, robustness, and paper monitoring |
+| LLM hallucination influences decisions | Structured evidence, bounded tools, validation, citations, and deterministic risk |
+| Prompt injection from external content | Untrusted-content boundaries, permissions, adversarial evaluation, and disclosure control |
+| Malicious or defective extension compromises OSCA | Trust tiers, manifests, integrity, conformance, isolation, and kill controls |
+| Credentials or private data are exposed | Vault-backed secrets, authenticated transport, redaction, scanning, and scopes |
+| Paper-account state becomes inconsistent | Immutable balanced journal, reconciliation, projections, and recovery checks |
+| Storage growth destabilizes the host | Budgets, tiered retention, forecasting, safe eviction, and ingestion pause |
+| Duplicate or replayed work changes paper state | Typed identities, idempotency, durable state, and explicit recovery policies |
+| Provider or network outage causes unsafe action | Freshness and health gates, fail-safe pause, and visible degradation |
+| Backups cannot restore | Isolated restores, DR exercises, integrity checks, objectives, and off-device copies |
+| Notifications become noise | Deduplication, digests, severity, acknowledgement, and suppression |
+| Upgrades change retained results | Immutable versions, lockfiles, deployment pointers, and explicit migration |
+| Complexity reduces maintainability | Standards, SDD, IDD, TDD, bounded modules, documentation, and fitness tests |
+| Performance misses single-node targets | Benchmarks, profiling gates, incremental work, budgets, and optional workers |
+| Users mistake research for guaranteed advice | Explicit uncertainty, methodology, boundaries, and no-return promises |
+| Future live execution leaks into initial scope | Explicit non-goal, absent live-order capability, and isolated future seams |
+
+## 38. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1734,14 +1787,13 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 38. PRD sections pending discovery
+## 39. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - Milestone decomposition
-- Risks and mitigations
 
-## 39. Document governance
+## 40. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
