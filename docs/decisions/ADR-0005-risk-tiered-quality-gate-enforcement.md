@@ -1,6 +1,6 @@
 # ADR-0005: Risk-Tiered Quality Gate Enforcement
 
-- **Status:** Baseline
+- **Status:** Frozen
 - **Date:** 2026-07-17
 - **Decision owners:** Architecture authority and engineering governance
 - **Related:** ADR-0001, ADR-0003, ADR-0004; `docs/quality/verification-strategy.md`
