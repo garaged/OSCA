@@ -1,6 +1,6 @@
 # M1 — Secure Walking Skeleton
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Product authority
 - **Architecture approval:** Architecture authority
 - **Purpose:** Index the intent, requirements, decisions, specifications, validation, and evidence for M1.
