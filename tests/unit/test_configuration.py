@@ -46,5 +46,7 @@ class ConfigurationValidationTests(TestCase):
                 session_provider="local-session-v1",
             ),
         )
-        self.assertEqual(validate_configuration(raw).deployment_mode, DeploymentMode.PERSONAL_SERVER)
-
+        self.assertEqual(
+            validate_configuration(raw).deployment_mode,
+            DeploymentMode.PERSONAL_SERVER,
+        )
