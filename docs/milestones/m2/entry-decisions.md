@@ -1,6 +1,6 @@
 # M2 Entry Decision Package
 
-- **Status:** Accepted decision criteria; provider and persistence selections pending evidence
+- **Status:** Accepted decision criteria and persistence selection; provider selections pending licensing evidence
 - **Governing role:** Architecture authority
 - **Product, security, data, licensing, and quality approval:** Accepted for the criteria 2026-07-18
 - **Authoritative sources:** M2 intent/scope; D-012–D-018; D-040; DD-003, DD-010
@@ -10,7 +10,7 @@
 
 1. Exact semantic/structural M2 public contracts and ownership.
 2. Instrument/provider/market-data schema ownership and migration sequence.
-3. Daily payload persistence and replaceable access boundary; M1 SQLite selection does not decide this.
+3. Daily payload persistence and replaceable access boundary — decided by ADR-0017.
 4. Reference stock and crypto providers and their permitted acquisition/retention/fixture use.
 5. Quota, retry, endpoint, timeout, and credential-reference profiles.
 6. Daily expected-date policy sufficient for M2 without claiming the M3 calendar engine.
@@ -47,8 +47,8 @@ The M2 choice must:
 - allow later evidence-driven replacement without changing public dataset identity;
 - avoid preselecting M3 intraday/analytical behavior.
 
-Candidate comparison and an ADR are required before M2.1/M2.3 persistence merges.
+[ADR-0017](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md) selects capability-owned SQLite metadata plus immutable, manifest-governed Parquet source/canonical payloads. M2.1 may implement the owned metadata schemas. M2.3 payload work remains subject to the ADR's schema, coordination, migration, and recovery fitness obligations.
 
 ## Decision gate
 
-M2.1 may begin only after requirements/contracts/risks are accepted and its metadata persistence is decided. Production-visible M2.7 adapters remain gated until provider-specific licensing and policy approval; deterministic fixture adapters may be built earlier against the accepted contract.
+M2.1 is authorized against ADR-0017 and the accepted requirements/contracts/risks. Production-visible M2.7 adapters remain gated until provider-specific licensing and policy approval; deterministic fixture adapters may be built earlier against the accepted contract.
