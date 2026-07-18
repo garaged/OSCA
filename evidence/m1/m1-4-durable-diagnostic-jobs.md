@@ -1,12 +1,12 @@
 # M1.4 durable diagnostic jobs evidence
 
 - **Status:** Complete
-- **Source checkpoint:** `d44ee32adc8edfec6ff5432be4429dfc9fee15ce`
+- **Source checkpoint:** `8a019b8e593ed0f4e725c6c10dca14d3dcad2c6b`
 - **Branch:** `agent/m1-secure-walking-skeleton`
 - **Requirements:** REQ-0011–REQ-0015
 - **Decision:** ADR-0013
 - **Contract:** `osca.workflow.diagnostic-run` 1.0.0
-- **Schema revision:** `m1_0003`
+- **Schema revision:** `m1_0004`
 - **OpenSpec change:** `m1-4-durable-diagnostic-jobs`
 - **Validated:** 2026-07-18
 
@@ -19,16 +19,16 @@
 - Observable interruption followed by explicit policy-controlled resume.
 - Versioned, duplicate-aware named-phase checkpoints.
 - Cooperative cancellation, bounded deterministic retry, and safe shutdown.
-- Catalog-owned result metadata registered durably before its typed reference permits success.
-- Shared versioned HTTP and CLI application handlers.
-- Correlated safe telemetry, Operations-owned cancellation audit, and failure findings.
+- Catalog-owned result metadata with build, lineage, integrity, availability, and retention semantics registered before success.
+- Shared versioned HTTP and CLI application handlers with trusted local authorization and capability enforcement.
+- Correlated logs, OpenTelemetry spans and metrics, typed Operations job events, cancellation audit, and failure findings.
 - Workflow-owned schema and repositories with no private cross-capability imports.
 
 ## Gate results
 
 | Gate | Result |
 |---|---|
-| Full pytest suite | Pass — 35 tests |
+| Full pytest suite | Pass — 39 tests |
 | Lifecycle property and prohibited-transition tests | Pass |
 | Idempotency and conflict fixtures | Pass |
 | Lease, heartbeat, expiry, recovery, and CAS tests | Pass |
@@ -37,7 +37,7 @@
 | Telemetry redaction and audit tests | Pass |
 | Architecture boundary tests | Pass |
 | Ruff | Pass |
-| Strict mypy | Pass — 58 source files |
+| Strict mypy | Pass — 60 source files |
 | Alembic upgrade/downgrade/upgrade through `m1_0003` | Pass |
 | CLI smoke test | Pass — all four diagnostic commands registered |
 | Strict OpenSpec validation | Pass — 1 change, 0 failures |
@@ -57,3 +57,7 @@ Implementation review found that the accepted M1 specification required “only 
 ## Conclusion
 
 M1.4 implementation and retained validation are complete. No blocker remains within the durable diagnostic-job slice. The OpenSpec pilot should be reviewed for Adopt, Revise, or Remove disposition after archival.
+
+## PR #4 review remediation
+
+Review identified four blockers: caller-controlled actor identity, incomplete REQ-0014 observability, incomplete REQ-0013 retained metadata, and absent required PR automation. Change `pr-4-review-remediation` added trusted capability context, spoofing/denial tests, correlated spans/metrics/job-event persistence, governed metadata and integrity verification, migration `m1_0004`, locked quality checks, Markdown link validation, and secret scanning. Local gates pass; GitHub check results are retained on PR #4.
