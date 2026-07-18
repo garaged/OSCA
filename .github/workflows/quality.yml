@@ -17,14 +17,25 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          python-version: "3.13"
       - name: Install locked Python environment
         run: uv sync --locked
+      - name: Install pinned age interoperability fixture
+        run: |
+          curl --fail --location --silent --show-error \
+            --output /tmp/age.tar.gz \
+            https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-linux-amd64.tar.gz
+          echo "bdc69c09cbdd6cf8b1f333d372a1f58247b3a33146406333e30c0f26e8f51377  /tmp/age.tar.gz" \
+            | sha256sum --check -
+          tar --extract --gzip --no-same-owner --file /tmp/age.tar.gz --directory /tmp
       - name: Ruff
         run: uv run ruff check .
       - name: Strict mypy
         run: uv run mypy
       - name: Tests, contracts, migrations, links, and architecture
         run: uv run pytest
+        env:
+          AGE_TEST_EXECUTABLE: /tmp/age/age
 
   openspec:
     runs-on: ubuntu-latest

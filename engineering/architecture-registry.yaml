@@ -62,6 +62,7 @@ adrs:
   - { id: ADR-0013, status: accepted, tier: implementation, owner: workflow-capability-owner }
   - { id: ADR-0014, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0015, status: accepted, tier: implementation, owner: security-authority }
+  - { id: ADR-0016, status: accepted, tier: implementation, owner: security-authority }
 
 governed_indexes:
   requirements: docs/governance/requirements-catalog.md

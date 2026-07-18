@@ -8,6 +8,7 @@ from sqlalchemy import engine_from_config, pool
 from osca.catalog.infrastructure import CatalogBase
 from osca.configuration.infrastructure import ConfigurationBase
 from osca.operations.infrastructure import AuditBase
+from osca.recovery.infrastructure import RecoveryBase
 from osca.workflow.infrastructure import WorkflowBase
 
 config = context.config
@@ -19,6 +20,7 @@ target_metadata = [
     AuditBase.metadata,
     WorkflowBase.metadata,
     CatalogBase.metadata,
+    RecoveryBase.metadata,
 ]
 
 

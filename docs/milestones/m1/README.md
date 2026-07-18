@@ -19,8 +19,11 @@
 - [Walking-skeleton specification](../../specifications/m1-secure-walking-skeleton.md)
 - [Evidence plan](evidence-plan.md)
 - [Durable diagnostic jobs usage](diagnostic-jobs.md)
+- [Protected backup and isolated restore](recovery.md)
 - [M1.4 retained evidence](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
+- [M1.5–M1.6 recovery evidence](../../../evidence/m1/m1-5-6-recovery-skeleton.md)
 - [Archived M1.4 OpenSpec pilot](../../../openspec/changes/archive/2026-07-18-m1-4-durable-diagnostic-jobs/README.md)
+- [Archived M1 recovery OpenSpec change](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
 - [M1 initiation record](initiation-record.md)
 
 ## Governing controls
@@ -33,4 +36,4 @@
 
 ## Implementation state
 
-M1 entry gates are satisfied. M1.1–M1.3 foundations and the M1.4 durable diagnostic-job slice are implemented with retained evidence. Recovery-package work and the remaining M1 exit gates are not complete.
+M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation and M1.8 exit review remain.

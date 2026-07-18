@@ -17,6 +17,7 @@ class MetadataAvailability(StrEnum):
 
 class RetentionClass(StrEnum):
     MILESTONE_EVIDENCE = "milestone_evidence"
+    PROTECTED_BACKUP = "protected_backup"
 
 
 class CatalogResultReference(BaseModel):
@@ -33,6 +34,35 @@ class CatalogResultReference(BaseModel):
     revision: int = 1
     integrity_digest: str = ""
     media_type: str = "application/json"
+    registered_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    def verify_integrity(self) -> bool:
+        return self.integrity_digest == metadata_digest(
+            self.model_dump(mode="json", exclude={"integrity_digest"})
+        )
+
+
+class RecoveryRecordKind(StrEnum):
+    BACKUP = "backup"
+    RESTORE = "restore"
+
+
+class CatalogRecoveryReference(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.catalog.recovery-reference"] = "osca.catalog.recovery-reference"
+    version: Literal["1.0.0"] = "1.0.0"
+    record_id: UUID = Field(default_factory=uuid4)
+    kind: RecoveryRecordKind
+    subject_id: UUID
+    correlation_id: CorrelationId
+    producer_build: str
+    source_schema: str
+    configuration_revision: UUID
+    lineage: tuple[UUID, ...]
+    availability: MetadataAvailability
+    retention: RetentionClass = RetentionClass.PROTECTED_BACKUP
+    revision: int = 1
+    integrity_digest: str = ""
     registered_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     def verify_integrity(self) -> bool:
