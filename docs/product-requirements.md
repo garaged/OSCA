@@ -118,11 +118,78 @@ OSCA is not initially optimized for:
 - SaaS administrators managing tenants, billing, or organizational access
 - Live-trading operators requiring production order execution
 
-## 8. Intelligence model
+## 8. Initial market universe and instrument identity
+
+### 8.1 Default market universe
+
+The initial default universe includes:
+
+- US-listed common stocks
+- US-listed exchange-traded funds for benchmarks, sectors, and portfolio analysis
+- Major spot cryptocurrencies and their supported trading pairs
+- User-defined watchlists and research universes
+
+Options, futures, perpetual contracts, leveraged tokens, foreign exchange, bonds, and non-US equities are not part of the initial default universe.
+
+The domain model must not assume that all instruments are US-based or denominated in US dollars. Future markets and asset classes should be addable without redefining existing instrument identities.
+
+### 8.2 Extending the supported universe
+
+Users must be able to add instruments within an already supported asset class without changing application code, provided at least one configured data provider can supply the required capabilities.
+
+Instrument addition should support:
+
+- Discovery through provider search
+- Registration from provider metadata
+- Manual registration when discovery is unavailable
+- One or more provider mappings per instrument
+- Validation and duplicate detection
+- Capability visibility, such as quotes, historical bars, fundamentals, news, or corporate actions
+- Explicit unsupported or partially supported status
+- Inclusion in watchlists and research universes
+
+Adding a new symbol is distinct from adding a new asset class. A new asset class may require new domain behavior, validation, calendars, accounting rules, and provider adapters.
+
+### 8.3 Canonical instrument identity
+
+OSCA must maintain a provider-neutral instrument registry. A displayed ticker or provider symbol is not a stable primary identity.
+
+A canonical identity must distinguish, as applicable:
+
+- Asset class
+- Underlying security or crypto asset
+- Listing, exchange, or trading venue
+- Base and quote assets for a crypto pair
+- Trading, quote, and reporting currencies
+- Effective dates and lifecycle status
+- Stable external identifiers when available
+- Provider-specific symbols and identifier mappings
+
+The same ticker text may refer to different instruments, and the same instrument may have different symbols across providers. Symbol reuse, ticker changes, venue changes, delistings, and crypto pair differences must not overwrite historical identity.
+
+### 8.4 Provider symbol mapping
+
+Each data-source adapter resolves between its remote identifiers and OSCA canonical identities through explicit, time-aware mappings.
+
+A mapping should contain:
+
+- Canonical instrument identifier
+- Provider identifier
+- Provider symbol or pair notation
+- Provider and dataset scope
+- Venue or exchange context
+- Validity interval when relevant
+- Mapping provenance
+- Verification state
+- Supported data capabilities
+
+Mappings must be inspectable and correctable. Provider data cannot enter normalized storage as an unverified ticker-only identity when ambiguity exists.
+
+## 9. Intelligence model
 
 OSCA uses both machine learning and language models, with explicit separation of responsibilities.
 
-### 8.1 Machine learning
+### 9.1 Machine learning
 
 Machine learning may support:
 
@@ -137,7 +204,7 @@ Machine learning may support:
 - Strategy parameter exploration
 - Position-sizing recommendations for simulation
 
-### 8.2 Language models
+### 9.2 Language models
 
 Language models may support:
 
@@ -152,7 +219,7 @@ Language models may support:
 
 Language-model output must not be used as a numerical source of truth. Claims should reference the data or artifacts used to produce them.
 
-### 8.3 Deterministic responsibilities
+### 9.3 Deterministic responsibilities
 
 Deterministic components remain authoritative for:
 
@@ -167,7 +234,7 @@ Deterministic components remain authoritative for:
 - Experiment identity and artifact resolution
 - Data-quality rules
 
-## 9. Artifact identity and lineage
+## 10. Artifact identity and lineage
 
 Datasets, scans, features, models, predictions, reports, backtests, and paper-trading runs must have unambiguous identities.
 
@@ -190,7 +257,7 @@ Every material artifact should expose, as applicable:
 
 Artifact lookup must be type-aware so, for example, a training run cannot be mistaken for a scan merely because both belong to an intraday workflow.
 
-## 10. Cache and data lifecycle — initial requirements
+## 11. Cache and data lifecycle — initial requirements
 
 The cache is a first-class product capability rather than an incidental HTTP optimization.
 
@@ -215,7 +282,7 @@ It must eventually support:
 
 Detailed cache policy remains an open design area and will receive its own specification after product requirements are settled.
 
-## 11. Backtesting and paper trading — initial requirements
+## 12. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -238,7 +305,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 12. Engineering-quality direction
+## 13. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -254,13 +321,12 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 13. PRD sections pending discovery
+## 14. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
-- Market and asset coverage
 - Temporal resolutions and operating cadence
 - Data-source classes and licensing constraints
 - Detailed cache semantics
@@ -278,7 +344,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 14. Document governance
+## 15. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
