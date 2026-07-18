@@ -1270,7 +1270,60 @@ Imported schedules remain disabled until reviewed. Run history retains lineage, 
 
 The initial modular monolith may add optional execution workers later without requiring distributed deployment.
 
-## 30. Engineering-quality direction
+## 30. Deterministic risk policies
+
+### 30.1 Policy hierarchy
+
+OSCA applies versioned deterministic risk policies at:
+
+1. System safety
+2. Paper account
+3. Portfolio or mandate
+4. Strategy
+5. Final order-intent validation
+
+The strictest applicable constraint wins. Models and LLMs may propose actions or sizes but cannot approve their own exceptions.
+
+System safeguards include non-bypassable operational invariants. Account and portfolio policies cover capital, currency, universe, exposure, concentration, liquidity, drawdown, and loss constraints. Strategy policies add method-specific sizing, turnover, holding-period, and order restrictions.
+
+### 30.2 Shared enforcement
+
+The authoritative event-driven backtest and paper-trading engine use the same risk-policy domain and evaluation behavior. Vectorized research may approximate supported policies but must disclose omissions or semantic differences.
+
+Risk evaluation occurs before strategy action where applicable, before order acceptance, and after fills or material portfolio events.
+
+### 30.3 Risk controls
+
+Controls include, as applicable:
+
+- Maximum position size
+- Gross and net exposure
+- Leverage
+- Cash reserve
+- Asset-class and sector concentration
+- Correlated exposure
+- Turnover
+- Liquidity and estimated market impact
+- Spread and slippage
+- Drawdown
+- Daily and cumulative loss
+- Stale, partial, provisional, or low-quality data
+- Provider, accounting, reconciliation, certificate, storage, and operational health
+- Stop-loss, take-profit, trailing-stop, and time-exit policies
+
+Stops are simulated execution instructions and do not guarantee a fill price. Initial paper accounts use no leverage by default.
+
+### 30.4 Decisions, overrides, and safety actions
+
+Risk outcomes are structured and explain approval, modification, rejection, or pause. Risk breaches create findings and alerts and may pause further paper orders.
+
+OSCA provides account-level pause and a system-wide paper-automation kill switch. Overrides require explicit authority, rationale, scope, duration, and audit history.
+
+Policy versions are pinned to backtests and retained paper decisions. Policy changes affect future decisions unless an explicit reevaluation is requested.
+
+Stress and scenario analysis evaluates adverse price, volatility, correlation, liquidity, and provider-failure conditions.
+
+## 31. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1286,7 +1339,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 31. PRD sections pending discovery
+## 32. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1294,13 +1347,12 @@ The following areas are intentionally incomplete:
 - Product goals, non-goals, and measurable outcomes
 - Detailed cache semantics
 - Backtest fidelity levels
-- Portfolio and risk functionality
 - Availability, performance, scalability, and cost objectives
 - Milestone decomposition
 - Product success metrics
 - Risks and mitigations
 
-## 32. Document governance
+## 33. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
