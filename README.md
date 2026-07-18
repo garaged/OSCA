@@ -13,7 +13,8 @@ The product requirements and M0 architecture foundation are approved and merged.
 5. [Architecture handbook](docs/handbook/README.md)
 6. [Architecture decisions](docs/decisions/README.md)
 7. [Engineering constitution](engineering/constitution.md)
-8. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
+8. [M1 milestone](docs/milestones/m1/README.md)
+9. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
 
 ## Governing baseline
 
