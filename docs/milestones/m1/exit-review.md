@@ -1,8 +1,9 @@
 # M1 Exit Review Record
 
 - **Milestone:** M1 — Secure Walking Skeleton
-- **Review status:** Technically ready; authority acceptance pending
+- **Review status:** Accepted
 - **Decision authorities:** Product, architecture, security, and quality authorities
+- **Authority decision:** Accepted 2026-07-18 against technical head `e109b7027af3f8ac9e8dbb31137a3382adafa352`
 - **Baseline under review:** `c16119dbaf19004a92128d9db83f81846d4fd062`
 - **Requirements:** REQ-0001–REQ-0020
 - **Specification:** [M1 secure walking skeleton](../../specifications/m1-secure-walking-skeleton.md)
@@ -83,4 +84,4 @@ No active architecture exception is recorded. No deferred item is silently imple
 
 ## Authority decision
 
-Technical readiness requires a final green source revision, complete integrated evidence, synchronized indexes, and an archived OpenSpec change. After those conditions are met, product, architecture, security, and quality authorities must record **Accepted** or return blocking findings. Until then, M1 remains implementation complete but not milestone accepted.
+Technical readiness requires a final green source revision, complete integrated evidence, synchronized indexes, and an archived OpenSpec change. Product, architecture, security, and quality authorities accepted the technically validated record. M1 is accepted subject to the archival head passing the same required PR gates before merge.
