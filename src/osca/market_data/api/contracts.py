@@ -93,6 +93,39 @@ class RetrievalResolution(BaseModel):
         return self
 
 
+class RepairRange(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    start_date: date
+    end_date_exclusive: date
+
+    @model_validator(mode="after")
+    def validate_range(self) -> Self:
+        if self.start_date >= self.end_date_exclusive:
+            raise ValueError("repair range must be non-empty")
+        return self
+
+
+class RepairRequest(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.market-data.repair-request"] = "osca.market-data.repair-request"
+    version: Literal["1.0.0"] = "1.0.0"
+    request_id: UUID = Field(default_factory=uuid4)
+    instrument_id: UUID
+    ranges: tuple[RepairRange, ...] = Field(min_length=1)
+    provider_ids: tuple[Identifier, ...] = ()
+    idempotency_key: Identifier
+
+    @model_validator(mode="after")
+    def validate_disjoint_ranges(self) -> Self:
+        ordered = tuple(sorted(self.ranges, key=lambda item: item.start_date))
+        if any(
+            current.start_date < previous.end_date_exclusive
+            for previous, current in zip(ordered, ordered[1:], strict=False)
+        ):
+            raise ValueError("repair ranges must not overlap")
+        return self
+
+
 class DateFinding(BaseModel):
     model_config = ConfigDict(frozen=True)
     family: Literal["osca.data-quality.finding"] = "osca.data-quality.finding"
