@@ -25,6 +25,84 @@ class ManifestState(StrEnum):
     DELETED = "deleted"
 
 
+class ResolutionState(StrEnum):
+    FRESH = "fresh"
+    STALE = "stale"
+    PARTIAL = "partial"
+    INVALID = "invalid"
+    CORRUPT = "corrupt"
+    UNAVAILABLE = "unavailable"
+    REFRESHING = "refreshing"
+    QUOTA_BLOCKED = "quota_blocked"
+    POLICY_BLOCKED = "policy_blocked"
+
+
+class DateClassification(StrEnum):
+    OBSERVED = "observed"
+    MISSING = "missing"
+    UNRESOLVED = "unresolved"
+    NON_EXPECTED = "non_expected"
+    INCOMPLETE = "incomplete"
+
+
+class RetrievalRequest(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.market-data.retrieval-request"] = (
+        "osca.market-data.retrieval-request"
+    )
+    version: Literal["1.0.0"] = "1.0.0"
+    request_id: UUID = Field(default_factory=uuid4)
+    instrument_id: UUID
+    start_date: date
+    end_date_exclusive: date
+    interval: Literal["1d"] = "1d"
+    maximum_age_seconds: int = Field(ge=0)
+    require_complete: bool = True
+    provider_ids: tuple[Identifier, ...] = ()
+    pinned_revision_id: UUID | None = None
+    idempotency_key: Identifier
+
+    @model_validator(mode="after")
+    def validate_range(self) -> Self:
+        if self.start_date >= self.end_date_exclusive:
+            raise ValueError("retrieval range must be non-empty")
+        return self
+
+
+class RetrievalResolution(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.market-data.resolution"] = "osca.market-data.resolution"
+    version: Literal["1.0.0"] = "1.0.0"
+    request_id: UUID
+    state: ResolutionState
+    dataset_id: UUID | None = None
+    revision_id: UUID | None = None
+    observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    safe_remediation: Annotated[str, Field(min_length=1, max_length=256)]
+    findings: tuple[UUID, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_dataset_identity(self) -> Self:
+        identities = (self.dataset_id, self.revision_id)
+        if (identities[0] is None) != (identities[1] is None):
+            raise ValueError("dataset and revision identities must be present together")
+        if self.state is ResolutionState.FRESH and self.dataset_id is None:
+            raise ValueError("fresh resolution requires an exact dataset revision")
+        return self
+
+
+class DateFinding(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.data-quality.finding"] = "osca.data-quality.finding"
+    version: Literal["1.0.0"] = "1.0.0"
+    finding_id: UUID = Field(default_factory=uuid4)
+    instrument_id: UUID
+    effective_date: date
+    classification: DateClassification
+    reason: Identifier
+    repair_eligible: bool
+
+
 class CanonicalDailyBar(BaseModel):
     model_config = ConfigDict(frozen=True)
     family: Literal["osca.market-data.daily-bar"] = "osca.market-data.daily-bar"
