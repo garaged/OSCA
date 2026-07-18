@@ -1,6 +1,6 @@
 # M1.8 Exit Review Gap Analysis
 
-- **Status:** Complete analysis; exit review pending
+- **Status:** Complete analysis; findings resolved and exit accepted
 - **Governing roles:** Product, architecture, security, and quality authorities
 - **Requirements:** REQ-0001–REQ-0020
 - **Governing specification:** [M1 secure walking skeleton](../../specifications/m1-secure-walking-skeleton.md)
@@ -72,4 +72,4 @@ No new handbook or specification is required. M1.8 should create one review/evid
 
 ## Blocking assessment
 
-M1.8 has no discovered architecture redesign requirement, active exception, or failed implementation slice. Milestone acceptance is currently blocked by the missing AC-019 performance disposition, incomplete aggregate traceability, unresolved specification open questions, inconsistent contract lifecycle/status records, and absence of a final integrated exit review record.
+M1.8 has no discovered architecture redesign requirement, active exception, or failed implementation slice. All identified blockers were resolved: AC-019 has a bounded passing gate, aggregate traceability is verified, specification questions and contract lifecycle are dispositioned, integrated evidence is retained, and the named authorities accepted M1.
