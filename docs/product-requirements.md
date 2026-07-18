@@ -689,7 +689,60 @@ Paper accounts are persistent simulated portfolios independent of research proje
 
 LLM operations receive the explicitly selected project context and approved global references. The system must not silently mix unrelated project histories into an explanation or recommendation.
 
-## 19. Backtesting and paper trading — initial requirements
+## 19. Analytical output model
+
+OSCA uses connected but distinct analytical result types.
+
+### 19.1 Observation
+
+A measured or retrieved fact from governed data, including its effective time, units, quality, freshness, and provenance.
+
+### 19.2 Signal
+
+A method-specific interpretation of one or more observations. A signal identifies the method and version, scope, interval, horizon, direction or class, strength, and dependencies.
+
+### 19.3 Finding
+
+A structured analytical conclusion combining one or more signals. A finding preserves supporting and contradicting evidence rather than reducing all evidence to an opaque score.
+
+### 19.4 Thesis
+
+A time-bounded, testable hypothesis containing assumptions, evidence, expected outcomes, risks, and invalidation conditions. Thesis states include active, weakened, invalidated, expired, and confirmed.
+
+### 19.5 Recommendation
+
+An optional proposed simulated action produced by an explicit recommendation policy. It consumes findings or theses, portfolio state, and deterministic risk constraints. A recommendation is not an authoritative fact and does not directly place a live order.
+
+### 19.6 Alert
+
+A notification that an observation threshold, signal, finding, thesis change, recommendation condition, data-quality event, operational condition, or risk event occurred.
+
+### 19.7 Common analytical metadata
+
+Results include, as applicable:
+
+- Instrument, universe, or portfolio scope
+- Producing analysis identity and version
+- Effective time, expiration, and investment horizon
+- Direction or classification
+- Strength or materiality
+- Confidence and calibration method
+- Supporting and contradicting evidence
+- Assumptions
+- Data quality and freshness
+- Applicable market regime
+- Expected outcome distribution
+- Invalidation conditions
+- Relevant risks
+- Provenance and dependencies
+- Lifecycle state
+- Evaluation outcome once sufficient future data exists
+
+Composite scores are optional summary fields rather than complete analytical outputs. Their construction must be versioned and explainable.
+
+LLMs may generate narrative explanations, but referenced evidence and deterministically calculated values remain authoritative.
+
+## 20. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -712,7 +765,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 20. Engineering-quality direction
+## 21. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -728,7 +781,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 21. PRD sections pending discovery
+## 22. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -747,7 +800,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 22. Document governance
+## 23. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
