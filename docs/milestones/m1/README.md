@@ -1,6 +1,6 @@
 # M1 — Secure Walking Skeleton
 
-- **Status:** Implementation in progress
+- **Status:** Accepted
 - **Governing role:** Product authority
 - **Architecture approval:** Architecture authority
 - **Purpose:** Index the intent, requirements, decisions, specifications, validation, and evidence for M1.
@@ -43,4 +43,4 @@
 
 ## Implementation state
 
-M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation is complete with retained evidence. M1.8 exit review is active and remains the only authority process that can accept the milestone.
+M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation is complete with retained evidence. M1.8 exit review is accepted. M1 is complete; later scope must begin through a new governed milestone intent.
