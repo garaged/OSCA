@@ -125,3 +125,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use tiered, value-aware retention with protected, canonical, source, derived, and ephemeral storage classes.
 - **Rationale:** Age and recent access alone do not capture analytical value, reproducibility needs, provider recovery cost, or the disproportionate size of high-frequency data.
 - **Consequences:** Reclamation considers storage class, interval, age, recomputation cost, provider availability, dependencies, and user pinning. Protected records cannot be automatically deleted; lightweight manifests and lineage survive payload eviction; ingestion pauses safely when protected content exhausts the budget.
+
+
+## D-016 — Multi-provider routing and reconciliation
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA selects data providers through capability-specific ordered routing policies with explicit fallbacks, provenance, and no silent cross-provider merging.
+- **Rationale:** Providers differ by coverage, quality, interval, history, freshness, cost, quota, and licensing. A single global provider is unnecessarily limiting, while automatic merging can create inconsistent and irreproducible datasets.
+- **Consequences:** Adapters publish capabilities and limitations. Provider transitions remain visible or pass through an explicit versioned reconciliation process. Cross-provider comparisons produce quality findings rather than silently modifying observations. Experiments can pin provider and dataset revision.
