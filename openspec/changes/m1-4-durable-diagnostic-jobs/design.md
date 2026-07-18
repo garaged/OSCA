@@ -32,6 +32,8 @@ Add Alembic revision `m1_0003` for Workflow-prefixed run, idempotency, lease, ch
 
 A single-node executor atomically claims pending/interrupted eligible work. Lease owner, expiry, and heartbeat are persisted. Expiry recovery changes running work to interrupted before resume. The diagnostic handler is a versioned phase machine whose phases are duplicate-aware. No exactly-once claim is made.
 
+Only pending work is claimable. Policy-controlled recovery explicitly moves interrupted work to pending before a new atomic claim, preserving the governed transition graph and an observable interrupted state.
+
 ### Interaction classification
 
 - Submit and cancel are commands.
@@ -70,4 +72,3 @@ Land contracts and migration first, then repository/transition properties, execu
 - API/CLI semantic fixtures;
 - telemetry, redaction, audit, and health assertions;
 - Ruff, strict mypy, architecture checks, and full pytest suite.
-
