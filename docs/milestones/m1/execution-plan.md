@@ -13,8 +13,8 @@
 3. **M1.2 — Readiness contract and persistence (complete):** implement shared capability plus API, CLI, and web adapters.
 4. **M1.3 — Security, secrets, telemetry, and audit foundation (complete):** enforce deployment profiles, secret references, audit, and negative tests.
 5. **M1.4 — Durable diagnostic job (complete):** implement persistent lifecycle, restart/resume, cancellation, and telemetry.
-6. **M1.5 — Metadata catalog foundation (partial):** job-result metadata is verified; retain typed backup and restore metadata with lineage and availability.
-7. **M1.6 — Recovery skeleton (active):** create, verify, preview, and isolate minimal restore.
+6. **M1.5 — Metadata catalog foundation (complete):** job-result, backup, and restore metadata retain typed lineage, integrity, availability, and retention.
+7. **M1.6 — Recovery skeleton (complete):** create, verify, preview, and isolate minimal restore.
 8. **M1.7 — Documentation and operational evidence:** execute examples, validate references, and close findings.
 9. **M1.8 — Exit review:** reconcile traceability, risks, gates, compatibility, and deferred work.
 
