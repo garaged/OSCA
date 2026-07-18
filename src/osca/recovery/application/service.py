@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import sqlite3
 import zipfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -10,6 +12,7 @@ from osca.catalog.api import MetadataAvailability, RecoveryRecordKind
 from osca.operations.api import AuditOutcome, AuditRecord
 from osca.operations.application.ports import AuditRepository
 from osca.recovery.api import (
+    BackupManifest,
     BackupRecord,
     CreateBackup,
     ExecuteRestore,
@@ -20,7 +23,12 @@ from osca.recovery.api import (
     RestoreValidation,
     VerifyBackup,
 )
-from osca.recovery.application.ports import EncryptionContainer, RecoveryCatalog
+from osca.recovery.application.ports import (
+    EncryptionContainer,
+    RecoveryCatalog,
+    RecoveryOperationRepository,
+)
+from osca.recovery.domain import RecoveryAction
 from osca.recovery.infrastructure.package import (
     RecoveryPackageError,
     build_cleartext_package,
@@ -50,14 +58,25 @@ class RecoveryService:
         vault: SecretVault,
         catalog: RecoveryCatalog,
         audit: AuditRepository,
+        operations: RecoveryOperationRepository,
     ) -> None:
         self._container = container
         self._vault = vault
         self._catalog = catalog
         self._audit = audit
+        self._operations = operations
 
     def create(self, command: CreateBackup) -> BackupRecord:
         _require(command.authorization, Capability.RECOVERY_BACKUP)
+        with self._track(
+            authorization=command.authorization,
+            correlation_id=command.correlation_id,
+            action=RecoveryAction.CREATE,
+            target=command.destination,
+        ):
+            return self._create(command)
+
+    def _create(self, command: CreateBackup) -> BackupRecord:
         destination = Path(command.destination).resolve()
         if destination.exists():
             raise RecoveryPackageError("recovery.destination.exists")
@@ -104,8 +123,17 @@ class RecoveryService:
         )
         return record
 
-    def verify(self, query: VerifyBackup) -> tuple[object, str]:
+    def verify(self, query: VerifyBackup) -> tuple[BackupManifest, str]:
         _require(query.authorization, Capability.RECOVERY_VERIFY)
+        with self._track(
+            authorization=query.authorization,
+            correlation_id=query.correlation_id,
+            action=RecoveryAction.VERIFY,
+            target=query.package,
+        ):
+            return self._verify(query)
+
+    def _verify(self, query: VerifyBackup) -> tuple[BackupManifest, str]:
         package = Path(query.package).resolve()
         active_digest = file_digest(package)
         identity = self._vault.resolve(query.identity_reference)
@@ -121,11 +149,20 @@ class RecoveryService:
 
     def preview(self, query: PreviewRestore) -> RestorePlan:
         _require(query.authorization, Capability.RECOVERY_VERIFY)
-        manifest, package_digest = self.verify(query)
+        with self._track(
+            authorization=query.authorization,
+            correlation_id=query.correlation_id,
+            action=RecoveryAction.PREVIEW,
+            target=query.destination,
+        ):
+            return self._preview(query)
+
+    def _preview(self, query: PreviewRestore) -> RestorePlan:
+        manifest, package_digest = self._verify(query)
         destination = Path(query.destination).resolve()
         conflicts = ("destination exists",) if destination.exists() else ()
         return RestorePlan(
-            backup_id=manifest.backup_id,  # type: ignore[attr-defined]
+            backup_id=manifest.backup_id,
             package_digest=package_digest,
             destination=str(destination),
             operations=("create isolated destination", "extract validated M1 state"),
@@ -141,6 +178,15 @@ class RecoveryService:
 
     def execute(self, command: ExecuteRestore) -> RestoreRecord:
         _require(command.authorization, Capability.RECOVERY_RESTORE)
+        with self._track(
+            authorization=command.authorization,
+            correlation_id=command.correlation_id,
+            action=RecoveryAction.EXECUTE,
+            target=command.plan.destination,
+        ):
+            return self._execute(command)
+
+    def _execute(self, command: ExecuteRestore) -> RestoreRecord:
         if not command.plan.verify_integrity() or not command.plan.executable:
             raise RecoveryPackageError("recovery.plan.not_executable")
         package = Path(command.package).resolve()
@@ -200,6 +246,42 @@ class RecoveryService:
             record.record_id,
         )
         return record
+
+    @contextmanager
+    def _track(
+        self,
+        *,
+        authorization: AuthorizationContext,
+        correlation_id: CorrelationId,
+        action: RecoveryAction,
+        target: str,
+    ) -> Iterator[None]:
+        operation = self._operations.start(
+            correlation_id=correlation_id,
+            actor=authorization.actor,
+            action=action,
+            target=target,
+        )
+        try:
+            yield
+        except Exception:
+            self._operations.complete(
+                operation, succeeded=False, code="recovery.operation.failed"
+            )
+            if action in {RecoveryAction.CREATE, RecoveryAction.EXECUTE}:
+                self._audit_outcome(
+                    authorization,
+                    correlation_id,
+                    action.value,
+                    operation.operation_id,
+                    AuditOutcome.FAILED,
+                    "recovery.operation.failed",
+                )
+            raise
+        else:
+            self._operations.complete(
+                operation, succeeded=True, code="recovery.operation.succeeded"
+            )
 
     def _post_restore_validations(
         self, database: Path, expected_schema: str
@@ -263,6 +345,24 @@ class RecoveryService:
         action: str,
         target_id: object,
     ) -> None:
+        self._audit_outcome(
+            authorization,
+            correlation_id,
+            action,
+            target_id,
+            AuditOutcome.SUCCEEDED,
+            "recovery.operation.succeeded",
+        )
+
+    def _audit_outcome(
+        self,
+        authorization: AuthorizationContext,
+        correlation_id: CorrelationId,
+        action: str,
+        target_id: object,
+        outcome: AuditOutcome,
+        code: str,
+    ) -> None:
         self._audit.add(
             AuditRecord(
                 correlation_id=correlation_id,
@@ -270,8 +370,8 @@ class RecoveryService:
                 action=action,
                 target_type="recovery",
                 target_id=str(target_id),
-                outcome=AuditOutcome.SUCCEEDED,
-                code="recovery.operation.succeeded",
+                outcome=outcome,
+                code=code,
                 policy_version="ADR-0016",
             )
         )
