@@ -1029,7 +1029,60 @@ Evaluation covers, as applicable:
 - Cost and latency
 - Stability across supported model changes
 
-## 26. Engineering-quality direction
+## 26. Security, identity, and transport
+
+### 26.1 Deployment-aware authentication
+
+OSCA has one logical owner initially while retaining internal capability and scope enforcement.
+
+Local-only mode binds to loopback or a protected local channel by default and relies on the operating-system user boundary. Binding to another network interface requires explicit configuration.
+
+Personal-server access requires authenticated sessions and secure transport. Unsafe public exposure should be detected and rejected where practical.
+
+Automation credentials are scoped, individually revocable, and expiring where practical. Extensions and LLM tools receive explicitly approved capabilities rather than unrestricted owner authority.
+
+### 26.2 Secrets
+
+Provider, LLM, and other credentials use an operating-system credential store or replaceable encrypted secret-vault adapter.
+
+Secrets must not appear in logs, exception messages, URLs, manifests, project exports, ordinary backups, or diagnostic bundles. Backup and restore preserve secret references separately and require secure credential reconfiguration where needed.
+
+Extensions receive approved named credential capabilities and cannot read the secret vault directly.
+
+### 26.3 Network transport and endpoint authentication
+
+All non-local network transfers use encrypted and authenticated transport appropriate to the protocol. Plaintext fallback is prohibited.
+
+Requirements include:
+
+- Modern TLS with secure defaults and obsolete protocols and ciphers disabled
+- Server identity and hostname validation
+- Trusted certificate-chain validation
+- Fail-closed behavior for invalid, expired, mismatched, or untrusted certificates
+- No routine configuration switch that disables certificate verification
+- Client authentication on every protected remote application operation
+- Mutual TLS for controlled machine-to-machine channels where OSCA controls or configures both endpoints and the operational profile requires it
+- Provider-supported client authentication, such as OAuth, signed requests, scoped tokens, or API credentials, for external services that do not support client certificates
+- Credential rotation and revocation
+- Replay resistance where applicable
+- No secrets in query strings
+- Audit events for authentication and security-sensitive failures
+
+Remote browser access uses TLS for server authentication plus authenticated application sessions. Remote automation can combine mutually authenticated transport with scoped application credentials so transport identity and application authorization remain distinct.
+
+Certificate and trust-store configuration must be inspectable, testable, and documented. Certificate renewal and failure behavior require operational runbooks and automated health warnings.
+
+Security profiles should map requirements to applicable deployment context and documented regulatory or organizational controls rather than claiming one universal regulation mandates the same authentication mechanism for every connection.
+
+### 26.4 Application security
+
+Session handling includes request-forgery protection, secure cookie policy, expiration, explicit logout, and appropriate rate limiting. Security-sensitive actions generate audit events.
+
+Threat modeling, dependency and secret scanning, security tests, and secure configuration documentation are release requirements.
+
+A future multi-user edition must replace rather than stretch single-owner identity assumptions.
+
+## 27. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1045,7 +1098,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 27. PRD sections pending discovery
+## 28. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -1055,14 +1108,13 @@ The following areas are intentionally incomplete:
 - Backtest fidelity levels
 - Portfolio and risk functionality
 - Alerting and scheduled operation
-- Security and credential handling
 - Availability, performance, scalability, and cost objectives
 - Import, export, backup, and recovery
 - Milestone decomposition
 - Product success metrics
 - Risks and mitigations
 
-## 28. Document governance
+## 29. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
