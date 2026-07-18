@@ -196,3 +196,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will combine a reusable global catalog with isolated research projects and independently managed paper accounts.
 - **Rationale:** Shared datasets and extensions should be reusable without allowing mutable global configuration to compromise experiment isolation or portfolio accounting.
 - **Consequences:** Projects pin dependencies, contain research intent and outputs, and support clone, archive, comparison, import, and export. Global changes require impact analysis. Reusable content is promoted explicitly. Paper accounts can consume promoted research outputs without belonging to a project.
+
+
+## D-024 — Analytical output model
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will represent observations, signals, findings, theses, recommendations, and alerts as distinct connected result types. Composite scores are optional summaries rather than complete outputs.
+- **Rationale:** Facts, method-specific interpretations, testable hypotheses, and proposed actions have different authority and lifecycle semantics. Collapsing them into one score obscures uncertainty and disagreement.
+- **Consequences:** Results retain horizon, confidence, evidence, contradictions, assumptions, quality, regime, invalidation, risk, provenance, state, and later outcome evaluation as applicable. LLM narratives cannot replace authoritative structured evidence.
