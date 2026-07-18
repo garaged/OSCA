@@ -58,6 +58,12 @@ M1 is a **governed high-risk foundation change** under ADR-0005 because it estab
 
 M1 evidence is recorded under `evidence/m1/` with source SHA, environment/tool versions, lock digest, schema revisions, fixture digests, results, limitations, exceptions, and integrity digest. Generated bulk output may remain in CI retention while the repository record links its immutable run identity.
 
+Retained slice records:
+
+- [M1.1 readiness foundation](../../../evidence/m1/m1-1-readiness-foundation.md)
+- [M1.2–M1.3 persistence, security, and telemetry](../../../evidence/m1/m1-2-3-persistence-security-telemetry.md)
+- [M1.4 durable diagnostic jobs](../../../evidence/m1/m1-4-durable-diagnostic-jobs.md)
+
 ## Merge policy
 
 No implementation slice merges with a failing required gate. A temporary exception must use `EXC-NNNN`, expire, retain blocking visibility, and receive the governing authority's approval.
