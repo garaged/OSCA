@@ -1,6 +1,6 @@
 # M1 Execution Plan
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Architecture authority
 - **Product approval:** Product authority
 - **Authoritative sources:** M1 intent and scope; ADR-0001 through ADR-0010
