@@ -1,6 +1,6 @@
 # ADR-0001 — Requirements Authority and Traceability Model
 
-- **Status:** Accepted
+- **Status:** Baseline
 - **Date:** 2026-07-17
 - **Decision owners:** Product authority, architecture authority, and quality authority
 - **Scope:** All governed OSCA requirements, milestone specifications, tests, documentation, risks, and implementation evidence
