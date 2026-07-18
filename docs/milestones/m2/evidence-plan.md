@@ -1,8 +1,8 @@
 # M2 Evidence Plan
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Quality authority
-- **Security, data, licensing, and architecture approval:** Required
+- **Security, data, licensing, and architecture approval:** Accepted 2026-07-18
 - **Governing specification:** [M2 governed daily market data](../../specifications/m2-governed-daily-market-data.md)
 - **Last reviewed:** 2026-07-18
 
