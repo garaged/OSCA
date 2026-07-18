@@ -6,7 +6,7 @@
 - **Purpose:** Define implementation-ready behavior for the M1 system-readiness vertical slice.
 - **Governing intent:** [M1 intent](../milestones/m1/intent.md)
 - **Requirements:** REQ-0001 through REQ-0020
-- **Related decisions:** D-006, D-007, D-021, D-022, D-031, D-032, D-033, D-035, D-036, D-044, D-046; ADR-0001 through ADR-0015
+- **Related decisions:** D-006, D-007, D-021, D-022, D-031, D-032, D-033, D-035, D-036, D-044, D-046; ADR-0001 through ADR-0016
 - **Related risks:** Unsafe exposure, secret disclosure, state loss, workflow corruption, interface divergence, documentation drift
 - **Downstream consumers:** Implementation, tests, documentation, operations, and M1 evidence
 - **Last reviewed:** 2026-07-18
@@ -188,6 +188,5 @@ Installation, developer setup, local/personal-server configuration, security mod
 
 ## Open questions
 
-- Select an interoperable reviewed backup-encryption container before M1 recovery implementation.
 - Decide whether dual-stack loopback binding is one listener or platform-dependent listeners in the configuration specification.
 - Define exact supported operating systems for M1 credential-store conformance.
