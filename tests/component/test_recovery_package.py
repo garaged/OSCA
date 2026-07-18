@@ -8,6 +8,7 @@ import pytest
 from osca.recovery.infrastructure.package import (
     RecoveryPackageError,
     build_cleartext_package,
+    create_sqlite_snapshot,
     validate_cleartext_package,
 )
 
@@ -84,3 +85,25 @@ def test_incompatible_schema_is_rejected_before_restore(tmp_path: Path) -> None:
     )
     with pytest.raises(RecoveryPackageError, match="schema_incompatible"):
         validate_cleartext_package(package)
+
+
+def test_snapshot_excludes_uncommitted_concurrent_write(tmp_path: Path) -> None:
+    source = tmp_path / "source.db"
+    snapshot = tmp_path / "snapshot.db"
+    _source_database(source)
+    writer = sqlite3.connect(source)
+    try:
+        writer.execute("BEGIN IMMEDIATE")
+        writer.execute("INSERT INTO evidence VALUES ('not-yet-committed')")
+        create_sqlite_snapshot(source, snapshot)
+        writer.commit()
+    finally:
+        writer.close()
+    restored = sqlite3.connect(snapshot)
+    active = sqlite3.connect(source)
+    try:
+        assert restored.execute("SELECT COUNT(*) FROM evidence").fetchone() == (1,)
+        assert active.execute("SELECT COUNT(*) FROM evidence").fetchone() == (2,)
+    finally:
+        restored.close()
+        active.close()
