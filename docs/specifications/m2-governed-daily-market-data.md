@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0019
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0020
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -54,7 +54,7 @@ Equivalent work deduplicates through durable workflow semantics. Provider latenc
 
 ### Gaps, repair, and quality
 
-The M2 daily reference policy declares expected dates without claiming the complete M3 calendar engine. Missing expected dates produce gaps; non-trading/date uncertainty produces an explicit unresolved finding rather than fabricated data. Repair requests only missing/invalid ranges and produces a new dataset revision with lineage.
+ADR-0020 defines the bounded daily reference policy: completed UTC dates are expected for crypto; stock weekdays are candidates whose holiday/session uncertainty produces an explicit unresolved finding. Only confirmed missing sessions become gaps or automatic repair ranges. M2 does not claim the complete M3 calendar engine. Repair requests only missing/invalid ranges and produces a new dataset revision with lineage.
 
 Initial rules reject or find: non-finite numbers, negative price/volume, high below open/close/low, low above open/close/high, duplicate identity/date, identity mismatch, invalid completion/time semantics, and declared range gaps. Findings never silently mutate observations.
 
