@@ -26,7 +26,7 @@ jobs:
             https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-linux-amd64.tar.gz
           echo "bdc69c09cbdd6cf8b1f333d372a1f58247b3a33146406333e30c0f26e8f51377  /tmp/age.tar.gz" \
             | sha256sum --check -
-          tar --extract --gzip --file /tmp/age.tar.gz --directory /tmp
+          tar --extract --gzip --no-same-owner --file /tmp/age.tar.gz --directory /tmp
       - name: Ruff
         run: uv run ruff check .
       - name: Strict mypy
