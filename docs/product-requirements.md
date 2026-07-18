@@ -642,7 +642,54 @@ User-facing behavior is incomplete until its task-oriented usage documentation i
 
 Generated reference material may supplement but cannot replace conceptual guidance, tutorials, operational runbooks, and realistic end-to-end examples. Contextual help in the web application should link to the relevant versioned documentation.
 
-## 18. Backtesting and paper trading — initial requirements
+## 18. Research organization
+
+### 18.1 Global catalog
+
+The global catalog contains reusable and system-level resources, including:
+
+- Canonical instruments and provider mappings
+- Provider capabilities and routing policies
+- Governed dataset identities
+- Installed extensions
+- Reusable analysis templates
+- Promoted models
+- Credentials and security policies
+- Schedules and system defaults
+
+Global resources cannot be destructively changed without identifying affected projects, analyses, artifacts, and paper accounts.
+
+### 18.2 Research projects
+
+A research project is the primary container for an objective-specific investigation. It may contain:
+
+- Research objective, intent, decisions, hypotheses, and notes
+- Instrument universe
+- Provider, freshness, interval, and date-range policies
+- Analysis definitions and dependency graphs
+- Features and labels
+- Model experiments and comparisons
+- Backtests
+- Findings
+- Dashboards and reports
+- Extension and environment lockfiles
+- Reproducibility manifests
+
+Projects reference immutable datasets and artifacts rather than duplicating all underlying data. Project defaults can override system defaults without mutating them. Reusable content is promoted deliberately into the global catalog.
+
+Projects can be cloned, archived, compared, exported, and imported. Exports may be thin manifests or self-contained packages, subject to data-provider licensing.
+
+Every durable analysis, backtest, and report belongs to an explicit project. Short-lived work belongs to an identified ad hoc workspace rather than an ambiguous global context.
+
+### 18.3 Paper accounts
+
+Paper accounts are persistent simulated portfolios independent of research projects. They may consume promoted strategies, model versions, or recommendations from one or more projects without transferring ownership of portfolio history to those projects.
+
+### 18.4 Language-model context
+
+LLM operations receive the explicitly selected project context and approved global references. The system must not silently mix unrelated project histories into an explanation or recommendation.
+
+## 19. Backtesting and paper trading — initial requirements
 
 The platform must support fair, reproducible comparison of strategies and models.
 
@@ -665,7 +712,7 @@ It should eventually include:
 - Paper-order lifecycle and simulated fills
 - Difference analysis between simulated expectations and forward results
 
-## 19. Engineering-quality direction
+## 20. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -681,7 +728,7 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 20. PRD sections pending discovery
+## 21. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
@@ -700,7 +747,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 21. Document governance
+## 22. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
