@@ -35,6 +35,9 @@ class Capability(StrEnum):
     WORKFLOW_SUBMIT = "workflow.diagnostic.submit"
     WORKFLOW_READ = "workflow.diagnostic.read"
     WORKFLOW_CANCEL = "workflow.diagnostic.cancel"
+    RECOVERY_BACKUP = "recovery.backup.create"
+    RECOVERY_VERIFY = "recovery.backup.verify"
+    RECOVERY_RESTORE = "recovery.restore.execute"
 
 
 class AuthorizationContext(BaseModel):
