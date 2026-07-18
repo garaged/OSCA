@@ -35,4 +35,4 @@
 
 ## Implementation state
 
-M1 entry gates are satisfied. M1.1–M1.3 foundations and the M1.4 durable diagnostic-job slice are implemented with retained evidence. Recovery-package work and the remaining M1 exit gates are not complete.
+M1 entry gates are satisfied. M1.1–M1.6 are implemented with retained evidence. M1.7 documentation and operational-evidence reconciliation and M1.8 exit review remain.
