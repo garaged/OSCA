@@ -114,7 +114,11 @@ class EmbeddedExecutor:
                 message="Checkpoint major version is unsupported",
             )
             return self._service.transition(run, DiagnosticRunState.BLOCKED, error=error)
-        result = self._result_catalog.register(current.run_id.value, current.correlation_id)
+        result = self._result_catalog.register(
+            current.run_id.value,
+            current.correlation_id,
+            current.producer_build,
+        )
         with_result = current.model_copy(
             update={"result": result, "revision": current.revision + 1}
         )
