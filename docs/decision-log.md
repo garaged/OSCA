@@ -187,3 +187,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** Version-matched usage, operations, API, analytical-methodology, and extension documentation is a release-blocking part of OSCA's definition of done.
 - **Rationale:** The platform's analytical, data-governance, storage, extensibility, and operational behavior cannot be used safely or effectively without clear documentation.
 - **Consequences:** Behavior changes and their documentation ship together. Task-oriented guides, examples, references, runbooks, limitations, and troubleshooting are maintained and validated where practical; generated references alone are insufficient.
+
+
+## D-023 — Research organization
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will combine a reusable global catalog with isolated research projects and independently managed paper accounts.
+- **Rationale:** Shared datasets and extensions should be reusable without allowing mutable global configuration to compromise experiment isolation or portfolio accounting.
+- **Consequences:** Projects pin dependencies, contain research intent and outputs, and support clone, archive, comparison, import, and export. Global changes require impact analysis. Reusable content is promoted explicitly. Paper accounts can consume promoted research outputs without belonging to a project.
