@@ -5,7 +5,7 @@
 - **Approval roles:** Product, security, data, licensing, and quality authorities — accepted 2026-07-18
 - **Governing intent:** [M2 intent](../milestones/m2/intent.md)
 - **Requirements:** REQ-0021–REQ-0040
-- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0017
+- **Related decisions:** D-012–D-018, D-040; ADR-0001–ADR-0018
 - **Risk class:** Governed high-risk data-integrity, licensing, and external-adapter change
 - **Last reviewed:** 2026-07-18
 
@@ -68,7 +68,7 @@ Treat provider metadata and payloads as untrusted structured input. Enforce sche
 
 ## Persistence, migration, and recovery
 
-Instrument, Provider, and Market Data each own schemas. Catalog receives typed public metadata only. Payload storage is physically replaceable and cannot reuse another capability's private tables. Migrations retain every released revision and prove upgrade/downgrade policy. M2 recovery protects registry/mapping/policy/catalog metadata; bulk source/canonical payload backup is deferred pending an explicit profile, with availability/reconstruction implications documented.
+Instrument, Provider, and Market Data each own schemas. Catalog receives typed public metadata only. Payload storage is physically replaceable and cannot reuse another capability's private tables. Migrations retain every released revision and prove upgrade/downgrade policy. ADR-0018 protects governed metadata and accepted canonical payloads. Retained source payloads are backed up only when the exact provider-policy revision permits it; intentional exclusions and their reproducibility implications remain explicit.
 
 ## Acceptance criteria
 
