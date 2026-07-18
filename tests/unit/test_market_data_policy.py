@@ -64,7 +64,8 @@ def test_cleanup_never_selects_accepted_canonical_history() -> None:
     canonical = manifest(DatasetLayer.CANONICAL, protected=True, byte_size=200)
     source = manifest(DatasetLayer.SOURCE, protected=False, byte_size=100)
     plan = preview_cleanup(
-        (canonical, source), eligible_manifest_ids=frozenset({canonical.manifest_id, source.manifest_id})
+        (canonical, source),
+        eligible_manifest_ids=frozenset({canonical.manifest_id, source.manifest_id}),
     )
     assert tuple(action.manifest_id for action in plan.actions) == (source.manifest_id,)
     assert plan.protected_bytes == 200
