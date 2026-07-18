@@ -143,3 +143,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use four logical data layers—source, canonical, derived, and artifact—with a shared metadata and lineage catalog.
 - **Rationale:** Source observations, normalized facts, reproducible transformations, and research outputs have different correctness, revision, retention, and recovery semantics.
 - **Consequences:** Retained source payloads are immutable; canonical corrections create revisions; derived results identify transformations and inputs; artifacts reference datasets explicitly; and catalog metadata survives payload eviction. The logical separation does not mandate four physical databases.
+
+
+## D-018 — Retrieval and freshness model
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use policy-driven hybrid retrieval with explicit data requirements, structured resolution status, targeted gap repair, and on-demand, scheduled, dependency-driven, manual, invalidation-driven, or real-time triggers.
+- **Rationale:** Fixed TTLs cannot correctly represent immutable history, provisional bars, provider revisions, market sessions, offline research, and workflows with different freshness tolerances.
+- **Consequences:** Callers declare freshness and completeness needs. Equivalent concurrent requests share idempotent retrieval jobs. Historical ranges are repaired incrementally. Analyses retain the exact dataset revision used, and cache results expose freshness, partiality, invalidity, availability, and refresh state.
