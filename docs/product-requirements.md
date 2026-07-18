@@ -915,7 +915,69 @@ Performance snapshots may accelerate reads but must be regenerable. Reconciliati
 
 Paper-account history does not change because a strategy, extension, or model is upgraded. Tax reporting is not initially authoritative, although lot and cost-basis information is retained for future analysis.
 
-## 24. Engineering-quality direction
+## 24. Machine-learning lifecycle
+
+### 24.1 Governed experiments and model registry
+
+OSCA supports pluggable training workflows while standardizing experiment identity, lifecycle records, evaluation contracts, and deployment control.
+
+A model version is immutable. A deployment references an exact model version and can change without rewriting historical decisions or results.
+
+Lifecycle states include:
+
+1. Draft experiment
+2. Training candidate
+3. Evaluated candidate
+4. Event-driven validated
+5. Approved for paper deployment
+6. Active paper champion or challenger
+7. Suspended
+8. Retired
+
+### 24.2 Reproducible training records
+
+Training records include, as applicable:
+
+- Dataset and revision identities
+- Feature and label definitions
+- Sampling and weighting
+- Temporal availability rules
+- Training, validation, test, walk-forward, and forward-period definitions
+- Code and extension versions
+- Dependencies and environment
+- Parameters and random seeds
+- Material hardware context
+- Produced model artifacts and integrity information
+
+Feature contracts explicitly define timing and information availability to prevent leakage.
+
+### 24.3 Evaluation and promotion
+
+Evaluation is task-specific and includes uncertainty or calibration where meaningful. Simple baselines and non-ML strategies are mandatory comparison candidates.
+
+Hyperparameter searches are retained as experiment families rather than preserving only the winning run. Final held-out data cannot be reused repeatedly for model selection.
+
+Promotion policies may enforce data quality, minimum sample size, stability, risk, robustness, explainability, and event-driven validation.
+
+### 24.4 Paper deployment and monitoring
+
+Champion and challenger deployments support controlled forward comparison. Monitoring covers:
+
+- Input and feature distributions
+- Feature availability
+- Prediction distributions
+- Calibration
+- Realized outcomes
+- Operational errors and latency
+- Applicable market-regime changes
+
+Retraining may be scheduled or triggered but never implies automatic promotion. Rollback changes the deployment pointer to a prior immutable model version.
+
+Model import and export use manifests and security validation. Unsafe or unsupported serialization formats can be rejected or quarantined.
+
+Reinforcement-learning models follow the same governance and remain bounded by deterministic portfolio and risk rules.
+
+## 25. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -931,14 +993,13 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 25. PRD sections pending discovery
+## 26. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
 - Detailed cache semantics
-- Model and experiment lifecycle
 - Backtest fidelity levels
 - Portfolio and risk functionality
 - Alerting and scheduled operation
@@ -949,7 +1010,7 @@ The following areas are intentionally incomplete:
 - Product success metrics
 - Risks and mitigations
 
-## 26. Document governance
+## 27. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
