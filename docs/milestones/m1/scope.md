@@ -1,6 +1,6 @@
 # M1 Scope — Secure Walking Skeleton
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Product authority
 - **Architecture approval:** Architecture authority
 - **Authoritative sources:** M1 intent; approved PRD M1 outcome; Tier-1 ADRs
