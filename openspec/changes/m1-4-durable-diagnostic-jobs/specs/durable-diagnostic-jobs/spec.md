@@ -18,6 +18,15 @@ The Workflow capability SHALL persist a stable typed run before execution and SH
 ### Requirement: Governed lifecycle transitions
 The Workflow capability SHALL permit only the pending, running, blocked, succeeded, failed, cancelling, cancelled, and interrupted transitions defined by ADR-0013.
 
+The permitted graph is:
+
+- pending to running or cancelled;
+- running to blocked, succeeded, failed, cancelling, or interrupted;
+- blocked to pending or cancelled;
+- cancelling to cancelled or interrupted;
+- interrupted to pending, failed, or cancelled;
+- succeeded, failed, and cancelled are terminal.
+
 #### Scenario: Invalid transition
 - **WHEN** a caller or executor attempts a transition not present in the accepted transition graph
 - **THEN** the system rejects it without changing durable state and records correlated diagnostics
@@ -93,4 +102,3 @@ The change SHALL retain evidence for lifecycle properties, migration, idempotenc
 #### Scenario: OpenSpec and OSCA verification
 - **WHEN** all implementation tasks are complete
 - **THEN** strict OpenSpec validation passes and the OSCA evidence record links the source revision and executed gate results
-
