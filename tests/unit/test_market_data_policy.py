@@ -1,12 +1,18 @@
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 from uuid import uuid4
 
 from osca.instrument.api import AssetClass
-from osca.market_data.api import DatasetLayer, DatasetManifest, ManifestState
+from osca.market_data.api import (
+    DatasetLayer,
+    DatasetManifest,
+    ManifestState,
+    RetrievalRequest,
+)
 from osca.market_data.application import (
     classify_dates,
     contiguous_missing_ranges,
     preview_cleanup,
+    resolve_retrieval,
 )
 
 
@@ -77,3 +83,59 @@ def test_cleanup_defaults_are_not_implicit() -> None:
     plan = preview_cleanup((source,), eligible_manifest_ids=frozenset())
     assert plan.actions == ()
     assert plan.protected_bytes == 100
+
+
+def test_retrieval_reports_fresh_stale_and_exact_pinning() -> None:
+    instrument_id = uuid4()
+    created_at = datetime(2024, 1, 3, tzinfo=UTC)
+    candidate = manifest(DatasetLayer.CANONICAL, protected=True, byte_size=200).model_copy(
+        update={
+            "instrument_id": instrument_id,
+            "start_date": date(2024, 1, 1),
+            "end_date_exclusive": date(2024, 1, 3),
+            "created_at": created_at,
+        }
+    )
+    request = RetrievalRequest(
+        instrument_id=instrument_id,
+        start_date=date(2024, 1, 1),
+        end_date_exclusive=date(2024, 1, 3),
+        maximum_age_seconds=60,
+        pinned_revision_id=candidate.manifest_id,
+        idempotency_key="retrieval-1",
+    )
+    fresh = resolve_retrieval(
+        request,
+        manifests=(candidate,),
+        findings=(),
+        now=created_at + timedelta(seconds=60),
+    )
+    assert fresh.state == "fresh"
+    assert fresh.revision_id == candidate.manifest_id
+    stale = resolve_retrieval(
+        request,
+        manifests=(candidate,),
+        findings=(),
+        now=created_at + timedelta(seconds=61),
+    )
+    assert stale.state == "stale"
+
+
+def test_retrieval_does_not_substitute_for_missing_pinned_revision() -> None:
+    candidate = manifest(DatasetLayer.CANONICAL, protected=True, byte_size=200)
+    request = RetrievalRequest(
+        instrument_id=candidate.instrument_id,
+        start_date=candidate.start_date,
+        end_date_exclusive=candidate.end_date_exclusive,
+        maximum_age_seconds=60,
+        pinned_revision_id=uuid4(),
+        idempotency_key="retrieval-2",
+    )
+    resolution = resolve_retrieval(
+        request,
+        manifests=(candidate,),
+        findings=(),
+        now=candidate.created_at,
+    )
+    assert resolution.state == "unavailable"
+    assert resolution.dataset_id is None
