@@ -1,11 +1,11 @@
 # OpenSpec Integration Policy
 
-- **Status:** Accepted pilot
+- **Status:** Adopted with controls
 - **Governing role:** Architecture authority
 - **Quality approval:** Quality authority
 - **Purpose:** Use OpenSpec as a bounded change-execution layer without creating a competing OSCA authority system.
 - **Authoritative sources:** Engineering constitution; governed workflow; ADR-0001, ADR-0004, ADR-0005; AI contributor contract
-- **Pilot change:** `m1-4-durable-diagnostic-jobs`
+- **Pilot change:** `m1-4-durable-diagnostic-jobs` — completed and archived
 - **Review trigger:** M1.4 completion, OpenSpec upgrade, schema/profile change, or governance conflict
 - **Last reviewed:** 2026-07-18
 
@@ -74,6 +74,21 @@ DO_NOT_TRACK=1 npm run openspec:validate
 
 OSCA implementation gates remain independently required.
 
+## Pilot disposition
+
+**Decision: Adopt with controls.** M1.4 satisfied the success criteria: execution state remained reconstructable, strict validation passed before and after archive, and the change exposed a missing authoritative lifecycle graph during implementation rather than allowing it to remain implicit. The authority boundary prevented OpenSpec from silently resolving that defect.
+
+The pilot also identified maintenance controls that remain mandatory:
+
+- replace generated placeholder purpose text in synchronized capability specs;
+- validate generated project-skill frontmatter before commit;
+- keep exact tool and lockfile pins;
+- update navigation when active changes move to the archive;
+- keep OSCA evidence and quality gates independent of OpenSpec validation;
+- do not retrofit completed history or require OpenSpec for trivial low-risk changes.
+
+OpenSpec is approved for bounded, governed implementation changes where delta scenarios and resumable task state materially improve review. Each change still requires the authority links and lifecycle defined above.
+
 ## Pilot success criteria
 
 The pilot succeeds if it:
@@ -85,4 +100,4 @@ The pilot succeeds if it:
 - archives cleanly before PR merge;
 - adds less maintenance cost than the execution clarity it provides.
 
-At M1.4 closure, the authority records Adopt, Revise, or Remove. Until then OpenSpec is recommended for M1.4 only, not mandatory for every change.
+The M1.4 closure decision is **Adopt with controls**. Re-evaluate on an OpenSpec upgrade, schema/profile change, repeated maintenance friction, or any governance conflict.
