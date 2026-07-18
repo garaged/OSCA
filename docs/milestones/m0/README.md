@@ -27,12 +27,28 @@ M0 does not select an implementation language, database, frontend framework, ML 
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability model](../../governance/traceability-model.md)
 - [Traceability register](../../governance/traceability-register.md)
+- [Glossary and ubiquitous language](../../glossary.md)
+
+## Architecture foundation
+
+- [Architecture index](../../architecture/README.md)
+- [System context](../../architecture/system-context.md)
+- [Conceptual domain model](../../architecture/domain-model.md)
+- Architecture principles — pending
+- Modular-monolith boundaries — pending
+- Dependency rules — pending
+- Draft public seams — pending
 
 ## Decision records
 
 - [ADR index](../../decisions/README.md)
 - [ADR-0001 — Requirements authority and traceability model](../../decisions/ADR-0001-requirements-authority-and-traceability-model.md)
+- [ADR-0002 — Modular-monolith decomposition model](../../decisions/ADR-0002-modular-monolith-decomposition-model.md)
 
-## Current increment
+## Increment status
 
-The first M0 increment establishes the control plane for later artifacts. It introduces no product behavior and makes no implementation-technology selection.
+- **Increment 1 — Governance control plane:** Published for M0 review.
+- **Increment 2 — Ubiquitous language and system understanding:** Draft artifacts published for M0 review.
+- **Increment 3 — Architecture foundation:** Pending.
+
+All M0 artifacts remain subject to complete-package approval. Publication on `agent/m0-foundation` does not merge or approve the M0 package.
