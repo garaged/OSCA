@@ -12,18 +12,22 @@
 
 - [System context](system-context.md)
 - [Domain model](domain-model.md)
-- Architecture principles — pending
-- Modular-monolith boundaries — pending
-- Dependency rules — pending
+- [Architecture principles](principles.md)
+- [Modular-monolith boundaries](modular-monolith.md)
+- [Dependency rules](dependency-rules.md)
 - Proposed repository structure — pending
 
 ## Draft public seams
 
-The provider, analysis, visualization, model, and extension seams will be specified after the context, domain language, architecture principles, and dependency rules are stable enough to establish ownership and invariants.
+The provider, analysis, visualization, model, and extension seams will be specified after the boundary-enforcement decision establishes how public and private contracts will be represented and verified.
 
 ## Decision records
 
 Accepted architecture decisions are indexed in [the ADR directory](../decisions/README.md).
+
+## Current decision boundary
+
+The logical module and dependency rules are technology-neutral. M0 now requires a decision on the physical and automated enforcement model for module boundaries before the final module catalog, repository structure, architecture fitness checks, and public seams are approved.
 
 ## Model status
 

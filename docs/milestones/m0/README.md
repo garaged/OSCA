@@ -34,10 +34,11 @@ M0 does not select an implementation language, database, frontend framework, ML 
 - [Architecture index](../../architecture/README.md)
 - [System context](../../architecture/system-context.md)
 - [Conceptual domain model](../../architecture/domain-model.md)
-- Architecture principles — pending
-- Modular-monolith boundaries — pending
-- Dependency rules — pending
+- [Architecture principles](../../architecture/principles.md)
+- [Modular-monolith boundaries](../../architecture/modular-monolith.md)
+- [Dependency rules](../../architecture/dependency-rules.md)
 - Draft public seams — pending
+- Proposed repository structure — pending
 
 ## Decision records
 
@@ -49,6 +50,6 @@ M0 does not select an implementation language, database, frontend framework, ML 
 
 - **Increment 1 — Governance control plane:** Published for M0 review.
 - **Increment 2 — Ubiquitous language and system understanding:** Draft artifacts published for M0 review.
-- **Increment 3 — Architecture foundation:** Pending.
+- **Increment 3 — Architecture foundation:** Logical principles and dependency rules published; boundary-enforcement decision pending.
 
 All M0 artifacts remain subject to complete-package approval. Publication on `agent/m0-foundation` does not merge or approve the M0 package.
