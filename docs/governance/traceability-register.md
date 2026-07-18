@@ -36,6 +36,7 @@ The first M1 intent may be drafted while requirement extraction is reviewed. M1 
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0001–REQ-0020 | Cited PRD sections and D-records in requirements catalog | [M1 intent](../milestones/m1/intent.md) | [Secure walking skeleton](../specifications/m1-secure-walking-skeleton.md) | M1-AC-001–M1-AC-020 | [M1 evidence plan](../milestones/m1/evidence-plan.md) | Required by REQ-0019; implementation links pending | ADR-0001–ADR-0015 | Planned |
+| REQ-0001–REQ-0010, REQ-0016–REQ-0020 | Cited PRD sections and D-records in requirements catalog | [M1 intent](../milestones/m1/intent.md) | [Secure walking skeleton](../specifications/m1-secure-walking-skeleton.md) | M1-AC-001–M1-AC-010, M1-AC-016–M1-AC-020 | [M1 evidence plan](../milestones/m1/evidence-plan.md) | Incremental implementation links in M1 evidence | ADR-0001–ADR-0015 | In progress |
+| REQ-0011–REQ-0015 | Cited PRD sections and D-records in requirements catalog | [M1 intent](../milestones/m1/intent.md) | [Secure walking skeleton](../specifications/m1-secure-walking-skeleton.md) | M1-AC-011–M1-AC-015 | [M1.4 evidence](../../evidence/m1/m1-4-durable-diagnostic-jobs.md) | [Diagnostic jobs usage](../milestones/m1/diagnostic-jobs.md) | ADR-0003, ADR-0004, ADR-0005, ADR-0006, ADR-0007, ADR-0009, ADR-0010, ADR-0012, ADR-0013, ADR-0014 | Verified |
 
 Implementation, test-result, documentation, and risk-disposition links are added incrementally. “Planned” does not claim verification completion.
