@@ -84,6 +84,17 @@ class RecordingOperations:
         return operation
 
 
+class RecordingConfiguration:
+    def __init__(self) -> None:
+        self.snapshots: dict[UUID, ValidatedConfiguration] = {}
+
+    def add(self, configuration: ValidatedConfiguration) -> None:
+        self.snapshots[configuration.revision_id] = configuration
+
+    def get(self, revision_id: UUID) -> ValidatedConfiguration | None:
+        return self.snapshots.get(revision_id)
+
+
 def _authorization(*capabilities: Capability) -> AuthorizationContext:
     return AuthorizationContext(
         actor="local-owner",
@@ -111,7 +122,24 @@ def _database(path: Path) -> None:
         connection.execute("CREATE TABLE catalog_result_metadata (result_id TEXT)")
         connection.execute("CREATE TABLE catalog_recovery_metadata (record_id TEXT)")
         connection.execute("CREATE TABLE operations_audit_records (record_id TEXT)")
+        connection.execute(
+            "CREATE TABLE configuration_snapshots (revision_id TEXT PRIMARY KEY, payload TEXT)"
+        )
         connection.execute("INSERT INTO retained VALUES ('evidence')")
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def _persist_configuration_row(
+    database: Path, configuration: ValidatedConfiguration
+) -> None:
+    connection = sqlite3.connect(database)
+    try:
+        connection.execute(
+            "INSERT INTO configuration_snapshots VALUES (?, ?)",
+            (str(configuration.revision_id), configuration.model_dump_json()),
+        )
         connection.commit()
     finally:
         connection.close()
@@ -124,27 +152,32 @@ def test_create_verify_preview_and_isolated_restore_leave_active_unchanged(
     package = tmp_path / "backup.age"
     restored = tmp_path / "isolated"
     _database(database)
-    active_before = file_digest(database)
     catalog = RecordingCatalog()
     audit = RecordingAudit()
+    configurations = RecordingConfiguration()
     service = RecoveryService(
         container=CopyContainer(),
         vault=MemoryVault(),
         catalog=catalog,
         audit=audit,
         operations=RecordingOperations(),
+        configuration=configurations,
+        source_database=database,
     )
     correlation = CorrelationId.new()
     configuration_revision = uuid4()
+    configuration = _configuration(configuration_revision)
+    configurations.add(configuration)
+    _persist_configuration_row(database, configuration)
+    active_before = file_digest(database)
     created = service.create(
         CreateBackup(
             authorization=_authorization(Capability.RECOVERY_BACKUP),
             correlation_id=correlation,
-            source_database=str(database),
             destination=str(package),
             recipient="age1" + "q" * 58,
             recipient_fingerprint="sha256:" + "a" * 64,
-            configuration_snapshot=_configuration(configuration_revision),
+            configuration_snapshot=configuration,
             configuration_revision=configuration_revision,
             source_build="test-build",
             source_schema="m1_0005",
@@ -193,24 +226,29 @@ def test_preview_conflict_and_package_change_block_execution(tmp_path: Path) -> 
     destination = tmp_path / "existing"
     destination.mkdir()
     _database(database)
+    configurations = RecordingConfiguration()
     service = RecoveryService(
         container=CopyContainer(),
         vault=MemoryVault(),
         catalog=RecordingCatalog(),
         audit=RecordingAudit(),
         operations=RecordingOperations(),
+        configuration=configurations,
+        source_database=database,
     )
     correlation = CorrelationId.new()
     revision = uuid4()
+    configuration = _configuration(revision)
+    configurations.add(configuration)
+    _persist_configuration_row(database, configuration)
     service.create(
         CreateBackup(
             authorization=_authorization(Capability.RECOVERY_BACKUP),
             correlation_id=correlation,
-            source_database=str(database),
             destination=str(package),
             recipient="age1" + "q" * 58,
             recipient_fingerprint="sha256:" + "a" * 64,
-            configuration_snapshot=_configuration(revision),
+            configuration_snapshot=configuration,
             configuration_revision=revision,
             source_build="test",
             source_schema="m1_0005",
@@ -257,13 +295,14 @@ def test_missing_capability_fails_before_backup_creation(tmp_path: Path) -> None
         catalog=RecordingCatalog(),
         audit=RecordingAudit(),
         operations=RecordingOperations(),
+        configuration=RecordingConfiguration(),
+        source_database=tmp_path / "missing",
     )
     with pytest.raises(RecoveryAuthorizationDenied):
         service.create(
             CreateBackup(
                 authorization=_authorization(),
                 correlation_id=CorrelationId.new(),
-                source_database=str(tmp_path / "missing"),
                 destination=str(tmp_path / "backup.age"),
                 recipient="age1" + "q" * 58,
                 recipient_fingerprint="fingerprint",
