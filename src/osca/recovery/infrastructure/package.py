@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import stat
 import zipfile
 from collections.abc import Mapping, Sequence
 from pathlib import Path, PurePosixPath
@@ -55,7 +56,7 @@ def create_sqlite_snapshot(source: Path, destination: Path) -> None:
 def _zip_info(path: str) -> zipfile.ZipInfo:
     info = zipfile.ZipInfo(path, _ZIP_TIMESTAMP)
     info.compress_type = zipfile.ZIP_DEFLATED
-    info.external_attr = 0o600 << 16
+    info.external_attr = (stat.S_IFREG | 0o600) << 16
     return info
 
 
@@ -151,7 +152,7 @@ def validate_cleartext_package(package: Path) -> BackupManifest:
                 if info.file_size > _MAX_ENTRY_BYTES:
                     raise RecoveryPackageError("recovery.package.entry_too_large")
                 unix_mode = info.external_attr >> 16
-                if unix_mode and not (unix_mode & 0o100000 or unix_mode & 0o600):
+                if unix_mode and not stat.S_ISREG(unix_mode):
                     raise RecoveryPackageError("recovery.package.entry_type_invalid")
             manifest = BackupManifest.model_validate_json(archive.read(_MANIFEST_PATH))
             if not manifest.verify_integrity():
