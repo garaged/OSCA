@@ -1,6 +1,6 @@
 # M1 Technology Decision Package
 
-- **Status:** Proposed for authority decision
+- **Status:** Accepted
 - **Governing role:** Architecture authority
 - **Product approval:** Product authority for user/deployment consequences
 - **Purpose:** Resolve only the technology decisions triggered by the M1 secure walking skeleton.
@@ -76,12 +76,6 @@ If accepted, the package should be split into focused ADRs:
 
 The web-shell choice remains explicitly provisional adapter guidance rather than a foundational UI-framework ADR.
 
-## Approval request
+## Approval record
 
-Approve one of:
-
-- **Recommended set:** authorize the five focused ADRs using this package.
-- **Recommended set with changes:** identify the rows to change before ADR authoring.
-- **Alternative direction:** require a different coherent stack and state the deployment or development constraint driving it.
-
-No production implementation should begin until this decision package and the M1 requirement extraction are approved.
+The recommended coherent set was accepted by the product and architecture authority on 2026-07-18 and formalized as ADR-0011 through ADR-0015.
