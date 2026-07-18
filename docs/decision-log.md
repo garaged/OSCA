@@ -223,3 +223,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use versioned declarative visualization specifications rendered by the application, with separately governed custom views for specialized interactions.
 - **Rationale:** Analytical extensions need rich presentation without requiring arbitrary frontend code or direct internal-data access.
 - **Consequences:** Specifications consume typed results, support interactive dashboards and static rendering, retain provenance, disclose downsampling, export data and reproduction metadata, and meet accessibility requirements. Custom views require additional trust, permissions, and compatibility governance.
+
+
+## D-027 — Dual-stage backtesting
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will provide fast vectorized research mode and authoritative event-driven simulation mode. Paper trading shares the event-driven domain model.
+- **Rationale:** Vectorized evaluation supports efficient exploration but cannot faithfully represent every temporal, order, fill, liquidity, and portfolio behavior required for realistic validation.
+- **Consequences:** Strategies declare compatible modes and produce typed decisions or order intents. Research results are labeled estimates. Candidates pass through event-driven validation before paper trading. Cross-engine fixtures, visible result differences, point-in-time enforcement, reproducible assumptions, and promotion gates are required.
