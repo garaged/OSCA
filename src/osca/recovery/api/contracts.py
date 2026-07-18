@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from osca.security.api import AuthorizationContext, SecretReference
 from osca.shared_kernel.api import CorrelationId
 
 
@@ -145,3 +146,38 @@ class RestoreRecord(BaseModel):
     validations: tuple[RestoreValidation, ...]
     availability: RecoveryAvailability
     registered_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class CreateBackup(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    authorization: AuthorizationContext
+    correlation_id: CorrelationId
+    source_database: str
+    destination: str
+    recipient: str
+    recipient_fingerprint: str
+    configuration_snapshot: dict[str, Any]
+    configuration_revision: UUID
+    source_build: str
+    source_schema: str
+
+
+class VerifyBackup(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    authorization: AuthorizationContext
+    correlation_id: CorrelationId
+    package: str
+    identity_reference: SecretReference
+
+
+class PreviewRestore(VerifyBackup):
+    destination: str
+
+
+class ExecuteRestore(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    authorization: AuthorizationContext
+    correlation_id: CorrelationId
+    package: str
+    identity_reference: SecretReference
+    plan: RestorePlan
