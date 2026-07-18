@@ -6,11 +6,17 @@ from uuid import uuid4
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 from osca.market_data.api import CanonicalDailyBar
+from osca.market_data.application import CanonicalPublicationIntent, CanonicalPublisher
 from osca.market_data.infrastructure import (
     DAILY_BAR_SCHEMA,
     ImmutablePayloadStore,
+    MarketDataBase,
+    PyArrowCanonicalCodec,
+    SqliteManifestRepository,
     deserialize_daily_bars,
     payload_digest,
     serialize_daily_bars,
@@ -59,3 +65,32 @@ def test_immutable_store_is_idempotent_and_rejects_replacement(tmp_path: Path) -
         store.publish("canonical/instrument/revision.parquet", payload + b"changed")
     with pytest.raises(ValueError):
         store.publish("../escape.parquet", payload)
+
+
+def test_staged_publisher_is_content_idempotent(tmp_path: Path) -> None:
+    engine = create_engine("sqlite://")
+    MarketDataBase.metadata.create_all(engine)
+    intent = CanonicalPublicationIntent(
+        dataset_id=uuid4(),
+        revision=1,
+        fingerprint="sha256:" + "d" * 64,
+        instrument_id=INSTRUMENT_ID,
+        provider_id="synthetic",
+        source_context="fixture-v1",
+        start_date=date(2024, 1, 1),
+        end_date_exclusive=date(2024, 1, 2),
+        retention_policy_revision="synthetic-v1",
+        backup_permitted=True,
+    )
+    with Session(engine) as session, session.begin():
+        publisher = CanonicalPublisher(
+            SqliteManifestRepository(session),
+            ImmutablePayloadStore(tmp_path),
+            PyArrowCanonicalCodec(),
+        )
+        first = publisher.publish(intent, (bar(1),))
+        second = publisher.publish(intent, (bar(1),))
+        assert second == first
+        assert first.state == "ready"
+        assert first.protected is True
+        assert (tmp_path / first.object_key).is_file()
