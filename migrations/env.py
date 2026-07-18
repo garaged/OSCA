@@ -5,6 +5,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from osca.catalog.infrastructure import CatalogBase
 from osca.configuration.infrastructure import ConfigurationBase
 from osca.operations.infrastructure import AuditBase
 from osca.workflow.infrastructure import WorkflowBase
@@ -13,7 +14,12 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = [ConfigurationBase.metadata, AuditBase.metadata, WorkflowBase.metadata]
+target_metadata = [
+    ConfigurationBase.metadata,
+    AuditBase.metadata,
+    WorkflowBase.metadata,
+    CatalogBase.metadata,
+]
 
 
 def run_migrations_offline() -> None:
