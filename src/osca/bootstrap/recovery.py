@@ -13,6 +13,8 @@ from sqlalchemy.orm import Session
 from osca import __version__
 from osca.bootstrap.database import create_sqlite_engine
 from osca.catalog.infrastructure import SqliteResultCatalog
+from osca.configuration.api import ValidatedConfiguration
+from osca.configuration.infrastructure import SqliteConfigurationRepository
 from osca.operations.infrastructure import SqliteAuditRepository, configure_telemetry
 from osca.recovery.application.service import RecoveryService
 from osca.recovery.infrastructure import SqliteRecoveryOperationRepository
@@ -23,14 +25,22 @@ from osca.security.infrastructure import KeyringVault
 
 @lru_cache(maxsize=1)
 def recovery_engine() -> Engine:
-    path = Path(os.environ.get("OSCA_DATABASE_PATH", "osca.db"))
-    return create_sqlite_engine(path)
+    return create_sqlite_engine(_database_path())
+
+
+def _database_path() -> Path:
+    return Path(os.environ.get("OSCA_DATABASE_PATH", "osca.db")).expanduser().resolve()
 
 
 def _age_executable() -> Path:
     configured = os.environ.get("OSCA_AGE_PATH")
     candidate = configured or shutil.which("age") or "/usr/bin/age"
     return Path(candidate).expanduser().resolve()
+
+
+def persist_configuration_snapshot(configuration: ValidatedConfiguration) -> None:
+    with Session(recovery_engine()) as session, session.begin():
+        SqliteConfigurationRepository(session).add(configuration)
 
 
 @contextmanager
@@ -46,6 +56,8 @@ def recovery_service() -> Iterator[RecoveryService]:
             catalog=SqliteResultCatalog(catalog_session),
             audit=SqliteAuditRepository(audit_session),
             operations=SqliteRecoveryOperationRepository(operation_session),
+            configuration=SqliteConfigurationRepository(catalog_session),
+            source_database=_database_path(),
             observer=RecoveryTelemetryObserver(
                 telemetry=configure_telemetry(service_version=__version__)
             ),
