@@ -20,7 +20,7 @@
 
 ## 4. Approval and closure
 
-- [ ] 4.1 Obtain product, architecture, security, data, licensing, and quality approval.
-- [ ] 4.2 Convert proposed requirements/specification/evidence artifacts to accepted status.
+- [x] 4.1 Obtain product, architecture, security, data, licensing, and quality approval.
+- [x] 4.2 Convert proposed requirements/specification/evidence artifacts to accepted status.
 - [ ] 4.3 Retain M2 initiation record and archive OpenSpec before merge.
 - [ ] 4.4 Begin M2.1 only from the accepted merge revision.
