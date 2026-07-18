@@ -357,3 +357,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will provide a guided but non-linear lifecycle from secure configuration and research framing through governed data, exploration, modeling, dual-stage backtesting, promotion, paper deployment, monitoring, outcome learning, and preservation.
 - **Rationale:** Independent tools provide flexibility but do not ensure that intent, evidence, assumptions, promotion, and realized outcomes remain connected.
 - **Consequences:** Stages expose prerequisites and outputs; projects can branch; ad hoc work can be governed later; timelines retain decisions and revisions; the web UI combines guidance with expert access; CLI and API share lifecycle semantics; and LLM assistance cannot bypass gates.
+
+
+## D-042 — Product success measurement
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use a balanced product scorecard centered on research integrity, data effectiveness, model and backtest rigor, safety, operational robustness, user effectiveness, and extensibility. Financial returns and raw engagement volume are not primary product KPIs.
+- **Rationale:** Product correctness is distinct from market outcomes, and activity counts can reward noise, overfitting, and unnecessary complexity.
+- **Consequences:** Milestones define measurable outcome thresholds; zero tolerance applies to unexplained accounting discrepancies, unauthorized risk bypass, silent canonical mutation, and secret disclosure; negative research results retain value; telemetry remains local by default; and measurement definitions are versioned.
