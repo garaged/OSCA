@@ -1651,7 +1651,74 @@ Financial returns remain strategy-evaluation metrics, not product promises or pr
 
 Milestones define measurable thresholds that tighten over time. Product-health measurement can remain local; external usage telemetry is opt-in. Metric definitions and calculation versions are governed and reproducible.
 
-## 36. Engineering-quality direction
+## 36. Availability, performance, scale, and cost
+
+### 36.1 Reference deployment profiles
+
+| Profile | CPU | Memory | Free storage | Intended use |
+|---|---:|---:|---:|---|
+| Minimum | 4 modern cores | 8 GB | 20 GB | Daily research and small watchlists |
+| Recommended | 8 cores | 16 GB | 100 GB | Daily and selected intraday research, backtesting, and local operation |
+| Heavy research | 16 or more cores | 32 GB or more | 500 GB or more | Larger intraday universes, parallel experiments, and local models |
+
+GPU acceleration is optional. Core market data, deterministic analytics, backtesting, cache management, and paper accounting cannot require a GPU.
+
+### 36.2 Initial scale targets
+
+On recommended hardware, OSCA targets:
+
+- At least 50,000 canonical instruments and provider mappings
+- Twenty years of daily bars for at least 10,000 instruments
+- Configurable one-minute histories for at least 500 selected instruments, subject to storage policy
+- Larger universes at coarser intervals without loading complete datasets into memory
+- At least four independent background jobs while retaining interactive responsiveness
+- Hundreds of analytical capabilities and extensions without eager loading
+- Thousands of retained experiments and backtests through indexed metadata and lazy artifact access
+- Priority for paper-account processing over exploratory work
+
+### 36.3 Responsiveness objectives
+
+For cached and indexed data on recommended hardware:
+
+- Common navigation and metadata operations: p95 under one second
+- Typical dashboards and charts: p95 under three seconds
+- Job submission acknowledgement: under one second
+- Health, job, and paper-account state visibility: within five seconds
+- Cancellation acknowledgement: within two seconds before safe termination
+- Long-running work exposes progress or a meaningful phase within two seconds
+
+Provider latency is excluded from application-processing targets but remains visible.
+
+### 36.4 Reference computational objectives
+
+Using governed benchmark datasets on recommended hardware:
+
+- F0 signal study across twenty years of daily data for 1,000 instruments: target under two minutes
+- F1 ten-year daily portfolio estimate over 500 instruments: target under two minutes
+- F2 five-year daily event-driven simulation over 100 instruments: target under ten minutes
+- Resampling and common indicator calculation are incremental when unaffected history already exists
+
+Architecture milestones establish repeatable benchmarks. Targets may be refined only through recorded evidence and an explicit decision.
+
+### 36.5 Availability and isolation
+
+Local mode makes no artificial high-availability claim; recovery and integrity take priority.
+
+Personal-server software targets 99.5 percent availability while the host, storage, and required dependencies are healthy. Provider outages are measured separately.
+
+A job, extension, or provider failure cannot make unrelated capabilities unavailable. Scheduled paper workflows fail safe when required dependencies are unhealthy.
+
+### 36.6 Cost control and graceful degradation
+
+OSCA requires no mandatory paid cloud service. Paid data and model providers remain optional.
+
+Users configure storage, compute, provider quota, LLM token, and monetary budgets. Workflows estimate cost where possible and stop predictably at limits.
+
+Resource pressure pauses or reduces noncritical work. OSCA cannot silently reduce analytical correctness, fidelity, data quality, or security to remain within budget.
+
+Single-node scaling is preferred initially. Optional workers or service extraction require profiling evidence and a recorded architectural decision.
+
+## 37. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1667,15 +1734,14 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 37. PRD sections pending discovery
+## 38. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
-- Availability, performance, scalability, and cost objectives
 - Milestone decomposition
 - Risks and mitigations
 
-## 38. Document governance
+## 39. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
