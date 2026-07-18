@@ -1366,7 +1366,62 @@ Event-driven backtests use raw tradable prices and apply corporate actions as ex
 
 Point-in-time tests use only lifecycle information available at simulated time. Revised or late events create new dataset revisions and identify affected analyses, models, and backtests.
 
-## 32. Engineering-quality direction
+## 32. Data-quality framework
+
+### 32.1 Quality states
+
+Datasets and revisions receive structured quality state:
+
+- Valid
+- Valid with findings
+- Degraded
+- Partial
+- Quarantined
+- Invalid
+- Superseded
+
+Workflows declare the severities and conditions they accept. Exploratory views, ML training, backtesting, and paper automation may apply increasingly strict gates.
+
+### 32.2 Validation scope
+
+Versioned and context-aware quality rules cover, as applicable:
+
+- Schema and required fields
+- Canonical instrument mapping
+- Timestamp ordering, uniqueness, timezone, session, and calendar alignment
+- OHLC invariants
+- Price, volume, unit, scale, and currency validity
+- Missing, unexpected, duplicate, or overlapping intervals
+- Extreme movement and stale-value detection
+- Corporate actions and adjustment factors
+- Provider revisions and discontinuities
+- Cross-provider discrepancies
+- Fundamental reporting periods
+- News duplication and publication timing
+- Future information and look-ahead contamination
+- Feature leakage and label alignment
+
+Rules account for market, venue, asset class, interval, provider semantics, and lifecycle state.
+
+### 32.3 Findings and repair
+
+Quality findings include severity, rule identity and version, affected scope, evidence, impact, and suggested remediation.
+
+Automatic repairs are deterministic versioned transformations that create new revisions. OSCA never silently interpolates values, removes outliers, shifts timestamps, changes units, or remaps symbols.
+
+Original source data, prior canonical revisions, repair transformations, and affected downstream artifacts remain traceable. Material repairs support preview and approval.
+
+Provider comparison informs quality findings but does not automatically identify one provider as truth.
+
+### 32.4 Downstream enforcement
+
+Every analysis records its accepted quality policy and actual findings. Quality regression triggers dependency-aware impact analysis.
+
+Paper automation rejects inputs violating active risk or quality policy. LLMs may explain findings and propose remediation but cannot silently modify canonical data.
+
+Quality dashboards show trends by provider, instrument, interval, rule, severity, and revision.
+
+## 33. Engineering-quality direction
 
 The following process requirements are accepted in principle and will be specified before implementation:
 
@@ -1382,20 +1437,19 @@ The following process requirements are accepted in principle and will be specifi
 - Documentation treated as versioned product material
 - No feature considered complete without observability and failure behavior appropriate to its risk
 
-## 33. PRD sections pending discovery
+## 34. PRD sections pending discovery
 
 The following areas are intentionally incomplete:
 
 - User problems and primary workflows
 - Product goals, non-goals, and measurable outcomes
-- Detailed cache semantics
 - Backtest fidelity levels
 - Availability, performance, scalability, and cost objectives
 - Milestone decomposition
 - Product success metrics
 - Risks and mitigations
 
-## 34. Document governance
+## 35. Document governance
 
 Accepted decisions are recorded in [decision-log.md](decision-log.md). A decision remains active until explicitly superseded. Open questions should not be silently converted into requirements.
 
