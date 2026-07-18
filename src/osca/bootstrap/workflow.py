@@ -8,8 +8,13 @@ from pathlib import Path
 
 from sqlalchemy import Engine
 
+from osca import __version__
 from osca.bootstrap.database import SessionProvider, create_sqlite_engine
-from osca.operations.infrastructure import SqliteAuditRepository
+from osca.operations.infrastructure import (
+    SqliteAuditRepository,
+    SqliteWorkflowEventRepository,
+    configure_telemetry,
+)
 from osca.workflow.application import WorkflowService
 from osca.workflow.infrastructure import SqliteDiagnosticRunRepository
 from osca.workflow.infrastructure.observation import WorkflowObserver
@@ -26,5 +31,9 @@ def workflow_service() -> Iterator[WorkflowService]:
     with SessionProvider(workflow_engine()).transaction() as session:
         yield WorkflowService(
             SqliteDiagnosticRunRepository(session),
-            WorkflowObserver(audit=SqliteAuditRepository(session)),
+            WorkflowObserver(
+                audit=SqliteAuditRepository(session),
+                events=SqliteWorkflowEventRepository(session),
+                telemetry=configure_telemetry(service_version=__version__),
+            ),
         )
