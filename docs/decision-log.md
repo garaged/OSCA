@@ -330,3 +330,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will preserve canonical raw price and volume observations, model corporate actions and crypto lifecycle changes explicitly, and provide versioned selectable adjustment views.
 - **Rationale:** Adjusted series are useful for analysis but cannot replace actual historical tradable observations or explicit accounting events.
 - **Consequences:** Analyses disclose adjustment policy; incompatible views do not mix silently; event-driven backtests apply actions to raw prices; point-in-time tests enforce information availability; and event revisions create new dataset revisions with impact analysis.
+
+
+## D-039 — Policy-driven data quality
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use versioned contextual quality rules, explicit validity and degradation states, quarantine, traceable repair revisions, and workflow-specific acceptance policies.
+- **Rationale:** Rejecting all imperfect real-world data sacrifices availability, while permissive warnings allow defects to contaminate models, backtests, and recommendations.
+- **Consequences:** Quality findings preserve evidence and impact; repairs never silently rewrite data; provider comparison does not automatically establish truth; downstream artifacts retain accepted policy; regressions trigger impact analysis; and paper automation enforces strict risk-linked quality gates.
