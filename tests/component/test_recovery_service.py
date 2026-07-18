@@ -1,10 +1,12 @@
 import shutil
 import sqlite3
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 
+from osca.configuration.api import DeploymentMode, ListenerConfiguration, SecurityConfiguration
+from osca.configuration.api.contracts import ValidatedConfiguration
 from osca.operations.api import AuditRecord
 from osca.recovery.api import CreateBackup, ExecuteRestore, PreviewRestore, VerifyBackup
 from osca.recovery.application.service import RecoveryAuthorizationDenied, RecoveryService
@@ -90,6 +92,16 @@ def _authorization(*capabilities: Capability) -> AuthorizationContext:
     )
 
 
+def _configuration(revision: UUID) -> ValidatedConfiguration:
+    return ValidatedConfiguration(
+        revision_id=revision,
+        profile="local",
+        deployment_mode=DeploymentMode.LOCAL,
+        listener=ListenerConfiguration(),
+        security=SecurityConfiguration(),
+    )
+
+
 def _database(path: Path) -> None:
     connection = sqlite3.connect(path)
     try:
@@ -132,7 +144,7 @@ def test_create_verify_preview_and_isolated_restore_leave_active_unchanged(
             destination=str(package),
             recipient="age1" + "q" * 58,
             recipient_fingerprint="sha256:" + "a" * 64,
-            configuration_snapshot={"profile": "local", "identity": "vault://recovery/key"},
+            configuration_snapshot=_configuration(configuration_revision),
             configuration_revision=configuration_revision,
             source_build="test-build",
             source_schema="m1_0005",
@@ -191,7 +203,7 @@ def test_missing_capability_fails_before_backup_creation(tmp_path: Path) -> None
                 destination=str(tmp_path / "backup.age"),
                 recipient="age1" + "q" * 58,
                 recipient_fingerprint="fingerprint",
-                configuration_snapshot={},
+                configuration_snapshot=_configuration(uuid4()),
                 configuration_revision=uuid4(),
                 source_build="test",
                 source_schema="m1_0005",
