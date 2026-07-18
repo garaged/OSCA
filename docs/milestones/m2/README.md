@@ -19,6 +19,7 @@
 - [Proposed risk register](risk-register.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
+- [Active M2 initiation OpenSpec change](../../../openspec/changes/m2-initiation/proposal.md)
 
 ## Required initiation sequence
 
