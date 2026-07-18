@@ -11,7 +11,7 @@ from osca.operations.api import AuditRecord
 from osca.recovery.api import CreateBackup, ExecuteRestore, PreviewRestore, VerifyBackup
 from osca.recovery.application.service import RecoveryAuthorizationDenied, RecoveryService
 from osca.recovery.domain import RecoveryAction, RecoveryOperation
-from osca.recovery.infrastructure.package import file_digest
+from osca.recovery.infrastructure.package import RecoveryPackageError, file_digest
 from osca.security.api import AuthorizationContext, Capability, SecretReference
 from osca.shared_kernel.api import CorrelationId
 
@@ -150,6 +150,7 @@ def test_create_verify_preview_and_isolated_restore_leave_active_unchanged(
             source_schema="m1_0005",
         )
     )
+    assert b"AGE-SECRET-KEY-TEST" not in package.read_bytes()
     identity = SecretReference(namespace="recovery", name="age-identity")
     manifest, _ = service.verify(
         VerifyBackup(
@@ -184,6 +185,69 @@ def test_create_verify_preview_and_isolated_restore_leave_active_unchanged(
     assert file_digest(database) == active_before
     assert len(catalog.kinds) == 2
     assert [item.action for item in audit.records] == ["backup.create", "restore.execute"]
+
+
+def test_preview_conflict_and_package_change_block_execution(tmp_path: Path) -> None:
+    database = tmp_path / "active.db"
+    package = tmp_path / "backup.age"
+    destination = tmp_path / "existing"
+    destination.mkdir()
+    _database(database)
+    service = RecoveryService(
+        container=CopyContainer(),
+        vault=MemoryVault(),
+        catalog=RecordingCatalog(),
+        audit=RecordingAudit(),
+        operations=RecordingOperations(),
+    )
+    correlation = CorrelationId.new()
+    revision = uuid4()
+    service.create(
+        CreateBackup(
+            authorization=_authorization(Capability.RECOVERY_BACKUP),
+            correlation_id=correlation,
+            source_database=str(database),
+            destination=str(package),
+            recipient="age1" + "q" * 58,
+            recipient_fingerprint="sha256:" + "a" * 64,
+            configuration_snapshot=_configuration(revision),
+            configuration_revision=revision,
+            source_build="test",
+            source_schema="m1_0005",
+        )
+    )
+    identity = SecretReference(namespace="recovery", name="age-identity")
+    plan = service.preview(
+        PreviewRestore(
+            authorization=_authorization(Capability.RECOVERY_VERIFY),
+            correlation_id=correlation,
+            package=str(package),
+            identity_reference=identity,
+            destination=str(destination),
+        )
+    )
+    assert not plan.executable
+    executable_plan = service.preview(
+        PreviewRestore(
+            authorization=_authorization(Capability.RECOVERY_VERIFY),
+            correlation_id=correlation,
+            package=str(package),
+            identity_reference=identity,
+            destination=str(tmp_path / "new-destination"),
+        )
+    )
+    assert executable_plan.executable
+    package.write_bytes(package.read_bytes() + b"changed")
+    with pytest.raises(RecoveryPackageError, match="package_changed"):
+        service.execute(
+            ExecuteRestore(
+                authorization=_authorization(Capability.RECOVERY_RESTORE),
+                correlation_id=correlation,
+                package=str(package),
+                identity_reference=identity,
+                plan=executable_plan,
+            )
+        )
 
 
 def test_missing_capability_fails_before_backup_creation(tmp_path: Path) -> None:
