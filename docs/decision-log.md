@@ -152,3 +152,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use policy-driven hybrid retrieval with explicit data requirements, structured resolution status, targeted gap repair, and on-demand, scheduled, dependency-driven, manual, invalidation-driven, or real-time triggers.
 - **Rationale:** Fixed TTLs cannot correctly represent immutable history, provisional bars, provider revisions, market sessions, offline research, and workflows with different freshness tolerances.
 - **Consequences:** Callers declare freshness and completeness needs. Equivalent concurrent requests share idempotent retrieval jobs. Historical ranges are repaired incrementally. Analyses retain the exact dataset revision used, and cache results expose freshness, partiality, invalidity, availability, and refresh state.
+
+
+## D-019 — Analysis extensibility and independent distribution
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will combine declarative analysis composition with typed, versioned code-extension contracts. Extensions can be packaged, published, imported, updated, disabled, and uninstalled independently of the OSCA repository.
+- **Rationale:** Common analyses should be composable without code, while new analytical and provider capabilities must evolve without requiring inclusion in core application releases.
+- **Consequences:** OSCA requires category-specific contracts, manifests, compatibility checks, integrity verification, installation records, dependency and permission declarations, conformance tests, version pinning, impact previews, and reproducible references to exact extension versions.
