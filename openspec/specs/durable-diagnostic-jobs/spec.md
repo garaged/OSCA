@@ -3,10 +3,9 @@
 ## Purpose
 Define the verified M1 semantics for durable single-node diagnostic-run submission,
 execution, observation, interruption, and recovery under REQ-0011–REQ-0015 and ADR-0013.
-
 ## Requirements
 ### Requirement: Idempotent diagnostic-run submission
-The Workflow capability SHALL persist a stable typed run before execution and SHALL apply the declared idempotency behavior from REQ-0011 and the accepted M1 specification.
+The Workflow capability SHALL accept mutation identity only from a trusted adapter-derived actor/capability context, SHALL enforce the required capability in shared application handlers, SHALL persist a stable typed run before execution, and SHALL preserve the declared idempotency behavior.
 
 #### Scenario: First submission
 - **WHEN** an authorized caller submits a valid versioned diagnostic input with a new idempotency key
@@ -19,6 +18,14 @@ The Workflow capability SHALL persist a stable typed run before execution and SH
 #### Scenario: Conflicting duplicate submission
 - **WHEN** the same idempotency key is reused with semantically different input
 - **THEN** the system rejects the request with a structured non-retryable conflict
+
+#### Scenario: Caller attempts identity spoofing
+- **WHEN** an API caller includes actor or capability-like fields in a submission payload
+- **THEN** those fields cannot determine execution identity and the trusted boundary context is used
+
+#### Scenario: Missing capability
+- **WHEN** a trusted context lacks the required submit or cancel capability
+- **THEN** the mutation is rejected before persistence with a structured non-retryable denial
 
 ### Requirement: Governed lifecycle transitions
 The Workflow capability SHALL permit only the pending, running, blocked, succeeded, failed, cancelling, cancelled, and interrupted transitions defined by ADR-0013.
@@ -81,11 +88,15 @@ The executor SHALL retry only failures classified as retryable and SHALL apply b
 - **THEN** the run enters failed state and produces a visible Operations finding
 
 ### Requirement: Durable result metadata before success
-The Workflow capability SHALL require a typed Catalog result reference before committing succeeded state.
+Catalog-owned result metadata SHALL include stable identity, version, producer build, producing-run lineage, correlation, integrity, availability, retention, and registration time before Workflow commits success.
 
 #### Scenario: Missing result reference
 - **WHEN** a handler attempts to complete successfully without registered result metadata
 - **THEN** the transition is rejected and the run remains non-terminal or failed according to the structured error category
+
+#### Scenario: Metadata round trip
+- **WHEN** result metadata is registered and reloaded
+- **THEN** its deterministic integrity digest verifies and all governed metadata semantics are preserved
 
 ### Requirement: Consistent interface observation
 The API and CLI SHALL expose the same run identity, lifecycle state, progress, checkpoint phase, attempt, and safe error semantics through shared application queries.
@@ -95,15 +106,24 @@ The API and CLI SHALL expose the same run identity, lifecycle state, progress, c
 - **THEN** both results are semantically equivalent apart from presentation and request correlation identity
 
 ### Requirement: Correlated operational evidence
-Submission, claim, transition, checkpoint, retry, cancellation, recovery, and completion SHALL propagate correlation identity and SHALL not include secret values.
+Submission, claim, transition, checkpoint, retry, cancellation, recovery, and completion SHALL emit safe correlated logs, OpenTelemetry metrics and spans, and typed job events; security-sensitive actions SHALL also emit distinct Operations-owned audit records.
 
 #### Scenario: Failed run evidence
 - **WHEN** a diagnostic run fails
 - **THEN** structured telemetry, a distinct audit record where security-sensitive, and a health finding reference the run and correlation identity without exposing protected values
 
+#### Scenario: Operation evidence fan-out
+- **WHEN** a workflow operation is recorded
+- **THEN** its log, metric, span, and job event carry the same run and correlation identities without input, idempotency key, or secret values
+
 ### Requirement: Retained verification
-The change SHALL retain evidence for lifecycle properties, migration, idempotency, lease expiry, restart recovery, cancellation, adapter equivalence, telemetry, and architecture boundaries.
+The change SHALL retain evidence for lifecycle properties, migration, idempotency, lease expiry, restart recovery, cancellation, adapter equivalence, telemetry, architecture boundaries, and required pull-request automation for locked environments, static analysis, tests, strict OpenSpec validation, and secret scanning.
 
 #### Scenario: OpenSpec and OSCA verification
 - **WHEN** all implementation tasks are complete
 - **THEN** strict OpenSpec validation passes and the OSCA evidence record links the source revision and executed gate results
+
+#### Scenario: Pull request head changes
+- **WHEN** a commit is pushed to the PR branch
+- **THEN** required quality and secret-scanning workflows evaluate that exact head revision
+
