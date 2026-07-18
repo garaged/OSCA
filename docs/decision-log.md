@@ -82,3 +82,20 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** The primary persona is a technical individual investor/researcher. An analytical investor and an extension developer are secondary personas.
 - **Rationale:** This gives OSCA a coherent local-first user while preserving both an approachable analytical experience and a formal extension ecosystem.
 - **Consequences:** Advanced research workflows may span the web UI, CLI, API, and notebooks. Consumer-facing views must explain results clearly, while extensions require documented contracts, validation, compatibility rules, and isolated tests.
+
+
+## D-011 — Initial market universe
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA's initial default universe includes US-listed common stocks, US-listed ETFs, and major spot cryptocurrencies and pairs.
+- **Rationale:** This provides strong initial research coverage, useful benchmarks, and both session-based and 24/7 markets while keeping early data and market-structure complexity bounded.
+- **Consequences:** Derivatives, foreign exchange, bonds, and non-US equities are excluded from the initial default universe. The domain model must nevertheless remain globally capable.
+
+## D-012 — Extensible instruments and canonical identity
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** Instruments within supported asset classes can be registered without code changes. OSCA uses provider-neutral canonical instrument identities with explicit provider-symbol mappings.
+- **Rationale:** Tickers are neither globally unique nor permanent, and providers frequently use different identifiers or pair notation for the same economic instrument.
+- **Consequences:** OSCA requires an instrument registry, provider mapping records, ambiguity detection, capability metadata, lifecycle handling, and provider-assisted or manual registration. Provider symbols are aliases rather than database primary keys.
