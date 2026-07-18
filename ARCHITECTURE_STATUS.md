@@ -6,7 +6,7 @@
 - **M0 architecture foundation:** Merged through PR #2
 - **Tier-1 ADRs:** Baseline after M0.6 validation
 - **Architecture review:** Approved
-- **M0.x operationalization:** Complete on `agent/m0x-operationalization`
+- **M0.x operationalization:** Complete
 - **Next activity:** Select and specify the first M1 vertical slice
 - **Freeze point:** Tier-1 ADRs become Frozen when M1 implementation begins
 
