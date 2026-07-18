@@ -4,7 +4,7 @@
 - **Governing role:** Architecture authority
 - **Approval roles:** Product and quality authorities
 - **Assessed:** 2026-07-18
-- **Baseline:** M0 plus completed M0.5–M0.8 work on `agent/m0x-operationalization`
+- **Baseline:** M0 plus completed M0.5–M0.8 operationalization artifacts
 
 ## Assessment
 
