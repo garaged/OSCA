@@ -22,6 +22,7 @@
 - [Accepted M2 persistence ADR](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md)
 - [Accepted M2 recovery ADR](../../decisions/ADR-0018-m2-market-data-recovery-profile.md)
 - [Accepted M2 numeric representation ADR](../../decisions/ADR-0019-m2-canonical-daily-bar-numeric-representation.md)
+- [Accepted M2 expected-date ADR](../../decisions/ADR-0020-m2-bounded-daily-expected-date-policy.md)
 - [M2.1 instrument registry evidence](../../../evidence/m2/m2-1-instrument-registry.md)
 - [Archived M2.1 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-instrument-registry/README.md)
 - [Active risk register](risk-register.md)
