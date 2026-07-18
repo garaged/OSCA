@@ -134,3 +134,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA selects data providers through capability-specific ordered routing policies with explicit fallbacks, provenance, and no silent cross-provider merging.
 - **Rationale:** Providers differ by coverage, quality, interval, history, freshness, cost, quota, and licensing. A single global provider is unnecessarily limiting, while automatic merging can create inconsistent and irreproducible datasets.
 - **Consequences:** Adapters publish capabilities and limitations. Provider transitions remain visible or pass through an explicit versioned reconciliation process. Cross-provider comparisons produce quality findings rather than silently modifying observations. Experiments can pin provider and dataset revision.
+
+
+## D-017 — Governed data layers
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** OSCA will use four logical data layers—source, canonical, derived, and artifact—with a shared metadata and lineage catalog.
+- **Rationale:** Source observations, normalized facts, reproducible transformations, and research outputs have different correctness, revision, retention, and recovery semantics.
+- **Consequences:** Retained source payloads are immutable; canonical corrections create revisions; derived results identify transformations and inputs; artifacts reference datasets explicitly; and catalog metadata survives payload eviction. The logical separation does not mandate four physical databases.
