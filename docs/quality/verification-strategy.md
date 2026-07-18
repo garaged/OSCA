@@ -1,6 +1,6 @@
 # OSCA Verification Strategy
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Purpose:** Define the evidence model used to prove product, architecture, security, compatibility, reproducibility, and operational behavior.
 - **Applies to:** All milestones, modules, public seams, migrations, extensions, workflows, and releases.
 
