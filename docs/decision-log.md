@@ -73,3 +73,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** A mutable alias such as `latest` may only resolve to an immutable, typed artifact and cannot serve as primary identity.
 - **Rationale:** Earlier analytical workflows demonstrated that a shared `latest` pointer can resolve to the wrong workflow output, such as confusing training and scanning artifacts.
 - **Consequences:** Artifact lookup must consider artifact type, workflow, version, parameters, and lineage. Runs and outputs require stable identifiers.
+
+
+## D-010 — Target users and personas
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** The primary persona is a technical individual investor/researcher. An analytical investor and an extension developer are secondary personas.
+- **Rationale:** This gives OSCA a coherent local-first user while preserving both an approachable analytical experience and a formal extension ecosystem.
+- **Consequences:** Advanced research workflows may span the web UI, CLI, API, and notebooks. Consumer-facing views must explain results clearly, while extensions require documented contracts, validation, compatibility rules, and isolated tests.
