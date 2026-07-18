@@ -28,8 +28,6 @@ def test_http_and_cli_observe_semantically_equivalent_run(
     submitted = TestClient(web_app).post(
         "/api/v1/diagnostic-runs",
         json={
-            "actor": "operator",
-            "correlation_id": {},
             "idempotency_key": "adapter-fixture",
             "input": {"probe": "storage"},
         },
@@ -41,3 +39,19 @@ def test_http_and_cli_observe_semantically_equivalent_run(
     cli_run = json.loads(cli.stdout)
     for field in ("run_id", "state", "attempt", "checkpoint", "error"):
         assert cli_run[field] == api_run[field]
+
+
+def test_http_rejects_caller_controlled_identity(tmp_path: Path, monkeypatch: object) -> None:
+    database = tmp_path / "spoofing.db"
+    migrate(database)
+    monkeypatch.setenv("OSCA_DATABASE_PATH", str(database))  # type: ignore[attr-defined]
+    workflow_engine.cache_clear()
+    response = TestClient(web_app).post(
+        "/api/v1/diagnostic-runs",
+        json={
+            "actor": "spoofed-admin",
+            "idempotency_key": "spoof",
+            "input": {"probe": "storage"},
+        },
+    )
+    assert response.status_code == 422
