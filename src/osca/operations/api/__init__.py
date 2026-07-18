@@ -1,5 +1,6 @@
 from .audit import AuditOutcome, AuditRecord
 from .contracts import ComponentReadiness, HealthState, ReadinessSnapshot
+from .events import WorkflowJobEvent
 
 __all__ = [
     "AuditOutcome",
@@ -7,4 +8,5 @@ __all__ = [
     "ComponentReadiness",
     "HealthState",
     "ReadinessSnapshot",
+    "WorkflowJobEvent",
 ]
