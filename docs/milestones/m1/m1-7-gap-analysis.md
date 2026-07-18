@@ -1,6 +1,6 @@
 # M1.7 Documentation and Operational Evidence Gap Analysis
 
-- **Status:** Complete analysis; implementation pending
+- **Status:** Complete analysis; implementation completed and evidenced
 - **Governing role:** Quality authority
 - **Requirements:** REQ-0019, REQ-0020
 - **Governing specification:** [M1 secure walking skeleton](../../specifications/m1-secure-walking-skeleton.md)
@@ -87,4 +87,4 @@ No blocking duplicate normative rule was found. The risk is prospective: reprodu
 
 ## Blocking assessment
 
-No architecture defect or missing authority blocks M1.7. The branch is not ready for M1.8 or M1 completion until the remaining deliverables above are implemented and validated.
+No architecture defect or missing authority blocks M1.7. The identified M1.7 deliverables are implemented and validated in the retained M1.7 evidence. M1 completion remains pending the separate M1.8 exit review.
