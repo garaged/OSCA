@@ -4,7 +4,7 @@
 
 Define the bounded M1 semantics for protected backup creation, non-mutating verification, explicit preview, and new-location-only restore under REQ-0010, REQ-0013, REQ-0017, REQ-0018, and ADR-0016.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Protected consistent backup
 
