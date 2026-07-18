@@ -1,6 +1,6 @@
 # Architecture Fitness Program
 
-- **Status:** Draft for M0 acceptance
+- **Status:** Accepted
 - **Scope:** Executable evidence that OSCA continues to satisfy accepted architecture decisions
 
 ## Purpose
