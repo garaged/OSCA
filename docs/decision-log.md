@@ -402,3 +402,12 @@ This log records accepted product and architectural-direction decisions made dur
 - **Decision:** OSCA will use the M0 through M12 risk-ordered vertical milestone sequence, with a universal evidence-based exit gate.
 - **Rationale:** Horizontal infrastructure milestones delay usable outcomes, while feature-first delivery can bypass foundational correctness and governance.
 - **Consequences:** Every milestone produces an end-to-end outcome with specifications, traceability, tests, observability, documentation, accessibility, risk evidence, and no untreated critical risks. M0 establishes governance; later milestones progress through secure platform, governed data, analytics, extensions, F0–F3 evaluation, ML, LLM, analytical breadth, and release hardening.
+
+
+## D-047 — PRD approval baseline
+
+- **Status:** Accepted
+- **Date:** 2026-07-17
+- **Decision:** The OSCA PRD is approved as the governed baseline for M0 intent and specification work after formal consistency, terminology, requirement-language, decision-coverage, and milestone-dependency review.
+- **Rationale:** All product-discovery areas have accepted decisions, no conflicting requirements remain, and the M0–M12 roadmap provides complete product decomposition without prematurely selecting implementation technologies.
+- **Consequences:** Future requirement changes require explicit impact analysis and a decision-log entry. M0 may refine architecture and technical detail but cannot silently weaken or expand the approved product boundary.
