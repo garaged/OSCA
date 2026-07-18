@@ -43,6 +43,8 @@ class DateClassification(StrEnum):
     UNRESOLVED = "unresolved"
     NON_EXPECTED = "non_expected"
     INCOMPLETE = "incomplete"
+    INVALID = "invalid"
+    DUPLICATE = "duplicate"
 
 
 class RetrievalRequest(BaseModel):
