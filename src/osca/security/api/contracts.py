@@ -32,12 +32,20 @@ class VaultProbeResult(BaseModel):
 
 
 class Capability(StrEnum):
+    JOB_SUBMIT = "workflow.job.submit"
+    JOB_READ = "workflow.job.read"
+    JOB_CANCEL = "workflow.job.cancel"
     WORKFLOW_SUBMIT = "workflow.diagnostic.submit"
     WORKFLOW_READ = "workflow.diagnostic.read"
     WORKFLOW_CANCEL = "workflow.diagnostic.cancel"
     RECOVERY_BACKUP = "recovery.backup.create"
     RECOVERY_VERIFY = "recovery.backup.verify"
     RECOVERY_RESTORE = "recovery.restore.execute"
+    MARKET_DATA_READ = "market-data.read"
+    MARKET_DATA_RETRIEVE = "market-data.retrieve"
+    MARKET_DATA_REPAIR = "market-data.repair"
+    MARKET_DATA_CLEANUP_PREVIEW = "market-data.cleanup.preview"
+    MARKET_DATA_CLEANUP_EXECUTE = "market-data.cleanup.execute"
 
 
 class AuthorizationContext(BaseModel):
