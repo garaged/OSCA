@@ -9,7 +9,7 @@ The accepted M2 specification, REQ-0030–REQ-0040, and ADR-0017–ADR-0026 gove
 - Accepted canonical revisions are immutable and protected throughout M2. Exact pins never substitute another revision.
 - Completed UTC dates are expected for crypto. Stock weekdays remain unresolved until confirmed as sessions; only confirmed gaps are repair-eligible.
 - Cleanup is preview-first and requires explicit policy-derived eligibility. It cannot select canonical, pinned, or otherwise protected material.
-- Candidate provider parsers use injected I/O. Live transports and production visibility remain blocked until licensing, credential, endpoint, quota, and failure controls are accepted.
+- M2 includes free public-access reference implementations with injected I/O; paid/authenticated providers are deferred to post-M2 with explicit licensing evidence.
 
 ## Failure and recovery
 
@@ -22,6 +22,10 @@ Retrieval, repair, publication, provider transitions, quality findings, and clea
 ## Rollout and forward recovery
 
 Retained migrations are additive. Failed staged payloads are reconciled or quarantined. Published canonical history is never rolled back by deletion; corrections create a new revision and lineage.
+
+## Provider integration strategy
+
+Free, public-access providers are included as reference implementations in M2 to demonstrate the provider-neutral contract and adapter pattern. Paid services, authentication-required APIs, and quota-managed providers are deferred to a separate change with explicit licensing, credential rotation, quota enforcement, and integration tests before any production promotion.
 
 ## Architecture fitness
 
