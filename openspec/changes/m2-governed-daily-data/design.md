@@ -1,6 +1,6 @@
 ## Context
 
-The accepted M2 specification, REQ-0030–REQ-0040, and ADR-0017–ADR-0026 govern this change. OpenSpec tracks execution and cannot approve provider rights or replace those authorities.
+The accepted M2 specification, REQ-0030–REQ-0040, and ADR-0017–ADR-0028 govern this change. OpenSpec tracks execution and cannot approve provider rights or replace those authorities.
 
 ## Decisions
 
@@ -9,7 +9,7 @@ The accepted M2 specification, REQ-0030–REQ-0040, and ADR-0017–ADR-0026 gove
 - Accepted canonical revisions are immutable and protected throughout M2. Exact pins never substitute another revision.
 - Completed UTC dates are expected for crypto. Stock weekdays remain unresolved until confirmed as sessions; only confirmed gaps are repair-eligible.
 - Cleanup is preview-first and requires explicit policy-derived eligibility. It cannot select canonical, pinned, or otherwise protected material.
-- M2 includes free public-access reference implementations with injected I/O; paid/authenticated providers are deferred to post-M2 with explicit licensing evidence.
+- Candidate provider parsers use injected I/O. Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 until licensing, credential, endpoint, quota, and failure controls are accepted.
 
 ## Failure and recovery
 
@@ -25,7 +25,7 @@ Retained migrations are additive. Failed staged payloads are reconciled or quara
 
 ## Provider integration strategy
 
-Free, public-access providers are included as reference implementations in M2 to demonstrate the provider-neutral contract and adapter pattern. Paid services, authentication-required APIs, and quota-managed providers are deferred to a separate change with explicit licensing, credential rotation, quota enforcement, and integration tests before any production promotion.
+M2 validates the provider-neutral contract and adapter pattern with deterministic candidate parsers and bounded injected transport. Paid services, authentication-required APIs, and quota-managed production use remain disabled until a separate provider-promotion change records exact licensing/account-plan evidence, credential rotation, quota enforcement, and integration tests.
 
 ## Architecture fitness
 
