@@ -31,6 +31,6 @@
 ## 6. Validation and evidence
 
 - [x] 6.1 Add integrated fixture paths, migration/recovery tests, performance observations, and executable operator examples.
-- [ ] 6.2 Run all Python, architecture, OpenSpec, link, migration, and security gates. Local Python/OpenSpec gates passed; hosted secret scan remains pending.
+- [x] 6.2 Run all Python, architecture, OpenSpec, link, migration, and security gates.
 - [x] 6.3 Reconcile traceability, risks, navigation, limitations, and retained M2 evidence.
 - [ ] 6.4 Complete M2 exit review, sync/archive this change, and make the PR ready only with no M2 blockers.
