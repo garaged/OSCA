@@ -1,6 +1,6 @@
 # M1 protected backup and isolated restore
 
-- **Status:** Implemented; final CI evidence pending
+- **Status:** Implemented with retained CI evidence
 - **Requirements:** REQ-0010, REQ-0013, REQ-0017, REQ-0018
 - **Governing decisions:** ADR-0009, ADR-0015, ADR-0016
 - **Contracts:** `osca.recovery.backup-manifest` 1.0.0 and `osca.recovery.restore-plan` 1.0.0
