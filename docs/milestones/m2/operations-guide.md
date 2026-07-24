@@ -1,6 +1,6 @@
 # Operate M2 Governed Daily Market Data
 
-- **Status:** Implementation-aligned draft; provider production promotion remains policy-blocked
+- **Status:** Implementation-aligned draft; paid/authenticated provider production promotion is deferred beyond M2
 - **Requirements:** REQ-0021–REQ-0040
 - **Governing specification:** [M2 governed daily market data](../../../openspec/changes/m2-governed-daily-data/specs/m2-governed-daily-data/spec.md)
 - **Governing decisions:** ADR-0017–ADR-0028
@@ -19,7 +19,7 @@ The following rules are mandatory:
 - preserve every accepted canonical revision throughout M2;
 - preview cleanup separately from execution and revalidate current eligibility and protection at execution time;
 - keep provider credentials in named vault references and provider rights in exact policy revisions;
-- keep Twelve Data and Kraken production-disabled until their applicable account, jurisdiction, rights, endpoint, quota, and conformance evidence is accepted.
+- keep paid, authenticated, or license-sensitive provider production use disabled until its applicable account, jurisdiction, rights, endpoint, quota, and conformance evidence is accepted in a later provider-promotion change.
 
 ## Current implementation path
 
@@ -46,9 +46,9 @@ Canonical objects remain protected even if incorrectly included in the eligible 
 
 ## Provider candidate status
 
-Twelve Data and Kraken implement deterministic provider-neutral response parsing and bounded injected JSON transport. The transport enforces HTTPS, an exact host, approved query keys, fixed timeout, byte limits, no redirects, no compressed responses, and an object-shaped JSON root.
+Twelve Data and Kraken candidate parsers implement deterministic provider-neutral response parsing and bounded injected JSON transport. The transport enforces HTTPS, an exact host, approved query keys, fixed timeout, byte limits, no redirects, no compressed responses, and an object-shaped JSON root.
 
-This technical implementation is not licensing approval. Production configuration must remain disabled until the exact operating jurisdiction, Twelve Data account plan, intended private/non-display use, retention, backup/export rights, and Kraken API/account mode are recorded and accepted.
+This technical implementation is not licensing approval. Production configuration for paid, authenticated, or license-sensitive provider use must remain disabled until exact operating jurisdiction, account plan, intended private/non-display use, retention, backup/export rights, and API/account mode are recorded and accepted.
 
 ## Troubleshooting
 
