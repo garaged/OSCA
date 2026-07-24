@@ -1,11 +1,11 @@
 # M2 — Instruments, Providers, and Cache Vertical Slice
 
-- **Status:** M2 implementation complete; exit review and final PR readiness in progress
+- **Status:** M2 complete
 - **Governing role:** Product authority
-- **Architecture, security, data, licensing, and quality review:** Required
+- **Architecture, security, data, licensing, and quality review:** Complete for M2 scope
 - **Authoritative outcome:** PRD M2
 - **Baseline:** Accepted M1 secure walking skeleton
-- **Last reviewed:** 2026-07-18
+- **Last reviewed:** 2026-07-24
 
 ## Current artifacts
 
