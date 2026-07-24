@@ -1,4 +1,5 @@
 import logging
+from typing import Any, cast
 
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
@@ -39,9 +40,12 @@ def test_recovery_observation_is_correlated_and_secret_free() -> None:
         target="/path/that/must/not/be/observed/SECRET-CANARY",
     )
     RecoveryTelemetryObserver(logger, telemetry).record(operation)
-    assert records[-1].correlation_id == str(operation.correlation_id.value)
+    record = cast(Any, records[-1])
+    assert record.correlation_id == str(operation.correlation_id.value)
     assert "SECRET-CANARY" not in records[-1].getMessage()
-    assert spans.get_finished_spans()[0].attributes["osca.recovery.operation_id"] == str(
-        operation.operation_id
-    )
-    assert metrics.get_metrics_data().resource_metrics
+    attributes = spans.get_finished_spans()[0].attributes
+    assert attributes is not None
+    assert attributes["osca.recovery.operation_id"] == str(operation.operation_id)
+    metrics_data = metrics.get_metrics_data()
+    assert metrics_data is not None
+    assert metrics_data.resource_metrics

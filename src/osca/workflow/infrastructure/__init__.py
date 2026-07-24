@@ -1,3 +1,7 @@
-from osca.workflow.infrastructure.persistence import SqliteDiagnosticRunRepository, WorkflowBase
+from osca.workflow.infrastructure.persistence import (
+    SqliteDiagnosticRunRepository,
+    SqliteJobRepository,
+    WorkflowBase,
+)
 
-__all__ = ["SqliteDiagnosticRunRepository", "WorkflowBase"]
+__all__ = ["SqliteDiagnosticRunRepository", "SqliteJobRepository", "WorkflowBase"]

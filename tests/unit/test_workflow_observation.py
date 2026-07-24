@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, cast
 
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
@@ -46,7 +46,7 @@ def test_observation_contains_correlation_but_not_input() -> None:
     logger.setLevel(logging.INFO)
     logger.addHandler(Capture())
     WorkflowObserver(logger).record("submitted", run)
-    record = records[-1]
+    record = cast(Any, records[-1])
     assert record.correlation_id == str(run.correlation_id.value)
     assert "protected" not in record.getMessage()
     assert "secret-key" not in record.getMessage()
@@ -93,7 +93,11 @@ def test_operation_emits_correlated_span_metric_and_job_event() -> None:
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
-    assert spans[0].attributes["osca.correlation_id"] == str(run.correlation_id.value)
-    assert metric_reader.get_metrics_data().resource_metrics
+    attributes = spans[0].attributes
+    assert attributes is not None
+    assert attributes["osca.correlation_id"] == str(run.correlation_id.value)
+    metrics_data = metric_reader.get_metrics_data()
+    assert metrics_data is not None
+    assert metrics_data.resource_metrics
     assert events.events[0].correlation_id == run.correlation_id
     assert events.events[0].run_id == run.run_id.value

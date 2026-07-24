@@ -108,6 +108,23 @@ Pause and report a blocker when:
 
 Never mark tasks complete, approve a PR, or merge while a blocking finding remains.
 
+## Delivery batching
+
+Default to one working branch and one pull request for a coherent milestone or bounded delivery stream. Resolve foreseeable product, architecture, data, security, licensing, recovery, and quality decisions early; record them alongside the implementation they govern; and continue through specification, implementation, validation, documentation, evidence, OpenSpec synchronization, and final review on that branch.
+
+Do not create serial decision-only or increment-only pull requests merely to mark internal progress. Use commits, milestone task state, retained evidence, and concise progress updates for intermediate checkpoints. A pull request is a delivery/review boundary, not a substitute for the required authority chain.
+
+Split work into another branch or pull request when there is a solid reason, including:
+
+- a high-risk or irreversible decision needs independent review before dependent work can safely proceed;
+- different approval authorities, licensing evidence, security review, or external coordination block only part of the stream;
+- the branch would become unsafe to review, validate, recover, or merge as one coherent change;
+- a dependency must land independently to unblock other authorized work;
+- production remediation, compatibility, migration, or release sequencing requires isolation;
+- authoritative sources conflict or a stop condition requires escalation.
+
+Batching never permits implementation before its governing requirement, ADR, contract, or specification is accepted. Each increment must remain buildable, testable, diagnosable, traceable, and revertible within the branch. Before the final PR is marked ready, reconcile the complete diff, migrations, contracts, navigation, traceability, evidence, risks, OpenSpec state, and deferred work.
+
 ## Pull requests
 
 PRs must state scope, governing requirements and ADRs, validation performed, evidence links, residual risks, and deferred work. Review the complete diff, unresolved threads, approvals, mergeability, and required checks.

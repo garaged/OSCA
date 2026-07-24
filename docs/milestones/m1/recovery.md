@@ -7,9 +7,9 @@
 
 ## Normative behavior
 
-The [M1 specification](../../specifications/m1-secure-walking-skeleton.md) and
-[ADR-0016](../../decisions/ADR-0016-m1-backup-encryption-container.md) govern behavior. This page
-is operator guidance and does not redefine those sources.
+The [M1 recovery specification](../../../openspec/specs/m1-recovery-skeleton/spec.md) and
+[M1 recovery decision record](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
+govern behavior. This page is operator guidance and does not redefine those sources.
 
 Production output is an age v1 binary container encrypted to an X25519 recipient. Plaintext
 packages are test fixtures only. Verification and preview do not write active state. Restore

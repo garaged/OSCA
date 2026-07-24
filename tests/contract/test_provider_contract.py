@@ -15,7 +15,7 @@ from osca.provider.api import (
     QuotaProfile,
     TimestampSemantics,
 )
-from osca.provider.application import DailyProviderAdapter
+from osca.provider.application import DailyProviderAdapter, DailyProviderRouter
 from osca.provider.infrastructure import SyntheticDailyProvider
 
 
@@ -123,3 +123,31 @@ def test_policy_uncertainty_fails_closed() -> None:
     assert result.failure is not None
     assert result.failure.code is ProviderFailureCode.POLICY
     assert result.observations == ()
+
+
+def test_routing_fallback_is_visible_and_never_merges_series() -> None:
+    unavailable_capability = capability(AssetClass.STOCK, "first").model_copy(
+        update={"healthy": False}
+    )
+    first = SyntheticDailyProvider(unavailable_capability, observations("first"))
+    second = SyntheticDailyProvider(
+        capability(AssetClass.STOCK, "second"), observations("second")
+    )
+    router = DailyProviderRouter({"first": first, "second": second})
+    provider_request = DailyProviderRequest(
+        instrument_id=uuid4(),
+        provider_symbol="ACME",
+        start_date=date(2024, 1, 1),
+        end_date_exclusive=date(2024, 1, 2),
+    )
+    routed = router.retrieve(
+        provider_request,
+        asset_class=AssetClass.STOCK,
+        ordered_provider_ids=("first", "second"),
+    )
+    assert routed.result.provider_id == "second"
+    assert routed.attempted_provider_ids == ("first", "second")
+    assert routed.transitions == ("first:transport",)
+    assert all(
+        item.source_identity.startswith("second") for item in routed.result.observations
+    )

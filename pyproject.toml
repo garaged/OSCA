@@ -16,6 +16,7 @@ dependencies = [
   "opentelemetry-api>=1.35,<2",
   "opentelemetry-sdk>=1.35,<2",
   "pydantic>=2.11,<3",
+  "pyarrow>=25,<26",
   "sqlalchemy>=2.0,<3",
   "typer>=0.16,<1",
   "uvicorn>=0.35,<1",
@@ -48,6 +49,10 @@ python_version = "3.13"
 strict = true
 packages = ["osca"]
 mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["pyarrow", "pyarrow.parquet"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
