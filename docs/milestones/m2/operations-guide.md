@@ -2,7 +2,7 @@
 
 - **Status:** Implementation-aligned draft; paid/authenticated provider production promotion is deferred beyond M2
 - **Requirements:** REQ-0021–REQ-0040
-- **Governing specification:** [M2 governed daily market data](../../../openspec/changes/m2-governed-daily-data/specs/m2-governed-daily-data/spec.md)
+- **Governing specification:** [M2 governed daily market data](../../../openspec/specs/m2-governed-daily-data/spec.md)
 - **Governing decisions:** ADR-0017–ADR-0028
 - **Last reviewed:** 2026-07-18
 
