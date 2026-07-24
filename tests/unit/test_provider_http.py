@@ -1,28 +1,34 @@
+from collections.abc import Mapping
 from io import BytesIO
-from typing import Self
 from urllib.request import Request
 
 import pytest
 
 from osca.provider.infrastructure import BoundedJsonTransport
+from osca.provider.infrastructure.http import Response
 
 
-class FakeResponse(BytesIO):
+class FakeResponse:
+    headers: Mapping[str, str]
+
     def __init__(self, payload: bytes, *, encoding: str = "identity") -> None:
-        super().__init__(payload)
+        self._stream = BytesIO(payload)
         self.headers = {"Content-Encoding": encoding}
 
-    def __enter__(self) -> Self:
+    def __enter__(self) -> Response:
         return self
 
     def __exit__(self, *args: object) -> None:
-        self.close()
+        self._stream.close()
+
+    def read(self, amount: int = -1) -> bytes:
+        return self._stream.read(amount)
 
 
 def test_transport_enforces_endpoint_query_and_response_bounds() -> None:
     seen: list[str] = []
 
-    def open_request(request: Request, timeout: float) -> FakeResponse:
+    def open_request(request: Request, timeout: float) -> Response:
         seen.append(request.full_url)
         assert timeout == 2.0
         return FakeResponse(b'{"values": []}')
