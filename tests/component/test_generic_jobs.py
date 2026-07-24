@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from osca.market_data.api import RetrievalRequest
 from osca.market_data.application import MarketDataJobService
+from osca.operations.api import AuditRecord, WorkflowJobEvent
 from osca.security.api import AuthorizationContext, Capability
 from osca.shared_kernel.api import CorrelationId
 from osca.workflow.api import CancelJob, JobResultReference, JobState, SubmitJob
@@ -21,6 +22,22 @@ def authorization(*capabilities: Capability) -> AuthorizationContext:
         capabilities=frozenset(capabilities),
         authentication_method="local-os-user",
     )
+
+
+class RecordingAudit:
+    def __init__(self) -> None:
+        self.records: list[AuditRecord] = []
+
+    def add(self, record: AuditRecord) -> None:
+        self.records.append(record)
+
+
+class RecordingEvents:
+    def __init__(self) -> None:
+        self.events: list[WorkflowJobEvent] = []
+
+    def add(self, event: WorkflowJobEvent) -> None:
+        self.events.append(event)
 
 
 def submit_command(payload: dict[str, object]) -> SubmitJob:
@@ -89,8 +106,15 @@ def test_market_data_submission_requires_domain_and_generic_job_capabilities() -
         idempotency_key="market-retrieve-1",
     )
     with Session(engine) as session, session.begin():
-        service = MarketDataJobService(JobService(SqliteJobRepository(session)))
+        audit = RecordingAudit()
+        events = RecordingEvents()
+        service = MarketDataJobService(
+            JobService(SqliteJobRepository(session)), audit, events
+        )
         context = authorization(Capability.JOB_SUBMIT, Capability.MARKET_DATA_RETRIEVE)
         job = service.submit_retrieval(context, CorrelationId.new(), request)
         assert job.kind == "market-data.retrieve"
         assert job.input_family == request.family
+        assert audit.records[0].target_id == str(job.job_id)
+        assert events.events[0].run_id == job.job_id
+        assert events.events[0].action == "market-data.retrieve.submit"
