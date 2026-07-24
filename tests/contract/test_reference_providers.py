@@ -13,6 +13,7 @@ from osca.provider.api import (
     QuotaProfile,
     TimestampSemantics,
 )
+from osca.provider.application.ports import DailyProviderAdapter
 from osca.provider.infrastructure import KrakenDailyProvider, TwelveDataDailyProvider
 
 
@@ -65,6 +66,7 @@ def request(symbol: str) -> DailyProviderRequest:
 
 @pytest.mark.parametrize("adapter_name", ["twelve-data", "kraken"])
 def test_reference_adapters_emit_one_governed_contract(adapter_name: str) -> None:
+    adapter: DailyProviderAdapter
     if adapter_name == "twelve-data":
         payload: dict[str, Any] = {
             "values": [
