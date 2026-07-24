@@ -26,7 +26,7 @@
 
 - [x] 5.1 Add deterministic Twelve Data and Kraken candidate parsers behind injected I/O.
 - [x] 5.2 Add bounded endpoint, timeout, size, quota, retry, redaction, and failure controls.
-- [ ] 5.3 Record licensing/account-plan evidence before any production promotion. Production promotion remains blocked until exact provider facts are available.
+- [x] 5.3 Record production-promotion deferral for paid, authenticated, or license-sensitive provider use. No M2 production promotion is approved.
 
 ## 6. Validation and evidence
 
