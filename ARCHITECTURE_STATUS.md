@@ -8,7 +8,8 @@
 - **Architecture review:** Approved
 - **M0.x operationalization:** Complete
 - **M1 secure walking skeleton:** Accepted
-- **Current activity:** M2.0 entry decisions; persistence accepted, provider/licensing selection pending
+- **M2 governed daily-data vertical slice:** Complete
+- **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -33,11 +34,13 @@ M0.x does not redesign M0. It supplies application guidance, validation evidence
 
 ## M1 completion boundary
 
-M1 is accepted through its governed exit review. M1.1–M1.8 provide the secure walking skeleton and retained evidence. Subsequent product work must begin with a new milestone intent, exact requirement allocation, triggered decisions, accepted specification, and proportional evidence plan; M1 acceptance does not authorize implementing later PRD scope early.
+M1 is accepted through its governed exit review. M1.1-M1.8 provide the secure walking skeleton and retained evidence. Subsequent product work must begin with a new milestone intent, exact requirement allocation, triggered decisions, accepted specification, and proportional evidence plan; M1 acceptance does not authorize implementing later PRD scope early.
 
-## M2 entry state
+## M2 completion boundary
 
-The M2 initiation package is accepted. [ADR-0017](docs/decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md) selects capability-owned SQLite metadata and manifest-governed Parquet daily payloads, authorizing M2.1 metadata work. Production-visible provider adapters remain gated by provider-specific licensing and policy approval.
+M2 is complete through its governed exit review and archived OpenSpec change. M2 provides canonical stock and spot-crypto identity, provider-neutral daily-data contracts, deterministic fixture adapters, governed source/canonical persistence, retrieval and repair jobs, quality findings, inspection, and protected cleanup behavior.
+
+Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 and remains disabled until exact provider-specific licensing, account-plan, credential, quota, and policy evidence is accepted.
 
 ## Key navigation
 
@@ -48,3 +51,5 @@ The M2 initiation package is accepted. [ADR-0017](docs/decisions/ADR-0017-m2-met
 - [Architecture registry](engineering/architecture-registry.yaml)
 - [Engineering bootstrap](engineering/bootstrap/README.md)
 - [M0.x roadmap](docs/milestones/m0x-roadmap.md)
+- [M1 milestone](docs/milestones/m1/README.md)
+- [M2 milestone](docs/milestones/m2/README.md)
