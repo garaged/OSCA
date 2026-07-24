@@ -1,6 +1,6 @@
 # M2 — Instruments, Providers, and Cache Vertical Slice
 
-- **Status:** M2.3–M2.7 implementation in progress; provider production promotion remains policy-blocked
+- **Status:** M2 implementation complete; exit review and final PR readiness in progress
 - **Governing role:** Product authority
 - **Architecture, security, data, licensing, and quality review:** Required
 - **Authoritative outcome:** PRD M2
@@ -18,7 +18,8 @@
 - [Accepted entry decisions](entry-decisions.md)
 - [Accepted staged provider strategy](provider-strategy.md)
 - [M2 operations guide](operations-guide.md)
-- [Active consolidated OpenSpec change](../../../openspec/changes/m2-governed-daily-data/proposal.md)
+- [M2 exit review](../../../evidence/m2/m2-exit-review.md)
+- [Archived M2 governed daily-data OpenSpec change](../../../openspec/changes/archive/2026-07-24-m2-governed-daily-data/README.md)
 - [M2.2 provider contract evidence](../../../evidence/m2/m2-2-provider-contract-fixtures.md)
 - [Archived M2.2 OpenSpec change](../../../openspec/changes/archive/2026-07-18-m2-provider-contract/README.md)
 - [Accepted M2 persistence ADR](../../decisions/ADR-0017-m2-metadata-and-daily-payload-persistence.md)
@@ -45,4 +46,4 @@
 
 Intent → Requirements → Architecture → Specification → Validation → Evidence
 
-ADR-0017 authorizes M2.1 metadata implementation and governs later Parquet payload work. Provider selection and production-visible adapters remain gated by provider-specific licensing and policy approval. Deterministic fixture-first contract work may proceed.
+M2 implementation is complete. Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 and remains disabled until exact provider-specific licensing, account-plan, credential, quota, and policy evidence is accepted.
