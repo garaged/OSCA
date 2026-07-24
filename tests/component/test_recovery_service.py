@@ -5,6 +5,11 @@ from uuid import UUID, uuid4
 
 import pytest
 
+from osca.catalog.api import (
+    CatalogRecoveryReference,
+    MetadataAvailability,
+    RecoveryRecordKind,
+)
 from osca.configuration.api import DeploymentMode, ListenerConfiguration, SecurityConfiguration
 from osca.configuration.api.contracts import ValidatedConfiguration
 from osca.operations.api import AuditRecord
@@ -42,9 +47,29 @@ class RecordingCatalog:
     def __init__(self) -> None:
         self.kinds: list[object] = []
 
-    def register_recovery(self, **values: object) -> object:
-        self.kinds.append(values["kind"])
-        return object()
+    def register_recovery(
+        self,
+        *,
+        kind: RecoveryRecordKind,
+        subject_id: UUID,
+        correlation_id: CorrelationId,
+        producer_build: str,
+        source_schema: str,
+        configuration_revision: UUID,
+        lineage: tuple[UUID, ...],
+        availability: MetadataAvailability,
+    ) -> CatalogRecoveryReference:
+        self.kinds.append(kind)
+        return CatalogRecoveryReference(
+            kind=kind,
+            subject_id=subject_id,
+            correlation_id=correlation_id,
+            producer_build=producer_build,
+            source_schema=source_schema,
+            configuration_revision=configuration_revision,
+            lineage=lineage,
+            availability=availability,
+        )
 
 
 class RecordingAudit:
