@@ -1,15 +1,15 @@
 # M1 protected backup and isolated restore
 
-- **Status:** Implemented with retained CI evidence
+- **Status:** Implemented; final CI evidence pending
 - **Requirements:** REQ-0010, REQ-0013, REQ-0017, REQ-0018
 - **Governing decisions:** ADR-0009, ADR-0015, ADR-0016
 - **Contracts:** `osca.recovery.backup-manifest` 1.0.0 and `osca.recovery.restore-plan` 1.0.0
 
 ## Normative behavior
 
-The [M1 specification](../../specifications/m1-secure-walking-skeleton.md) and
-[ADR-0016](../../decisions/ADR-0016-m1-backup-encryption-container.md) govern behavior. This page
-is operator guidance and does not redefine those sources.
+The [M1 recovery specification](../../../openspec/specs/m1-recovery-skeleton/spec.md) and
+[M1 recovery decision record](../../../openspec/changes/archive/2026-07-18-m1-recovery-skeleton/README.md)
+govern behavior. This page is operator guidance and does not redefine those sources.
 
 Production output is an age v1 binary container encrypted to an X25519 recipient. Plaintext
 packages are test fixtures only. Verification and preview do not write active state. Restore
