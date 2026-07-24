@@ -1,4 +1,5 @@
 import json
+from typing import Any, cast
 from uuid import uuid4
 
 import pytest
@@ -79,4 +80,5 @@ def test_restore_plan_is_immutable_and_conflicts_block_execution() -> None:
     assert plan.verify_integrity()
     assert not plan.executable
     with pytest.raises(ValidationError):
-        plan.destination = "/active"  # type: ignore[misc]
+        mutable_plan = cast(Any, plan)
+        mutable_plan.destination = "/active"
