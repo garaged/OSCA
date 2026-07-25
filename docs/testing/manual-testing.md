@@ -91,3 +91,18 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Outcome calibration | Inspect expected-versus-realized outcome records where supported. | Calibration status and error metric are retained. |
 | Portfolio scenario | Inspect portfolio scenario evidence where supported. | Scenario reports remain analytical evidence and do not imply order authority. |
 | Visualization metadata | Inspect visualization pack metadata where supported. | Accessible summaries and export metadata are required. |
+
+
+## M12 Smoke Checklist
+
+| Area | Manual check | Expected result |
+|---|---|---|
+| Release-readiness boundary | Review M12 CLI/help/docs and available developer surfaces. | M12 is presented as governed operational metadata and evidence, not production backup delivery, restore execution, scheduler execution, or live trading. |
+| Backup manifest review | Inspect a lightweight, standard, or archival backup manifest where supported. | Profile, recovery point, encryption, integrity digest, recovery classes, exclusions, off-device intent, and secret-reference-only behavior are visible. |
+| Restore verification | Inspect restore verification evidence where supported. | Verification uses an isolated target and blocks when integrity, compatibility, or journal reconciliation fails. |
+| DR exercise evidence | Inspect disaster-recovery exercise records where supported. | Scenario, objectives, duration, linked restore verification, findings, and status are retained. |
+| Health finding | Inspect a degraded or blocked health finding where supported. | Impact, remediation guidance, correlation identity, and findings are visible. |
+| Alert policy | Inspect alert policy metadata where supported. | Dedupe, escalation, and destination metadata are present, while external delivery remains disabled. |
+| Missed workflow safety | Try a financially meaningful missed-run record without approval where supported. | Validation fails closed instead of scheduling automatic replay. |
+| Risk control boundary | Try approving a breached strict risk control where supported. | The decision is rejected or validation fails closed. |
+| Persistence scope | Persist and query operations metadata using a disposable SQLite file. | Records round trip by component, workflow, or policy identity. |
