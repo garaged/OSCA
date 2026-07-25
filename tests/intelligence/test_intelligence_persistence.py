@@ -1,12 +1,59 @@
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from osca.intelligence import (
+    AnalysisPackFamily,
+    AnalysisPackManifest,
+    AnalyticalResultBundle,
     EvidenceKind,
+    EvidenceReference,
+    MethodologyDisclosure,
+    PackDataRequirement,
     SQLiteIntelligenceStore,
     VisualizationPackSpec,
 )
-from tests.intelligence.test_intelligence_contracts import build_manifest, build_result
+
+
+def build_manifest() -> AnalysisPackManifest:
+    return AnalysisPackManifest(
+        pack_id="fundamental-core",
+        pack_version="1.0.0",
+        pack_family=AnalysisPackFamily.FUNDAMENTAL_VALUATION,
+        supported_asset_classes=("equity",),
+        output_kinds=(EvidenceKind.FINDING,),
+        data_requirements=(
+            PackDataRequirement(
+                capability="financial-statements",
+                interval="quarterly",
+                quality_policy_id="strict",
+            ),
+        ),
+        methodology=MethodologyDisclosure(
+            methodology_id="dcf-screen",
+            methodology_version="1.0.0",
+            assumptions=("discount-rate-declared",),
+            limitations=("not-investment-advice",),
+            documentation_uri="docs/intelligence/dcf-screen.md",
+        ),
+    )
+
+
+def build_result(project_id: UUID, pack_id: str = "fundamental-core") -> AnalyticalResultBundle:
+    evidence = EvidenceReference(
+        evidence_id=uuid4(),
+        evidence_kind=EvidenceKind.OBSERVATION,
+        source_pack_id=pack_id,
+        dataset_revision_ids=(uuid4(),),
+        methodology_id="dcf-screen",
+        confidence=0.8,
+    )
+    return AnalyticalResultBundle(
+        project_id=project_id,
+        pack_id=pack_id,
+        pack_version="1.0.0",
+        result_kind=EvidenceKind.FINDING,
+        evidence=(evidence,),
+    )
 
 
 def test_intelligence_store_round_trips_pack_manifest(tmp_path: Path) -> None:
