@@ -16,6 +16,7 @@ from osca.backtesting.eventing.contracts import (
     ValuationHolding,
     ValuationSnapshot,
 )
+from osca.backtesting.eventing.persistence import SQLiteF2ValidationStore
 from osca.backtesting.eventing.services import (
     build_fill_journal_transaction,
     build_order_lifecycle_event,
@@ -26,6 +27,7 @@ from osca.backtesting.eventing.services import (
 )
 
 __all__ = [
+    "SQLiteF2ValidationStore",
     "F2EventType",
     "F2SimulationEvent",
     "FillModelMetadata",
