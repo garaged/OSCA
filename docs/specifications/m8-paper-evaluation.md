@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Milestone:** M8
-- **Requirements:** REQ-0102-REQ-0111
+- **Requirements:** REQ-0102-REQ-0112
 - **ADR:** ADR-0034
 
 ## Purpose
@@ -50,3 +50,7 @@ M8 documentation must disclose deferred live execution, ML, LLM, provider promot
 ### REQ-0111: Evidence-based completion
 
 M8 is complete only when requirements, contracts, implementation, verification, documentation, traceability, risks, OpenSpec, and hosted Quality evidence are retained.
+
+### REQ-0112: Manual testing and usage baseline
+
+M8 establishes the first manual testing and usage document. Later milestone specifications must update that document when user-visible or operator-visible behavior changes, or record why no manual coverage change is required.
