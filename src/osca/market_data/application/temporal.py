@@ -154,6 +154,27 @@ def classify_temporal_gaps(
     return tuple(gaps)
 
 
+def temporal_repair_windows(
+    gaps: Sequence[TemporalGap],
+) -> tuple[CompletedBarWindow, ...]:
+    repairable = sorted(
+        (
+            gap
+            for gap in gaps
+            if gap.state is TemporalGapState.MISSING and gap.repair_eligible
+        ),
+        key=lambda gap: (gap.starts_at, gap.ends_at),
+    )
+    return tuple(
+        CompletedBarWindow(
+            interval=gap.interval,
+            starts_at=gap.starts_at,
+            ends_at=gap.ends_at,
+        )
+        for gap in repairable
+    )
+
+
 def resample_ohlcv(
     bars: Sequence[CanonicalOhlcvBar],
     *,
