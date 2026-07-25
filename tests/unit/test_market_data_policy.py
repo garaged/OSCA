@@ -91,6 +91,15 @@ def test_cleanup_defaults_are_not_implicit() -> None:
 
 def test_cleanup_protects_explicit_pins_and_inspection_accounts_usage() -> None:
     source = manifest(DatasetLayer.SOURCE, protected=False, byte_size=100)
+    intraday = source.model_copy(
+        update={
+            "manifest_id": uuid4(),
+            "dataset_id": uuid4(),
+            "fingerprint": "sha256:" + "d" * 64,
+            "interval": "5m",
+            "object_key": "source/intraday.parquet",
+        }
+    )
     plan = preview_cleanup(
         (source,),
         eligible_manifest_ids=frozenset({source.manifest_id}),
@@ -98,10 +107,13 @@ def test_cleanup_protects_explicit_pins_and_inspection_accounts_usage() -> None:
     )
     assert plan.actions == ()
     assert plan.protected_bytes == 100
-    inspection = inspect_storage((source,))
-    assert inspection.usage[0].object_count == 1
-    assert inspection.usage[0].byte_size == 100
-    assert inspection.manifests == (source,)
+    inspection = inspect_storage((source, intraday))
+    assert [usage.interval for usage in inspection.usage] == ["1d", "5m"]
+    assert [usage.object_count for usage in inspection.usage] == [1, 1]
+    assert {item.manifest_id for item in inspection.manifests} == {
+        source.manifest_id,
+        intraday.manifest_id,
+    }
 
 
 def test_series_quality_finds_duplicates_and_identity_mismatch() -> None:
@@ -147,6 +159,15 @@ def test_retrieval_reports_fresh_stale_and_exact_pinning() -> None:
             "created_at": created_at,
         }
     )
+    intraday = candidate.model_copy(
+        update={
+            "manifest_id": uuid4(),
+            "dataset_id": uuid4(),
+            "fingerprint": "sha256:" + "e" * 64,
+            "interval": "5m",
+            "object_key": "canonical/intraday.parquet",
+        }
+    )
     request = RetrievalRequest(
         instrument_id=instrument_id,
         start_date=date(2024, 1, 1),
@@ -157,7 +178,7 @@ def test_retrieval_reports_fresh_stale_and_exact_pinning() -> None:
     )
     fresh = resolve_retrieval(
         request,
-        manifests=(candidate,),
+        manifests=(candidate, intraday),
         findings=(),
         now=created_at + timedelta(seconds=60),
     )
@@ -165,11 +186,29 @@ def test_retrieval_reports_fresh_stale_and_exact_pinning() -> None:
     assert fresh.revision_id == candidate.manifest_id
     stale = resolve_retrieval(
         request,
-        manifests=(candidate,),
+        manifests=(candidate, intraday),
         findings=(),
         now=created_at + timedelta(seconds=61),
     )
     assert stale.state == "stale"
+
+    intraday_request = RetrievalRequest(
+        instrument_id=instrument_id,
+        start_date=date(2024, 1, 1),
+        end_date_exclusive=date(2024, 1, 3),
+        interval="5m",
+        maximum_age_seconds=60,
+        pinned_revision_id=intraday.manifest_id,
+        idempotency_key="retrieval-1-5m",
+    )
+    intraday_resolution = resolve_retrieval(
+        intraday_request,
+        manifests=(candidate, intraday),
+        findings=(),
+        now=created_at + timedelta(seconds=60),
+    )
+    assert intraday_resolution.state == "fresh"
+    assert intraday_resolution.revision_id == intraday.manifest_id
 
 
 def test_retrieval_does_not_substitute_for_missing_pinned_revision() -> None:

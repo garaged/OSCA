@@ -52,3 +52,9 @@ Implementation, test-result, documentation, and risk-disposition links are added
 | REQ-0030-REQ-0040 | PRD sections 10-14, 37-39; D-013-D-018; accepted M2 decisions | [M2 intent](../milestones/m2/intent.md) | [M2 governed daily market data](../specifications/m2-governed-daily-market-data.md) | M2-AC-004-M2-AC-020 | [M2 exit review](../../evidence/m2/m2-exit-review.md) | [M2 operations guide](../milestones/m2/operations-guide.md) | ADR-0017-ADR-0028 | Verified |
 
 M2 verification is complete for the governed daily-data scope. Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 and remains policy-blocked until exact provider-specific licensing, account-plan, credential, quota, and retention/export evidence is accepted.
+
+## M3 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0041-REQ-0052 | PRD sections 8, 10-14, 37-39; D-004, D-012-D-018, D-040 | [M3 intent](../milestones/m3/intent.md) | [M3 temporal correctness](../specifications/m3-temporal-correctness.md) | M3-AC-001-M3-AC-012 | [M3 exit review](../../evidence/m3/m3-exit-review.md) | [M3 index](../milestones/m3/README.md) | ADR-0029 | Verified |

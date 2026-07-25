@@ -7,7 +7,7 @@ from pathlib import Path, PurePosixPath
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from osca.market_data.api import CanonicalDailyBar
+from osca.market_data.api import CanonicalDailyBar, CanonicalOhlcvBar
 
 DAILY_BAR_SCHEMA = pa.schema(
     [
@@ -31,6 +31,31 @@ DAILY_BAR_SCHEMA = pa.schema(
     metadata={b"osca.contract": b"osca.market-data.daily-bar/1.0.0"},
 )
 
+OHLCV_BAR_SCHEMA = pa.schema(
+    [
+        pa.field("bar_id", pa.string(), nullable=False),
+        pa.field("instrument_id", pa.string(), nullable=False),
+        pa.field("interval", pa.string(), nullable=False),
+        pa.field("starts_at", pa.timestamp("us", tz="UTC"), nullable=False),
+        pa.field("ends_at", pa.timestamp("us", tz="UTC"), nullable=False),
+        pa.field("effective_date", pa.date32(), nullable=False),
+        pa.field("complete", pa.bool_(), nullable=False),
+        pa.field("open", pa.decimal128(38, 18), nullable=False),
+        pa.field("high", pa.decimal128(38, 18), nullable=False),
+        pa.field("low", pa.decimal128(38, 18), nullable=False),
+        pa.field("close", pa.decimal128(38, 18), nullable=False),
+        pa.field("volume", pa.decimal128(38, 18), nullable=False),
+        pa.field("currency", pa.string(), nullable=False),
+        pa.field("volume_unit", pa.string(), nullable=False),
+        pa.field("provider_id", pa.string(), nullable=False),
+        pa.field("source_identity", pa.string(), nullable=False),
+        pa.field("request_id", pa.string(), nullable=False),
+        pa.field("normalization_revision", pa.string(), nullable=False),
+        pa.field("calendar_revision", pa.string(), nullable=False),
+    ],
+    metadata={b"osca.contract": b"osca.market-data.ohlcv-bar/1.0.0"},
+)
+
 
 def serialize_daily_bars(bars: Sequence[CanonicalDailyBar]) -> bytes:
     ordered = tuple(sorted(bars, key=lambda bar: bar.effective_date))
@@ -50,21 +75,7 @@ def serialize_daily_bars(bars: Sequence[CanonicalDailyBar]) -> bytes:
         ],
         schema=DAILY_BAR_SCHEMA,
     )
-    output = pa.BufferOutputStream()
-    pq.write_table(
-        table,
-        output,
-        compression="zstd",
-        version="2.6",
-        data_page_version="2.0",
-        use_dictionary=False,
-        write_statistics=True,
-        row_group_size=max(1, min(len(ordered), 4096)),
-    )
-    payload = output.getvalue().to_pybytes()
-    if not isinstance(payload, bytes):
-        raise TypeError("PyArrow returned a non-bytes payload")
-    return payload
+    return _write_table(table, row_count=len(ordered))
 
 
 def deserialize_daily_bars(payload: bytes) -> tuple[CanonicalDailyBar, ...]:
@@ -74,8 +85,55 @@ def deserialize_daily_bars(payload: bytes) -> tuple[CanonicalDailyBar, ...]:
     return tuple(CanonicalDailyBar.model_validate(row) for row in table.to_pylist())
 
 
+def serialize_ohlcv_bars(bars: Sequence[CanonicalOhlcvBar]) -> bytes:
+    ordered = tuple(sorted(bars, key=lambda bar: (bar.starts_at, str(bar.bar_id))))
+    if not ordered:
+        raise ValueError("canonical OHLCV Parquet objects cannot be empty")
+    identities = tuple((bar.instrument_id, bar.interval, bar.starts_at) for bar in ordered)
+    if len(identities) != len(set(identities)):
+        raise ValueError("canonical OHLCV Parquet objects require unique interval rows")
+    table = pa.Table.from_pylist(
+        [
+            {
+                **bar.model_dump(),
+                "bar_id": str(bar.bar_id),
+                "instrument_id": str(bar.instrument_id),
+                "request_id": str(bar.request_id),
+            }
+            for bar in ordered
+        ],
+        schema=OHLCV_BAR_SCHEMA,
+    )
+    return _write_table(table, row_count=len(ordered))
+
+
+def deserialize_ohlcv_bars(payload: bytes) -> tuple[CanonicalOhlcvBar, ...]:
+    table = pq.read_table(pa.BufferReader(payload))
+    if not table.schema.equals(OHLCV_BAR_SCHEMA, check_metadata=True):
+        raise ValueError("Parquet schema is not osca.market-data.ohlcv-bar/1.0.0")
+    return tuple(CanonicalOhlcvBar.model_validate(row) for row in table.to_pylist())
+
+
 def payload_digest(payload: bytes) -> str:
     return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
+def _write_table(table: pa.Table, *, row_count: int) -> bytes:
+    output = pa.BufferOutputStream()
+    pq.write_table(
+        table,
+        output,
+        compression="zstd",
+        version="2.6",
+        data_page_version="2.0",
+        use_dictionary=False,
+        write_statistics=True,
+        row_group_size=max(1, min(row_count, 4096)),
+    )
+    payload = output.getvalue().to_pybytes()
+    if not isinstance(payload, bytes):
+        raise TypeError("PyArrow returned a non-bytes payload")
+    return payload
 
 
 class ImmutablePayloadStore:
@@ -131,3 +189,8 @@ class ImmutablePayloadStore:
 class PyArrowCanonicalCodec:
     def encode(self, bars: Sequence[CanonicalDailyBar]) -> bytes:
         return serialize_daily_bars(bars)
+
+
+class PyArrowOhlcvCodec:
+    def encode(self, bars: Sequence[CanonicalOhlcvBar]) -> bytes:
+        return serialize_ohlcv_bars(bars)

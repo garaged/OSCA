@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 Decimal38x18 = Annotated[Decimal, Field(max_digits=38, decimal_places=18)]
 Identifier = Annotated[str, Field(min_length=1, max_length=128)]
+ApprovedInterval = Literal["1m", "5m", "15m", "30m", "1h", "4h", "1d"]
 
 
 class DatasetLayer(StrEnum):
@@ -58,7 +59,7 @@ class RetrievalRequest(BaseModel):
     instrument_id: UUID
     start_date: date
     end_date_exclusive: date
-    interval: Literal["1d"] = "1d"
+    interval: ApprovedInterval = "1d"
     maximum_age_seconds: int = Field(ge=0)
     require_complete: bool = True
     provider_ids: tuple[Identifier, ...] = ()
@@ -199,6 +200,7 @@ class DatasetManifest(BaseModel):
     instrument_id: UUID
     provider_id: Identifier
     source_context: Identifier
+    interval: ApprovedInterval = "1d"
     start_date: date
     end_date_exclusive: date
     schema_revision: Identifier

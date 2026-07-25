@@ -9,6 +9,7 @@
 - **M0.x operationalization:** Complete
 - **M1 secure walking skeleton:** Accepted
 - **M2 governed daily-data vertical slice:** Complete
+- **M3 multi-timeframe temporal correctness:** Complete
 - **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -42,6 +43,12 @@ M2 is complete through its governed exit review and archived OpenSpec change. M2
 
 Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 and remains disabled until exact provider-specific licensing, account-plan, credential, quota, and policy evidence is accepted.
 
+## M3 completion boundary
+
+M3 is complete through its governed exit review and archived OpenSpec change. M3 provides approved interval semantics, UTC completed-bar windows, stock exchange-session and crypto UTC boundary models, calendar-aware gap and repair eligibility classification, deterministic resampling lineage, interval-aware dataset/retrieval/storage identity, governed OHLCV Parquet payloads, and interval-aware non-daily OHLCV publication.
+
+Provider production promotion remains deferred and disabled until exact provider-specific evidence is accepted.
+
 ## Key navigation
 
 - [M0.x index](docs/milestones/m0x/README.md)
@@ -53,3 +60,4 @@ Production promotion for paid, authenticated, or license-sensitive provider use 
 - [M0.x roadmap](docs/milestones/m0x-roadmap.md)
 - [M1 milestone](docs/milestones/m1/README.md)
 - [M2 milestone](docs/milestones/m2/README.md)
+- [M3 milestone](docs/milestones/m3/README.md)

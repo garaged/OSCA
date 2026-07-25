@@ -48,10 +48,11 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0026](ADR-0026-m2-canonical-history-retention.md) | M2 canonical-history retention | Accepted |
 | [ADR-0027](ADR-0027-generic-durable-job-contract.md) | Generic durable job contract | Accepted |
 | [ADR-0028](ADR-0028-m2-market-data-authorization-capabilities.md) | M2 Market Data authorization capabilities | Accepted |
+| [ADR-0029](ADR-0029-m3-temporal-correctness-model.md) | M3 temporal correctness model | Accepted |
 
 ## Baseline status
 
-ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0028 are the accepted M2 persistence, recovery, data, workflow, and authorization decisions. All remain governed by the architecture evolution policy.
+ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0028 are the accepted M2 persistence, recovery, data, workflow, and authorization decisions. ADR-0029 governs M3 temporal correctness. All remain governed by the architecture evolution policy.
 
 ## Template
 
