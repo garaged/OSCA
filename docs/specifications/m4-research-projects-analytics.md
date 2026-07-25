@@ -1,23 +1,23 @@
 # Specification — M4 Research Projects, Analytics, and Visualization
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Governing role:** Architecture authority
 - **Approval roles:** Product, data, quality, and extension authorities
 - **Governing intent:** [M4 intent](../milestones/m4/intent.md)
 - **Requirements:** REQ-0053-REQ-0068
-- **Related decisions:** D-009, D-019, D-021-D-026, D-046; ADR-0001-ADR-0029
+- **Related decisions:** D-009, D-019, D-021-D-026, D-046; ADR-0001-ADR-0030
 - **Risk class:** Governed product, lineage, and analysis-contract change
 - **Last reviewed:** 2026-07-24
 
 ## Public contract families
 
-- `osca.research.project` 1.0.0 — draft;
-- `osca.research.hypothesis` 1.0.0 — draft;
-- `osca.research.timeline-event` 1.0.0 — draft;
-- `osca.analysis.graph` 1.0.0 — draft;
-- `osca.analysis.output` 1.0.0 — draft;
-- `osca.visualization.specification` 1.0.0 — draft;
-- `osca.visualization.dashboard` 1.0.0 — draft.
+- `osca.research.project` 1.0.0 — accepted;
+- `osca.research.hypothesis` 1.0.0 — accepted;
+- `osca.research.timeline-event` 1.0.0 — accepted;
+- `osca.analysis.graph` 1.0.0 — accepted;
+- `osca.analysis.output` 1.0.0 — accepted;
+- `osca.visualization.specification` 1.0.0 — accepted;
+- `osca.visualization.dashboard` 1.0.0 — accepted.
 
 ## Behavioral specification
 
@@ -33,4 +33,4 @@ Visualization specifications reference analytical output identities rather than 
 
 Dashboard specifications compose panels from governed visualization specifications in the same project. Composition records panel metadata and source visualization identities without mutating the visualizations, analytical outputs, or underlying analyses.
 
-M4 contracts are internal and draft extension-compatible. Independently packaged extensions remain M5 scope.
+M4 contracts are internal and extension-compatible. Independently packaged extensions remain M5 scope.
