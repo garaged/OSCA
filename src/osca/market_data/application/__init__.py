@@ -35,8 +35,8 @@ __all__ = [
     "inspect_storage",
     "normalize_daily",
     "preview_cleanup",
-    "resolve_retrieval",
     "resample_ohlcv",
+    "resolve_retrieval",
     "stock_expected_windows",
     "validate_daily_series",
 ]
