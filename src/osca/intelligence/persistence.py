@@ -142,7 +142,10 @@ class SQLiteIntelligenceStore:
             payload_json=report.model_dump_json(),
         )
 
-    def list_portfolio_scenarios(self, paper_account_id: str) -> tuple[PortfolioScenarioReport, ...]:
+    def list_portfolio_scenarios(
+        self,
+        paper_account_id: str,
+    ) -> tuple[PortfolioScenarioReport, ...]:
         return tuple(
             PortfolioScenarioReport.model_validate_json(payload)
             for payload in self._list_payloads_by_paper(paper_account_id, "portfolio_scenario")
