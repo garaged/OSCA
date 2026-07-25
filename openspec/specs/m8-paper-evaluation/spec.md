@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Index the verified M8 F3 paper evaluation and automation semantics under REQ-0102-REQ-0111 and ADR-0034.
+Index the verified M8 F3 paper evaluation and automation semantics under REQ-0102-REQ-0112 and ADR-0034.
 
 ## Requirements
 
@@ -96,3 +96,12 @@ Delivery adapters SHALL declare configuration and enabled state before delivery 
 #### Scenario: Adapter is disabled
 - **WHEN** a delivery attempt is planned for a disabled adapter
 - **THEN** the attempt is skipped without external delivery
+
+
+### Requirement: Manual testing and usage baseline
+
+M8 SHALL establish the first manual testing and usage document, and later milestone specifications SHALL update it or record why no manual coverage change is required.
+
+#### Scenario: Later milestone changes usage
+- **WHEN** a later milestone changes user-visible or operator-visible behavior
+- **THEN** its specification reviews the manual testing and usage baseline and either updates it or records that no manual coverage change is required
