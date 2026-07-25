@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from typing import Annotated
 from uuid import UUID
 
 import typer
@@ -96,8 +97,8 @@ def diagnostic_cancel(run_id: UUID) -> None:
 @app.command("extension-install")
 def extension_install(
     manifest_file: Path,
-    source_uri: str = typer.Option(..., "--source-uri"),
-    database: Path = typer.Option(Path("osca-extensions.sqlite"), "--database"),
+    source_uri: Annotated[str, typer.Option("--source-uri")],
+    database: Annotated[Path, typer.Option("--database")] = Path("osca-extensions.sqlite"),
 ) -> None:
     """Create and persist an extension installation record from a manifest."""
 
@@ -117,7 +118,7 @@ def extension_install(
 def extension_activate(
     manifest_file: Path,
     installation_id: UUID,
-    database: Path = typer.Option(Path("osca-extensions.sqlite"), "--database"),
+    database: Annotated[Path, typer.Option("--database")] = Path("osca-extensions.sqlite"),
 ) -> None:
     """Record an explicit extension activation decision."""
 
@@ -138,8 +139,8 @@ def extension_activate(
 
 @app.command("extension-list")
 def extension_list(
-    database: Path = typer.Option(Path("osca-extensions.sqlite"), "--database"),
-    package_id: str | None = typer.Option(None, "--package-id"),
+    database: Annotated[Path, typer.Option("--database")] = Path("osca-extensions.sqlite"),
+    package_id: Annotated[str | None, typer.Option("--package-id")] = None,
 ) -> None:
     """List persisted extension installation records."""
 
