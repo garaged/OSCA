@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from osca.backtesting.eventing.contracts import (
     JournalTransaction,
     OrderLifecycleEvent,
@@ -60,6 +62,14 @@ def validate_lifecycle_sequence(
         )
 
     for previous, current in zip(ordered, ordered[1:], strict=False):
+        if previous.request_id != current.request_id:
+            findings.append(
+                ReconciliationFinding(
+                    code="lifecycle_request_mismatch",
+                    severity="error",
+                    message="order lifecycle sequence cannot mix requests",
+                )
+            )
         if previous.order_intent_id != current.order_intent_id:
             findings.append(
                 ReconciliationFinding(
@@ -107,7 +117,7 @@ def validate_journal_transaction(
 
 def evaluate_promotion_gate(
     *,
-    request_id,
+    request_id: UUID,
     candidate_id: str,
     findings: tuple[ReconciliationFinding, ...],
 ) -> PromotionGateDecision:
