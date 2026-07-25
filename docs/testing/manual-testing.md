@@ -54,3 +54,14 @@ For M8, run the checklist after PR #29 is merged and before starting broad produ
 At M8, OSCA is still a governed engineering foundation. Manual testing should focus on operational smoke checks and safety boundaries, not strategy profitability, broad UX polish, or production trading readiness.
 
 Use this document as the durable baseline for future milestones. When M9 or later introduces new usage surfaces, append focused checks instead of rewriting historical milestone coverage.
+
+## M9 Smoke Checklist
+
+| Area | Manual check | Expected result |
+|---|---|---|
+| ML scope boundary | Review M9 CLI/help/docs and available developer surfaces. | ML lifecycle is presented as governed evidence; no path suggests live trading or automatic promotion. |
+| Feature registry | Create or inspect feature definitions where supported. | Features preserve source dataset, transformation, value type, and point-in-time safety. |
+| Label registry | Create or inspect label definitions where supported. | Labels preserve objective, horizon, source dataset, and leakage-check evidence. |
+| Evaluation report | Inspect a model evaluation report where supported. | Holdout metrics and calibration methodology are visible before promotion. |
+| Promotion gate | Try promotion with passing and blocked evidence where supported. | Passing evidence can approve event validation; error findings or missed thresholds fail closed. |
+| Retraining boundary | Review retraining docs and records where supported. | Retraining creates evidence but does not automatically promote a model. |
