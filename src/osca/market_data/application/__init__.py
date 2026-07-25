@@ -16,6 +16,7 @@ from osca.market_data.application.temporal import (
     floor_to_interval,
     resample_ohlcv,
     stock_expected_windows,
+    temporal_repair_windows,
 )
 
 __all__ = [
@@ -38,5 +39,6 @@ __all__ = [
     "resample_ohlcv",
     "resolve_retrieval",
     "stock_expected_windows",
+    "temporal_repair_windows",
     "validate_daily_series",
 ]
