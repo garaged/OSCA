@@ -1,6 +1,6 @@
 # ADR-0034: F3 Paper Evaluation Boundary
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-07-25
 - **Deciders:** Architecture authority, product authority
 - **Related requirements:** REQ-0102-REQ-0111
