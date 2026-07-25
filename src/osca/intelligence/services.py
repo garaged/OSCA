@@ -18,13 +18,26 @@ from osca.intelligence.contracts import (
 
 def validate_analysis_pack(manifest: AnalysisPackManifest) -> PackValidationDecision:
     findings: list[IntelligenceFinding] = []
-    if not manifest.methodology.documentation_uri.startswith(("docs/", "http://", "https://")):
+    documented = manifest.methodology.documentation_uri.startswith(
+        ("docs/", "http://", "https://")
+    )
+    if not documented:
         findings.append(
-            _error("missing_methodology_docs", "analysis pack methodology documentation is not reachable")
+            _error(
+                "missing_methodology_docs",
+                "analysis pack methodology documentation is not reachable",
+            )
         )
-    if manifest.pack_family.value == "cross_family_synthesis" and not manifest.supports_cross_family_synthesis:
+    synthesis_pack_without_flag = (
+        manifest.pack_family.value == "cross_family_synthesis"
+        and not manifest.supports_cross_family_synthesis
+    )
+    if synthesis_pack_without_flag:
         findings.append(
-            _error("synthesis_flag_missing", "cross-family synthesis pack must declare synthesis support")
+            _error(
+                "synthesis_flag_missing",
+                "cross-family synthesis pack must declare synthesis support",
+            )
         )
 
     if findings:
@@ -61,14 +74,19 @@ def compare_methods(
     else:
         outcome = MethodComparisonOutcome.BLOCKED
 
-    findings = ()
+    findings: tuple[IntelligenceFinding, ...] = ()
     if outcome is MethodComparisonOutcome.BLOCKED:
-        findings = (_error("preferred_result_not_compared", "preferred result was not compared"),)
+        findings = (
+            _error("preferred_result_not_compared", "preferred result was not compared"),
+        )
 
+    accepted_preferred_result_id = (
+        None if outcome is MethodComparisonOutcome.BLOCKED else preferred_result_id
+    )
     return MethodComparisonReport(
         project_id=project_id,
         compared_result_ids=result_ids,
-        preferred_result_id=None if outcome is MethodComparisonOutcome.BLOCKED else preferred_result_id,
+        preferred_result_id=accepted_preferred_result_id,
         outcome=outcome,
         rationale=rationale,
         findings=findings,
@@ -89,9 +107,11 @@ def calibrate_outcome(
         if error_metric <= warning_threshold
         else CalibrationStatus.DEGRADED
     )
-    findings = ()
+    findings: tuple[IntelligenceFinding, ...] = ()
     if status is CalibrationStatus.DEGRADED:
-        findings = (_warning("outcome_calibration_degraded", "realized outcome exceeded threshold"),)
+        findings = (
+            _warning("outcome_calibration_degraded", "realized outcome exceeded threshold"),
+        )
     return OutcomeCalibrationReport(
         project_id=project_id,
         source_result_id=source_result_id,
