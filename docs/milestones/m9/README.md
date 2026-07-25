@@ -1,6 +1,6 @@
 # M9 - Governed ML Lifecycle
 
-- **Status:** Active
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, model-risk, security, and quality review:** Required for M9 scope
 - **Authoritative outcome:** PRD M9 governed ML lifecycle
@@ -20,7 +20,9 @@
 - [Manual testing and usage](../../testing/manual-testing.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
-- [Active M9 OpenSpec change](../../../openspec/changes/m9-governed-ml-lifecycle/README.md)
+- [Accepted M9 OpenSpec specification](../../../openspec/specs/m9-governed-ml-lifecycle/spec.md)
+- [Exit review](exit-review.md)
+- [Archived M9 OpenSpec change](../../../openspec/changes/archive/2026-07-25-m9-governed-ml-lifecycle/README.md)
 
 ## Required chain
 
