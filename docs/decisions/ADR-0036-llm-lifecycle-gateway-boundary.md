@@ -1,6 +1,6 @@
 # ADR-0036: LLM Lifecycle and Gateway Boundary
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-07-25
 - **Deciders:** Product authority, architecture authority, security authority
 - **Milestone:** M10

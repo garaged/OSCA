@@ -1,9 +1,9 @@
 # M10 LLM Lifecycle and Gateway Specification
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Milestone:** M10
 - **Requirements:** REQ-0125-REQ-0133
-- **ADR:** ADR-0036
+- **ADR:** ADR-0036 accepted
 - **Manual testing:** M10 updates `docs/testing/manual-testing.md`
 
 ## Requirements

@@ -16,7 +16,8 @@
 - **M7 F2 event-driven validation foundation:** Complete
 - **M8 F3 paper evaluation and automation foundation:** Complete
 - **M9 governed ML lifecycle foundation:** Complete
-- **Current activity:** M10 LLM lifecycle and gateway foundation
+- **M10 LLM lifecycle and gateway foundation:** Complete
+- **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -110,3 +111,9 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 M9 is complete through its governed exit review and archived OpenSpec change. M9 provides governed ML feature and label definitions, training workflow metadata, experiment and model artifact records, evaluation and calibration reports, deterministic promotion decisions, SQLite lifecycle metadata persistence, F2 event-validation links, champion/challenger paper deployment decisions, drift/outcome monitoring reports, and retraining records without automatic promotion.
 
 Trainer execution, production model serving, LLM behavior, live execution, real-capital orders, F4 fidelity, and provider production promotion remain deferred to later governed milestone intents.
+
+## M10 completion boundary
+
+M10 is complete through its governed exit review and archived OpenSpec change. M10 provides governed LLM provider/model capability records, prompt templates, bounded tool definitions, explicit project-context policies, structured-output contracts, request envelopes, deterministic route decisions, privacy and budget gates, evaluation reports, and SQLite lifecycle metadata persistence without invoking providers.
+
+Provider adapters, prompt execution, retrieval materialization, generated recommendations, LLM tool orchestration, state-changing execution, live execution, real-capital orders, and provider production promotion remain deferred to later governed milestone intents.

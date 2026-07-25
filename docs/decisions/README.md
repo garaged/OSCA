@@ -55,11 +55,11 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0033](ADR-0033-f2-event-driven-validation-authority.md) | F2 event-driven validation authority | Accepted |
 | [ADR-0034](ADR-0034-f3-paper-evaluation-boundary.md) | F3 paper evaluation boundary | Accepted |
 | [ADR-0035](ADR-0035-governed-ml-lifecycle-boundary.md) | Governed ML lifecycle boundary | Accepted |
-| [ADR-0036](ADR-0036-llm-lifecycle-gateway-boundary.md) | LLM lifecycle and gateway boundary | Proposed |
+| [ADR-0036](ADR-0036-llm-lifecycle-gateway-boundary.md) | LLM lifecycle and gateway boundary | Accepted |
 
 ## Baseline status
 
-ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0028 are the accepted M2 persistence, recovery, data, workflow, and authorization decisions. ADR-0029 governs M3 temporal correctness. ADR-0030 governs M4 research project, analysis graph, analytical output, and visualization contracts. ADR-0031 governs the M5 extension package lifecycle boundary. ADR-0032 governs the M6 backtesting validation boundary. ADR-0033 governs the M7 F2 event-driven validation authority. ADR-0034 governs the M8 F3 paper evaluation and automation boundary. ADR-0035 governs the M9 governed ML lifecycle boundary. ADR-0036 proposes the M10 LLM lifecycle and gateway boundary. All remain governed by the architecture evolution policy.
+ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0028 are the accepted M2 persistence, recovery, data, workflow, and authorization decisions. ADR-0029 governs M3 temporal correctness. ADR-0030 governs M4 research project, analysis graph, analytical output, and visualization contracts. ADR-0031 governs the M5 extension package lifecycle boundary. ADR-0032 governs the M6 backtesting validation boundary. ADR-0033 governs the M7 F2 event-driven validation authority. ADR-0034 governs the M8 F3 paper evaluation and automation boundary. ADR-0035 governs the M9 governed ML lifecycle boundary. ADR-0036 governs the M10 LLM lifecycle and gateway boundary. All remain governed by the architecture evolution policy.
 
 ## Template
 

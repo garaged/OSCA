@@ -1,6 +1,6 @@
 # M10 - LLM Lifecycle and Gateway
 
-- **Status:** In progress
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, security, privacy, model-risk, and quality review:** Required for M10 scope
 - **Authoritative outcome:** PRD section 25 language-model lifecycle and gateway
@@ -20,7 +20,9 @@
 - [Manual testing and usage](../../testing/manual-testing.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
-- [OpenSpec change](../../../openspec/changes/m10-llm-lifecycle-gateway/specs/m10-llm-lifecycle-gateway/spec.md)
+- [Accepted M10 OpenSpec specification](../../../openspec/specs/m10-llm-lifecycle-gateway/spec.md)
+- [Exit review](exit-review.md)
+- [Archived M10 OpenSpec change](../../../openspec/changes/archive/2026-07-25-m10-llm-lifecycle-gateway/README.md)
 
 ## Required chain
 
