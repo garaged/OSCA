@@ -53,11 +53,20 @@ def bar(day: int) -> CanonicalDailyBar:
 
 def ohlcv_bar(hour: int, interval: MarketDataInterval = MarketDataInterval.H1) -> CanonicalOhlcvBar:
     starts_at = datetime(2024, 1, 2, hour, tzinfo=UTC)
+    seconds = {
+        MarketDataInterval.M1: 60,
+        MarketDataInterval.M5: 5 * 60,
+        MarketDataInterval.M15: 15 * 60,
+        MarketDataInterval.M30: 30 * 60,
+        MarketDataInterval.H1: 60 * 60,
+        MarketDataInterval.H4: 4 * 60 * 60,
+        MarketDataInterval.D1: 24 * 60 * 60,
+    }[interval]
     return CanonicalOhlcvBar(
         instrument_id=INSTRUMENT_ID,
         interval=interval,
         starts_at=starts_at,
-        ends_at=starts_at + timedelta(seconds=3600),
+        ends_at=starts_at + timedelta(seconds=seconds),
         effective_date=starts_at.date(),
         open=Decimal("100.100000000000000000"),
         high=Decimal("103.100000000000000000"),
