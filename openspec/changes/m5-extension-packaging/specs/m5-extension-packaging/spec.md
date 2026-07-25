@@ -4,7 +4,7 @@
 
 Define governed independent extension package manifest, installation, activation, permission, trust, integrity, and impact-preview semantics under REQ-0069-REQ-0084.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Extension manifest metadata
 
