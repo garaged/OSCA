@@ -14,6 +14,9 @@ from osca.bootstrap.runtime import readiness_snapshot
 from osca.bootstrap.workflow import workflow_service
 from osca.configuration.api.contracts import RawConfiguration
 from osca.configuration.application import validate_configuration
+from osca.extensions.api import ExtensionManifest
+from osca.extensions.application import create_installation_record, decide_activation
+from osca.extensions.persistence import SQLiteExtensionLifecycleStore
 from osca.recovery.api import CreateBackup, ExecuteRestore, PreviewRestore, VerifyBackup
 from osca.security.api import SecretReference
 from osca.shared_kernel.api import CorrelationId
@@ -88,6 +91,62 @@ def diagnostic_cancel(run_id: UUID) -> None:
     with workflow_service() as service:
         run = service.cancel(command)
     typer.echo(run.model_dump_json(indent=2))
+
+
+@app.command("extension-install")
+def extension_install(
+    manifest_file: Path,
+    source_uri: str = typer.Option(..., "--source-uri"),
+    database: Path = typer.Option(Path("osca-extensions.sqlite"), "--database"),
+) -> None:
+    """Create and persist an extension installation record from a manifest."""
+
+    manifest = _load_extension_manifest(manifest_file)
+    store = SQLiteExtensionLifecycleStore(database)
+    store.initialize()
+    record = create_installation_record(
+        manifest,
+        source_uri=source_uri,
+        granted_permissions=manifest.permissions,
+    )
+    store.save_installation(record)
+    typer.echo(record.model_dump_json(indent=2))
+
+
+@app.command("extension-activate")
+def extension_activate(
+    manifest_file: Path,
+    installation_id: UUID,
+    database: Path = typer.Option(Path("osca-extensions.sqlite"), "--database"),
+) -> None:
+    """Record an explicit extension activation decision."""
+
+    manifest = _load_extension_manifest(manifest_file)
+    store = SQLiteExtensionLifecycleStore(database)
+    store.initialize()
+    installation = store.get_installation(installation_id)
+    if installation is None:
+        raise typer.BadParameter(f"installation not found: {installation_id}")
+    decision = decide_activation(
+        manifest,
+        installation,
+        requested_permissions=manifest.permissions,
+    )
+    store.save_activation_decision(decision)
+    typer.echo(decision.model_dump_json(indent=2))
+
+
+@app.command("extension-list")
+def extension_list(
+    database: Path = typer.Option(Path("osca-extensions.sqlite"), "--database"),
+    package_id: str | None = typer.Option(None, "--package-id"),
+) -> None:
+    """List persisted extension installation records."""
+
+    store = SQLiteExtensionLifecycleStore(database)
+    store.initialize()
+    records = store.list_installations(package_id=package_id)
+    typer.echo(json.dumps([record.model_dump(mode="json") for record in records], indent=2))
 
 
 @app.command("backup-create")
@@ -172,6 +231,10 @@ def restore_isolated(package: Path, destination: Path, identity_name: str) -> No
             )
         )
     typer.echo(record.model_dump_json(indent=2))
+
+
+def _load_extension_manifest(manifest_file: Path) -> ExtensionManifest:
+    return ExtensionManifest.model_validate_json(manifest_file.read_text(encoding="utf-8"))
 
 
 def main() -> None:
