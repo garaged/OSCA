@@ -64,4 +64,5 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Label registry | Create or inspect label definitions where supported. | Labels preserve objective, horizon, source dataset, and leakage-check evidence. |
 | Evaluation report | Inspect a model evaluation report where supported. | Holdout metrics and calibration methodology are visible before promotion. |
 | Promotion gate | Try promotion with passing and blocked evidence where supported. | Passing evidence can approve event validation; error findings or missed thresholds fail closed. |
+| Drift monitoring | Inspect monitoring reports where supported. | Drift threshold breaches are visible as degraded or blocked, not silently healthy. |
 | Retraining boundary | Review retraining docs and records where supported. | Retraining creates evidence but does not automatically promote a model. |
