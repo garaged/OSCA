@@ -10,6 +10,7 @@
 - [x] Add durable market-aware schedule and non-replay recovery contracts.
 - [x] Record hosted Quality evidence for M8.2.
 - [x] Add SQLite paper metadata persistence.
-- [ ] Record hosted Quality evidence for M8.3.
-- [ ] Add notification and recovery slices.
+- [x] Record hosted Quality evidence for M8.3.
+- [x] Add notification inbox, digest, and delivery-adapter boundary.
+- [ ] Record hosted Quality evidence for M8.4.
 - [ ] Archive OpenSpec change at M8 closeout.
