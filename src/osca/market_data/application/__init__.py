@@ -6,6 +6,8 @@ from osca.market_data.application.normalize import IncompleteObservationError, n
 from osca.market_data.application.publication import (
     CanonicalPublicationIntent,
     CanonicalPublisher,
+    OhlcvPublicationIntent,
+    OhlcvPublisher,
 )
 from osca.market_data.application.quality import validate_daily_series
 from osca.market_data.application.retrieval import resolve_retrieval
@@ -26,6 +28,8 @@ __all__ = [
     "CleanupService",
     "IncompleteObservationError",
     "MarketDataJobService",
+    "OhlcvPublicationIntent",
+    "OhlcvPublisher",
     "StorageInspection",
     "classify_dates",
     "classify_temporal_gaps",
