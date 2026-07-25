@@ -99,7 +99,10 @@ class SQLitePaperEvaluationStore:
             payload_json=request.model_dump_json(),
         )
 
-    def list_evaluation_requests(self, paper_account_id: UUID) -> tuple[PaperEvaluationRequest, ...]:
+    def list_evaluation_requests(
+        self,
+        paper_account_id: UUID,
+    ) -> tuple[PaperEvaluationRequest, ...]:
         return tuple(
             PaperEvaluationRequest.model_validate_json(payload)
             for payload in self._list_payloads_by_account(paper_account_id, "evaluation_request")
@@ -253,7 +256,11 @@ class SQLitePaperEvaluationStore:
             ).fetchall()
         return tuple(cast(str, row["payload_json"]) for row in rows)
 
-    def _list_payloads_by_account(self, paper_account_id: UUID, record_type: str) -> tuple[str, ...]:
+    def _list_payloads_by_account(
+        self,
+        paper_account_id: UUID,
+        record_type: str,
+    ) -> tuple[str, ...]:
         with self._connect() as connection:
             rows = connection.execute(
                 """
