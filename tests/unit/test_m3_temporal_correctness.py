@@ -17,6 +17,7 @@ from osca.market_data.application.temporal import (
     crypto_expected_windows,
     resample_ohlcv,
     stock_expected_windows,
+    temporal_repair_windows,
 )
 
 
@@ -61,6 +62,7 @@ def test_stock_sessions_drive_expected_windows_and_gap_repair() -> None:
     )
     assert [gap.state for gap in gaps] == ["observed", "missing", "missing"]
     assert [gap.repair_eligible for gap in gaps] == [False, True, True]
+    assert temporal_repair_windows(gaps) == windows[1:]
 
 
 def test_unknown_stock_calendar_is_unresolved_not_missing() -> None:
@@ -75,6 +77,7 @@ def test_unknown_stock_calendar_is_unresolved_not_missing() -> None:
     assert len(gaps) == 1
     assert gaps[0].state == "unresolved"
     assert gaps[0].repair_eligible is False
+    assert temporal_repair_windows(gaps) == ()
 
 
 def test_crypto_utc_day_boundaries_are_interval_aware() -> None:
