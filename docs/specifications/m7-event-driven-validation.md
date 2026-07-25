@@ -1,6 +1,6 @@
 # Specification - M7 F2 Event-Driven Validation Foundation
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Architecture authority
 - **Requirements:** REQ-0093-REQ-0101
 - **Related decisions:** D-001, D-002, D-004, D-009, D-027-D-028, D-037-D-038, D-041, D-046; ADR-0033
