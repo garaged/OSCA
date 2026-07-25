@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 
@@ -20,7 +20,9 @@ from osca.backtesting.application import plan_backtest_execution
 from osca.backtesting.persistence import SQLiteBacktestLifecycleStore
 
 
-def make_request(*, project_id=None, strategy_id: str = "strategy.mean-reversion") -> BacktestRequest:
+def make_request(
+    *, project_id: UUID | None = None, strategy_id: str = "strategy.mean-reversion"
+) -> BacktestRequest:
     return BacktestRequest(
         project_id=project_id or uuid4(),
         strategy_id=strategy_id,
