@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from osca.intelligence.contracts import (
     AnalysisPackManifest,
     AnalyticalResultBundle,
@@ -46,9 +48,9 @@ def validate_analysis_pack(manifest: AnalysisPackManifest) -> PackValidationDeci
 
 def compare_methods(
     *,
-    project_id: object,
+    project_id: UUID,
     result_bundles: tuple[AnalyticalResultBundle, ...],
-    preferred_result_id: object | None = None,
+    preferred_result_id: UUID | None = None,
     rationale: str,
 ) -> MethodComparisonReport:
     result_ids = tuple(bundle.result_bundle_id for bundle in result_bundles)
@@ -75,8 +77,8 @@ def compare_methods(
 
 def calibrate_outcome(
     *,
-    project_id: object,
-    source_result_id: object,
+    project_id: UUID,
+    source_result_id: UUID,
     expected_outcome: str,
     realized_outcome: str,
     error_metric: float,
@@ -103,7 +105,7 @@ def calibrate_outcome(
 
 def synthesize_cross_family_evidence(
     *,
-    project_id: object,
+    project_id: UUID,
     result_bundles: tuple[AnalyticalResultBundle, ...],
     supporting_evidence: tuple[EvidenceReference, ...],
     contradicting_evidence: tuple[EvidenceReference, ...] = (),
