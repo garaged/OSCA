@@ -1,20 +1,20 @@
 # M6 Status
 
 - **Milestone:** M6 backtesting and strategy validation foundation
-- **Status:** Active
-- **Current slice:** M6.1 backtesting contracts and execution planner
-- **Latest hosted Quality:** Pending
+- **Status:** Complete
+- **Current slice:** M6 complete
+- **Latest hosted Quality:** 30154098640
 - **Last updated:** 2026-07-25
 
 ## Implemented
 
 - Backtesting API contracts for fidelity profiles, execution modes, data availability, assumptions, windows, requests, execution plans, strategy decisions, order intents, metrics, and results.
 - Application validation and planning services for fail-closed pre-execution checks.
-- Unit tests for M6.1 behavior.
+- SQLite lifecycle persistence for backtest requests, execution plans, and results.
+- Metadata-only CLI administration for backtest planning and request listing.
+- Unit tests and retained evidence for M6.1, M6.2, and M6.3 behavior.
+- Accepted ADR/spec, canonical OpenSpec spec, archived OpenSpec change, and exit review.
 
-## Pending
+## Deferred
 
-- Hosted Quality evidence for M6.1.
-- Persistence for request/plan/result lifecycle.
-- Operator administration.
-- Exit review and OpenSpec archive.
+- Event matching, fills, portfolio accounting, paper journals, runtime strategy execution, ML, LLM, paper trading, live execution, and provider production promotion.
