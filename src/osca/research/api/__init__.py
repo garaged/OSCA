@@ -1,11 +1,14 @@
 from osca.research.api.contracts import (
+    AdHocWorkspace,
     AnalysisGraph,
     AnalysisNode,
     AnalysisOutput,
     AnalysisOutputType,
+    EvidenceReport,
     GraphValidationFinding,
     Hypothesis,
     HypothesisState,
+    ProjectPromotion,
     ProjectStatus,
     ResearchProject,
     TimelineEvent,
@@ -16,13 +19,16 @@ from osca.research.api.contracts import (
 )
 
 __all__ = [
+    "AdHocWorkspace",
     "AnalysisGraph",
     "AnalysisNode",
     "AnalysisOutput",
     "AnalysisOutputType",
+    "EvidenceReport",
     "GraphValidationFinding",
     "Hypothesis",
     "HypothesisState",
+    "ProjectPromotion",
     "ProjectStatus",
     "ResearchProject",
     "TimelineEvent",
