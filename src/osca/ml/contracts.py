@@ -37,6 +37,24 @@ class ModelArtifactStatus(StrEnum):
     REJECTED = "rejected"
 
 
+class MLDeploymentRole(StrEnum):
+    CHAMPION = "champion"
+    CHALLENGER = "challenger"
+
+
+class MLMonitoringStatus(StrEnum):
+    HEALTHY = "healthy"
+    DEGRADED = "degraded"
+    BLOCKED = "blocked"
+
+
+class MLRetrainingTrigger(StrEnum):
+    SCHEDULED = "scheduled"
+    DRIFT = "drift"
+    OUTCOME_DEGRADATION = "outcome_degradation"
+    MANUAL = "manual"
+
+
 class MLFindingSeverity(StrEnum):
     INFO = "info"
     WARNING = "warning"
@@ -202,4 +220,104 @@ class MLPromotionDecision(BaseModel):
             finding.severity is MLFindingSeverity.ERROR for finding in self.findings
         ):
             raise ValueError("ML promotion cannot approve artifacts with error findings")
+        return self
+
+
+class MLEventValidationLink(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.ml.event-validation-link"] = "osca.ml.event-validation-link"
+    version: Literal["1.0.0"] = "1.0.0"
+    link_id: UUID = Field(default_factory=uuid4)
+    model_artifact_id: UUID
+    promotion_decision_id: UUID
+    f2_request_id: UUID
+    f2_promotion_gate_id: UUID
+    linked_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_link(self) -> Self:
+        if self.linked_at.tzinfo is None:
+            raise ValueError("ML event-validation link linked_at must be timezone-aware")
+        return self
+
+
+class MLPaperDeploymentDecision(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.ml.paper-deployment-decision"] = "osca.ml.paper-deployment-decision"
+    version: Literal["1.0.0"] = "1.0.0"
+    deployment_decision_id: UUID = Field(default_factory=uuid4)
+    model_artifact_id: UUID
+    paper_account_id: UUID
+    paper_run_id: UUID
+    role: MLDeploymentRole
+    approved_for_paper: bool
+    promotion_decision_id: UUID
+    rationale: Description
+    findings: tuple[MLFinding, ...] = ()
+    decided_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_deployment(self) -> Self:
+        if self.decided_at.tzinfo is None:
+            raise ValueError("ML paper deployment decided_at must be timezone-aware")
+        if self.approved_for_paper and any(
+            finding.severity is MLFindingSeverity.ERROR for finding in self.findings
+        ):
+            raise ValueError("ML paper deployment cannot approve artifacts with error findings")
+        return self
+
+
+class MLDriftMetric(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    name: Identifier
+    value: float
+    threshold: float
+    methodology: Identifier
+
+
+class MLMonitoringReport(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.ml.monitoring-report"] = "osca.ml.monitoring-report"
+    version: Literal["1.0.0"] = "1.0.0"
+    monitoring_report_id: UUID = Field(default_factory=uuid4)
+    model_artifact_id: UUID
+    paper_run_id: UUID
+    status: MLMonitoringStatus
+    drift_metrics: tuple[MLDriftMetric, ...] = ()
+    outcome_metrics: tuple[MLMetric, ...] = ()
+    findings: tuple[MLFinding, ...] = ()
+    observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_monitoring(self) -> Self:
+        if self.observed_at.tzinfo is None:
+            raise ValueError("ML monitoring observed_at must be timezone-aware")
+        blocked = self.status is MLMonitoringStatus.BLOCKED or any(
+            finding.severity is MLFindingSeverity.ERROR for finding in self.findings
+        )
+        threshold_breached = any(metric.value > metric.threshold for metric in self.drift_metrics)
+        if self.status is MLMonitoringStatus.HEALTHY and (blocked or threshold_breached):
+            raise ValueError("healthy ML monitoring cannot include blocked or drift-breached evidence")
+        return self
+
+
+class MLRetrainingRecord(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.ml.retraining-record"] = "osca.ml.retraining-record"
+    version: Literal["1.0.0"] = "1.0.0"
+    retraining_record_id: UUID = Field(default_factory=uuid4)
+    source_model_artifact_id: UUID
+    trigger: MLRetrainingTrigger
+    workflow_id: Identifier
+    created_experiment_run_id: UUID | None = None
+    automatic_promotion_requested: bool = False
+    rationale: Description
+    requested_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_retraining(self) -> Self:
+        if self.requested_at.tzinfo is None:
+            raise ValueError("ML retraining requested_at must be timezone-aware")
+        if self.automatic_promotion_requested:
+            raise ValueError("ML retraining cannot request automatic promotion")
         return self
