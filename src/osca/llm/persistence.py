@@ -57,7 +57,10 @@ class SQLiteLLMLifecycleStore:
 
     def save_provider_capability(self, capability: LLMProviderCapability) -> None:
         self._save_record(
-            record_id=f"{capability.provider_id}:{capability.model_id}:{capability.model_version}",
+            record_id=(
+                f"{capability.provider_id}:{capability.model_id}:"
+                f"{capability.model_version}"
+            ),
             provider_id=capability.provider_id,
             request_id=None,
             route_decision_id=None,
@@ -196,7 +199,11 @@ class SQLiteLLMLifecycleStore:
             ).fetchall()
         return tuple(str(row[0]) for row in rows)
 
-    def _list_payloads_by_request(self, request_id: str, record_type: str) -> tuple[str, ...]:
+    def _list_payloads_by_request(
+        self,
+        request_id: str,
+        record_type: str,
+    ) -> tuple[str, ...]:
         with self._connect() as connection:
             rows = connection.execute(
                 """
