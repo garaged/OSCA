@@ -27,7 +27,6 @@ from osca.backtesting.eventing.services import (
 )
 
 __all__ = [
-    "SQLiteF2ValidationStore",
     "F2EventType",
     "F2SimulationEvent",
     "FillModelMetadata",
@@ -41,6 +40,7 @@ __all__ = [
     "ReconciliationFinding",
     "RiskDecision",
     "RiskDecisionAction",
+    "SQLiteF2ValidationStore",
     "SimulatedFill",
     "ValuationHolding",
     "ValuationSnapshot",
