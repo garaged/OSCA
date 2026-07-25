@@ -9,6 +9,9 @@ from osca.research.api import (
     AnalysisNode,
     AnalysisOutput,
     AnalysisOutputType,
+    Hypothesis,
+    HypothesisState,
+    ResearchProject,
     TimelineEvent,
     TimelineEventType,
     VisualizationSpec,
@@ -16,9 +19,11 @@ from osca.research.api import (
 )
 from osca.research.application import (
     assemble_evidence_report,
+    compose_dashboard,
     plan_analysis_graph,
     project_timeline,
     promote_ad_hoc_workspace,
+    transition_hypothesis,
 )
 
 
@@ -41,6 +46,36 @@ def test_promote_ad_hoc_workspace_creates_project_promotion_and_event() -> None:
     assert promotion.project_id == project.project_id
     assert event.event_type is TimelineEventType.PROMOTION
     assert event.related_ids == (workspace.workspace_id, promotion.promotion_id)
+
+
+def test_transition_hypothesis_records_state_change_event() -> None:
+    project = ResearchProject(objective="Test risk-on breadth", horizon="15d")
+    hypothesis = Hypothesis(
+        project_id=project.project_id,
+        statement="Breadth expansion improves next-week returns",
+        assumptions=("market regime remains risk-on",),
+        expected_outcomes=("breadth basket outperforms benchmark",),
+        invalidation_conditions=("breadth basket underperforms after costs",),
+        confidence=0.6,
+    )
+
+    updated, event = transition_hypothesis(
+        hypothesis,
+        new_state=HypothesisState.WEAKENED,
+        rationale="Latest evidence weakened the breadth thesis",
+    )
+
+    assert hypothesis.state is HypothesisState.ACTIVE
+    assert updated.state is HypothesisState.WEAKENED
+    assert event.event_type is TimelineEventType.HYPOTHESIS
+    assert event.related_ids == (hypothesis.hypothesis_id,)
+
+    with pytest.raises(ValueError, match="different state"):
+        transition_hypothesis(
+            updated,
+            new_state=HypothesisState.WEAKENED,
+            rationale="No actual state transition",
+        )
 
 
 def test_project_timeline_orders_events_deterministically() -> None:
@@ -136,3 +171,37 @@ def test_assemble_evidence_report_requires_project_scoped_outputs() -> None:
 
     assert report.output_ids == (output.output_id,)
     assert report.visualization_ids == (visualization.visualization_id,)
+
+
+def test_compose_dashboard_uses_project_scoped_visualizations() -> None:
+    project = ResearchProject(objective="Compare volume shocks", horizon="5d")
+    output_id = uuid4()
+    visualization = VisualizationSpec(
+        project_id=project.project_id,
+        visualization_type=VisualizationType.HEATMAP,
+        title="Volume shock heatmap",
+        source_output_ids=(output_id,),
+    )
+
+    dashboard = compose_dashboard(
+        project=project,
+        title="Volume shock dashboard",
+        visualizations=(visualization,),
+    )
+
+    assert dashboard.project_id == project.project_id
+    assert dashboard.panels[0].title == visualization.title
+    assert dashboard.source_visualization_ids == (visualization.visualization_id,)
+
+    foreign_visualization = VisualizationSpec(
+        project_id=uuid4(),
+        visualization_type=VisualizationType.TABLE,
+        title="Foreign table",
+        source_output_ids=(output_id,),
+    )
+    with pytest.raises(ValueError, match="belong to the project"):
+        compose_dashboard(
+            project=project,
+            title="Invalid dashboard",
+            visualizations=(foreign_visualization,),
+        )
