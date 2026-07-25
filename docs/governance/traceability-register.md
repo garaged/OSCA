@@ -58,3 +58,9 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0041-REQ-0052 | PRD sections 8, 10-14, 37-39; D-004, D-012-D-018, D-040 | [M3 intent](../milestones/m3/intent.md) | [M3 temporal correctness](../specifications/m3-temporal-correctness.md) | M3-AC-001-M3-AC-012 | [M3 exit review](../../evidence/m3/m3-exit-review.md) | [M3 index](../milestones/m3/README.md) | ADR-0029 | Verified |
+
+## M4 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0053-REQ-0068 | PRD sections 11, 15, 18-21, 34-39; D-009, D-019, D-021-D-026, D-046 | [M4 intent](../milestones/m4/intent.md) | [M4 research projects, analytics, and visualization](../specifications/m4-research-projects-analytics.md) | M4-AC-001-M4-AC-012 | [M4 evidence plan](../milestones/m4/evidence-plan.md) | [M4 index](../milestones/m4/README.md) | ADR-0030 | Planned |
