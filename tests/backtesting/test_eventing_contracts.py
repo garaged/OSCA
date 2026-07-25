@@ -103,8 +103,18 @@ def test_journal_transaction_must_balance_by_currency() -> None:
         effective_at=datetime(2026, 1, 1, tzinfo=UTC),
         description="simulated fill cash settlement",
         lines=(
-            JournalLine(account="positions", side=JournalLineSide.DEBIT, amount=100, currency="USD"),
-            JournalLine(account="cash", side=JournalLineSide.CREDIT, amount=100, currency="USD"),
+            JournalLine(
+                account="positions",
+                side=JournalLineSide.DEBIT,
+                amount=100,
+                currency="USD",
+            ),
+            JournalLine(
+                account="cash",
+                side=JournalLineSide.CREDIT,
+                amount=100,
+                currency="USD",
+            ),
         ),
     )
 
@@ -117,8 +127,18 @@ def test_journal_transaction_must_balance_by_currency() -> None:
             effective_at=datetime(2026, 1, 1, tzinfo=UTC),
             description="imbalanced settlement",
             lines=(
-                JournalLine(account="positions", side=JournalLineSide.DEBIT, amount=100, currency="USD"),
-                JournalLine(account="cash", side=JournalLineSide.CREDIT, amount=99, currency="USD"),
+                JournalLine(
+                    account="positions",
+                    side=JournalLineSide.DEBIT,
+                    amount=100,
+                    currency="USD",
+                ),
+                JournalLine(
+                    account="cash",
+                    side=JournalLineSide.CREDIT,
+                    amount=99,
+                    currency="USD",
+                ),
             ),
         )
 
