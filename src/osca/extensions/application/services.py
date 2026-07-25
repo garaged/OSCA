@@ -107,8 +107,13 @@ def decide_activation(
         reasons.append(f"trust tier cannot activate: {manifest.trust_tier}")
     if installation.activation_state is ExtensionActivationState.QUARANTINED:
         reasons.append("installation is quarantined")
-    granted = {(permission.kind, permission.scope) for permission in installation.granted_permissions}
-    requested = {(permission.kind, permission.scope) for permission in requested_permissions}
+    granted = {
+        (permission.kind, permission.scope)
+        for permission in installation.granted_permissions
+    }
+    requested = {
+        (permission.kind, permission.scope) for permission in requested_permissions
+    }
     permission_approval_required = requested != granted
     if permission_approval_required:
         reasons.append("permission changes require renewed approval")
