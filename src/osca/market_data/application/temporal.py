@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Sequence
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, time, timedelta
 from uuid import UUID, uuid4
 
 from osca.market_data.api.temporal import (
@@ -48,11 +48,20 @@ def stock_expected_windows(
         return ()
     step = timedelta(seconds=INTERVAL_SECONDS[interval])
     if interval is MarketDataInterval.D1:
-        return (CompletedBarWindow(interval=interval, starts_at=session.opens_at, ends_at=session.closes_at),)
+        day_start = datetime.combine(session.session_date, time.min, tzinfo=UTC)
+        return (
+            CompletedBarWindow(
+                interval=interval,
+                starts_at=day_start,
+                ends_at=day_start + timedelta(days=1),
+            ),
+        )
     windows: list[CompletedBarWindow] = []
     cursor = session.opens_at
     while cursor + step <= session.closes_at:
-        windows.append(CompletedBarWindow(interval=interval, starts_at=cursor, ends_at=cursor + step))
+        windows.append(
+            CompletedBarWindow(interval=interval, starts_at=cursor, ends_at=cursor + step)
+        )
         cursor += step
     return tuple(windows)
 
@@ -66,7 +75,13 @@ def crypto_expected_windows(
         raise ValueError("crypto day start must be expressed in UTC")
     step = timedelta(seconds=INTERVAL_SECONDS[interval])
     if interval is MarketDataInterval.D1:
-        return (CompletedBarWindow(interval=interval, starts_at=day_start, ends_at=day_start + step),)
+        return (
+            CompletedBarWindow(
+                interval=interval,
+                starts_at=day_start,
+                ends_at=day_start + step,
+            ),
+        )
     day_end = day_start + timedelta(days=1)
     windows: list[CompletedBarWindow] = []
     cursor = day_start
@@ -181,7 +196,9 @@ def resample_ohlcv(
     return tuple(results)
 
 
-def pairwise(items: Sequence[CanonicalOhlcvBar]) -> Iterable[tuple[CanonicalOhlcvBar, CanonicalOhlcvBar]]:
+def pairwise(
+    items: Sequence[CanonicalOhlcvBar],
+) -> Iterable[tuple[CanonicalOhlcvBar, CanonicalOhlcvBar]]:
     for index in range(len(items) - 1):
         yield items[index], items[index + 1]
 
@@ -197,7 +214,10 @@ def _combine_group(
     first = group[0]
     if any(bar.instrument_id != first.instrument_id for bar in group):
         raise ValueError("resampling group cannot mix instruments")
-    if any(bar.currency != first.currency or bar.volume_unit != first.volume_unit for bar in group):
+    if any(
+        bar.currency != first.currency or bar.volume_unit != first.volume_unit
+        for bar in group
+    ):
         raise ValueError("resampling group cannot mix units")
     if any(bar.provider_id != first.provider_id for bar in group):
         raise ValueError("resampling group cannot mix providers")
