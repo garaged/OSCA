@@ -96,7 +96,7 @@ def bar(start_hour: int, close: str) -> CanonicalOhlcvBar:
         ends_at=start + timedelta(hours=1),
         effective_date=start.date(),
         open=Decimal("10"),
-        high=Decimal("12"),
+        high=Decimal("15"),
         low=Decimal("9"),
         close=Decimal(close),
         volume=Decimal("100"),
