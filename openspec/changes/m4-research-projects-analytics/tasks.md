@@ -6,7 +6,8 @@
 - [x] Add initial OpenSpec change package.
 - [x] Add additive project, analysis graph, analytical output, and visualization contracts.
 - [x] Add initial unit tests.
-- [ ] Add REQ-0053-REQ-0068 to requirements catalog.
-- [ ] Update traceability and navigation.
-- [ ] Add project timeline and ad hoc promotion services.
-- [ ] Add retained evidence and hosted Quality validation.
+- [x] Add REQ-0053-REQ-0068 to requirements catalog.
+- [x] Update traceability and navigation.
+- [x] Add project timeline and ad hoc promotion services.
+- [x] Add graph planning and evidence-report assembly services.
+- [x] Add retained evidence and hosted Quality validation.
