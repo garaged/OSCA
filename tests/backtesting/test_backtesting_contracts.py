@@ -97,7 +97,14 @@ def test_completed_backtest_result_requires_metrics() -> None:
     result = BacktestResult(
         request_id=uuid4(),
         status=BacktestStatus.COMPLETED,
-        metrics=(BacktestMetric(name="total_return", value=0.12, unit="ratio", methodology="simple"),),
+        metrics=(
+            BacktestMetric(
+                name="total_return",
+                value=0.12,
+                unit="ratio",
+                methodology="simple",
+            ),
+        ),
     )
 
     assert result.status is BacktestStatus.COMPLETED
