@@ -183,6 +183,7 @@ class AnalysisGraph(BaseModel):
             for node_id in sorted(duplicates)
         )
         known = set(node_ids)
+        output_refs = {ref for node in self.nodes for ref in node.output_refs}
         for node in self.nodes:
             for dependency in node.depends_on:
                 if dependency not in known:
@@ -190,6 +191,15 @@ class AnalysisGraph(BaseModel):
                         GraphValidationFinding(
                             code="missing_dependency",
                             message=f"missing dependency: {dependency}",
+                            node_id=node.node_id,
+                        )
+                    )
+            for input_ref in node.input_refs:
+                if input_ref not in output_refs:
+                    findings.append(
+                        GraphValidationFinding(
+                            code="missing_input",
+                            message=f"missing input reference: {input_ref}",
                             node_id=node.node_id,
                         )
                     )
@@ -254,6 +264,40 @@ class VisualizationSpec(BaseModel):
     source_output_ids: tuple[UUID, ...] = Field(min_length=1)
     encoding: dict[str, Any] = Field(default_factory=dict)
     downsampling_disclosure: Description | None = None
+
+
+class DashboardPanel(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    panel_id: Identifier
+    visualization_id: UUID
+    title: Identifier
+    position: Annotated[int, Field(ge=0)]
+    layout: dict[str, Any] = Field(default_factory=dict)
+
+
+class DashboardSpec(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.visualization.dashboard"] = "osca.visualization.dashboard"
+    version: Literal["1.0.0"] = "1.0.0"
+    dashboard_id: UUID = Field(default_factory=uuid4)
+    project_id: UUID
+    title: Identifier
+    panels: tuple[DashboardPanel, ...] = Field(min_length=1)
+    source_visualization_ids: tuple[UUID, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_panels(self) -> Self:
+        panel_ids = [panel.panel_id for panel in self.panels]
+        if len(set(panel_ids)) != len(panel_ids):
+            raise ValueError("dashboard panel identifiers must be unique")
+        positions = [panel.position for panel in self.panels]
+        if len(set(positions)) != len(positions):
+            raise ValueError("dashboard panel positions must be unique")
+        panel_visualization_ids = {panel.visualization_id for panel in self.panels}
+        source_ids = set(self.source_visualization_ids)
+        if panel_visualization_ids != source_ids:
+            raise ValueError("dashboard panels must match source visualizations")
+        return self
 
 
 class VisualizationExport(BaseModel):
