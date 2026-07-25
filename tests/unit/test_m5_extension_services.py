@@ -19,7 +19,6 @@ from osca.extensions.application import (
     validate_extension_manifest,
 )
 
-
 DIGEST = "sha256:" + "b" * 64
 
 
