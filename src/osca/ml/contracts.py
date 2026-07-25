@@ -297,7 +297,9 @@ class MLMonitoringReport(BaseModel):
         )
         threshold_breached = any(metric.value > metric.threshold for metric in self.drift_metrics)
         if self.status is MLMonitoringStatus.HEALTHY and (blocked or threshold_breached):
-            raise ValueError("healthy ML monitoring cannot include blocked or drift-breached evidence")
+            raise ValueError(
+                "healthy ML monitoring cannot include blocked or drift-breached evidence"
+            )
         return self
 
 
