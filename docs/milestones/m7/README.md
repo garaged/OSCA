@@ -1,6 +1,6 @@
 # M7 - F2 Event-Driven Validation Foundation
 
-- **Status:** Active
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, simulation, accounting, and risk review:** Required for M7 scope
 - **Authoritative outcome:** PRD M7 F2 event-driven validation for strategies
@@ -16,9 +16,11 @@
 - [Execution plan](execution-plan.md)
 - [Risk register](risk-register.md)
 - [M7 status](status.md)
+- [Exit review](exit-review.md)
 - [Deferred scope](deferred-scope.md)
 - [M7 F2 event-driven validation specification](../../specifications/m7-event-driven-validation.md)
-- [Active M7 OpenSpec change](../../../openspec/changes/2026-07-25-m7-event-driven-validation/README.md)
+- [Accepted M7 OpenSpec specification](../../../openspec/specs/m7-event-driven-validation/spec.md)
+- [Archived M7 OpenSpec change](../../../openspec/changes/archive/2026-07-25-m7-event-driven-validation/README.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
 
