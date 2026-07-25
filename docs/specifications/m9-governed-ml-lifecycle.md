@@ -32,6 +32,10 @@ Evaluation reports must preserve metrics by dataset split and require holdout me
 
 ML promotion decisions must fail closed when quality findings contain errors or when required holdout thresholds are not met.
 
+### Metadata persistence
+
+ML lifecycle metadata must persist stable records and support workflow, experiment, and model-artifact scoped queries without executing training.
+
 ### Manual testing
 
 M9 must review and update the manual testing and usage baseline for ML lifecycle operator-visible behavior.
