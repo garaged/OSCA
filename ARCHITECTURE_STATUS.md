@@ -9,7 +9,7 @@
 - **M0.x operationalization:** Complete
 - **M1 secure walking skeleton:** Accepted
 - **M2 governed daily-data vertical slice:** Complete
-- **Current activity:** Next governed milestone intent pending
+- **Current activity:** M3 multi-timeframe market data and temporal correctness in progress
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -53,3 +53,4 @@ Production promotion for paid, authenticated, or license-sensitive provider use 
 - [M0.x roadmap](docs/milestones/m0x-roadmap.md)
 - [M1 milestone](docs/milestones/m1/README.md)
 - [M2 milestone](docs/milestones/m2/README.md)
+- [M3 milestone](docs/milestones/m3/README.md)
