@@ -17,4 +17,4 @@
 
 ## Current evidence
 
-Hosted Quality run `30138100271` passed for head `95002287f8ed4544e699a1f6fca63e82334168d8` after the project timeline, ad hoc promotion, graph planning, and report assembly slice.
+Hosted Quality run `30138852688` passed for head `1ad24422e0502c99092aa370eb48fdb4c77952dd` after the hypothesis lifecycle, missing graph input validation, and dashboard composition slice.
