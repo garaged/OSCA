@@ -9,6 +9,8 @@ from osca.research.api import (
     AnalysisNode,
     AnalysisOutput,
     AnalysisOutputType,
+    DashboardPanel,
+    DashboardSpec,
     Hypothesis,
     HypothesisState,
     ResearchProject,
@@ -75,6 +77,26 @@ def test_analysis_graph_validation_detects_cycles_missing_dependencies_and_polic
     }
 
 
+def test_analysis_graph_validation_detects_missing_input_references() -> None:
+    graph = AnalysisGraph(
+        project_id=uuid4(),
+        quality_policy="strict-complete-v1",
+        nodes=(
+            AnalysisNode(
+                node_id="signal",
+                node_kind="signal",
+                input_refs=("missing.output",),
+                output_refs=("signal.output",),
+            ),
+        ),
+    )
+
+    findings = graph.validate_graph()
+    assert [(finding.code, finding.node_id) for finding in findings] == [
+        ("missing_input", "signal")
+    ]
+
+
 def test_analysis_output_requires_dataset_lineage_and_utc_effective_time() -> None:
     project_id = uuid4()
     graph_id = uuid4()
@@ -126,3 +148,37 @@ def test_visualization_spec_and_export_reference_outputs() -> None:
 
     assert export.source_output_ids == (output_id,)
     assert export.aggregation_disclosure == "No aggregation applied"
+
+
+def test_dashboard_spec_composes_unique_visualization_panels() -> None:
+    visualization_id = uuid4()
+    dashboard = DashboardSpec(
+        project_id=uuid4(),
+        title="Momentum dashboard",
+        panels=(
+            DashboardPanel(
+                panel_id="summary",
+                visualization_id=visualization_id,
+                title="Summary",
+                position=0,
+            ),
+        ),
+        source_visualization_ids=(visualization_id,),
+    )
+
+    assert dashboard.panels[0].visualization_id == visualization_id
+
+    with pytest.raises(ValidationError):
+        DashboardSpec(
+            project_id=uuid4(),
+            title="Broken dashboard",
+            panels=(
+                DashboardPanel(
+                    panel_id="summary",
+                    visualization_id=visualization_id,
+                    title="Summary",
+                    position=0,
+                ),
+            ),
+            source_visualization_ids=(uuid4(),),
+        )
