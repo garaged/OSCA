@@ -97,7 +97,6 @@ def test_plan_analysis_graph_returns_topological_order_and_rejects_invalid() -> 
 
 
 def test_assemble_evidence_report_requires_project_scoped_outputs() -> None:
-    project_id = uuid4()
     graph_id = uuid4()
     project = AdHocWorkspace(
         objective="Explore breakout behavior",
