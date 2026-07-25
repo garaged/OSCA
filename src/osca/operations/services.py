@@ -69,7 +69,10 @@ def health_state_from_findings(
     )
 
 
-def should_enqueue_alert(policy: AlertPolicy, active_findings: tuple[OperationsFinding, ...]) -> bool:
+def should_enqueue_alert(
+    policy: AlertPolicy,
+    active_findings: tuple[OperationsFinding, ...],
+) -> bool:
     if policy.external_delivery_enabled:
         return False
     return any(
