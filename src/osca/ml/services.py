@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from osca.ml.contracts import (
     DatasetSplit,
     MLDeploymentRole,
@@ -63,8 +65,8 @@ def evaluate_ml_promotion(
 def link_model_to_event_validation(
     *,
     promotion: MLPromotionDecision,
-    f2_request_id: object,
-    f2_promotion_gate_id: object,
+    f2_request_id: UUID,
+    f2_promotion_gate_id: UUID,
 ) -> MLEventValidationLink:
     if not promotion.approved_for_event_validation:
         raise ValueError("event validation link requires approved ML promotion")
@@ -79,8 +81,8 @@ def link_model_to_event_validation(
 def decide_paper_deployment(
     *,
     promotion: MLPromotionDecision,
-    paper_account_id: object,
-    paper_run_id: object,
+    paper_account_id: UUID,
+    paper_run_id: UUID,
     role: MLDeploymentRole,
     rationale: str = "ML paper deployment evaluated",
     findings: tuple[MLFinding, ...] = (),
@@ -101,8 +103,8 @@ def decide_paper_deployment(
 
 def build_monitoring_report(
     *,
-    model_artifact_id: object,
-    paper_run_id: object,
+    model_artifact_id: UUID,
+    paper_run_id: UUID,
     drift_metrics: tuple[MLDriftMetric, ...] = (),
     outcome_metrics: tuple[MLMetric, ...] = (),
     findings: tuple[MLFinding, ...] = (),
@@ -128,7 +130,7 @@ def build_monitoring_report(
 
 def request_retraining(
     *,
-    source_model_artifact_id: object,
+    source_model_artifact_id: UUID,
     trigger: MLRetrainingTrigger,
     workflow_id: str,
     rationale: str,
