@@ -94,6 +94,36 @@ def test_manifest_is_idempotent_by_fingerprint_and_canonical_is_protected() -> N
         )
 
 
+def test_manifest_persists_interval_metadata() -> None:
+    engine = create_engine("sqlite://")
+    MarketDataBase.metadata.create_all(engine)
+    manifest = DatasetManifest(
+        revision=1,
+        fingerprint="sha256:" + "f" * 64,
+        layer=DatasetLayer.CANONICAL,
+        state=ManifestState.READY,
+        instrument_id=uuid4(),
+        provider_id="synthetic",
+        source_context="fixture-5m",
+        interval="5m",
+        start_date=date(2024, 1, 2),
+        end_date_exclusive=date(2024, 1, 3),
+        schema_revision="1.0.0",
+        row_count=78,
+        byte_size=2048,
+        content_digest="sha256:" + "a" * 64,
+        object_key="canonical/aa/object-5m.parquet",
+        retention_policy_revision="synthetic-v1",
+        backup_permitted=True,
+        protected=True,
+    )
+    with Session(engine) as session, session.begin():
+        repository = SqliteManifestRepository(session)
+        repository.add(manifest)
+        assert repository.by_fingerprint(manifest.fingerprint) == manifest
+        assert repository.ready(manifest.dataset_id)[0].interval == "5m"
+
+
 def test_manifest_publication_transition_is_compare_and_set() -> None:
     engine = create_engine("sqlite://")
     MarketDataBase.metadata.create_all(engine)
