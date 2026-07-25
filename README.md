@@ -2,7 +2,7 @@
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies.
 
-The M0 architecture foundation, M0.x operational controls, M1 secure walking skeleton, and M2 governed daily-data vertical slice are authoritative. Later product scope requires a new governed milestone intent.
+The M0 architecture foundation, M0.x operational controls, M1 secure walking skeleton, M2 governed daily-data vertical slice, M3 multi-timeframe temporal correctness, and M4 research projects analytics foundation are authoritative. Later product scope requires a new governed milestone intent.
 
 ## Start here
 
@@ -18,6 +18,7 @@ The M0 architecture foundation, M0.x operational controls, M1 secure walking ske
 10. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
 11. [M2 milestone](docs/milestones/m2/README.md)
 12. [M3 milestone](docs/milestones/m3/README.md)
+13. [M4 milestone](docs/milestones/m4/README.md)
 
 ## Governing baseline
 
