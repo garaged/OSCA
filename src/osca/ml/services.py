@@ -111,13 +111,12 @@ def build_monitoring_report(
 ) -> MLMonitoringReport:
     has_error = any(finding.severity is MLFindingSeverity.ERROR for finding in findings)
     threshold_breached = any(metric.value > metric.threshold for metric in drift_metrics)
-    status = (
-        MLMonitoringStatus.BLOCKED
-        if has_error
-        else MLMonitoringStatus.DEGRADED
-        if threshold_breached
-        else MLMonitoringStatus.HEALTHY
-    )
+    if has_error:
+        status = MLMonitoringStatus.BLOCKED
+    elif threshold_breached:
+        status = MLMonitoringStatus.DEGRADED
+    else:
+        status = MLMonitoringStatus.HEALTHY
     return MLMonitoringReport(
         model_artifact_id=model_artifact_id,
         paper_run_id=paper_run_id,
