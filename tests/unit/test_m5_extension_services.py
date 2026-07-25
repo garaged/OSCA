@@ -2,6 +2,12 @@ from uuid import uuid4
 
 import pytest
 
+from osca.extensions.application import (
+    create_installation_record,
+    decide_activation,
+    preview_extension_impact,
+    validate_extension_manifest,
+)
 from osca.extensions.api import (
     ExtensionActivationState,
     ExtensionCategory,
@@ -11,12 +17,6 @@ from osca.extensions.api import (
     ExtensionPermissionKind,
     ExtensionSchemaRef,
     ExtensionTrustTier,
-)
-from osca.extensions.application import (
-    create_installation_record,
-    decide_activation,
-    preview_extension_impact,
-    validate_extension_manifest,
 )
 
 
