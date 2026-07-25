@@ -14,6 +14,8 @@
 - **M5 independent extension packaging and activation:** Complete
 - **M6 backtesting and strategy validation foundation:** Complete
 - **M7 F2 event-driven validation foundation:** Complete
+- **M8 F3 paper evaluation and automation foundation:** Complete
+- **M9 governed ML lifecycle foundation:** Complete
 - **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -100,3 +102,9 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M6 milestone](docs/milestones/m6/README.md)
 - [M7 milestone](docs/milestones/m7/README.md)
 - [M8 milestone](docs/milestones/m8/README.md)
+
+## M9 completion boundary
+
+M9 is complete through its governed exit review and archived OpenSpec change. M9 provides governed ML feature and label definitions, training workflow metadata, experiment and model artifact records, evaluation and calibration reports, deterministic promotion decisions, SQLite lifecycle metadata persistence, F2 event-validation links, champion/challenger paper deployment decisions, drift/outcome monitoring reports, and retraining records without automatic promotion.
+
+Trainer execution, production model serving, LLM behavior, live execution, real-capital orders, F4 fidelity, and provider production promotion remain deferred to later governed milestone intents.
