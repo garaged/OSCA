@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 import pytest
+
 from osca.extensions.api import (
     ExtensionActivationState,
     ExtensionCategory,
