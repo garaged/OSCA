@@ -1,6 +1,6 @@
 # M3 Status
 
-- **Current implementation slice:** M3.2 interval metadata, freshness, and repair planning
+- **Current implementation slice:** M3.3 governed OHLCV payload support
 - **Branch:** `agent/m3-temporal-correctness`
 - **Last updated:** 2026-07-24
 
@@ -14,10 +14,11 @@
 - Retrieval resolution filters by interval, so daily and intraday revisions are not silently substituted.
 - Storage inspection groups usage by interval.
 - SQLite manifest persistence retains interval metadata through the existing JSON payload repository.
-- Unit and component tests cover the first two temporal correctness surfaces.
+- Governed OHLCV Parquet schema, serialization, deserialization, and codec support are added for non-daily and resampled bars.
+- Unit and component tests cover the current temporal correctness, interval metadata, and OHLCV payload surfaces.
 
 ## Remaining M3 work
 
 - Interval-aware retention and canonical revision behavior beyond manifest identity.
-- Interval-aware publication/payload support for non-daily OHLCV Parquet objects.
+- Publication workflow integration for non-daily OHLCV payloads.
 - Final evidence reconciliation, OpenSpec archive, hosted CI cleanup, and merge readiness.
