@@ -1,6 +1,6 @@
 # Specification - M6 Backtesting and Strategy Validation Foundation
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Governing role:** Architecture authority
 - **Requirements:** REQ-0085-REQ-0092
 - **Related decisions:** D-004, D-009, D-021, D-027-D-028, D-037, D-041, D-046; ADR-0032
@@ -25,6 +25,8 @@ Backtest planning fails closed when inputs use revised-after-fact data, when eve
 Strategy decisions retain evidence linkage and may produce order intents for simulated execution. Order intents are not live orders and do not imply brokerage or exchange execution.
 
 Backtest execution plans disclose required checks and cannot be executable when error findings exist.
+
+Backtest requests, execution plans, and results are persisted in SQLite metadata storage with stable identifiers and queryable lifecycle history. The CLI exposes metadata-only request planning and request listing backed by the lifecycle store.
 
 Completed backtest results retain typed metrics and methodology metadata. Unsupported behavior must be disclosed rather than approximated silently.
 
