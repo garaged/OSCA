@@ -3,8 +3,8 @@
 - **Status:** Complete
 - **Milestone:** M6 backtesting and strategy validation foundation
 - **Completed:** 2026-07-25
-- **Final hosted Quality:** 30154098640
-- **Final verified head:** 42ac29b338cf8f35984a768a5cdb16d0263e2b8b
+- **Final hosted Quality:** 30154184627
+- **Final verified head:** 4c0a7291b43b7e4610fc180fa086f96e411f11a0
 
 ## Scope completed
 
@@ -12,7 +12,7 @@ M6 establishes deterministic backtesting contracts and metadata lifecycle behavi
 
 ## Verification
 
-Hosted Quality run 30154098640 passed OpenSpec strict validation, secret scan, Ruff, strict mypy, pytest, contracts, migrations, links, and architecture checks.
+Hosted Quality run 30154184627 passed OpenSpec strict validation, secret scan, Ruff, strict mypy, pytest, contracts, migrations, links, and architecture checks.
 
 ## Deferred scope
 
