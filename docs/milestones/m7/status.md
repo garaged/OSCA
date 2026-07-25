@@ -2,8 +2,8 @@
 
 - **Milestone:** M7 F2 event-driven validation foundation
 - **Status:** Active
-- **Current slice:** M7.2 deterministic simulation service foundation
-- **Latest hosted Quality:** 30162485417
+- **Current slice:** M7.3 F2 validation metadata persistence
+- **Latest hosted Quality:** 30162598782
 - **Last updated:** 2026-07-25
 
 ## Implemented
@@ -13,6 +13,8 @@
 - ADR-0033 for F2 event-driven validation authority.
 - Initial F2 event-driven contract and validation service surface.
 - Hosted Quality run 30162485417 passed Ruff, strict mypy, pytest, OpenSpec, and secret scan for M7.1.
+- Deterministic lifecycle, fill, and journal settlement services.
+- Hosted Quality run 30162598782 passed Ruff, strict mypy, pytest, OpenSpec, and secret scan for M7.2.
 
 ## Deferred
 
