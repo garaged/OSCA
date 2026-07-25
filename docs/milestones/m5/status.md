@@ -28,4 +28,4 @@
 - M5.1 hosted Quality run `30142177187` passed at head `a4cac51012fa176a4a8c61c5b1c6a97e594b4838`.
 - M5.2 hosted Quality run `30151273502` passed at head `f0744a62f5419ae18bf522a40f1301b152c495df`.
 - M5.3 hosted Quality run `30151415441` passed at head `71afb66bc6be86c7d3e9bb3c4a0445ae38cb64af`.
-- Final archived-head validation is pending after this closeout update.
+- Final archived-head hosted Quality run `30151575123` passed at head `62fdadd058ade30d723df41a1d7920db7b68190b`.
