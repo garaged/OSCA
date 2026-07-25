@@ -14,7 +14,6 @@ from osca.extensions.api import (
     ExtensionTrustTier,
 )
 
-
 DIGEST = "sha256:" + "a" * 64
 
 
