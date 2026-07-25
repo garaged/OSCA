@@ -12,6 +12,8 @@ M9 establishes the governed ML lifecycle foundation after M8. It includes featur
 
 ## Verification
 
+Hosted Quality run 30174614831 is green at closeout head a8a34d6c870f4ce11064e145bb75f9040aa49a82.
+
 Hosted Quality run 30174453549 passed OpenSpec strict validation, secret scanning, Ruff, strict mypy, pytest, migrations, links, and architecture checks for the M9.3 implementation head.
 
 ## Manual usage baseline
