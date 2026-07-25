@@ -77,4 +77,4 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0085-REQ-0092 | PRD sections 22, 29-30, 34, 37-39; D-001-D-002, D-004, D-009, D-027-D-028, D-036-D-037, D-041, D-046 | [M6 intent](../milestones/m6/intent.md) | [M6 backtesting foundation](../specifications/m6-backtesting-foundation.md) | M6-AC-001-M6-AC-008 | [M6 evidence plan](../milestones/m6/evidence-plan.md) | [M6 index](../milestones/m6/README.md) | ADR-0032 | Planned |
+| REQ-0085-REQ-0092 | PRD sections 22, 29-30, 34, 37-39; D-001-D-002, D-004, D-009, D-027-D-028, D-036-D-037, D-041, D-046 | [M6 intent](../milestones/m6/intent.md) | [M6 backtesting foundation](../specifications/m6-backtesting-foundation.md) | M6-AC-001-M6-AC-008 | [M6 exit review](../../evidence/m6/m6-exit-review.md) | [M6 index](../milestones/m6/README.md) | ADR-0032 | Verified |
