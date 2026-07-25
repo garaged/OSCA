@@ -64,3 +64,10 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0053-REQ-0068 | PRD sections 11, 15, 18-21, 34-39; D-009, D-019, D-021-D-026, D-046 | [M4 intent](../milestones/m4/intent.md) | [M4 research projects, analytics, and visualization](../specifications/m4-research-projects-analytics.md) | M4-AC-001-M4-AC-012 | [M4 exit review](../../evidence/m4/m4-exit-review.md) | [M4 index](../milestones/m4/README.md) | ADR-0030 | Verified |
+
+
+## M5 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0069-REQ-0084 | PRD sections 11, 13, 15-17, 20-21, 26-27, 34, 37-39; D-014, D-019, D-020, D-022, D-026, D-040, D-046 | [M5 intent](../milestones/m5/intent.md) | [M5 independent extension packaging and activation](../specifications/m5-extension-packaging.md) | M5-AC-001-M5-AC-008 | [M5 exit review](../../evidence/m5/m5-exit-review.md) | [M5 index](../milestones/m5/README.md) | ADR-0031 | Verified |
