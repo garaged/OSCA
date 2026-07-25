@@ -21,6 +21,7 @@ from osca.paper.contracts import (
     PaperScheduleCadence,
     PaperScheduleStatus,
 )
+from osca.paper.persistence import SQLitePaperEvaluationStore
 from osca.paper.services import (
     approve_paper_candidate,
     build_forward_comparison,
@@ -51,6 +52,7 @@ __all__ = [
     "PaperSchedule",
     "PaperScheduleCadence",
     "PaperScheduleStatus",
+    "SQLitePaperEvaluationStore",
     "approve_paper_candidate",
     "build_forward_comparison",
     "decide_paper_control",
