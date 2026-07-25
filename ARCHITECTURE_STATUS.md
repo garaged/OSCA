@@ -18,7 +18,8 @@
 - **M9 governed ML lifecycle foundation:** Complete
 - **M10 LLM lifecycle and gateway foundation:** Complete
 - **M11 analytical breadth and portfolio intelligence:** Complete
-- **Current activity:** Next governed milestone intent pending
+- **M12 release readiness and operational resilience:** Complete
+- **Current activity:** Initial M0-M12 roadmap complete; next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -107,6 +108,7 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M9 milestone](docs/milestones/m9/README.md)
 - [M10 milestone](docs/milestones/m10/README.md)
 - [M11 milestone](docs/milestones/m11/README.md)
+- [M12 milestone](docs/milestones/m12/README.md)
 
 ## M9 completion boundary
 
@@ -126,3 +128,9 @@ Provider adapters, prompt execution, retrieval materialization, generated recomm
 M11 is complete through its governed exit review and archived OpenSpec change. M11 provides governed analytical pack manifests, deterministic pack validation, analytical result bundles, method comparison, outcome calibration, portfolio scenario evidence, cross-family synthesis records, visualization pack metadata, and SQLite metadata persistence for analytical breadth and portfolio intelligence.
 
 Runtime fundamental, macro, event, news, sentiment, on-chain, specialized ML, and visualization engines; provider calls; LLM-generated synthesis; recommendation execution; live execution; real-capital orders; and provider production promotion remain deferred to later governed milestone intents.
+
+## M12 completion boundary
+
+M12 is complete through its governed exit review and archived OpenSpec change. M12 provides governed release-readiness and operational-resilience contracts for backup manifests, restore verification, disaster-recovery exercises, health findings, alert policies, workflow run records, deterministic risk-policy decisions, and SQLite metadata persistence.
+
+Real off-device backup transport, active restore execution, external alert delivery, runtime scheduler execution, personal-server transport implementation, live execution, real-capital orders, and provider production promotion remain deferred until later governed milestone intents.
