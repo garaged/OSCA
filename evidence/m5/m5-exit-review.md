@@ -2,7 +2,7 @@
 
 - **Milestone:** M5 independent extension packaging and activation
 - **Branch:** `agent/m5-extension-packaging`
-- **Status:** Pending final archived-head validation
+- **Status:** Passed
 - **Recorded:** 2026-07-25
 
 ## Evidence package
@@ -17,4 +17,4 @@
 
 ## Final validation
 
-Final archived-head hosted Quality validation is pending after the closeout update.
+Hosted Quality run `30151575123` passed at archived head `62fdadd058ade30d723df41a1d7920db7b68190b`: OpenSpec strict validation, secret scan, Ruff, strict mypy, pytest, contracts, migrations, documentation links, and architecture validation.
