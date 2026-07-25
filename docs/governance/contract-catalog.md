@@ -181,3 +181,14 @@ Unknown major versions fail validation. Canonical daily bars reject binary float
 | `osca.workflow.job-run` | Workflow | Capability-neutral durable identity, versioned input, idempotency, lifecycle, lease, checkpoint, error, and result reference | Additive-minor; state transitions, actor/kind/idempotency identity, input digest, and terminal-result rules cannot change | 1.0.0 | Supported | `osca.workflow.api.JobRun` |
 
 The generic contract is additive and does not replace or reinterpret `osca.workflow.diagnostic-run`. Generic and diagnostic rows remain separately readable. At-least-once execution requires idempotent or duplicate-aware handlers. Unknown input or job contract major versions fail before handler execution.
+
+## M9 contract families
+
+| Family | Owner | Purpose | Compatibility | Current version | Status | Specification |
+|---|---|---|---|---|---|---|
+| `osca.ml.feature-definition` | ML lifecycle | Govern feature identity, lineage, type, and point-in-time safety | Additive-minor with explicit semantic review | 1.0.0 | Proposed | [M9 specification](../specifications/m9-governed-ml-lifecycle.md) |
+| `osca.ml.label-definition` | ML lifecycle | Govern label identity, objective, horizon, and leakage checks | Additive-minor with explicit semantic review | 1.0.0 | Proposed | [M9 specification](../specifications/m9-governed-ml-lifecycle.md) |
+| `osca.ml.training-workflow` | ML lifecycle | Govern training workflow identity and reproducibility metadata | Additive-minor with explicit semantic review | 1.0.0 | Proposed | [M9 specification](../specifications/m9-governed-ml-lifecycle.md) |
+| `osca.ml.model-artifact` | ML lifecycle | Govern immutable model artifact identity and digest metadata | Additive-minor with explicit semantic review | 1.0.0 | Proposed | [M9 specification](../specifications/m9-governed-ml-lifecycle.md) |
+| `osca.ml.evaluation-report` | ML lifecycle | Govern split-scoped metrics and calibration evidence | Additive-minor with explicit semantic review | 1.0.0 | Proposed | [M9 specification](../specifications/m9-governed-ml-lifecycle.md) |
+| `osca.ml.promotion-decision` | ML lifecycle | Govern deterministic ML promotion outcomes | Additive-minor with explicit semantic review | 1.0.0 | Proposed | [M9 specification](../specifications/m9-governed-ml-lifecycle.md) |
