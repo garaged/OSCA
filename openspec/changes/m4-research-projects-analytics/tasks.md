@@ -10,4 +10,6 @@
 - [x] Update traceability and navigation.
 - [x] Add project timeline and ad hoc promotion services.
 - [x] Add graph planning and evidence-report assembly services.
+- [x] Add hypothesis lifecycle transition behavior.
+- [x] Add dashboard composition contracts and service.
 - [x] Add retained evidence and hosted Quality validation.
