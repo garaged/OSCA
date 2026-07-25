@@ -1,5 +1,9 @@
 # m8-paper-evaluation Specification
 
+## Purpose
+
+Index the verified M8 F3 paper evaluation and automation semantics under REQ-0102-REQ-0111 and ADR-0034.
+
 ## Requirements
 
 ### Requirement: Independent paper accounts
