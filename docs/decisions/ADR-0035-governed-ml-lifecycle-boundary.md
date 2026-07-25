@@ -1,6 +1,6 @@
 # ADR-0035 - Governed ML Lifecycle Boundary
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Date:** 2026-07-25
 - **Milestone:** M9
 - **Deciders:** Architecture authority, product authority, quality authority
