@@ -103,6 +103,44 @@ class TimelineEvent(BaseModel):
         return self
 
 
+class AdHocWorkspace(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.research.ad-hoc-workspace"] = "osca.research.ad-hoc-workspace"
+    version: Literal["1.0.0"] = "1.0.0"
+    workspace_id: UUID = Field(default_factory=uuid4)
+    objective: Description
+    horizon: Identifier
+    captured_context: tuple[Description, ...] = Field(min_length=1)
+    selected_dependency_ids: tuple[UUID, ...] = Field(min_length=1)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_created_at(self) -> Self:
+        if self.created_at.tzinfo is None:
+            raise ValueError("created_at must be timezone-aware")
+        return self
+
+
+class ProjectPromotion(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.research.project-promotion"] = (
+        "osca.research.project-promotion"
+    )
+    version: Literal["1.0.0"] = "1.0.0"
+    promotion_id: UUID = Field(default_factory=uuid4)
+    workspace_id: UUID
+    project_id: UUID
+    rationale: Description
+    selected_dependency_ids: tuple[UUID, ...] = Field(min_length=1)
+    promoted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_promoted_at(self) -> Self:
+        if self.promoted_at.tzinfo is None:
+            raise ValueError("promoted_at must be timezone-aware")
+        return self
+
+
 class AnalysisNode(BaseModel):
     model_config = ConfigDict(frozen=True)
     node_id: Identifier
@@ -187,6 +225,20 @@ class AnalysisOutput(BaseModel):
         if self.effective_at.tzinfo is None:
             raise ValueError("effective_at must be timezone-aware")
         return self
+
+
+class EvidenceReport(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.research.evidence-report"] = "osca.research.evidence-report"
+    version: Literal["1.0.0"] = "1.0.0"
+    report_id: UUID = Field(default_factory=uuid4)
+    project_id: UUID
+    title: Identifier
+    output_ids: tuple[UUID, ...] = Field(min_length=1)
+    visualization_ids: tuple[UUID, ...] = ()
+    assumptions: tuple[Description, ...] = Field(min_length=1)
+    contradictions: tuple[Description, ...] = ()
+    reproduction_refs: tuple[Identifier, ...] = Field(min_length=1)
 
 
 class VisualizationSpec(BaseModel):
