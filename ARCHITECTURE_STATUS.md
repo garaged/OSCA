@@ -11,6 +11,7 @@
 - **M2 governed daily-data vertical slice:** Complete
 - **M3 multi-timeframe temporal correctness:** Complete
 - **M4 research projects, analytics, and visualization:** Complete
+- **M5 independent extension packaging and activation:** Complete
 - **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -54,7 +55,13 @@ Provider production promotion remains deferred and disabled until exact provider
 
 M4 is complete through its governed exit review and archived OpenSpec change. M4 provides governed research-project contracts, hypothesis lifecycle evidence, project timeline and promotion behavior, analysis graph validation and planning, analytical output provenance, evidence-report assembly, declarative visualization specifications, visualization export metadata, and dashboard composition.
 
-Independent extension packaging, ML training, backtesting, paper trading, live execution, and provider production promotion remain deferred to later milestones.
+ML training, backtesting, paper trading, live execution, and provider production promotion remain deferred to later milestones.
+
+## M5 completion boundary
+
+M5 is complete through its governed exit review and archived OpenSpec change. M5 provides governed extension manifest contracts, fail-closed validation, installation records, explicit activation decisions, permission-renewal checks, disable/uninstall impact previews, SQLite lifecycle persistence, and metadata-only CLI administration.
+
+Runtime loading or execution of third-party extension code, public registry operation, HTTP API/UI administration, strategy/backtesting, ML, LLM, paper trading, live execution, and provider production promotion remain deferred to later milestones.
 
 ## Key navigation
 
@@ -69,3 +76,4 @@ Independent extension packaging, ML training, backtesting, paper trading, live e
 - [M2 milestone](docs/milestones/m2/README.md)
 - [M3 milestone](docs/milestones/m3/README.md)
 - [M4 milestone](docs/milestones/m4/README.md)
+- [M5 milestone](docs/milestones/m5/README.md)
