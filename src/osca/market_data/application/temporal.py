@@ -86,7 +86,13 @@ def crypto_expected_windows(
     windows: list[CompletedBarWindow] = []
     cursor = day_start
     while cursor + step <= day_end:
-        windows.append(CompletedBarWindow(interval=interval, starts_at=cursor, ends_at=cursor + step))
+        windows.append(
+            CompletedBarWindow(
+                interval=interval,
+                starts_at=cursor,
+                ends_at=cursor + step,
+            )
+        )
         cursor += step
     return tuple(windows)
 
