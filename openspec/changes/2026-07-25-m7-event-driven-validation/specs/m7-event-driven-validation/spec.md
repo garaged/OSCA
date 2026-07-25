@@ -1,10 +1,6 @@
 # m7-event-driven-validation Specification
 
-## Purpose
-
-Define the initial M7 F2 event-driven validation behavior under REQ-0093-REQ-0101 and ADR-0033.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Event stream identity
 
@@ -30,6 +26,14 @@ Simulated fills SHALL identify fill model, market observation, price, quantity, 
 - **WHEN** a simulated fill is recorded
 - **THEN** it retains model and market-observation lineage
 
+### Requirement: Deterministic risk outcomes
+
+F2 validation SHALL represent deterministic risk decisions that approve, modify, reject, or pause simulated order processing with policy version and rationale.
+
+#### Scenario: Risk decision is represented
+- **WHEN** a risk policy evaluates an order intent
+- **THEN** the resulting decision retains action, policy version, and rationale
+
 ### Requirement: Balanced journal transactions
 
 Journal transactions SHALL balance by currency.
@@ -37,6 +41,22 @@ Journal transactions SHALL balance by currency.
 #### Scenario: Transaction is imbalanced
 - **WHEN** journal lines do not sum to zero for each currency
 - **THEN** validation rejects the transaction
+
+### Requirement: Multi-currency valuation evidence
+
+F2 valuation snapshots SHALL retain base currency, priced holdings, price source, FX source when applicable, effective time, and valuation version.
+
+#### Scenario: Valuation is represented
+- **WHEN** a valuation snapshot includes holdings
+- **THEN** it retains source identity and effective time
+
+### Requirement: Rebuildable projections
+
+F2 portfolio projections SHALL identify the journal and valuation evidence required for rebuild.
+
+#### Scenario: Projection is represented
+- **WHEN** a portfolio projection is created
+- **THEN** it references journal transaction identities and valuation identity
 
 ### Requirement: Promotion gate evidence
 
