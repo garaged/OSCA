@@ -16,4 +16,6 @@
 
 ## Validation
 
-Local validation was not runnable from the current session because the populated workspace checkout was stale relative to merged `main`. Hosted Quality is expected to be the authoritative validation for this slice.
+Hosted Quality run 30162485417 passed Ruff, strict mypy, pytest, OpenSpec strict validation, and secret scan for head `42adef81f36c3aa0b6bd2598b366e394ae6ffd25`.
+
+Local validation was not runnable from the current session because the populated workspace checkout was stale relative to merged `main`; hosted Quality is the retained authoritative validation for this slice.
