@@ -16,8 +16,10 @@ from osca.ml import (
     MLPromotionDecision,
     MLRetrainingRecord,
     MLRetrainingTrigger,
+    build_evaluation_report,
     build_monitoring_report,
     decide_paper_deployment,
+    evaluate_ml_promotion,
     link_model_to_event_validation,
     request_retraining,
 )
