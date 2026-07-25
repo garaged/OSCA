@@ -1,9 +1,9 @@
 from osca.llm import (
     LLMCapability,
     LLMPrivacyClass,
+    LLMPromptTemplate,
     LLMProviderCapability,
     LLMRequestEnvelope,
-    LLMPromptTemplate,
     SQLiteLLMLifecycleStore,
     build_llm_evaluation_report,
     default_llm_budget,
