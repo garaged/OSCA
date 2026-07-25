@@ -3,6 +3,7 @@ from osca.paper.contracts import (
     ForwardComparisonMetric,
     ForwardComparisonRecord,
     HealthGateStatus,
+    MissedRunPolicy,
     PaperAccount,
     PaperAccountStatus,
     PaperControlAction,
@@ -13,12 +14,19 @@ from osca.paper.contracts import (
     PaperFinding,
     PaperFindingSeverity,
     PaperHealthGateDecision,
+    PaperRecoveryAction,
+    PaperRecoveryDecision,
+    PaperRunCheckpoint,
+    PaperSchedule,
+    PaperScheduleCadence,
+    PaperScheduleStatus,
 )
 from osca.paper.services import (
     approve_paper_candidate,
     build_forward_comparison,
     decide_paper_control,
     evaluate_paper_health_gate,
+    evaluate_paper_recovery,
 )
 
 __all__ = [
@@ -26,6 +34,7 @@ __all__ = [
     "ForwardComparisonMetric",
     "ForwardComparisonRecord",
     "HealthGateStatus",
+    "MissedRunPolicy",
     "PaperAccount",
     "PaperAccountStatus",
     "PaperControlAction",
@@ -36,8 +45,15 @@ __all__ = [
     "PaperFinding",
     "PaperFindingSeverity",
     "PaperHealthGateDecision",
+    "PaperRecoveryAction",
+    "PaperRecoveryDecision",
+    "PaperRunCheckpoint",
+    "PaperSchedule",
+    "PaperScheduleCadence",
+    "PaperScheduleStatus",
     "approve_paper_candidate",
     "build_forward_comparison",
     "decide_paper_control",
     "evaluate_paper_health_gate",
+    "evaluate_paper_recovery",
 ]
