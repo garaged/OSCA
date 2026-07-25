@@ -11,7 +11,8 @@
 - **M2 governed daily-data vertical slice:** Complete
 - **M3 multi-timeframe temporal correctness:** Complete
 - **M4 research projects, analytics, and visualization:** Complete
-- **Current activity:** M5 independent extension packaging and activation
+- **M5 independent extension packaging and activation:** Complete
+- **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -56,9 +57,11 @@ M4 is complete through its governed exit review and archived OpenSpec change. M4
 
 ML training, backtesting, paper trading, live execution, and provider production promotion remain deferred to later milestones.
 
-## M5 active boundary
+## M5 completion boundary
 
-M5 is active from the completed M4 baseline. M5 drafts governed extension manifest, installation, activation, trust-tier, permission, integrity, and impact-preview semantics without executing third-party extension code.
+M5 is complete through its governed exit review and archived OpenSpec change. M5 provides governed extension manifest contracts, fail-closed validation, installation records, explicit activation decisions, permission-renewal checks, disable/uninstall impact previews, SQLite lifecycle persistence, and metadata-only CLI administration.
+
+Runtime loading or execution of third-party extension code, public registry operation, HTTP API/UI administration, strategy/backtesting, ML, LLM, paper trading, live execution, and provider production promotion remain deferred to later milestones.
 
 ## Key navigation
 
