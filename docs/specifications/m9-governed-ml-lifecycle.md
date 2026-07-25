@@ -32,6 +32,14 @@ Evaluation reports must preserve metrics by dataset split and require holdout me
 
 ML promotion decisions must fail closed when quality findings contain errors or when required holdout thresholds are not met.
 
+### Event validation and paper challenger integration
+
+ML model artifacts must require approved ML promotion before F2 event-validation linking. Paper deployment decisions must preserve account, run, role, promotion decision, rationale, findings, and approval state.
+
+### Drift, outcome, and retraining monitoring
+
+ML monitoring reports must preserve drift metrics, outcome metrics, status, findings, and observation time. Retraining records must preserve source model, trigger, workflow, rationale, and requested time without automatic promotion.
+
 ### Metadata persistence
 
 ML lifecycle metadata must persist stable records and support workflow, experiment, and model-artifact scoped queries without executing training.
