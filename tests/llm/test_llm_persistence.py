@@ -61,5 +61,11 @@ def test_llm_lifecycle_store_round_trips_request_scoped_records(tmp_path) -> Non
     assert store.list_provider_capabilities()[0].provider_id == "local"
     assert store.list_prompt_templates()[0].prompt_id == "research-summary"
     assert store.list_requests()[0].request_id == request.request_id
-    assert store.list_route_decisions(str(request.request_id))[0].route_decision_id == route.route_decision_id
-    assert store.list_evaluation_reports(str(request.request_id))[0].evaluation_report_id == report.evaluation_report_id
+    assert (
+        store.list_route_decisions(str(request.request_id))[0].route_decision_id
+        == route.route_decision_id
+    )
+    assert (
+        store.list_evaluation_reports(str(request.request_id))[0].evaluation_report_id
+        == report.evaluation_report_id
+    )
