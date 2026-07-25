@@ -9,7 +9,8 @@
 - **M0.x operationalization:** Complete
 - **M1 secure walking skeleton:** Accepted
 - **M2 governed daily-data vertical slice:** Complete
-- **Current activity:** M3 multi-timeframe market data and temporal correctness in progress
+- **M3 multi-timeframe temporal correctness:** Complete
+- **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -41,6 +42,12 @@ M1 is accepted through its governed exit review. M1.1-M1.8 provide the secure wa
 M2 is complete through its governed exit review and archived OpenSpec change. M2 provides canonical stock and spot-crypto identity, provider-neutral daily-data contracts, deterministic fixture adapters, governed source/canonical persistence, retrieval and repair jobs, quality findings, inspection, and protected cleanup behavior.
 
 Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 and remains disabled until exact provider-specific licensing, account-plan, credential, quota, and policy evidence is accepted.
+
+## M3 completion boundary
+
+M3 is complete through its governed exit review and archived OpenSpec change. M3 provides approved interval semantics, UTC completed-bar windows, stock exchange-session and crypto UTC boundary models, calendar-aware gap and repair eligibility classification, deterministic resampling lineage, interval-aware dataset/retrieval/storage identity, governed OHLCV Parquet payloads, and interval-aware non-daily OHLCV publication.
+
+Provider production promotion remains deferred and disabled until exact provider-specific evidence is accepted.
 
 ## Key navigation
 
