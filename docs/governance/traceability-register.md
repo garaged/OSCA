@@ -94,3 +94,9 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0102-REQ-0112 | PRD sections 22-23, 28-31, 34-39; D-001-D-002, D-004, D-009, D-027-D-028, D-035-D-037, D-041-D-043, D-046 | [M8 intent](../milestones/m8/intent.md) | [M8 paper evaluation](../specifications/m8-paper-evaluation.md) | M8-AC-001-M8-AC-011 | [M8.1 evidence](../../evidence/m8/m8-1-paper-evaluation-contracts.md) | [M8 index](../milestones/m8/README.md), [Manual testing and usage](../testing/manual-testing.md) | ADR-0034 | Planned |
+
+## M9 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0113-REQ-0119 | PRD M9; REQ-0112 | [M9 intent](../milestones/m9/intent.md) | [M9 governed ML lifecycle](../specifications/m9-governed-ml-lifecycle.md) | [M9 acceptance](../milestones/m9/acceptance.md) | [M9 evidence plan](../milestones/m9/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0035 | Planned |
