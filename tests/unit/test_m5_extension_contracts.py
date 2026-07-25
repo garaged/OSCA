@@ -1,6 +1,4 @@
-from pydantic import ValidationError
 import pytest
-
 from osca.extensions.api import (
     ExtensionCategory,
     ExtensionDependency,
@@ -13,6 +11,7 @@ from osca.extensions.api import (
     ExtensionSchemaRef,
     ExtensionTrustTier,
 )
+from pydantic import ValidationError
 
 
 DIGEST = "sha256:" + "a" * 64
