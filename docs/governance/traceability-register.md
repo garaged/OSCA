@@ -100,3 +100,9 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0113-REQ-0124 | PRD M9; REQ-0112 | [M9 intent](../milestones/m9/intent.md) | [M9 governed ML lifecycle](../specifications/m9-governed-ml-lifecycle.md) | [M9 acceptance](../milestones/m9/acceptance.md) | [M9 evidence plan](../milestones/m9/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0035 | Planned |
+
+## M10 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0125-REQ-0132 | PRD section 25; REQ-0112 | [M10 intent](../milestones/m10/intent.md) | [M10 LLM lifecycle and gateway](../specifications/m10-llm-lifecycle-gateway.md) | [M10 acceptance](../milestones/m10/acceptance.md) | [M10 evidence plan](../milestones/m10/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0036 | Planned |

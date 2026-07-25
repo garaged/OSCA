@@ -66,3 +66,14 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Promotion gate | Try promotion with passing and blocked evidence where supported. | Passing evidence can approve event validation; error findings or missed thresholds fail closed. |
 | Drift monitoring | Inspect monitoring reports where supported. | Drift threshold breaches are visible as degraded or blocked, not silently healthy. |
 | Retraining boundary | Review retraining docs and records where supported. | Retraining creates evidence but does not automatically promote a model. |
+
+## M10 Smoke Checklist
+
+| Area | Manual check | Expected result |
+|---|---|---|
+| LLM scope boundary | Review M10 CLI/help/docs and available developer surfaces. | LLM behavior is presented as governed lifecycle evidence; no path suggests provider calls, generated recommendations, live trading, or automatic state changes are ready. |
+| Provider route evidence | Inspect an LLM route decision where supported. | The decision preserves exact provider/model identity, capability, privacy class, budget, and rationale. |
+| Tool boundary | Inspect registered LLM tool definitions where supported. | Tools declare read or state-changing mode, permission scope, and live-order prohibition. |
+| Prompt and context versioning | Inspect prompt template and context policy records where supported. | Records preserve version identity, selected project context, approved references, and no unrelated project mixing. |
+| Budget and privacy gates | Try route evaluation with over-budget or sensitive-disclosure inputs where supported. | Evaluation fails closed before any provider call. |
+| Evaluation evidence | Inspect LLM evaluation records where supported. | Grounding, structured-output validity, boundary behavior, cost, and latency findings are visible as evidence. |

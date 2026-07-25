@@ -16,7 +16,7 @@
 - **M7 F2 event-driven validation foundation:** Complete
 - **M8 F3 paper evaluation and automation foundation:** Complete
 - **M9 governed ML lifecycle foundation:** Complete
-- **Current activity:** Next governed milestone intent pending
+- **Current activity:** M10 LLM lifecycle and gateway foundation
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -102,6 +102,8 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M6 milestone](docs/milestones/m6/README.md)
 - [M7 milestone](docs/milestones/m7/README.md)
 - [M8 milestone](docs/milestones/m8/README.md)
+- [M9 milestone](docs/milestones/m9/README.md)
+- [M10 milestone](docs/milestones/m10/README.md)
 
 ## M9 completion boundary
 
