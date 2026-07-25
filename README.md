@@ -2,7 +2,7 @@
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies.
 
-The M0 architecture foundation, M0.x operational controls, M1 secure walking skeleton, M2 governed daily-data vertical slice, M3 multi-timeframe temporal correctness, M4 research projects analytics foundation, M5 independent extension packaging foundation, and M6 backtesting and strategy validation foundation, and M7 F2 event-driven validation foundation are authoritative. Later product scope requires a new governed milestone intent.
+The M0 architecture foundation, M0.x operational controls, M1 secure walking skeleton, M2 governed daily-data vertical slice, M3 multi-timeframe temporal correctness, M4 research projects analytics foundation, M5 independent extension packaging foundation, M6 backtesting and strategy validation foundation, M7 F2 event-driven validation foundation, and M8 F3 paper evaluation and automation foundation are authoritative. Later product scope requires a new governed milestone intent.
 
 ## Start here
 
@@ -22,6 +22,8 @@ The M0 architecture foundation, M0.x operational controls, M1 secure walking ske
 14. [M5 milestone](docs/milestones/m5/README.md)
 15. [M6 milestone](docs/milestones/m6/README.md)
 16. [M7 milestone](docs/milestones/m7/README.md)
+17. [M8 milestone](docs/milestones/m8/README.md)
+18. [Manual testing and usage](docs/testing/manual-testing.md)
 
 ## Governing baseline
 
@@ -46,3 +48,4 @@ The product baseline was merged through PR #1 at commit `14f537b7ce359007a776730
 - [Engineering bootstrap](engineering/bootstrap/README.md)
 - [OpenSpec integration policy](docs/governance/openspec-integration.md)
 - [Architecture validation](docs/validation/README.md)
+- [Manual testing and usage](docs/testing/manual-testing.md)

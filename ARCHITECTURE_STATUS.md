@@ -12,6 +12,8 @@
 - **M3 multi-timeframe temporal correctness:** Complete
 - **M4 research projects, analytics, and visualization:** Complete
 - **M5 independent extension packaging and activation:** Complete
+- **M6 backtesting and strategy validation foundation:** Complete
+- **M7 F2 event-driven validation foundation:** Complete
 - **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -75,6 +77,12 @@ M7 is complete through its governed exit review and archived OpenSpec change. M7
 
 F3 forward paper evaluation, independent paper accounts, durable market-aware schedules, runtime strategy execution, ML, LLM, live execution, tick/quote/order-book fidelity, and provider production promotion remain deferred until later governed milestone intents.
 
+## M8 completion boundary
+
+M8 is complete through its governed exit review and archived OpenSpec change. M8 provides F3 paper evaluation contracts, independent paper account identity, approved-candidate linkage from M7 promotion gates, forward paper run requests, data and operational health gates, pause and kill-switch controls, backtest-versus-forward comparison records, durable schedule identity, missed-run policy, checkpoint and recovery decisions, SQLite metadata persistence, notification inbox records, digests, delivery-adapter declarations, and skipped delivery attempts for disabled adapters.
+
+Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidelity, and provider production promotion remain deferred until later governed milestone intents.
+
 ## Key navigation
 
 - [M0.x index](docs/milestones/m0x/README.md)
@@ -91,3 +99,4 @@ F3 forward paper evaluation, independent paper accounts, durable market-aware sc
 - [M5 milestone](docs/milestones/m5/README.md)
 - [M6 milestone](docs/milestones/m6/README.md)
 - [M7 milestone](docs/milestones/m7/README.md)
+- [M8 milestone](docs/milestones/m8/README.md)
