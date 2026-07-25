@@ -12,6 +12,7 @@ class UsageSummary(BaseModel):
     layer: DatasetLayer
     provider_id: str
     instrument_id: UUID
+    interval: str
     object_count: int = Field(ge=0)
     row_count: int = Field(ge=0)
     byte_size: int = Field(ge=0)
@@ -27,11 +28,16 @@ class StorageInspection(BaseModel):
 
 
 def inspect_storage(manifests: tuple[DatasetManifest, ...]) -> StorageInspection:
-    totals: dict[tuple[DatasetLayer, str, UUID], list[int]] = defaultdict(
+    totals: dict[tuple[DatasetLayer, str, UUID, str], list[int]] = defaultdict(
         lambda: [0, 0, 0, 0]
     )
     for manifest in manifests:
-        key = (manifest.layer, manifest.provider_id, manifest.instrument_id)
+        key = (
+            manifest.layer,
+            manifest.provider_id,
+            manifest.instrument_id,
+            manifest.interval,
+        )
         values = totals[key]
         values[0] += 1
         values[1] += manifest.row_count
@@ -43,13 +49,15 @@ def inspect_storage(manifests: tuple[DatasetManifest, ...]) -> StorageInspection
             layer=key[0],
             provider_id=key[1],
             instrument_id=key[2],
+            interval=key[3],
             object_count=values[0],
             row_count=values[1],
             byte_size=values[2],
             protected_bytes=values[3],
         )
         for key, values in sorted(
-            totals.items(), key=lambda item: (item[0][0], item[0][1], str(item[0][2]))
+            totals.items(),
+            key=lambda item: (item[0][0], item[0][1], str(item[0][2]), item[0][3]),
         )
     )
     ordered = tuple(sorted(manifests, key=lambda item: (item.created_at, str(item.manifest_id))))
