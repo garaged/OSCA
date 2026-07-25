@@ -14,6 +14,7 @@
 - **M5 independent extension packaging and activation:** Complete
 - **M6 backtesting and strategy validation foundation:** Complete
 - **M7 F2 event-driven validation foundation:** Complete
+- **M8 F3 paper evaluation and automation foundation:** Complete
 - **M9 governed ML lifecycle foundation:** Complete
 - **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
