@@ -49,3 +49,20 @@ Forward comparison records SHALL preserve F2 request, F2 promotion gate, F3 pape
 #### Scenario: Comparison is recorded
 - **WHEN** forward outcome is compared against F2 evidence
 - **THEN** the record preserves both F2 and F3 identities
+
+
+### Requirement: Durable paper schedule identity
+
+Paper schedules SHALL preserve paper account, paper run, cadence, timezone, optional market calendar, missed-run policy, status, and timezone-aware start time.
+
+#### Scenario: Market-aware schedule lacks calendar
+- **WHEN** a market-open or market-close schedule omits market calendar identity
+- **THEN** schedule validation fails closed
+
+### Requirement: Non-replay recovery decision
+
+Paper recovery SHALL use checkpoints and missed-run policy to decide whether processing can resume, skip missed work, or remain blocked.
+
+#### Scenario: Recovery finding has error
+- **WHEN** recovery findings include an error
+- **THEN** recovery remains blocked and cannot resume
