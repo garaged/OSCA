@@ -1,6 +1,6 @@
 # M8 - F3 Paper Evaluation and Automation Foundation
 
-- **Status:** In progress
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, paper accounting, automation, and risk review:** Required for M8 scope
 - **Authoritative outcome:** PRD M8 F3 paper evaluation and automation
@@ -18,12 +18,14 @@
 - [M8 status](status.md)
 - [Deferred scope](deferred-scope.md)
 - [M8 F3 paper evaluation specification](../../specifications/m8-paper-evaluation.md)
-- [Active M8 OpenSpec change](../../../openspec/changes/m8-paper-evaluation/README.md)
+- [Accepted M8 OpenSpec specification](../../../openspec/specs/m8-paper-evaluation/spec.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
+- [Exit review](exit-review.md)
+- [Archived M8 OpenSpec change](../../../openspec/changes/archive/2026-07-25-m8-paper-evaluation/README.md)
 
 ## Required chain
 
 Intent -> Requirements -> Architecture -> Specification -> Validation -> Evidence
 
-M8 starts from M7 promotion gates and F2 validation evidence. It introduces governed F3 paper accounts, forward-evaluation requests, health gates, pause/kill controls, and outcome comparison before durable scheduling or notification delivery.
+M8 starts from M7 promotion gates and F2 validation evidence. It introduces governed F3 paper accounts, forward-evaluation requests, health gates, pause/kill controls, outcome comparison, schedule and recovery metadata, persistence, and notification boundary contracts without live execution.
