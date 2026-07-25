@@ -1,4 +1,4 @@
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from uuid import uuid4
@@ -9,17 +9,20 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from osca.market_data.api import CanonicalDailyBar
+from osca.market_data.api import CanonicalDailyBar, CanonicalOhlcvBar, MarketDataInterval
 from osca.market_data.application import CanonicalPublicationIntent, CanonicalPublisher
 from osca.market_data.infrastructure import (
     DAILY_BAR_SCHEMA,
+    OHLCV_BAR_SCHEMA,
     ImmutablePayloadStore,
     MarketDataBase,
     PyArrowCanonicalCodec,
     SqliteManifestRepository,
     deserialize_daily_bars,
+    deserialize_ohlcv_bars,
     payload_digest,
     serialize_daily_bars,
+    serialize_ohlcv_bars,
 )
 
 
@@ -42,6 +45,29 @@ def bar(day: int) -> CanonicalDailyBar:
     )
 
 
+def ohlcv_bar(hour: int) -> CanonicalOhlcvBar:
+    starts_at = datetime(2024, 1, 2, hour, tzinfo=UTC)
+    return CanonicalOhlcvBar(
+        instrument_id=INSTRUMENT_ID,
+        interval=MarketDataInterval.H1,
+        starts_at=starts_at,
+        ends_at=starts_at + timedelta(hours=1),
+        effective_date=starts_at.date(),
+        open=Decimal("100.100000000000000000"),
+        high=Decimal("103.100000000000000000"),
+        low=Decimal("99.100000000000000000"),
+        close=Decimal("102.100000000000000000"),
+        volume=Decimal("1000.000000000000000000"),
+        currency="USD",
+        volume_unit="shares",
+        provider_id="synthetic",
+        source_identity=f"fixture-h{hour}",
+        request_id=uuid4(),
+        normalization_revision="1.0.0",
+        calendar_revision="xnys-test-v1",
+    )
+
+
 INSTRUMENT_ID = uuid4()
 
 
@@ -53,6 +79,17 @@ def test_parquet_round_trip_has_exact_governed_schema() -> None:
     assert restored[0].open == Decimal("100.100000000000000000")
     metadata = pq.read_metadata(pa.BufferReader(payload))
     assert metadata.schema.to_arrow_schema().equals(DAILY_BAR_SCHEMA, check_metadata=True)
+
+
+def test_ohlcv_parquet_round_trip_has_exact_governed_schema() -> None:
+    original = (ohlcv_bar(2), ohlcv_bar(1))
+    payload = serialize_ohlcv_bars(original)
+    restored = deserialize_ohlcv_bars(payload)
+    assert tuple(item.starts_at.hour for item in restored) == (1, 2)
+    assert restored[0].interval == "1h"
+    assert restored[0].calendar_revision == "xnys-test-v1"
+    metadata = pq.read_metadata(pa.BufferReader(payload))
+    assert metadata.schema.to_arrow_schema().equals(OHLCV_BAR_SCHEMA, check_metadata=True)
 
 
 def test_immutable_store_is_idempotent_and_rejects_replacement(tmp_path: Path) -> None:
