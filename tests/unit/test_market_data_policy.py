@@ -110,7 +110,10 @@ def test_cleanup_protects_explicit_pins_and_inspection_accounts_usage() -> None:
     inspection = inspect_storage((source, intraday))
     assert [usage.interval for usage in inspection.usage] == ["1d", "5m"]
     assert [usage.object_count for usage in inspection.usage] == [1, 1]
-    assert inspection.manifests == (source, intraday)
+    assert {item.manifest_id for item in inspection.manifests} == {
+        source.manifest_id,
+        intraday.manifest_id,
+    }
 
 
 def test_series_quality_finds_duplicates_and_identity_mismatch() -> None:
