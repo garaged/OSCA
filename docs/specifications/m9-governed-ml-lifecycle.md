@@ -1,8 +1,8 @@
 # M9 Governed ML Lifecycle Specification
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Milestone:** M9
-- **Requirements:** REQ-0113-REQ-0119
+- **Requirements:** REQ-0113-REQ-0124
 - **ADR:** ADR-0035
 - **Manual testing:** M9 updates `docs/testing/manual-testing.md`
 
