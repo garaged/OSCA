@@ -65,3 +65,11 @@ M10 SHALL review and update the manual testing and usage baseline for LLM gatewa
 #### Scenario: M10 changes operator-visible LLM behavior
 - **WHEN** M10 adds LLM lifecycle contracts or usage surfaces
 - **THEN** the manual testing and usage baseline includes M10-specific smoke checks
+
+### Requirement: LLM lifecycle metadata persistence
+
+LLM lifecycle metadata SHALL persist provider capabilities, prompts, tools, context policies, requests, route decisions, and evaluation reports with request-scoped queries without executing provider calls.
+
+#### Scenario: LLM lifecycle records are persisted
+- **WHEN** LLM lifecycle records are saved
+- **THEN** they can be queried by request identity without invoking a provider

@@ -2,7 +2,7 @@
 
 - **Status:** Draft
 - **Milestone:** M10
-- **Requirements:** REQ-0125-REQ-0132
+- **Requirements:** REQ-0125-REQ-0133
 - **ADR:** ADR-0036
 - **Manual testing:** M10 updates `docs/testing/manual-testing.md`
 
@@ -39,3 +39,7 @@ LLM evaluation reports must preserve factual grounding, citation, numerical cons
 ### Manual testing
 
 M10 must review and update the manual testing and usage baseline for LLM gateway operator-visible behavior.
+
+### Metadata persistence
+
+LLM lifecycle metadata must persist provider capabilities, prompts, tools, context policies, requests, route decisions, and evaluation reports with request-scoped queries without executing provider calls.

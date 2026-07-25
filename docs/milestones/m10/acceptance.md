@@ -10,3 +10,4 @@
 | M10-AC-006 | REQ-0130 | Budget evaluation rejects requests whose estimated cost exceeds declared budget. |
 | M10-AC-007 | REQ-0131 | LLM evaluation reports retain quality findings and reject passed status with error findings. |
 | M10-AC-008 | REQ-0132 | Manual testing and usage includes M10-specific smoke checks. |
+| M10-AC-009 | REQ-0133 | LLM lifecycle records round trip through SQLite metadata persistence and can be queried by request identity. |

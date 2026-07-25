@@ -15,6 +15,7 @@ from osca.llm.contracts import (
     LLMToolDefinition,
     LLMToolMode,
 )
+from osca.llm.persistence import SQLiteLLMLifecycleStore
 from osca.llm.services import (
     build_llm_evaluation_report,
     default_llm_budget,
@@ -38,6 +39,7 @@ __all__ = [
     "LLMStructuredOutputContract",
     "LLMToolDefinition",
     "LLMToolMode",
+    "SQLiteLLMLifecycleStore",
     "build_llm_evaluation_report",
     "default_llm_budget",
     "estimate_llm_cost",

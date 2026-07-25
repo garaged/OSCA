@@ -9,7 +9,7 @@
 
 ## Later M10 slices
 
-- Add durable LLM metadata persistence if needed.
+- Add durable LLM metadata persistence.
 - Add provider adapter declaration persistence.
 - Add CLI/API administration only after contracts are stable.
 - Keep provider execution deferred until a governed slice explicitly accepts it.

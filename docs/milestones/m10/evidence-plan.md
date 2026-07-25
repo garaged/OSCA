@@ -8,4 +8,5 @@ M10 evidence is retained through tests, OpenSpec validation, architecture/status
 - Service tests for route selection, live-order prohibition, privacy gates, and budget checks.
 - OpenSpec strict validation for REQ-0125-REQ-0132.
 - Manual testing and usage update for M10.
+- SQLite persistence round-trip tests for LLM lifecycle records.
 - Hosted Quality run before PR readiness.

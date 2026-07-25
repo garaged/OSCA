@@ -9,6 +9,7 @@
 - Request envelope and route decision records.
 - Privacy, untrusted-content, budget, and tool-boundary service gates.
 - LLM evaluation evidence contracts.
+- SQLite metadata persistence for LLM lifecycle records.
 - Manual testing baseline update for M10.
 
 ## Deferred
@@ -17,5 +18,4 @@
 - Prompt rendering and response generation.
 - Tool orchestration execution.
 - LLM-generated recommendations or paper actions.
-- Persistent LLM metadata store.
 - UI/API/CLI administration beyond developer-facing contracts.
