@@ -144,7 +144,9 @@ class LLMContextPolicy(BaseModel):
 
 class LLMStructuredOutputContract(BaseModel):
     model_config = ConfigDict(frozen=True)
-    family: Literal["osca.llm.structured-output-contract"] = "osca.llm.structured-output-contract"
+    family: Literal["osca.llm.structured-output-contract"] = (
+        "osca.llm.structured-output-contract"
+    )
     version: Literal["1.0.0"] = "1.0.0"
     output_contract_id: Identifier
     schema_version: Identifier
