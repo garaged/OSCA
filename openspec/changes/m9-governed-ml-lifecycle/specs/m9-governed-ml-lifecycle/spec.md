@@ -65,3 +65,35 @@ ML lifecycle metadata SHALL be persisted with stable record identity and queryab
 #### Scenario: ML lifecycle records are persisted
 - **WHEN** ML lifecycle records are saved
 - **THEN** they can be queried by their governed workflow, experiment, or model artifact identity
+
+### Requirement: ML event-validation integration
+
+ML model artifacts SHALL require approved ML promotion before being linked to F2 event-driven validation evidence.
+
+#### Scenario: Promotion is not approved
+- **WHEN** a model artifact lacks approved ML promotion
+- **THEN** F2 event-validation linking fails closed
+
+### Requirement: ML paper challenger deployment decision
+
+ML paper deployment decisions SHALL preserve paper account, paper run, role, promotion decision, rationale, findings, and approval state.
+
+#### Scenario: Promotion is not approved for event validation
+- **WHEN** a model lacks event-validation approval
+- **THEN** paper deployment is not approved
+
+### Requirement: ML drift and outcome monitoring
+
+ML monitoring reports SHALL preserve drift metrics, outcome metrics, status, findings, and observation time.
+
+#### Scenario: Drift threshold is breached
+- **WHEN** a drift metric exceeds its threshold
+- **THEN** monitoring status is degraded or blocked
+
+### Requirement: ML retraining without automatic promotion
+
+ML retraining records SHALL preserve source model, trigger, workflow, rationale, and requested time without requesting automatic promotion.
+
+#### Scenario: Retraining requests automatic promotion
+- **WHEN** a retraining record requests automatic promotion
+- **THEN** validation fails closed
