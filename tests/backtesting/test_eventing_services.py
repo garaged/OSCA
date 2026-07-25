@@ -16,7 +16,7 @@ from osca.backtesting.eventing import (
 
 def lifecycle_event(state: OrderLifecycleState, offset_seconds: int = 0) -> OrderLifecycleEvent:
     return OrderLifecycleEvent(
-        request_id=uuid4(),
+        request_id=REQUEST_ID,
         order_intent_id=ORDER_ID,
         decision_id=DECISION_ID,
         state=state,
@@ -25,6 +25,7 @@ def lifecycle_event(state: OrderLifecycleState, offset_seconds: int = 0) -> Orde
     )
 
 
+REQUEST_ID = uuid4()
 ORDER_ID = uuid4()
 DECISION_ID = uuid4()
 
