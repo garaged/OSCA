@@ -6,6 +6,7 @@
 
 ## Completed
 
+- M9.3 F2/F3 integration, monitoring, and retraining records added.
 - M9.2 SQLite ML lifecycle metadata persistence added.
 - M9 branch created.
 - M9.1 governed ML lifecycle contracts and service gates added and validated.
@@ -13,4 +14,5 @@
 
 ## Pending
 
-- F2/F3 integration, monitoring, retraining, and closeout.
+- Hosted Quality for M9.3.
+- M9 closeout.
