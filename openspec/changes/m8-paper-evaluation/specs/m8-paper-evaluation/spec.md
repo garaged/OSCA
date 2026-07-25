@@ -75,3 +75,20 @@ Paper evaluation metadata SHALL be persisted with stable record identity and que
 #### Scenario: Paper records are persisted
 - **WHEN** paper account, run, gate, control, schedule, recovery, and comparison records are saved
 - **THEN** they can be queried by paper account or paper run identity
+
+
+### Requirement: Notification inbox and digest boundary
+
+Paper notifications SHALL be retained as inbox records and digest inputs before delivery adapter execution.
+
+#### Scenario: Digest is generated
+- **WHEN** a digest is generated from notification identities
+- **THEN** it preserves paper run and notification identity
+
+### Requirement: Delivery adapter declaration
+
+Delivery adapters SHALL declare configuration and enabled state before delivery attempts are planned.
+
+#### Scenario: Adapter is disabled
+- **WHEN** a delivery attempt is planned for a disabled adapter
+- **THEN** the attempt is skipped without external delivery
