@@ -12,7 +12,7 @@
 - **M3 multi-timeframe temporal correctness:** Complete
 - **M4 research projects, analytics, and visualization:** Complete
 - **M5 independent extension packaging and activation:** Complete
-- **Current activity:** M7 F2 event-driven validation foundation
+- **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -69,11 +69,11 @@ M6 is complete through its governed exit review and archived OpenSpec change. M6
 
 Event matching, fills, portfolio accounting, paper journals, runtime strategy execution, ML, LLM, paper trading, live execution, and provider production promotion remain deferred until their exact contracts and evidence are accepted.
 
-## M7 entry boundary
+## M7 completion boundary
 
-M7 starts from the accepted M6 backtesting contract boundary. M7 may introduce F2 event-driven bar simulation contracts for order lifecycle, fill modeling, deterministic risk outcomes, balanced accounting journals, valuation, reconciliation, rebuildable projections, and promotion-gate evidence.
+M7 is complete through its governed exit review and archived OpenSpec change. M7 provides deterministic F2 event-driven validation contracts, order lifecycle evidence, simulated fills, fill model metadata, deterministic risk decisions, balanced journal transactions, valuation snapshots, rebuildable projections, promotion gates, validation services, fill settlement helpers, and SQLite metadata persistence for F2 validation evidence.
 
-Forward paper automation, independent paper accounts, durable market-aware schedules, ML, LLM, live execution, tick/quote/order-book fidelity, and provider production promotion remain deferred until later governed milestone intents.
+F3 forward paper evaluation, independent paper accounts, durable market-aware schedules, runtime strategy execution, ML, LLM, live execution, tick/quote/order-book fidelity, and provider production promotion remain deferred until later governed milestone intents.
 
 ## Key navigation
 
