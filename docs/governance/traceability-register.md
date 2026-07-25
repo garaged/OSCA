@@ -84,4 +84,4 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0093-REQ-0101 | PRD sections 22-23, 30-31, 34, 37-39; D-001-D-002, D-004, D-009, D-027-D-028, D-037-D-038, D-041, D-046 | [M7 intent](../milestones/m7/intent.md) | [M7 F2 event-driven validation](../specifications/m7-event-driven-validation.md) | M7-AC-001-M7-AC-009 | [M7 evidence plan](../milestones/m7/evidence-plan.md) | [M7 index](../milestones/m7/README.md) | ADR-0033 | Planned |
+| REQ-0093-REQ-0101 | PRD sections 22-23, 30-31, 34, 37-39; D-001-D-002, D-004, D-009, D-027-D-028, D-037-D-038, D-041, D-046 | [M7 intent](../milestones/m7/intent.md) | [M7 F2 event-driven validation](../specifications/m7-event-driven-validation.md) | M7-AC-001-M7-AC-009 | [M7 exit review](../../evidence/m7/m7-exit-review.md) | [M7 index](../milestones/m7/README.md) | ADR-0033 | Verified |
