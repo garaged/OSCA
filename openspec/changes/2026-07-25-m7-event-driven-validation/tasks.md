@@ -6,5 +6,7 @@
 - [x] 2.1 Add F2 event-driven contract surface.
 - [x] 2.2 Add lifecycle, journal, and promotion validation services.
 - [x] 2.3 Add focused contract and service tests.
-- [ ] 3.1 Run local validation where workspace checkout permits it.
-- [ ] 3.2 Open draft PR and inspect hosted Quality.
+- [x] 3.1 Record hosted Quality validation for M7.1.
+- [x] 3.2 Open draft PR and inspect hosted Quality.
+- [ ] 4.1 Add deterministic order lifecycle and fill settlement services.
+- [ ] 4.2 Add focused M7.2 service tests.
