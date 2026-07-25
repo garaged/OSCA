@@ -40,10 +40,13 @@ def validate_backtest_request(
                 message="backtests must use point-in-time data availability",
             )
         )
-    if request.data_availability is BacktestDataAvailability.PROVISIONAL and request.fidelity_profile in {
+    if (
+        request.data_availability is BacktestDataAvailability.PROVISIONAL
+        and request.fidelity_profile in {
         BacktestFidelityProfile.F2_EVENT_DRIVEN_BAR,
-        BacktestFidelityProfile.F3_FORWARD_PAPER,
-    }:
+            BacktestFidelityProfile.F3_FORWARD_PAPER,
+        }
+    ):
         findings.append(
             BacktestValidationFinding(
                 code="provisional_execution_data",
