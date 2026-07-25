@@ -71,3 +71,10 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0069-REQ-0084 | PRD sections 11, 13, 15-17, 20-21, 26-27, 34, 37-39; D-014, D-019, D-020, D-022, D-026, D-040, D-046 | [M5 intent](../milestones/m5/intent.md) | [M5 independent extension packaging and activation](../specifications/m5-extension-packaging.md) | M5-AC-001-M5-AC-008 | [M5 exit review](../../evidence/m5/m5-exit-review.md) | [M5 index](../milestones/m5/README.md) | ADR-0031 | Verified |
+
+
+## M6 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0085-REQ-0092 | PRD sections 22, 29-30, 34, 37-39; D-001-D-002, D-004, D-009, D-027-D-028, D-036-D-037, D-041, D-046 | [M6 intent](../milestones/m6/intent.md) | [M6 backtesting foundation](../specifications/m6-backtesting-foundation.md) | M6-AC-001-M6-AC-008 | [M6 evidence plan](../milestones/m6/evidence-plan.md) | [M6 index](../milestones/m6/README.md) | ADR-0032 | Planned |
