@@ -18,8 +18,8 @@
 - **M9 governed ML lifecycle foundation:** Complete
 - **M10 LLM lifecycle and gateway foundation:** Complete
 - **M11 analytical breadth and portfolio intelligence:** Complete
-- **M12 release readiness and operational resilience:** In review
-- **Current activity:** M12 release readiness and operational resilience
+- **M12 release readiness and operational resilience:** Complete
+- **Current activity:** Initial M0-M12 roadmap complete; next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -131,6 +131,6 @@ Runtime fundamental, macro, event, news, sentiment, on-chain, specialized ML, an
 
 ## M12 completion boundary
 
-M12 is in review. M12 provides governed release-readiness and operational-resilience contracts for backup manifests, restore verification, disaster-recovery exercises, health findings, alert policies, workflow run records, deterministic risk-policy decisions, and SQLite metadata persistence.
+M12 is complete through its governed exit review and archived OpenSpec change. M12 provides governed release-readiness and operational-resilience contracts for backup manifests, restore verification, disaster-recovery exercises, health findings, alert policies, workflow run records, deterministic risk-policy decisions, and SQLite metadata persistence.
 
 Real off-device backup transport, active restore execution, external alert delivery, runtime scheduler execution, personal-server transport implementation, live execution, real-capital orders, and provider production promotion remain deferred until later governed milestone intents.
