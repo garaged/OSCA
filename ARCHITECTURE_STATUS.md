@@ -12,7 +12,7 @@
 - **M3 multi-timeframe temporal correctness:** Complete
 - **M4 research projects, analytics, and visualization:** Complete
 - **M5 independent extension packaging and activation:** Complete
-- **Current activity:** Next governed milestone intent pending
+- **Current activity:** M6 backtesting and strategy validation foundation
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -63,6 +63,12 @@ M5 is complete through its governed exit review and archived OpenSpec change. M5
 
 Runtime loading or execution of third-party extension code, public registry operation, HTTP API/UI administration, strategy/backtesting, ML, LLM, paper trading, live execution, and provider production promotion remain deferred to later milestones.
 
+## M6 active boundary
+
+M6 is active under a governed milestone intent. M6.1 introduces deterministic backtest contracts and execution planning for fidelity profiles, execution modes, point-in-time data requirements, pinned assumptions, strategy decisions, simulated order intents, execution plans, and result metrics.
+
+Event matching, fills, portfolio accounting, paper journals, persistent backtest lifecycle storage, operator administration, ML, LLM, paper trading, live execution, and provider production promotion remain deferred until their exact contracts and evidence are accepted.
+
 ## Key navigation
 
 - [M0.x index](docs/milestones/m0x/README.md)
@@ -77,3 +83,4 @@ Runtime loading or execution of third-party extension code, public registry oper
 - [M3 milestone](docs/milestones/m3/README.md)
 - [M4 milestone](docs/milestones/m4/README.md)
 - [M5 milestone](docs/milestones/m5/README.md)
+- [M6 milestone](docs/milestones/m6/README.md)
