@@ -1,6 +1,6 @@
-from pathlib import Path
 import sqlite3
-from typing import Any, cast
+from pathlib import Path
+from typing import cast
 from uuid import UUID
 
 from osca.extensions.api import (
@@ -92,9 +92,7 @@ class SQLiteExtensionLifecycleStore:
                 ),
             )
 
-    def get_installation(
-        self, installation_id: UUID
-    ) -> ExtensionInstallationRecord | None:
+    def get_installation(self, installation_id: UUID) -> ExtensionInstallationRecord | None:
         with self._connect() as connection:
             row = connection.execute(
                 """
@@ -106,9 +104,7 @@ class SQLiteExtensionLifecycleStore:
             ).fetchone()
         if row is None:
             return None
-        return ExtensionInstallationRecord.model_validate_json(
-            cast(str, row["payload_json"])
-        )
+        return ExtensionInstallationRecord.model_validate_json(cast(str, row["payload_json"]))
 
     def list_installations(
         self, *, package_id: str | None = None
@@ -123,15 +119,11 @@ class SQLiteExtensionLifecycleStore:
         with self._connect() as connection:
             rows = connection.execute(query, parameters).fetchall()
         return tuple(
-            ExtensionInstallationRecord.model_validate_json(
-                cast(str, row["payload_json"])
-            )
+            ExtensionInstallationRecord.model_validate_json(cast(str, row["payload_json"]))
             for row in rows
         )
 
-    def save_activation_decision(
-        self, decision: ExtensionActivationDecision
-    ) -> None:
+    def save_activation_decision(self, decision: ExtensionActivationDecision) -> None:
         with self._connect() as connection:
             connection.execute(
                 """
@@ -158,9 +150,7 @@ class SQLiteExtensionLifecycleStore:
                 ),
             )
 
-    def get_activation_decision(
-        self, decision_id: UUID
-    ) -> ExtensionActivationDecision | None:
+    def get_activation_decision(self, decision_id: UUID) -> ExtensionActivationDecision | None:
         with self._connect() as connection:
             row = connection.execute(
                 """
@@ -172,9 +162,7 @@ class SQLiteExtensionLifecycleStore:
             ).fetchone()
         if row is None:
             return None
-        return ExtensionActivationDecision.model_validate_json(
-            cast(str, row["payload_json"])
-        )
+        return ExtensionActivationDecision.model_validate_json(cast(str, row["payload_json"]))
 
     def list_activation_decisions(
         self, *, installation_id: UUID | None = None
@@ -189,9 +177,7 @@ class SQLiteExtensionLifecycleStore:
         with self._connect() as connection:
             rows = connection.execute(query, parameters).fetchall()
         return tuple(
-            ExtensionActivationDecision.model_validate_json(
-                cast(str, row["payload_json"])
-            )
+            ExtensionActivationDecision.model_validate_json(cast(str, row["payload_json"]))
             for row in rows
         )
 
@@ -211,9 +197,7 @@ class SQLiteExtensionLifecycleStore:
                 (package_id,),
             ).fetchall()
         return tuple(
-            ExtensionActivationDecision.model_validate_json(
-                cast(str, row["payload_json"])
-            )
+            ExtensionActivationDecision.model_validate_json(cast(str, row["payload_json"]))
             for row in rows
         )
 
