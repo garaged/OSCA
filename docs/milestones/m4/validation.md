@@ -5,16 +5,16 @@
 
 ## Required checks
 
-- [ ] OpenSpec doctor and strict validation.
-- [ ] Secret scanning.
-- [ ] Ruff.
-- [ ] Strict mypy.
-- [ ] Pytest.
-- [ ] Contract validation.
-- [ ] Migration validation.
-- [ ] Documentation link validation.
-- [ ] Architecture validation.
+- [x] OpenSpec doctor and strict validation.
+- [x] Secret scanning.
+- [x] Ruff.
+- [x] Strict mypy.
+- [x] Pytest.
+- [x] Contract validation.
+- [x] Migration validation.
+- [x] Documentation link validation.
+- [x] Architecture validation.
 
 ## Current evidence
 
-Initial M4 validation is pending the first hosted Quality run for the draft PR.
+Hosted Quality run `30138100271` passed for head `95002287f8ed4544e699a1f6fca63e82334168d8` after the project timeline, ad hoc promotion, graph planning, and report assembly slice.
