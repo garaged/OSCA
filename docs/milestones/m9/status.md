@@ -6,6 +6,7 @@
 
 ## Completed
 
+- M9.2 SQLite ML lifecycle metadata persistence added.
 - M9 branch created.
 - M9.1 governed ML lifecycle contracts and service gates added and validated.
 - Manual testing and usage baseline updated for M9.
@@ -13,5 +14,5 @@
 ## Pending
 
 - Hosted Quality for M9.1.
-- Durable registry persistence.
+- Hosted Quality for M9.2.
 - F2/F3 integration, monitoring, retraining, and closeout.
