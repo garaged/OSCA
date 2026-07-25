@@ -69,6 +69,12 @@ M6 is complete through its governed exit review and archived OpenSpec change. M6
 
 Event matching, fills, portfolio accounting, paper journals, runtime strategy execution, ML, LLM, paper trading, live execution, and provider production promotion remain deferred until their exact contracts and evidence are accepted.
 
+## M7 completion boundary
+
+M7 is complete through its governed exit review and archived OpenSpec change. M7 provides deterministic F2 event-driven validation contracts, order lifecycle evidence, simulated fills, fill model metadata, deterministic risk decisions, balanced journal transactions, valuation snapshots, rebuildable projections, promotion gates, validation services, fill settlement helpers, and SQLite metadata persistence for F2 validation evidence.
+
+F3 forward paper evaluation, independent paper accounts, durable market-aware schedules, runtime strategy execution, ML, LLM, live execution, tick/quote/order-book fidelity, and provider production promotion remain deferred until later governed milestone intents.
+
 ## Key navigation
 
 - [M0.x index](docs/milestones/m0x/README.md)
@@ -84,3 +90,4 @@ Event matching, fills, portfolio accounting, paper journals, runtime strategy ex
 - [M4 milestone](docs/milestones/m4/README.md)
 - [M5 milestone](docs/milestones/m5/README.md)
 - [M6 milestone](docs/milestones/m6/README.md)
+- [M7 milestone](docs/milestones/m7/README.md)
