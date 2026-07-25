@@ -119,4 +119,4 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0145-REQ-0156 | PRD sections 26-30, 37-39; REQ-0112 | [M12 intent](../milestones/m12/intent.md) | [M12 release readiness and operational resilience](../specifications/m12-release-readiness-resilience.md) | [M12 acceptance](../milestones/m12/acceptance.md) | [M12 evidence plan](../milestones/m12/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0038 | Planned |
+| REQ-0145-REQ-0156 | PRD sections 26-30, 37-39; REQ-0112 | [M12 intent](../milestones/m12/intent.md) | [M12 release readiness and operational resilience](../specifications/m12-release-readiness-resilience.md) | [M12 acceptance](../milestones/m12/acceptance.md) | [M12 evidence plan](../milestones/m12/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0038 | Verified |
