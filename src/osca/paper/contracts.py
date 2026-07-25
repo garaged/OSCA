@@ -278,3 +278,94 @@ class PaperRecoveryDecision(BaseModel):
         if self.can_resume and (self.action is PaperRecoveryAction.BLOCK or has_error):
             raise ValueError("paper recovery cannot resume from blocked or error state")
         return self
+
+
+class PaperNotificationSeverity(StrEnum):
+    INFO = "info"
+    WARNING = "warning"
+    CRITICAL = "critical"
+
+
+class PaperNotificationStatus(StrEnum):
+    NEW = "new"
+    ACKNOWLEDGED = "acknowledged"
+    SUPPRESSED = "suppressed"
+
+
+class DeliveryAttemptStatus(StrEnum):
+    PLANNED = "planned"
+    SENT = "sent"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+
+
+class PaperNotification(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.notification"] = "osca.paper.notification"
+    version: Literal["1.0.0"] = "1.0.0"
+    notification_id: UUID = Field(default_factory=uuid4)
+    paper_run_id: UUID
+    severity: PaperNotificationSeverity
+    title: Identifier
+    message: Description
+    source_record_id: UUID | None = None
+    status: PaperNotificationStatus = PaperNotificationStatus.NEW
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_created_at(self) -> Self:
+        if self.created_at.tzinfo is None:
+            raise ValueError("paper notification created_at must be timezone-aware")
+        return self
+
+
+class PaperNotificationDigest(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.notification-digest"] = "osca.paper.notification-digest"
+    version: Literal["1.0.0"] = "1.0.0"
+    digest_id: UUID = Field(default_factory=uuid4)
+    paper_run_id: UUID
+    notification_ids: tuple[UUID, ...] = Field(min_length=1)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_generated_at(self) -> Self:
+        if self.generated_at.tzinfo is None:
+            raise ValueError("paper notification digest generated_at must be timezone-aware")
+        return self
+
+
+class DeliveryAdapterDeclaration(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.delivery-adapter"] = "osca.paper.delivery-adapter"
+    version: Literal["1.0.0"] = "1.0.0"
+    adapter_id: Identifier
+    adapter_kind: Identifier
+    configured: bool = False
+    enabled: bool = False
+
+    @model_validator(mode="after")
+    def validate_adapter(self) -> Self:
+        if self.enabled and not self.configured:
+            raise ValueError("delivery adapter cannot be enabled before configuration")
+        return self
+
+
+class PaperDeliveryAttempt(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.delivery-attempt"] = "osca.paper.delivery-attempt"
+    version: Literal["1.0.0"] = "1.0.0"
+    delivery_attempt_id: UUID = Field(default_factory=uuid4)
+    digest_id: UUID
+    adapter_id: Identifier
+    status: DeliveryAttemptStatus
+    attempted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    error_message: Description | None = None
+
+    @model_validator(mode="after")
+    def validate_attempt(self) -> Self:
+        if self.attempted_at.tzinfo is None:
+            raise ValueError("paper delivery attempted_at must be timezone-aware")
+        if self.status is DeliveryAttemptStatus.FAILED and self.error_message is None:
+            raise ValueError("failed delivery attempts require error_message")
+        return self
