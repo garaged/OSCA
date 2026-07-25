@@ -13,6 +13,8 @@
 
 The approved PRD and decisions remain product authority. Numbered `REQ-NNNN` entries are allocated through governed extraction when a milestone intent selects the corresponding scope. Before implementation of a slice begins, every mandatory behavior in that slice must have an approved requirement entry and complete planned trace links.
 
+From M8 onward, milestone specifications must review the manual testing and usage baseline. A milestone must update [Manual testing and usage](../testing/manual-testing.md) when it changes user-visible or operator-visible behavior, or explicitly record why no manual coverage change is required.
+
 The register summarizes governed links and does not replace source metadata.
 
 ## Required columns
@@ -91,4 +93,4 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs/decisions | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0102-REQ-0111 | PRD sections 22-23, 28-31, 34-39; D-001-D-002, D-004, D-009, D-027-D-028, D-035-D-037, D-041-D-043, D-046 | [M8 intent](../milestones/m8/intent.md) | [M8 paper evaluation](../specifications/m8-paper-evaluation.md) | M8-AC-001-M8-AC-010 | [M8.1 evidence](../../evidence/m8/m8-1-paper-evaluation-contracts.md) | [M8 index](../milestones/m8/README.md) | ADR-0034 | Planned |
+| REQ-0102-REQ-0112 | PRD sections 22-23, 28-31, 34-39; D-001-D-002, D-004, D-009, D-027-D-028, D-035-D-037, D-041-D-043, D-046 | [M8 intent](../milestones/m8/intent.md) | [M8 paper evaluation](../specifications/m8-paper-evaluation.md) | M8-AC-001-M8-AC-011 | [M8.1 evidence](../../evidence/m8/m8-1-paper-evaluation-contracts.md) | [M8 index](../milestones/m8/README.md), [Manual testing and usage](../testing/manual-testing.md) | ADR-0034 | Planned |
