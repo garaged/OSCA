@@ -4,7 +4,7 @@
 - **Milestone:** M8 F3 paper evaluation and automation foundation
 - **Branch:** agent/m8-paper-evaluation-automation
 - **Final implementation Quality:** 30168991911
-- **Closeout Quality:** Pending
+- **Closeout Quality:** 30169166472
 
 ## Retained evidence
 
@@ -12,6 +12,10 @@
 - M8.2 schedule and recovery contracts: 30168758413
 - M8.3 paper metadata persistence: 30168875727
 - M8.4 notification boundary: 30168991911
+
+## Final verification
+
+Hosted Quality green on 30169166472 at 4ac01f537a6a21271f42d41d807f256643d138e9.
 
 ## Residual limitations
 
