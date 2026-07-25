@@ -47,8 +47,9 @@ def test_lifecycle_sequence_rejects_terminal_regression() -> None:
     findings = validate_lifecycle_sequence(
         (
             lifecycle_event(OrderLifecycleState.CREATED),
-            lifecycle_event(OrderLifecycleState.FILLED, 1),
-            lifecycle_event(OrderLifecycleState.CANCELLED, 2),
+            lifecycle_event(OrderLifecycleState.ACCEPTED, 1),
+            lifecycle_event(OrderLifecycleState.FILLED, 2),
+            lifecycle_event(OrderLifecycleState.CANCELLED, 3),
         )
     )
 
