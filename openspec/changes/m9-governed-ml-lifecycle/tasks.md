@@ -8,5 +8,5 @@
 - [x] Add focused contract/service tests.
 - [x] Update manual testing and usage baseline.
 - [x] Add durable registry persistence.
-- [ ] Add F2/F3 integration and monitoring evidence.
+- [x] Add F2/F3 integration and monitoring evidence.
 - [ ] Accept and archive M9 OpenSpec.
