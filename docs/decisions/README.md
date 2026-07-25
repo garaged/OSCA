@@ -53,6 +53,7 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0031](ADR-0031-m5-extension-package-lifecycle-contracts.md) | M5 extension package lifecycle contracts | Accepted |
 | [ADR-0032](ADR-0032-backtesting-validation-boundary.md) | Backtesting validation boundary | Accepted |
 | [ADR-0033](ADR-0033-f2-event-driven-validation-authority.md) | F2 event-driven validation authority | Accepted |
+| [ADR-0035](ADR-0035-governed-ml-lifecycle-boundary.md) | Governed ML lifecycle boundary | Draft |
 | [ADR-0034](ADR-0034-f3-paper-evaluation-boundary.md) | F3 paper evaluation boundary | Accepted |
 
 ## Baseline status
