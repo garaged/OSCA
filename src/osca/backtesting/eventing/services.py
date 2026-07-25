@@ -1,3 +1,4 @@
+from itertools import pairwise
 from uuid import UUID
 
 from osca.backtesting.eventing.contracts import (
@@ -61,7 +62,7 @@ def validate_lifecycle_sequence(
             )
         )
 
-    for previous, current in zip(ordered, ordered[1:], strict=False):
+    for previous, current in pairwise(ordered):
         if previous.request_id != current.request_id:
             findings.append(
                 ReconciliationFinding(
@@ -93,7 +94,10 @@ def validate_lifecycle_sequence(
                 ReconciliationFinding(
                     code="lifecycle_invalid_transition",
                     severity="error",
-                    message=f"invalid lifecycle transition from {previous.state} to {current.state}",
+                    message=(
+                        f"invalid lifecycle transition from {previous.state} "
+                        f"to {current.state}"
+                    ),
                 )
             )
     return tuple(findings)
