@@ -34,4 +34,4 @@ The following remain outside M5 and require later governed milestone intents:
 
 ## Exit decision
 
-M5 is complete for the accepted scope once the final archived-head hosted Quality run passes OpenSpec strict validation, secret scan, Ruff, strict mypy, pytest, contracts, migrations, documentation links, and architecture validation.
+M5 is complete for the accepted scope. Hosted Quality run `30151575123` passed at archived head `62fdadd058ade30d723df41a1d7920db7b68190b`: OpenSpec strict validation, secret scan, Ruff, strict mypy, pytest, contracts, migrations, documentation links, and architecture validation.
