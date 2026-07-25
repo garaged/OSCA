@@ -3,22 +3,22 @@ from uuid import UUID
 from osca.backtesting.eventing import PromotionGateDecision
 from osca.paper.contracts import (
     ApprovedPaperCandidate,
+    DeliveryAttemptStatus,
     ForwardComparisonMetric,
     ForwardComparisonRecord,
     HealthGateStatus,
     MissedRunPolicy,
     PaperControlAction,
     PaperControlDecision,
+    PaperDeliveryAttempt,
     PaperFinding,
     PaperFindingSeverity,
     PaperHealthGateDecision,
-    PaperRecoveryAction,
-    PaperRecoveryDecision,
     PaperNotification,
     PaperNotificationDigest,
     PaperNotificationSeverity,
-    DeliveryAttemptStatus,
-    PaperDeliveryAttempt,
+    PaperRecoveryAction,
+    PaperRecoveryDecision,
 )
 
 
