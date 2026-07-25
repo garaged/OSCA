@@ -12,3 +12,4 @@
 | M8-AC-008 | REQ-0109 | Durable automation, notification delivery, and recovery behavior fail closed until specified in later M8 slices. |
 | M8-AC-009 | REQ-0110 | M8 documentation and evidence identify deferred live execution, ML, LLM, and provider promotion scope. |
 | M8-AC-010 | REQ-0111 | M8 closes only with retained evidence, accepted spec, archived OpenSpec change, and hosted Quality pass. |
+| M8-AC-011 | REQ-0112 | M8 creates the first manual testing and usage baseline and requires later milestone specs to update it or document why no change is needed. |
