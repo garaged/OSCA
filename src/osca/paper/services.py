@@ -14,6 +14,11 @@ from osca.paper.contracts import (
     PaperHealthGateDecision,
     PaperRecoveryAction,
     PaperRecoveryDecision,
+    PaperNotification,
+    PaperNotificationDigest,
+    PaperNotificationSeverity,
+    DeliveryAttemptStatus,
+    PaperDeliveryAttempt,
 )
 
 
@@ -125,4 +130,45 @@ def evaluate_paper_recovery(
         action=PaperRecoveryAction.RESUME,
         can_resume=True,
         findings=findings,
+    )
+
+
+def build_paper_notification(
+    *,
+    paper_run_id: UUID,
+    severity: PaperNotificationSeverity,
+    title: str,
+    message: str,
+    source_record_id: UUID | None = None,
+) -> PaperNotification:
+    return PaperNotification(
+        paper_run_id=paper_run_id,
+        severity=severity,
+        title=title,
+        message=message,
+        source_record_id=source_record_id,
+    )
+
+
+def build_notification_digest(
+    *,
+    paper_run_id: UUID,
+    notification_ids: tuple[UUID, ...],
+) -> PaperNotificationDigest:
+    return PaperNotificationDigest(
+        paper_run_id=paper_run_id,
+        notification_ids=notification_ids,
+    )
+
+
+def plan_delivery_attempt(
+    *,
+    digest_id: UUID,
+    adapter_id: str,
+    adapter_enabled: bool,
+) -> PaperDeliveryAttempt:
+    return PaperDeliveryAttempt(
+        digest_id=digest_id,
+        adapter_id=adapter_id,
+        status=DeliveryAttemptStatus.PLANNED if adapter_enabled else DeliveryAttemptStatus.SKIPPED,
     )
