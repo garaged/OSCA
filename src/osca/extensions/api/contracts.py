@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Identifier = Annotated[str, Field(min_length=1, max_length=128)]
 Description = Annotated[str, Field(min_length=1, max_length=1024)]
-SemanticVersion = Annotated[str, Field(pattern=r"^\\d+\\.\\d+\\.\\d+([+-][A-Za-z0-9.-]+)?$")]
+SemanticVersion = Annotated[str, Field(pattern=r"^\d+\.\d+\.\d+([+-][A-Za-z0-9.-]+)?$")]
 Digest = Annotated[str, Field(pattern=r"^sha256:[a-fA-F0-9]{64}$")]
 
 
