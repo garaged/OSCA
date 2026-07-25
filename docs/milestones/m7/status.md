@@ -1,9 +1,9 @@
 # M7 Status
 
 - **Milestone:** M7 F2 event-driven validation foundation
-- **Status:** Active
-- **Current slice:** M7.3 F2 validation metadata persistence
-- **Latest hosted Quality:** 30162598782
+- **Status:** Complete
+- **Current slice:** M7 complete
+- **Latest hosted Quality:** 30162705410
 - **Last updated:** 2026-07-25
 
 ## Implemented
@@ -15,6 +15,9 @@
 - Hosted Quality run 30162485417 passed Ruff, strict mypy, pytest, OpenSpec, and secret scan for M7.1.
 - Deterministic lifecycle, fill, and journal settlement services.
 - Hosted Quality run 30162598782 passed Ruff, strict mypy, pytest, OpenSpec, and secret scan for M7.2.
+- SQLite metadata persistence for F2 lifecycle, fill, journal, valuation, projection, and promotion-gate evidence.
+- Hosted Quality run 30162705410 passed Ruff, strict mypy, pytest, OpenSpec, and secret scan for M7.3.
+- Accepted spec, archived OpenSpec change, traceability closeout, and exit review.
 
 ## Deferred
 
