@@ -4,7 +4,7 @@
 
 Define the accepted M3 temporal correctness semantics for approved intervals, UTC bar windows, stock exchange sessions, crypto UTC boundaries, completed bars, calendar-aware gaps, and resampling lineage.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Approved interval contract
 
