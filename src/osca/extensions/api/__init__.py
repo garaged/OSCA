@@ -1,0 +1,33 @@
+from osca.extensions.api.contracts import (
+    ExtensionActivationDecision,
+    ExtensionActivationState,
+    ExtensionCategory,
+    ExtensionDependency,
+    ExtensionEntryPoint,
+    ExtensionImpactPreview,
+    ExtensionImpactReference,
+    ExtensionInstallationRecord,
+    ExtensionManifest,
+    ExtensionPermission,
+    ExtensionPermissionKind,
+    ExtensionResourceRequirements,
+    ExtensionSchemaRef,
+    ExtensionTrustTier,
+)
+
+__all__ = [
+    "ExtensionActivationDecision",
+    "ExtensionActivationState",
+    "ExtensionCategory",
+    "ExtensionDependency",
+    "ExtensionEntryPoint",
+    "ExtensionImpactPreview",
+    "ExtensionImpactReference",
+    "ExtensionInstallationRecord",
+    "ExtensionManifest",
+    "ExtensionPermission",
+    "ExtensionPermissionKind",
+    "ExtensionResourceRequirements",
+    "ExtensionSchemaRef",
+    "ExtensionTrustTier",
+]
