@@ -17,7 +17,10 @@ from osca.backtesting.eventing.contracts import (
     ValuationSnapshot,
 )
 from osca.backtesting.eventing.services import (
+    build_fill_journal_transaction,
+    build_order_lifecycle_event,
     evaluate_promotion_gate,
+    simulate_bar_fill,
     validate_journal_transaction,
     validate_lifecycle_sequence,
 )
@@ -39,7 +42,10 @@ __all__ = [
     "SimulatedFill",
     "ValuationHolding",
     "ValuationSnapshot",
+    "build_fill_journal_transaction",
+    "build_order_lifecycle_event",
     "evaluate_promotion_gate",
+    "simulate_bar_fill",
     "validate_journal_transaction",
     "validate_lifecycle_sequence",
 ]
