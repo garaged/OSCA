@@ -1,11 +1,19 @@
 from osca.ml.contracts import (
     DatasetSplit,
+    MLDeploymentRole,
+    MLDriftMetric,
     MLEvaluationReport,
+    MLEventValidationLink,
     MLFinding,
     MLFindingSeverity,
     MLMetric,
     MLModelArtifact,
+    MLMonitoringReport,
+    MLMonitoringStatus,
+    MLPaperDeploymentDecision,
     MLPromotionDecision,
+    MLRetrainingRecord,
+    MLRetrainingTrigger,
 )
 
 
@@ -49,4 +57,86 @@ def evaluate_ml_promotion(
         approved_for_paper_challenger=False,
         rationale=rationale,
         findings=findings,
+    )
+
+
+def link_model_to_event_validation(
+    *,
+    promotion: MLPromotionDecision,
+    f2_request_id: object,
+    f2_promotion_gate_id: object,
+) -> MLEventValidationLink:
+    if not promotion.approved_for_event_validation:
+        raise ValueError("event validation link requires approved ML promotion")
+    return MLEventValidationLink(
+        model_artifact_id=promotion.model_artifact_id,
+        promotion_decision_id=promotion.promotion_decision_id,
+        f2_request_id=f2_request_id,
+        f2_promotion_gate_id=f2_promotion_gate_id,
+    )
+
+
+def decide_paper_deployment(
+    *,
+    promotion: MLPromotionDecision,
+    paper_account_id: object,
+    paper_run_id: object,
+    role: MLDeploymentRole,
+    rationale: str = "ML paper deployment evaluated",
+    findings: tuple[MLFinding, ...] = (),
+) -> MLPaperDeploymentDecision:
+    has_error = any(finding.severity is MLFindingSeverity.ERROR for finding in findings)
+    approved = promotion.approved_for_event_validation and not has_error
+    return MLPaperDeploymentDecision(
+        model_artifact_id=promotion.model_artifact_id,
+        paper_account_id=paper_account_id,
+        paper_run_id=paper_run_id,
+        role=role,
+        approved_for_paper=approved,
+        promotion_decision_id=promotion.promotion_decision_id,
+        rationale=rationale,
+        findings=findings,
+    )
+
+
+def build_monitoring_report(
+    *,
+    model_artifact_id: object,
+    paper_run_id: object,
+    drift_metrics: tuple[MLDriftMetric, ...] = (),
+    outcome_metrics: tuple[MLMetric, ...] = (),
+    findings: tuple[MLFinding, ...] = (),
+) -> MLMonitoringReport:
+    has_error = any(finding.severity is MLFindingSeverity.ERROR for finding in findings)
+    threshold_breached = any(metric.value > metric.threshold for metric in drift_metrics)
+    status = (
+        MLMonitoringStatus.BLOCKED
+        if has_error
+        else MLMonitoringStatus.DEGRADED
+        if threshold_breached
+        else MLMonitoringStatus.HEALTHY
+    )
+    return MLMonitoringReport(
+        model_artifact_id=model_artifact_id,
+        paper_run_id=paper_run_id,
+        status=status,
+        drift_metrics=drift_metrics,
+        outcome_metrics=outcome_metrics,
+        findings=findings,
+    )
+
+
+def request_retraining(
+    *,
+    source_model_artifact_id: object,
+    trigger: MLRetrainingTrigger,
+    workflow_id: str,
+    rationale: str,
+) -> MLRetrainingRecord:
+    return MLRetrainingRecord(
+        source_model_artifact_id=source_model_artifact_id,
+        trigger=trigger,
+        workflow_id=workflow_id,
+        automatic_promotion_requested=False,
+        rationale=rationale,
     )
