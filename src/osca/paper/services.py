@@ -10,7 +10,10 @@ from osca.paper.contracts import (
     PaperControlDecision,
     PaperFinding,
     PaperFindingSeverity,
+    MissedRunPolicy,
     PaperHealthGateDecision,
+    PaperRecoveryAction,
+    PaperRecoveryDecision,
 )
 
 
@@ -88,5 +91,38 @@ def build_forward_comparison(
         promotion_gate_id=promotion_gate_id,
         paper_run_id=paper_run_id,
         metrics=metrics,
+        findings=findings,
+    )
+
+
+def evaluate_paper_recovery(
+    *,
+    paper_run_id: UUID,
+    checkpoint_id: UUID | None,
+    missed_run_policy: MissedRunPolicy,
+    findings: tuple[PaperFinding, ...] = (),
+) -> PaperRecoveryDecision:
+    has_error = any(finding.severity is PaperFindingSeverity.ERROR for finding in findings)
+    if has_error or missed_run_policy is MissedRunPolicy.BLOCK:
+        return PaperRecoveryDecision(
+            paper_run_id=paper_run_id,
+            checkpoint_id=checkpoint_id,
+            action=PaperRecoveryAction.BLOCK,
+            can_resume=False,
+            findings=findings,
+        )
+    if missed_run_policy is MissedRunPolicy.SKIP:
+        return PaperRecoveryDecision(
+            paper_run_id=paper_run_id,
+            checkpoint_id=checkpoint_id,
+            action=PaperRecoveryAction.SKIP_MISSED,
+            can_resume=True,
+            findings=findings,
+        )
+    return PaperRecoveryDecision(
+        paper_run_id=paper_run_id,
+        checkpoint_id=checkpoint_id,
+        action=PaperRecoveryAction.RESUME,
+        can_resume=True,
         findings=findings,
     )
