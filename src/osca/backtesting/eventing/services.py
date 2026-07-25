@@ -1,7 +1,6 @@
+from datetime import UTC, datetime
 from itertools import pairwise
 from uuid import UUID
-
-from datetime import UTC, datetime
 
 from osca.backtesting.api import OrderIntent, OrderIntentSide
 from osca.backtesting.eventing.contracts import (
