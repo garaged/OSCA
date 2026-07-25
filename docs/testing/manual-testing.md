@@ -77,3 +77,17 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Prompt and context versioning | Inspect prompt template and context policy records where supported. | Records preserve version identity, selected project context, approved references, and no unrelated project mixing. |
 | Budget and privacy gates | Try route evaluation with over-budget or sensitive-disclosure inputs where supported. | Evaluation fails closed before any provider call. |
 | Evaluation evidence | Inspect LLM evaluation records where supported. | Grounding, structured-output validity, boundary behavior, cost, and latency findings are visible as evidence. |
+
+
+## M11 Smoke Checklist
+
+| Area | Manual check | Expected result |
+|---|---|---|
+| Analytical breadth boundary | Review M11 CLI/help/docs and available developer surfaces. | M11 is presented as governed analytical-pack metadata and evidence, not as complete runtime analytics engines. |
+| Pack manifest review | Inspect a fundamental, macro, events, news, crypto, portfolio, visualization, or synthesis pack manifest where supported. | Pack family, version, data requirements, methodology, assumptions, limitations, and documentation are visible. |
+| Validation failure | Try pack validation with missing methodology documentation where supported. | Validation fails closed with a blocking finding. |
+| Evidence synthesis | Inspect cross-family synthesis evidence where supported. | Supporting and contradicting evidence references remain visible. |
+| Method comparison | Try selecting a preferred method outside the compared set where supported. | The comparison is blocked instead of accepting an unrelated winner. |
+| Outcome calibration | Inspect expected-versus-realized outcome records where supported. | Calibration status and error metric are retained. |
+| Portfolio scenario | Inspect portfolio scenario evidence where supported. | Scenario reports remain analytical evidence and do not imply order authority. |
+| Visualization metadata | Inspect visualization pack metadata where supported. | Accessible summaries and export metadata are required. |

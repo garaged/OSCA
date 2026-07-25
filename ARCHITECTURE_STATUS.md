@@ -17,6 +17,7 @@
 - **M8 F3 paper evaluation and automation foundation:** Complete
 - **M9 governed ML lifecycle foundation:** Complete
 - **M10 LLM lifecycle and gateway foundation:** Complete
+- **M11 analytical breadth and portfolio intelligence:** Complete
 - **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -105,6 +106,7 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M8 milestone](docs/milestones/m8/README.md)
 - [M9 milestone](docs/milestones/m9/README.md)
 - [M10 milestone](docs/milestones/m10/README.md)
+- [M11 milestone](docs/milestones/m11/README.md)
 
 ## M9 completion boundary
 
@@ -117,3 +119,10 @@ Trainer execution, production model serving, LLM behavior, live execution, real-
 M10 is complete through its governed exit review and archived OpenSpec change. M10 provides governed LLM provider/model capability records, prompt templates, bounded tool definitions, explicit project-context policies, structured-output contracts, request envelopes, deterministic route decisions, privacy and budget gates, evaluation reports, and SQLite lifecycle metadata persistence without invoking providers.
 
 Provider adapters, prompt execution, retrieval materialization, generated recommendations, LLM tool orchestration, state-changing execution, live execution, real-capital orders, and provider production promotion remain deferred to later governed milestone intents.
+
+
+## M11 completion boundary
+
+M11 is complete through its governed exit review and archived OpenSpec change. M11 provides governed analytical pack manifests, deterministic pack validation, analytical result bundles, method comparison, outcome calibration, portfolio scenario evidence, cross-family synthesis records, visualization pack metadata, and SQLite metadata persistence for analytical breadth and portfolio intelligence.
+
+Runtime fundamental, macro, event, news, sentiment, on-chain, specialized ML, and visualization engines; provider calls; LLM-generated synthesis; recommendation execution; live execution; real-capital orders; and provider production promotion remain deferred to later governed milestone intents.
