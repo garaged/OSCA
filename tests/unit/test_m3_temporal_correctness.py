@@ -21,7 +21,15 @@ from osca.market_data.application.temporal import (
 
 
 def test_approved_intervals_are_exact_and_completed_bar_semantics_use_cutoff() -> None:
-    assert [item.value for item in MarketDataInterval] == ["1m", "5m", "15m", "30m", "1h", "4h", "1d"]
+    assert [item.value for item in MarketDataInterval] == [
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "4h",
+        "1d",
+    ]
     window = completed_bar_window(
         moment=datetime(2024, 1, 2, 10, 7, 30, tzinfo=UTC),
         interval=MarketDataInterval.M5,
@@ -121,7 +129,10 @@ def test_resampling_requires_complete_lower_interval_lineage() -> None:
     assert lineage.target_interval == "4h"
     assert len(lineage.source_bar_ids) == 4
 
-    assert resample_ohlcv((bar(0, "11"), bar(1, "12")), target_interval=MarketDataInterval.H4) == ()
+    assert (
+        resample_ohlcv((bar(0, "11"), bar(1, "12")), target_interval=MarketDataInterval.H4)
+        == ()
+    )
 
 
 def test_intraday_bar_contract_rejects_float_and_wrong_duration() -> None:
