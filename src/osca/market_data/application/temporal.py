@@ -230,6 +230,10 @@ def _combine_group(
     calendar_revisions = {bar.calendar_revision for bar in group}
     if len(calendar_revisions) != 1:
         raise ValueError("resampling group cannot mix calendar revisions")
+    source_identity = (
+        f"resampled:{first.interval}:{target_interval}:"
+        f"{target_start.isoformat()}:{len(group)}"
+    )
     return CanonicalOhlcvBar(
         instrument_id=first.instrument_id,
         interval=target_interval,
@@ -244,7 +248,7 @@ def _combine_group(
         currency=first.currency,
         volume_unit=first.volume_unit,
         provider_id=first.provider_id,
-        source_identity="resampled:" + ",".join(str(bar.bar_id) for bar in group),
+        source_identity=source_identity,
         request_id=request_id,
         normalization_revision="ohlcv-resample-v1",
         calendar_revision=first.calendar_revision,
