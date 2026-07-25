@@ -14,6 +14,7 @@ from osca.ml.contracts import (
     MLTrainingWorkflow,
     ModelArtifactStatus,
 )
+from osca.ml.persistence import SQLiteMLLifecycleStore
 from osca.ml.services import build_evaluation_report, evaluate_ml_promotion
 
 __all__ = [
@@ -31,6 +32,7 @@ __all__ = [
     "MLPromotionDecision",
     "MLTrainingWorkflow",
     "ModelArtifactStatus",
+    "SQLiteMLLifecycleStore",
     "build_evaluation_report",
     "evaluate_ml_promotion",
 ]
