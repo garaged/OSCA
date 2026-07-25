@@ -1,6 +1,6 @@
 # ADR-0031 - M5 Extension Package Lifecycle Contracts
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Date:** 2026-07-24
 - **Decision owner:** Architecture authority
 - **Related requirements:** REQ-0069-REQ-0084
