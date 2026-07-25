@@ -10,7 +10,8 @@
 - **M1 secure walking skeleton:** Accepted
 - **M2 governed daily-data vertical slice:** Complete
 - **M3 multi-timeframe temporal correctness:** Complete
-- **Current activity:** M4 research projects, analytics, and visualization in progress
+- **M4 research projects, analytics, and visualization:** Complete
+- **Current activity:** Next governed milestone intent pending
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -49,9 +50,11 @@ M3 is complete through its governed exit review and archived OpenSpec change. M3
 
 Provider production promotion remains deferred and disabled until exact provider-specific evidence is accepted.
 
-## M4 initiation boundary
+## M4 completion boundary
 
-M4 starts from the completed M3 data baseline. M4 is authorized to add governed research-project, analytical-output, analysis-graph, and visualization-specification contracts while keeping independent extension packaging, ML training, backtesting, paper trading, and live execution deferred to later milestones.
+M4 is complete through its governed exit review and archived OpenSpec change. M4 provides governed research-project contracts, hypothesis lifecycle evidence, project timeline and promotion behavior, analysis graph validation and planning, analytical output provenance, evidence-report assembly, declarative visualization specifications, visualization export metadata, and dashboard composition.
+
+Independent extension packaging, ML training, backtesting, paper trading, live execution, and provider production promotion remain deferred to later milestones.
 
 ## Key navigation
 
