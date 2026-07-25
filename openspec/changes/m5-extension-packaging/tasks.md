@@ -6,5 +6,8 @@
 - [x] Add extension API contracts.
 - [x] Add application services.
 - [x] Add unit tests.
-- [ ] Run hosted Quality and retain evidence.
-- [ ] Decide whether persistence/interface integration belongs in M5 after first green slice.
+- [x] Run hosted Quality and retain M5.1 evidence.
+- [x] Add SQLite lifecycle persistence for installation records and activation decisions.
+- [x] Run hosted Quality and retain M5.2 evidence.
+- [ ] Add CLI/API administration integration.
+- [ ] Archive OpenSpec change, accept specification, and complete exit review.
