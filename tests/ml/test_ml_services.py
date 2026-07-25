@@ -109,29 +109,3 @@ def test_evaluate_ml_promotion_blocks_error_findings() -> None:
     )
 
     assert decision.approved_for_event_validation is False
-
-def _approved_promotion(*, approved: bool = True):
-    artifact = MLModelArtifact(
-        experiment_run_id=uuid4(),
-        model_family="logistic-regression",
-        artifact_uri="models/local/model.bin",
-        artifact_digest="sha256:abcdef",
-    )
-    report = build_evaluation_report(
-        artifact=artifact,
-        metrics=(
-            MLMetric(
-                name="auc",
-                value=0.64 if approved else 0.58,
-                split=DatasetSplit.HOLDOUT,
-                methodology="classification.v1",
-            ),
-        ),
-        calibration_methodology="isotonic.v1",
-    )
-    return evaluate_ml_promotion(
-        report=report,
-        artifact=artifact,
-        minimum_holdout_metric=0.60,
-        holdout_metric_name="auc",
-    )
