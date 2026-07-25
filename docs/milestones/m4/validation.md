@@ -1,6 +1,6 @@
 # M4 Validation Checklist
 
-- **Status:** Active
+- **Status:** Complete
 - **Last updated:** 2026-07-24
 
 ## Required checks
@@ -17,4 +17,4 @@
 
 ## Current evidence
 
-Hosted Quality run `30138852688` passed for head `1ad24422e0502c99092aa370eb48fdb4c77952dd` after the hypothesis lifecycle, missing graph input validation, and dashboard composition slice.
+Hosted Quality run `30139129036` passed for archived M4 head `807a5758079515333bd6e2582d13279543c2cd3d`. The run covered OpenSpec strict validation, secret scan, Ruff, strict mypy, pytest, contracts, migrations, documentation links, and architecture validation.
