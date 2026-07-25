@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from osca.research.api import (
@@ -15,7 +17,7 @@ from osca.research.api import (
 
 class GraphExecutionPlan(BaseModel):
     model_config = ConfigDict(frozen=True)
-    graph_id: object
+    graph_id: UUID
     node_order: tuple[str, ...] = Field(min_length=1)
 
 
