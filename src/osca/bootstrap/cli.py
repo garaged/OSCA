@@ -9,6 +9,9 @@ from uuid import UUID
 import typer
 
 from osca import __version__
+from osca.backtesting.api import BacktestRequest
+from osca.backtesting.application import plan_backtest_execution
+from osca.backtesting.persistence import SQLiteBacktestLifecycleStore
 from osca.bootstrap.authorization import local_authorization_context
 from osca.bootstrap.recovery import persist_configuration_snapshot, recovery_service
 from osca.bootstrap.runtime import readiness_snapshot
@@ -150,6 +153,36 @@ def extension_list(
     typer.echo(json.dumps([record.model_dump(mode="json") for record in records], indent=2))
 
 
+@app.command("backtest-plan")
+def backtest_plan(
+    request_file: Path,
+    database: Annotated[Path, typer.Option("--database")] = Path("osca-backtests.sqlite"),
+) -> None:
+    """Persist a backtest request and its fail-closed execution plan."""
+
+    request = _load_backtest_request(request_file)
+    store = SQLiteBacktestLifecycleStore(database)
+    store.initialize()
+    plan = plan_backtest_execution(request)
+    store.save_request(request)
+    store.save_execution_plan(plan)
+    typer.echo(plan.model_dump_json(indent=2))
+
+
+@app.command("backtest-list")
+def backtest_list(
+    database: Annotated[Path, typer.Option("--database")] = Path("osca-backtests.sqlite"),
+    project_id: Annotated[UUID | None, typer.Option("--project-id")] = None,
+    strategy_id: Annotated[str | None, typer.Option("--strategy-id")] = None,
+) -> None:
+    """List persisted backtest requests without executing strategies."""
+
+    store = SQLiteBacktestLifecycleStore(database)
+    store.initialize()
+    records = store.list_requests(project_id=project_id, strategy_id=strategy_id)
+    typer.echo(json.dumps([record.model_dump(mode="json") for record in records], indent=2))
+
+
 @app.command("backup-create")
 def backup_create(destination: Path, recipient: str) -> None:
     """Create an encrypted age v1 backup of governed M1 state."""
@@ -232,6 +265,10 @@ def restore_isolated(package: Path, destination: Path, identity_name: str) -> No
             )
         )
     typer.echo(record.model_dump_json(indent=2))
+
+
+def _load_backtest_request(request_file: Path) -> BacktestRequest:
+    return BacktestRequest.model_validate_json(request_file.read_text(encoding="utf-8"))
 
 
 def _load_extension_manifest(manifest_file: Path) -> ExtensionManifest:

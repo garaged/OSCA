@@ -51,10 +51,11 @@ ADR lifecycle and freeze rules are defined in `engineering/architecture-evolutio
 | [ADR-0029](ADR-0029-m3-temporal-correctness-model.md) | M3 temporal correctness model | Accepted |
 | [ADR-0030](ADR-0030-m4-research-project-contract-model.md) | M4 research project contract model | Accepted |
 | [ADR-0031](ADR-0031-m5-extension-package-lifecycle-contracts.md) | M5 extension package lifecycle contracts | Accepted |
+| [ADR-0032](ADR-0032-backtesting-validation-boundary.md) | Backtesting validation boundary | Accepted |
 
 ## Baseline status
 
-ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0028 are the accepted M2 persistence, recovery, data, workflow, and authorization decisions. ADR-0029 governs M3 temporal correctness. ADR-0030 governs M4 research project, analysis graph, analytical output, and visualization contracts. ADR-0031 governs the M5 extension package lifecycle boundary. All remain governed by the architecture evolution policy.
+ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes require superseding ADRs. ADR-0011 through ADR-0016 are accepted M1 decisions. ADR-0017 through ADR-0028 are the accepted M2 persistence, recovery, data, workflow, and authorization decisions. ADR-0029 governs M3 temporal correctness. ADR-0030 governs M4 research project, analysis graph, analytical output, and visualization contracts. ADR-0031 governs the M5 extension package lifecycle boundary. ADR-0032 governs the M6 backtesting validation boundary. All remain governed by the architecture evolution policy.
 
 ## Template
 
