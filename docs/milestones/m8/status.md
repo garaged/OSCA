@@ -16,6 +16,7 @@
 - Notification inbox, digest, delivery-adapter, and delivery-attempt contracts added.
 - Active OpenSpec change archived.
 - Exit review retained.
+- Manual testing and usage baseline added as the first manual test/usage documentation milestone.
 
 ## Pending
 
