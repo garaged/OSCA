@@ -1,6 +1,6 @@
 # ADR-0032 - Backtesting Validation Boundary
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-07-25
 - **Tier:** Implementation
 - **Deciders:** Architecture authority, product authority
@@ -25,4 +25,4 @@ Execution planning fails closed for look-ahead data, incompatible fidelity profi
 - Strategy-generated order intents are simulation inputs, not live orders.
 - Completed backtest results require metric methodology metadata.
 - Event matching, fills, journals, and portfolio projections remain later governed work.
-- M6 can add persistence and operator access after the contract behavior is green.
+- M6 adds persistence and metadata-only operator access after the contract behavior is green.
