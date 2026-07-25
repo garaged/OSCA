@@ -44,7 +44,9 @@ def evaluate_llm_route(
         request.privacy_class is LLMPrivacyClass.SENSITIVE
         and not request.sensitive_disclosure_approved
     ):
-        findings.append(_error("sensitive_disclosure_blocked", "sensitive disclosure is not approved"))
+        findings.append(
+            _error("sensitive_disclosure_blocked", "sensitive disclosure is not approved")
+        )
 
     candidate = _select_provider(
         providers=providers,
@@ -64,7 +66,11 @@ def evaluate_llm_route(
         findings.append(_error("cost_budget_exceeded", "estimated LLM cost exceeds budget"))
 
     if findings:
-        return _blocked_route(request=request, findings=tuple(findings), estimated_cost=estimated_cost)
+        return _blocked_route(
+            request=request,
+            findings=tuple(findings),
+            estimated_cost=estimated_cost,
+        )
 
     return LLMRouteDecision(
         request_id=request.request_id,
