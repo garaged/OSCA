@@ -66,3 +66,12 @@ Paper recovery SHALL use checkpoints and missed-run policy to decide whether pro
 #### Scenario: Recovery finding has error
 - **WHEN** recovery findings include an error
 - **THEN** recovery remains blocked and cannot resume
+
+
+### Requirement: Paper metadata persistence
+
+Paper evaluation metadata SHALL be persisted with stable record identity and queryable account or paper-run scope without executing paper automation.
+
+#### Scenario: Paper records are persisted
+- **WHEN** paper account, run, gate, control, schedule, recovery, and comparison records are saved
+- **THEN** they can be queried by paper account or paper run identity
