@@ -10,8 +10,10 @@ from osca.ml import (
     MLFinding,
     MLFindingSeverity,
     MLMetric,
+    MLModelArtifact,
     MLMonitoringReport,
     MLMonitoringStatus,
+    MLPromotionDecision,
     MLRetrainingRecord,
     MLRetrainingTrigger,
     build_monitoring_report,
@@ -19,6 +21,8 @@ from osca.ml import (
     link_model_to_event_validation,
     request_retraining,
 )
+
+
 def test_event_validation_link_requires_approved_promotion() -> None:
     promotion = _approved_promotion(approved=False)
 
@@ -123,9 +127,7 @@ def test_monitoring_report_preserves_outcome_metrics() -> None:
     assert report.outcome_metrics[0].name == "precision"
     assert report.status is MLMonitoringStatus.HEALTHY
 
-def _approved_promotion(*, approved: bool = True):
-    from osca.ml import MLModelArtifact, build_evaluation_report, evaluate_ml_promotion
-
+def _approved_promotion(*, approved: bool = True) -> MLPromotionDecision:
     artifact = MLModelArtifact(
         experiment_run_id=uuid4(),
         model_family="logistic-regression",
