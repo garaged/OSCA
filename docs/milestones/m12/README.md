@@ -1,6 +1,6 @@
 # M12 - Release Readiness and Operational Resilience
 
-- **Status:** In review
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, security, operations, recovery, and quality review:** Required for M12 scope
 - **Authoritative outcome:** PRD sections 26-30 and 37-39 release-readiness boundary
