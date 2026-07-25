@@ -33,10 +33,17 @@ def evaluate_llm_route(
 ) -> LLMRouteDecision:
     findings: list[LLMFinding] = []
     if estimated_input_tokens > request.budget.max_input_tokens:
-        findings.append(_error("input_token_budget_exceeded", "estimated input tokens exceed budget"))
+        findings.append(
+            _error("input_token_budget_exceeded", "estimated input tokens exceed budget")
+        )
     if estimated_output_tokens > request.budget.max_output_tokens:
-        findings.append(_error("output_token_budget_exceeded", "estimated output tokens exceed budget"))
-    if request.privacy_class is LLMPrivacyClass.SENSITIVE and not request.sensitive_disclosure_approved:
+        findings.append(
+            _error("output_token_budget_exceeded", "estimated output tokens exceed budget")
+        )
+    if (
+        request.privacy_class is LLMPrivacyClass.SENSITIVE
+        and not request.sensitive_disclosure_approved
+    ):
         findings.append(_error("sensitive_disclosure_blocked", "sensitive disclosure is not approved"))
 
     candidate = _select_provider(
