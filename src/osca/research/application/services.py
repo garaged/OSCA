@@ -6,7 +6,11 @@ from osca.research.api import (
     AdHocWorkspace,
     AnalysisGraph,
     AnalysisOutput,
+    DashboardPanel,
+    DashboardSpec,
     EvidenceReport,
+    Hypothesis,
+    HypothesisState,
     ProjectPromotion,
     ResearchProject,
     TimelineEvent,
@@ -44,6 +48,24 @@ def promote_ad_hoc_workspace(
         related_ids=(workspace.workspace_id, promotion.promotion_id),
     )
     return project, promotion, event
+
+
+def transition_hypothesis(
+    hypothesis: Hypothesis,
+    *,
+    new_state: HypothesisState,
+    rationale: str,
+) -> tuple[Hypothesis, TimelineEvent]:
+    if hypothesis.state is new_state:
+        raise ValueError("hypothesis transition requires a different state")
+    updated = hypothesis.model_copy(update={"state": new_state})
+    event = TimelineEvent(
+        project_id=hypothesis.project_id,
+        event_type=TimelineEventType.HYPOTHESIS,
+        summary=rationale,
+        related_ids=(hypothesis.hypothesis_id,),
+    )
+    return updated, event
 
 
 def project_timeline(events: tuple[TimelineEvent, ...]) -> tuple[TimelineEvent, ...]:
@@ -106,4 +128,35 @@ def assemble_evidence_report(
         assumptions=assumptions,
         contradictions=contradictions,
         reproduction_refs=reproduction_refs,
+    )
+
+
+def compose_dashboard(
+    *,
+    project: ResearchProject,
+    title: str,
+    visualizations: tuple[VisualizationSpec, ...],
+) -> DashboardSpec:
+    if not visualizations:
+        raise ValueError("dashboard requires at least one visualization")
+    if any(
+        visualization.project_id != project.project_id for visualization in visualizations
+    ):
+        raise ValueError("all dashboard visualizations must belong to the project")
+    panels = tuple(
+        DashboardPanel(
+            panel_id=f"panel-{index + 1}",
+            visualization_id=visualization.visualization_id,
+            title=visualization.title,
+            position=index,
+        )
+        for index, visualization in enumerate(visualizations)
+    )
+    return DashboardSpec(
+        project_id=project.project_id,
+        title=title,
+        panels=panels,
+        source_visualization_ids=tuple(
+            visualization.visualization_id for visualization in visualizations
+        ),
     )
