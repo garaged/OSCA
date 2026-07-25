@@ -21,7 +21,10 @@ from osca.research.api import (
 
 
 def test_project_hypothesis_and_timeline_have_governed_identity() -> None:
-    project = ResearchProject(objective="Compare momentum behavior for liquid stocks", horizon="30d")
+    project = ResearchProject(
+        objective="Compare momentum behavior for liquid stocks",
+        horizon="30d",
+    )
     hypothesis = Hypothesis(
         project_id=project.project_id,
         statement="Recent winners continue outperforming over the next month",
