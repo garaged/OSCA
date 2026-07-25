@@ -1,6 +1,6 @@
 # M8 F3 Paper Evaluation Specification
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Milestone:** M8
 - **Requirements:** REQ-0102-REQ-0111
 - **ADR:** ADR-0034
