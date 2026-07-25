@@ -14,4 +14,4 @@
 
 ## Validation
 
-Hosted Quality evidence pending for this slice.
+Hosted Quality run 30162598782 passed Ruff, strict mypy, pytest, OpenSpec strict validation, and secret scan for head `e45f0073a1568765afa94a0cb9ad92a4c98bdfef`.
