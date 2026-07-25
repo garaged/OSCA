@@ -195,9 +195,15 @@ class MethodComparisonReport(BaseModel):
             raise ValueError("method comparison compared_at must be timezone-aware")
         if len(set(self.compared_result_ids)) != len(self.compared_result_ids):
             raise ValueError("method comparison result ids must be unique")
-        if self.outcome is MethodComparisonOutcome.PREFERRED and self.preferred_result_id is None:
+        if (
+            self.outcome is MethodComparisonOutcome.PREFERRED
+            and self.preferred_result_id is None
+        ):
             raise ValueError("preferred method comparison requires a preferred result id")
-        if self.preferred_result_id is not None and self.preferred_result_id not in self.compared_result_ids:
+        if (
+            self.preferred_result_id is not None
+            and self.preferred_result_id not in self.compared_result_ids
+        ):
             raise ValueError("preferred result must be one of the compared results")
         return self
 
