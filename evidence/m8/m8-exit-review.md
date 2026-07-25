@@ -4,7 +4,7 @@
 - **Milestone:** M8 F3 paper evaluation and automation foundation
 - **Branch:** agent/m8-paper-evaluation-automation
 - **Final implementation Quality:** 30168991911
-- **Closeout Quality:** 30169166472
+- **Closeout Quality:** 30169208019
 
 ## Retained evidence
 
@@ -15,7 +15,7 @@
 
 ## Final verification
 
-Hosted Quality green on 30169166472 at 4ac01f537a6a21271f42d41d807f256643d138e9.
+Hosted Quality green on 30169208019 at fdcba4d1c23b18e5973038511b7f918d2d99fade.
 
 ## Residual limitations
 
