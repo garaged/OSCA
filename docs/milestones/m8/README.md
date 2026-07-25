@@ -19,6 +19,7 @@
 - [Deferred scope](deferred-scope.md)
 - [M8 F3 paper evaluation specification](../../specifications/m8-paper-evaluation.md)
 - [Accepted M8 OpenSpec specification](../../../openspec/specs/m8-paper-evaluation/spec.md)
+- [Manual testing and usage](../../testing/manual-testing.md)
 - [Requirements catalog](../../governance/requirements-catalog.md)
 - [Traceability register](../../governance/traceability-register.md)
 - [Exit review](exit-review.md)
