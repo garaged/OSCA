@@ -8,8 +8,9 @@
 - [x] Add temporal application services for completion, gaps, repair planning, and resampling.
 - [x] Add interval identity to retrieval requests and dataset manifests.
 - [x] Add interval-aware retrieval resolution and storage inspection.
+- [x] Add non-daily OHLCV Parquet payload support.
 - [x] Add unit and component tests for current M3 slices.
 - [ ] Extend interval-aware retention and canonical revision behavior.
-- [ ] Add non-daily OHLCV publication/payload support.
+- [ ] Integrate non-daily OHLCV payloads into publication workflow.
 - [ ] Reconcile exit evidence and architecture status.
 - [ ] Run hosted Quality after each M3 slice and resolve findings.
