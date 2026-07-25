@@ -186,3 +186,95 @@ class ForwardComparisonRecord(BaseModel):
         if self.compared_at.tzinfo is None:
             raise ValueError("forward comparison compared_at must be timezone-aware")
         return self
+
+
+class PaperScheduleCadence(StrEnum):
+    HOURLY = "hourly"
+    DAILY = "daily"
+    MARKET_OPEN = "market_open"
+    MARKET_CLOSE = "market_close"
+
+
+class MissedRunPolicy(StrEnum):
+    SKIP = "skip"
+    RUN_ONCE = "run_once"
+    BLOCK = "block"
+
+
+class PaperScheduleStatus(StrEnum):
+    ACTIVE = "active"
+    PAUSED = "paused"
+    DISABLED = "disabled"
+
+
+class PaperRecoveryAction(StrEnum):
+    RESUME = "resume"
+    SKIP_MISSED = "skip_missed"
+    BLOCK = "block"
+
+
+class PaperSchedule(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.schedule"] = "osca.paper.schedule"
+    version: Literal["1.0.0"] = "1.0.0"
+    schedule_id: UUID = Field(default_factory=uuid4)
+    paper_account_id: UUID
+    paper_run_id: UUID
+    cadence: PaperScheduleCadence
+    timezone: Identifier
+    market_calendar_id: Identifier | None = None
+    missed_run_policy: MissedRunPolicy = MissedRunPolicy.BLOCK
+    status: PaperScheduleStatus = PaperScheduleStatus.ACTIVE
+    starts_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_schedule(self) -> Self:
+        if self.starts_at.tzinfo is None:
+            raise ValueError("paper schedule starts_at must be timezone-aware")
+        if self.cadence in {
+            PaperScheduleCadence.MARKET_OPEN,
+            PaperScheduleCadence.MARKET_CLOSE,
+        } and self.market_calendar_id is None:
+            raise ValueError("market-aware paper schedules require market_calendar_id")
+        return self
+
+
+class PaperRunCheckpoint(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.run-checkpoint"] = "osca.paper.run-checkpoint"
+    version: Literal["1.0.0"] = "1.0.0"
+    checkpoint_id: UUID = Field(default_factory=uuid4)
+    paper_run_id: UUID
+    sequence_number: Annotated[int, Field(ge=0)]
+    idempotency_key: Identifier
+    last_processed_at: datetime
+    source_event_ids: tuple[UUID, ...] = ()
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_checkpoint(self) -> Self:
+        if self.last_processed_at.tzinfo is None or self.created_at.tzinfo is None:
+            raise ValueError("paper checkpoint timestamps must be timezone-aware")
+        return self
+
+
+class PaperRecoveryDecision(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    family: Literal["osca.paper.recovery-decision"] = "osca.paper.recovery-decision"
+    version: Literal["1.0.0"] = "1.0.0"
+    recovery_decision_id: UUID = Field(default_factory=uuid4)
+    paper_run_id: UUID
+    checkpoint_id: UUID | None = None
+    action: PaperRecoveryAction
+    can_resume: bool
+    findings: tuple[PaperFinding, ...] = ()
+    decided_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def validate_recovery(self) -> Self:
+        if self.decided_at.tzinfo is None:
+            raise ValueError("paper recovery decided_at must be timezone-aware")
+        has_error = any(finding.severity is PaperFindingSeverity.ERROR for finding in self.findings)
+        if self.can_resume and (self.action is PaperRecoveryAction.BLOCK or has_error):
+            raise ValueError("paper recovery cannot resume from blocked or error state")
+        return self
