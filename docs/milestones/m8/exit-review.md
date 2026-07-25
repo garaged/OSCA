@@ -8,13 +8,17 @@
 
 ## Scope completed
 
-M8 establishes F3 paper evaluation and automation foundation contracts after M7. It includes independent paper accounts, approved candidate linkage, paper evaluation requests, health gates, pause and kill-switch controls, forward comparisons, durable schedule identity, missed-run policy, checkpoint and recovery decisions, SQLite metadata persistence, notification inbox records, digests, delivery-adapter declarations, and delivery-attempt metadata.
+M8 establishes F3 paper evaluation and automation foundation contracts after M7. It includes independent paper accounts, approved candidate linkage, paper evaluation requests, health gates, pause and kill-switch controls, forward comparisons, durable schedule identity, missed-run policy, checkpoint and recovery decisions, SQLite metadata persistence, notification inbox records, digests, delivery-adapter declarations, delivery-attempt metadata, and the first manual testing and usage documentation baseline.
 
 ## Verification
 
 Hosted Quality run 30169208019 is green at closeout head fdcba4d1c23b18e5973038511b7f918d2d99fade.
 
 Hosted Quality run 30168991911 passed OpenSpec strict validation, secret scanning, Ruff, strict mypy, pytest, migrations, links, and architecture checks for the M8.4 implementation head.
+
+## Manual usage baseline
+
+M8 is the first milestone with a documented manual testing and usage checklist. Later milestone specifications must review and update `docs/testing/manual-testing.md` when behavior changes, or record why no manual coverage change is required.
 
 ## Deferred scope
 
