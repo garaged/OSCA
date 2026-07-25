@@ -12,7 +12,9 @@
 - **M3 multi-timeframe temporal correctness:** Complete
 - **M4 research projects, analytics, and visualization:** Complete
 - **M5 independent extension packaging and activation:** Complete
-- **Current activity:** Next governed milestone intent pending
+- **M6 backtesting and strategy validation foundation:** Complete
+- **M7 F2 event-driven validation foundation:** Complete
+- **Current activity:** M8 F3 paper evaluation and automation foundation
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -75,6 +77,12 @@ M7 is complete through its governed exit review and archived OpenSpec change. M7
 
 F3 forward paper evaluation, independent paper accounts, durable market-aware schedules, runtime strategy execution, ML, LLM, live execution, tick/quote/order-book fidelity, and provider production promotion remain deferred until later governed milestone intents.
 
+## M8 activity boundary
+
+M8 is open on a governed milestone branch. The first slice defines F3 paper account and forward-evaluation contracts, approved-candidate linkage from M7 promotion gates, data and operational health gates, pause and kill-switch state, and backtest-versus-forward comparison records.
+
+Live execution, broker/exchange adapters, real-capital orders, ML, LLM, and provider production promotion remain outside M8 unless later governed M8 slices explicitly allocate them without violating PRD exclusions.
+
 ## Key navigation
 
 - [M0.x index](docs/milestones/m0x/README.md)
@@ -91,3 +99,4 @@ F3 forward paper evaluation, independent paper accounts, durable market-aware sc
 - [M5 milestone](docs/milestones/m5/README.md)
 - [M6 milestone](docs/milestones/m6/README.md)
 - [M7 milestone](docs/milestones/m7/README.md)
+- [M8 milestone](docs/milestones/m8/README.md)
