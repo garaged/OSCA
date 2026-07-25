@@ -17,6 +17,7 @@ The M0 architecture foundation, M0.x operational controls, M1 secure walking ske
 9. [Run and operate M1](docs/milestones/m1/operations-guide.md)
 10. [M1 initiation checklist](engineering/bootstrap/m1-initiation-checklist.md)
 11. [M2 milestone](docs/milestones/m2/README.md)
+12. [M3 milestone](docs/milestones/m3/README.md)
 
 ## Governing baseline
 
