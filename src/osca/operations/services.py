@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from osca.operations.contracts import (
     AlertPolicy,
     BackupPackageManifest,
@@ -47,7 +49,7 @@ def health_state_from_findings(
     *,
     impact: str,
     remediation_uri: str,
-    correlation_id: object,
+    correlation_id: UUID,
     findings: tuple[OperationsFinding, ...],
 ) -> HealthFindingRecord:
     if any(finding.severity is OperationsFindingSeverity.ERROR for finding in findings):
