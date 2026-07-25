@@ -23,6 +23,7 @@ The M0 architecture foundation, M0.x operational controls, M1 secure walking ske
 15. [M6 milestone](docs/milestones/m6/README.md)
 16. [M7 milestone](docs/milestones/m7/README.md)
 17. [M8 milestone](docs/milestones/m8/README.md)
+18. [Manual testing and usage](docs/testing/manual-testing.md)
 
 ## Governing baseline
 
@@ -47,3 +48,4 @@ The product baseline was merged through PR #1 at commit `14f537b7ce359007a776730
 - [Engineering bootstrap](engineering/bootstrap/README.md)
 - [OpenSpec integration policy](docs/governance/openspec-integration.md)
 - [Architecture validation](docs/validation/README.md)
+- [Manual testing and usage](docs/testing/manual-testing.md)
