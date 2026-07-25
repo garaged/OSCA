@@ -26,6 +26,7 @@ def resolve_retrieval(
         manifest
         for manifest in manifests
         if manifest.instrument_id == request.instrument_id
+        and manifest.interval == request.interval
         and manifest.layer is DatasetLayer.CANONICAL
         and manifest.state is ManifestState.READY
         and manifest.start_date <= request.start_date
