@@ -57,3 +57,11 @@ M9 SHALL review and update the manual testing and usage baseline for ML lifecycl
 #### Scenario: M9 changes operator-visible ML behavior
 - **WHEN** M9 adds ML lifecycle contracts or usage surfaces
 - **THEN** the manual testing and usage baseline includes M9-specific smoke checks
+
+### Requirement: ML lifecycle metadata persistence
+
+ML lifecycle metadata SHALL be persisted with stable record identity and queryable workflow, experiment, and model-artifact scopes without executing training.
+
+#### Scenario: ML lifecycle records are persisted
+- **WHEN** ML lifecycle records are saved
+- **THEN** they can be queried by their governed workflow, experiment, or model artifact identity
