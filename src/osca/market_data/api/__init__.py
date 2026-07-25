@@ -12,23 +12,6 @@ from osca.market_data.api.contracts import (
     RetrievalResolution,
     canonical_fingerprint,
 )
-
-__all__ = [
-    "CanonicalDailyBar",
-    "DatasetLayer",
-    "DatasetManifest",
-    "DateClassification",
-    "DateFinding",
-    "ManifestState",
-    "RepairRange",
-    "RepairRequest",
-    "ResolutionState",
-    "RetrievalRequest",
-    "RetrievalResolution",
-    "canonical_fingerprint",
-]
-
-
 from osca.market_data.api.temporal import (
     CanonicalOhlcvBar,
     CompletedBarWindow,
@@ -41,14 +24,26 @@ from osca.market_data.api.temporal import (
     TemporalGapState,
 )
 
-__all__ += [
+__all__ = [
+    "CanonicalDailyBar",
     "CanonicalOhlcvBar",
     "CompletedBarWindow",
     "CryptoUtcDay",
+    "DatasetLayer",
+    "DatasetManifest",
+    "DateClassification",
+    "DateFinding",
     "ExchangeSession",
+    "ManifestState",
     "MarketDataInterval",
+    "RepairRange",
+    "RepairRequest",
     "ResampleLineage",
+    "ResolutionState",
+    "RetrievalRequest",
+    "RetrievalResolution",
     "SessionState",
     "TemporalGap",
     "TemporalGapState",
+    "canonical_fingerprint",
 ]
