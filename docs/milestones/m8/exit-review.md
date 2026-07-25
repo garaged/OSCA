@@ -12,6 +12,8 @@ M8 establishes F3 paper evaluation and automation foundation contracts after M7.
 
 ## Verification
 
+Hosted Quality run 30169166472 is green at closeout head 4ac01f537a6a21271f42d41d807f256643d138e9.
+
 Hosted Quality run 30168991911 passed OpenSpec strict validation, secret scanning, Ruff, strict mypy, pytest, migrations, links, and architecture checks for the M8.4 implementation head.
 
 ## Deferred scope
