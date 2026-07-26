@@ -145,3 +145,4 @@ P1 is complete through its governed exit review and hosted Quality evidence. P1 
 Real provider calls, credential value access, production ingestion jobs, external redistribution/export implementation, runtime provider scheduling, live execution, and real-capital orders remain deferred until later governed milestone intents.
 
 - P1 clarification: provider promotion now preserves an explicit no-cost provider baseline so OSCA can function without requiring user spend when complete free-tier/no-cost evidence is available.
+- No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
