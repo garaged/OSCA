@@ -19,7 +19,7 @@
 - **M10 LLM lifecycle and gateway foundation:** Complete
 - **M11 analytical breadth and portfolio intelligence:** Complete
 - **M12 release readiness and operational resilience:** Complete
-- **P1 provider production promotion evidence gates:** In review
+- **P1 provider production promotion evidence gates:** Complete
 - **Current activity:** P1 provider production promotion evidence gates
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -140,6 +140,6 @@ Real off-device backup transport, active restore execution, external alert deliv
 
 ## P1 completion boundary
 
-P1 is in review. P1 defines provider production evidence bundles, deterministic promotion decisions, and SQLite metadata persistence for Twelve Data and Kraken provider production promotion evidence.
+P1 is complete through its governed exit review and hosted Quality evidence. P1 defines provider production evidence bundles, deterministic promotion decisions, and SQLite metadata persistence for Twelve Data and Kraken provider production promotion evidence.
 
 Real provider calls, credential value access, production ingestion jobs, external redistribution/export implementation, runtime provider scheduling, live execution, and real-capital orders remain deferred until later governed milestone intents.
