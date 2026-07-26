@@ -2,6 +2,7 @@ from osca.provider_promotion.contracts import (
     PromotionFinding,
     PromotionFindingSeverity,
     PromotionOutcome,
+    ProviderCostModel,
     ProviderPermission,
     ProviderProductionEvidenceBundle,
     ProviderPromotionDecision,
@@ -91,3 +92,18 @@ def evaluate_provider_promotion(
 
 def promotion_is_enabled(decision: ProviderPromotionDecision) -> bool:
     return decision.outcome is PromotionOutcome.APPROVE and decision.provider_enabled
+
+
+def provider_supports_no_cost_baseline(
+    evidence: ProviderProductionEvidenceBundle,
+) -> bool:
+    decision = evaluate_provider_promotion(evidence)
+    no_cost_models = {
+        ProviderCostModel.NO_COST,
+        ProviderCostModel.FREE_TIER,
+    }
+    return (
+        evidence.license_evidence.cost_model in no_cost_models
+        and not evidence.license_evidence.payment_required
+        and promotion_is_enabled(decision)
+    )
