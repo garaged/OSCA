@@ -337,3 +337,160 @@ The following entries are accepted authoritative decompositions for M2. Product 
 | REQ-0188 | Adapter fixture validation | Adapter fixtures must preserve provider, endpoint, fixture name, resource identity, source URI, checksum, record count, and disabled network-access state. | P4 intent; ADR-0042 | Data integrity | Provider adapters | P4 | Test | P4-R-005 | Active | Empty or mismatched fixtures fail validation. |
 | REQ-0189 | No live adapter runtime | P4 must not invoke provider APIs, materialize credentials, alter runtime routing, promote providers, or enable production ingestion. | P4 scope; ADR-0042 | Governance/security | Provider adapters | P4 | Inspection | P4-R-001-P4-R-004 | Active | Runtime provider use remains deferred. |
 | REQ-0190 | P4 evidence-based completion | P4 is complete only when requirements, contracts, tests, documentation, traceability, ADR, OpenSpec, and hosted Quality evidence are retained. | Universal exit gate; D-046 | Governance | Cross-cutting | P4 | Traceability audit | P4-R-001-P4-R-005 | Active | Exit review required. |
+
+
+## P5 state reconciliation and operator surface requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0191 | P5 objective | OSCA must deliver the P5 objective documented in the milestone specification before P5 is marked complete. | P5 intent; ADR-0043 | Product behavior | P5 | P5 | Test/inspection | P5-R-001 | Planned | Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI/API commands. |
+| REQ-0192 | P5 user value | P5 must expose operator or user-visible value described by the milestone specification. | P5 specification | Product behavior | P5 | P5 | Manual smoke/test | P5-R-002 | Planned | Maintainers can see exactly what is complete, specified, fixture-backed, deferred, and ready for the next implementation slice. |
+| REQ-0193 | P5 implementation scope | P5 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P5 scope | Governance | P5 | P5 | Traceability audit | P5-R-003 | Planned | Scope is documented in docs/milestones/p5/README.md. |
+| REQ-0194 | P5 deferred boundary | P5 must fail closed or report policy-blocked state for behavior outside approved scope. | P5 scope; ADR-0043 | Security/governance | P5 | P5 | Negative test/inspection | P5-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0195 | P5 validation gates | P5 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P5 | Quality evidence | P5-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0196 | P5 manual review | P5 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P5 | Manual review | P5-R-005 | Planned | Required from M8 onward. |
+| REQ-0197 | P5 exit review | P5 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P5 | Traceability audit | P5-R-001-P5-R-005 | Planned | Exit review required. |
+
+## P6 no-cost local ohlcv import provider requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0198 | P6 objective | OSCA must deliver the P6 objective documented in the milestone specification before P6 is marked complete. | P6 intent; ADR-0043 | Product behavior | P6 | P6 | Test/inspection | P6-R-001 | Planned | Add a governed local file import path for OHLCV history so OSCA can analyze real user-supplied data without paid providers. |
+| REQ-0199 | P6 user value | P6 must expose operator or user-visible value described by the milestone specification. | P6 specification | Product behavior | P6 | P6 | Manual smoke/test | P6-R-002 | Planned | Users can run OSCA locally with their own CSV or Parquet market data and no provider spend. |
+| REQ-0200 | P6 implementation scope | P6 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P6 scope | Governance | P6 | P6 | Traceability audit | P6-R-003 | Planned | Scope is documented in docs/milestones/p6/README.md. |
+| REQ-0201 | P6 deferred boundary | P6 must fail closed or report policy-blocked state for behavior outside approved scope. | P6 scope; ADR-0043 | Security/governance | P6 | P6 | Negative test/inspection | P6-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0202 | P6 validation gates | P6 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P6 | Quality evidence | P6-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0203 | P6 manual review | P6 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P6 | Manual review | P6-R-005 | Planned | Required from M8 onward. |
+| REQ-0204 | P6 exit review | P6 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P6 | Traceability audit | P6-R-001-P6-R-005 | Planned | Exit review required. |
+
+## P7 first demo research workflow requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0205 | P7 objective | OSCA must deliver the P7 objective documented in the milestone specification before P7 is marked complete. | P7 intent; ADR-0043 | Product behavior | P7 | P7 | Test/inspection | P7-R-001 | Planned | Connect imported or bundled data to a narrow analyst workflow that produces a deterministic research report. |
+| REQ-0206 | P7 user value | P7 must expose operator or user-visible value described by the milestone specification. | P7 specification | Product behavior | P7 | P7 | Manual smoke/test | P7-R-002 | Planned | A user can run one command or simple local flow and get useful market observations from OSCA. |
+| REQ-0207 | P7 implementation scope | P7 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P7 scope | Governance | P7 | P7 | Traceability audit | P7-R-003 | Planned | Scope is documented in docs/milestones/p7/README.md. |
+| REQ-0208 | P7 deferred boundary | P7 must fail closed or report policy-blocked state for behavior outside approved scope. | P7 scope; ADR-0043 | Security/governance | P7 | P7 | Negative test/inspection | P7-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0209 | P7 validation gates | P7 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P7 | Quality evidence | P7-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0210 | P7 manual review | P7 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P7 | Manual review | P7-R-005 | Planned | Required from M8 onward. |
+| REQ-0211 | P7 exit review | P7 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P7 | Traceability audit | P7-R-001-P7-R-005 | Planned | Exit review required. |
+
+## P8 backtest-to-paper happy path requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0212 | P8 objective | OSCA must deliver the P8 objective documented in the milestone specification before P8 is marked complete. | P8 intent; ADR-0043 | Product behavior | P8 | P8 | Test/inspection | P8-R-001 | Planned | Make one reproducible strategy travel from local data through backtest evidence into paper-evaluation records. |
+| REQ-0213 | P8 user value | P8 must expose operator or user-visible value described by the milestone specification. | P8 specification | Product behavior | P8 | P8 | Manual smoke/test | P8-R-002 | Planned | Users can compare a strategy hypothesis against historical data and retain paper-evaluation evidence. |
+| REQ-0214 | P8 implementation scope | P8 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P8 scope | Governance | P8 | P8 | Traceability audit | P8-R-003 | Planned | Scope is documented in docs/milestones/p8/README.md. |
+| REQ-0215 | P8 deferred boundary | P8 must fail closed or report policy-blocked state for behavior outside approved scope. | P8 scope; ADR-0043 | Security/governance | P8 | P8 | Negative test/inspection | P8-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0216 | P8 validation gates | P8 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P8 | Quality evidence | P8-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0217 | P8 manual review | P8 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P8 | Manual review | P8-R-005 | Planned | Required from M8 onward. |
+| REQ-0218 | P8 exit review | P8 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P8 | Traceability audit | P8-R-001-P8-R-005 | Planned | Exit review required. |
+
+## P9 sec/fred live preview adapters requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0219 | P9 objective | OSCA must deliver the P9 objective documented in the milestone specification before P9 is marked complete. | P9 intent; ADR-0043 | Product behavior | P9 | P9 | Test/inspection | P9-R-001 | Planned | Implement opt-in live preview adapters for official no-cost SEC EDGAR and FRED enrichment sources behind fail-closed network, fair-use, cache, and credential-reference gates. |
+| REQ-0220 | P9 user value | P9 must expose operator or user-visible value described by the milestone specification. | P9 specification | Product behavior | P9 | P9 | Manual smoke/test | P9-R-002 | Planned | Analysts can enrich local research with official filings and macro series when explicitly enabled. |
+| REQ-0221 | P9 implementation scope | P9 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P9 scope | Governance | P9 | P9 | Traceability audit | P9-R-003 | Planned | Scope is documented in docs/milestones/p9/README.md. |
+| REQ-0222 | P9 deferred boundary | P9 must fail closed or report policy-blocked state for behavior outside approved scope. | P9 scope; ADR-0043 | Security/governance | P9 | P9 | Negative test/inspection | P9-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0223 | P9 validation gates | P9 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P9 | Quality evidence | P9-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0224 | P9 manual review | P9 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P9 | Manual review | P9-R-005 | Planned | Required from M8 onward. |
+| REQ-0225 | P9 exit review | P9 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P9 | Traceability audit | P9-R-001-P9-R-005 | Planned | Exit review required. |
+
+## P10 runtime provider routing requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0226 | P10 objective | OSCA must deliver the P10 objective documented in the milestone specification before P10 is marked complete. | P10 intent; ADR-0043 | Product behavior | P10 | P10 | Test/inspection | P10-R-001 | Planned | Introduce governed runtime routing across local imports, fixtures, and approved enrichment adapters with explicit policy-blocked and stale states. |
+| REQ-0227 | P10 user value | P10 must expose operator or user-visible value described by the milestone specification. | P10 specification | Product behavior | P10 | P10 | Manual smoke/test | P10-R-002 | Planned | Users can request data or enrichment through one product surface and understand which source was used or blocked. |
+| REQ-0228 | P10 implementation scope | P10 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P10 scope | Governance | P10 | P10 | Traceability audit | P10-R-003 | Planned | Scope is documented in docs/milestones/p10/README.md. |
+| REQ-0229 | P10 deferred boundary | P10 must fail closed or report policy-blocked state for behavior outside approved scope. | P10 scope; ADR-0043 | Security/governance | P10 | P10 | Negative test/inspection | P10-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0230 | P10 validation gates | P10 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P10 | Quality evidence | P10-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0231 | P10 manual review | P10 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P10 | Manual review | P10-R-005 | Planned | Required from M8 onward. |
+| REQ-0232 | P10 exit review | P10 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P10 | Traceability audit | P10-R-001-P10-R-005 | Planned | Exit review required. |
+
+## P11 useful analyst workspace requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0233 | P11 objective | OSCA must deliver the P11 objective documented in the milestone specification before P11 is marked complete. | P11 intent; ADR-0043 | Product behavior | P11 | P11 | Test/inspection | P11-R-001 | Planned | Add a focused analyst workspace for projects, datasets, reports, backtests, and enrichment evidence. |
+| REQ-0234 | P11 user value | P11 must expose operator or user-visible value described by the milestone specification. | P11 specification | Product behavior | P11 | P11 | Manual smoke/test | P11-R-002 | Planned | Users can browse and inspect OSCA output without reading raw metadata tables. |
+| REQ-0235 | P11 implementation scope | P11 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P11 scope | Governance | P11 | P11 | Traceability audit | P11-R-003 | Planned | Scope is documented in docs/milestones/p11/README.md. |
+| REQ-0236 | P11 deferred boundary | P11 must fail closed or report policy-blocked state for behavior outside approved scope. | P11 scope; ADR-0043 | Security/governance | P11 | P11 | Negative test/inspection | P11-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0237 | P11 validation gates | P11 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P11 | Quality evidence | P11-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0238 | P11 manual review | P11 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P11 | Manual review | P11-R-005 | Planned | Required from M8 onward. |
+| REQ-0239 | P11 exit review | P11 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P11 | Traceability audit | P11-R-001-P11-R-005 | Planned | Exit review required. |
+
+## P12 ml/llm runtime preview requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0240 | P12 objective | OSCA must deliver the P12 objective documented in the milestone specification before P12 is marked complete. | P12 intent; ADR-0043 | Product behavior | P12 | P12 | Test/inspection | P12-R-001 | Planned | Turn governed ML and LLM lifecycle contracts into opt-in local runtime previews with budgets, provenance, and fail-closed controls. |
+| REQ-0241 | P12 user value | P12 must expose operator or user-visible value described by the milestone specification. | P12 specification | Product behavior | P12 | P12 | Manual smoke/test | P12-R-002 | Planned | Users can experiment with model-assisted analysis while retaining evidence and cost/privacy boundaries. |
+| REQ-0242 | P12 implementation scope | P12 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P12 scope | Governance | P12 | P12 | Traceability audit | P12-R-003 | Planned | Scope is documented in docs/milestones/p12/README.md. |
+| REQ-0243 | P12 deferred boundary | P12 must fail closed or report policy-blocked state for behavior outside approved scope. | P12 scope; ADR-0043 | Security/governance | P12 | P12 | Negative test/inspection | P12-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0244 | P12 validation gates | P12 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P12 | Quality evidence | P12-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0245 | P12 manual review | P12 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P12 | Manual review | P12-R-005 | Planned | Required from M8 onward. |
+| REQ-0246 | P12 exit review | P12 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P12 | Traceability audit | P12-R-001-P12-R-005 | Planned | Exit review required. |
+
+## P13 production provider promotion and ingestion requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0247 | P13 objective | OSCA must deliver the P13 objective documented in the milestone specification before P13 is marked complete. | P13 intent; ADR-0043 | Product behavior | P13 | P13 | Test/inspection | P13-R-001 | Planned | Promote eligible providers through P1 evidence gates and implement production ingestion jobs only for providers with accepted licensing, quota, credential, and redistribution evidence. |
+| REQ-0248 | P13 user value | P13 must expose operator or user-visible value described by the milestone specification. | P13 specification | Product behavior | P13 | P13 | Manual smoke/test | P13-R-002 | Planned | OSCA can ingest governed provider data without relying on fixtures or manual imports. |
+| REQ-0249 | P13 implementation scope | P13 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P13 scope | Governance | P13 | P13 | Traceability audit | P13-R-003 | Planned | Scope is documented in docs/milestones/p13/README.md. |
+| REQ-0250 | P13 deferred boundary | P13 must fail closed or report policy-blocked state for behavior outside approved scope. | P13 scope; ADR-0043 | Security/governance | P13 | P13 | Negative test/inspection | P13-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0251 | P13 validation gates | P13 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P13 | Quality evidence | P13-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0252 | P13 manual review | P13 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P13 | Manual review | P13-R-005 | Planned | Required from M8 onward. |
+| REQ-0253 | P13 exit review | P13 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P13 | Traceability audit | P13-R-001-P13-R-005 | Planned | Exit review required. |
+
+## P14 production operations requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0254 | P14 objective | OSCA must deliver the P14 objective documented in the milestone specification before P14 is marked complete. | P14 intent; ADR-0043 | Product behavior | P14 | P14 | Test/inspection | P14-R-001 | Planned | Make personal-server operation credible with scheduler execution, external alerts, backup transport, restore execution, release packaging, and security hardening. |
+| REQ-0255 | P14 user value | P14 must expose operator or user-visible value described by the milestone specification. | P14 specification | Product behavior | P14 | P14 | Manual smoke/test | P14-R-002 | Planned | A user can operate OSCA as a durable local/personal service rather than a demo script. |
+| REQ-0256 | P14 implementation scope | P14 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P14 scope | Governance | P14 | P14 | Traceability audit | P14-R-003 | Planned | Scope is documented in docs/milestones/p14/README.md. |
+| REQ-0257 | P14 deferred boundary | P14 must fail closed or report policy-blocked state for behavior outside approved scope. | P14 scope; ADR-0043 | Security/governance | P14 | P14 | Negative test/inspection | P14-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0258 | P14 validation gates | P14 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P14 | Quality evidence | P14-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0259 | P14 manual review | P14 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P14 | Manual review | P14-R-005 | Planned | Required from M8 onward. |
+| REQ-0260 | P14 exit review | P14 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P14 | Traceability audit | P14-R-001-P14-R-005 | Planned | Exit review required. |
+
+## P15 runtime extensions and packs requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0261 | P15 objective | OSCA must deliver the P15 objective documented in the milestone specification before P15 is marked complete. | P15 intent; ADR-0043 | Product behavior | P15 | P15 | Test/inspection | P15-R-001 | Planned | Allow trusted provider, analysis, and visualization packs to execute through governed extension lifecycle controls. |
+| REQ-0262 | P15 user value | P15 must expose operator or user-visible value described by the milestone specification. | P15 specification | Product behavior | P15 | P15 | Manual smoke/test | P15-R-002 | Planned | Users can extend OSCA without modifying the core repository. |
+| REQ-0263 | P15 implementation scope | P15 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P15 scope | Governance | P15 | P15 | Traceability audit | P15-R-003 | Planned | Scope is documented in docs/milestones/p15/README.md. |
+| REQ-0264 | P15 deferred boundary | P15 must fail closed or report policy-blocked state for behavior outside approved scope. | P15 scope; ADR-0043 | Security/governance | P15 | P15 | Negative test/inspection | P15-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0265 | P15 validation gates | P15 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P15 | Quality evidence | P15-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0266 | P15 manual review | P15 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P15 | Manual review | P15-R-005 | Planned | Required from M8 onward. |
+| REQ-0267 | P15 exit review | P15 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P15 | Traceability audit | P15-R-001-P15-R-005 | Planned | Exit review required. |
+
+## P16 live-order readiness study requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0268 | P16 objective | OSCA must deliver the P16 objective documented in the milestone specification before P16 is marked complete. | P16 intent; ADR-0043 | Product behavior | P16 | P16 | Test/inspection | P16-R-001 | Planned | Decide whether OSCA should support real-money order execution by producing threat models, controls, and a go/no-go ADR. |
+| REQ-0269 | P16 user value | P16 must expose operator or user-visible value described by the milestone specification. | P16 specification | Product behavior | P16 | P16 | Manual smoke/test | P16-R-002 | Planned | The project avoids drifting into capital execution without explicit product, legal, and security acceptance. |
+| REQ-0270 | P16 implementation scope | P16 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P16 scope | Governance | P16 | P16 | Traceability audit | P16-R-003 | Planned | Scope is documented in docs/milestones/p16/README.md. |
+| REQ-0271 | P16 deferred boundary | P16 must fail closed or report policy-blocked state for behavior outside approved scope. | P16 scope; ADR-0043 | Security/governance | P16 | P16 | Negative test/inspection | P16-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0272 | P16 validation gates | P16 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P16 | Quality evidence | P16-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0273 | P16 manual review | P16 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P16 | Manual review | P16-R-005 | Planned | Required from M8 onward. |
+| REQ-0274 | P16 exit review | P16 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P16 | Traceability audit | P16-R-001-P16-R-005 | Planned | Exit review required. |
+
+## P17 real-money controlled pilot requirements
+
+| ID | Title | Normative statement | Authority | Classification | Scope | Planned milestones | Verification class | Risk links | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0275 | P17 objective | OSCA must deliver the P17 objective documented in the milestone specification before P17 is marked complete. | P17 intent; ADR-0043 | Product behavior | P17 | P17 | Test/inspection | P17-R-001 | Planned | If and only if P16 approves, implement a tiny controlled live-order pilot with hard limits, manual approval, reconciliation, and rollback. |
+| REQ-0276 | P17 user value | P17 must expose operator or user-visible value described by the milestone specification. | P17 specification | Product behavior | P17 | P17 | Manual smoke/test | P17-R-002 | Planned | OSCA can test live execution mechanics under strict safety controls. |
+| REQ-0277 | P17 implementation scope | P17 must implement only the approved in-scope behaviors and retain traceable evidence for each. | P17 scope | Governance | P17 | P17 | Traceability audit | P17-R-003 | Planned | Scope is documented in docs/milestones/p17/README.md. |
+| REQ-0278 | P17 deferred boundary | P17 must fail closed or report policy-blocked state for behavior outside approved scope. | P17 scope; ADR-0043 | Security/governance | P17 | P17 | Negative test/inspection | P17-R-004 | Planned | Deferred behavior must not be silently enabled. |
+| REQ-0279 | P17 validation gates | P17 must pass automated validation, architecture validation, OpenSpec validation, secret scanning, and hosted Quality before completion. | Universal exit gate; D-046 | Quality | Cross-cutting | P17 | Quality evidence | P17-R-005 | Planned | Validation evidence is recorded in exit review. |
+| REQ-0280 | P17 manual review | P17 must update or explicitly reaffirm manual testing and usage guidance when visible behavior changes. | Manual testing governance | Quality/documentation | Cross-cutting | P17 | Manual review | P17-R-005 | Planned | Required from M8 onward. |
+| REQ-0281 | P17 exit review | P17 is complete only when implemented, specified-only, fixture-backed, and deferred behavior are recorded in exit review. | ADR-0043; traceability policy | Governance | Cross-cutting | P17 | Traceability audit | P17-R-001-P17-R-005 | Planned | Exit review required. |
