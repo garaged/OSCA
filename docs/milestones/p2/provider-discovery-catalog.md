@@ -1,6 +1,6 @@
 # P2 Provider Discovery Catalog - No-Cost Candidates
 
-- **Status:** In review
+- **Status:** Complete
 - **Milestone:** P2
 - **Purpose:** Identify no-cost provider candidates and exclusions before implementation.
 - **Review rule:** Discovery notes are not production promotion evidence. Later implementation or promotion work must revalidate exact account-plan, terms, quota, credential, retention, backup, and redistribution evidence under P1 gates.
