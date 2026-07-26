@@ -23,7 +23,7 @@
 - **P2 no-cost provider discovery baseline:** Complete
 - **P3 no-cost provider profile catalog:** Complete
 - **P4 no-cost provider adapter contracts:** Complete
-- **Current activity:** P4 no-cost provider adapter contracts
+- **Current activity:** P5 state reconciliation and operator surface planning
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -173,3 +173,14 @@ P3 is complete through its governed exit review and hosted Quality evidence. It 
 P4 is complete through its governed exit review and hosted Quality evidence. It defines fixture-backed adapter contracts for SEC EDGAR and FRED. Live provider calls, credential materialization, runtime routing, production promotion, and production ingestion remain deferred until later governed milestone intents.
 
 - P4 Quality: `30191624710` at `fef440b...`.
+
+
+## Planned P5-P17 implementation sequence
+
+The remaining P milestone sequence is planned in [Remaining P Milestone Roadmap](docs/milestones/remaining-p-roadmap.md). P5 is the required next implementation milestone because it reviews M0-M12 and P1-P4 for documentation and implementation drift before the next functional work begins.
+
+- **P5:** State reconciliation and operator surface.
+- **P6-P7:** Minimum usable local/demo tool through local OHLCV import and first demo research workflow.
+- **P8-P12:** Useful analyst workflow through backtest-to-paper, official enrichment preview, routing, workspace, and optional ML/LLM preview.
+- **P13-P15:** Production-capable version through promoted provider ingestion, production operations, and runtime extensions.
+- **P16-P17:** Real-money readiness only if explicitly approved through a go/no-go study and controlled pilot gates.

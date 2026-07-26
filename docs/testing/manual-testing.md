@@ -152,3 +152,20 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Review FRED constraints | FRED requires a named API-key reference and does not store credential values. |
 | Review request and fixture validation | Mismatched providers, unsupported endpoints, invalid checksums, and empty fixtures fail closed. |
 | Review runtime boundary | P4 does not invoke provider APIs, materialize credentials, change routing, promote providers, or enable production ingestion. |
+
+
+## P5 Reconciliation Manual Review
+
+| Check | Expected result |
+|---|---|
+| Review M0-M12 and P1-P4 status | Completed milestones distinguish implemented, specified-only, fixture-backed, and deferred behavior without stale current-activity claims. |
+| Review provider governance surfaces | Provider promotion, no-cost provider catalog, and adapter-contract state can be inspected through supported operator paths after P5 implementation. |
+| Review deferred boundaries | Live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders remain disabled or policy-blocked. |
+| Review P6 readiness | The next implementation milestone can start from clean requirements, traceability, status, ADR navigation, and manual-testing guidance. |
+
+## Remaining P Planning Manual Review
+
+| Check | Expected result |
+|---|---|
+| Review P5-P17 sequence | P5 precedes P6; local/imported OHLCV precedes live provider work; real-money work is gated behind P16 approval. |
+| Review phase separation | Minimum demo, analyst workflow, production-capable, and real-money readiness milestones are visibly separated. |
