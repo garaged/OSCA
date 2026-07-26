@@ -77,7 +77,10 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
                     blocks_default_automation=True,
                 ),
             ),
-            notes="Potential low-volume equity fallback after exact endpoint, quota, and terms evidence.",
+            notes=(
+                "Potential low-volume equity fallback after exact endpoint, quota, "
+                "and terms evidence."
+            ),
         ),
         ProviderCatalogProfile(
             provider_id=ProviderCatalogIdentifier.NASDAQ_DATA_LINK,
@@ -95,11 +98,17 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
             constraints=(
                 ProviderCatalogConstraint(
                     constraint_id="dataset-specific-terms-required",
-                    description="Each dataset must be gated by its own license and redistribution evidence.",
+                    description=(
+                        "Each dataset must be gated by its own license and "
+                        "redistribution evidence."
+                    ),
                     blocks_default_automation=True,
                 ),
             ),
-            notes="Dataset-specific source; useful only after named dataset terms are accepted.",
+            notes=(
+                "Dataset-specific source; useful only after named dataset terms "
+                "are accepted."
+            ),
         ),
         ProviderCatalogProfile(
             provider_id=ProviderCatalogIdentifier.STOOQ,
@@ -113,7 +122,10 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
             constraints=(
                 ProviderCatalogConstraint(
                     constraint_id="automation-terms-unclear",
-                    description="Automation, stability, and redistribution terms are not clear enough.",
+                    description=(
+                        "Automation, stability, and redistribution terms are not "
+                        "clear enough."
+                    ),
                     blocks_default_automation=True,
                 ),
             ),
@@ -127,11 +139,16 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
             access_mode=ProviderCatalogAccessMode.UNOFFICIAL,
             capabilities=(ProviderCatalogCapability.OHLCV,),
             disposition=ProviderCatalogDisposition.EXCLUDED,
-            source_uris=("https://legal.yahoo.com/us/en/yahoo/terms/product-atos/apiforydn/index.html",),
+            source_uris=(
+                "https://legal.yahoo.com/us/en/yahoo/terms/product-atos/apiforydn/index.html",
+            ),
             constraints=(
                 ProviderCatalogConstraint(
                     constraint_id="official-finance-api-not-evidenced",
-                    description="No compliant official public Yahoo Finance market-data API path is evidenced.",
+                    description=(
+                        "No compliant official public Yahoo Finance market-data "
+                        "API path is evidenced."
+                    ),
                     blocks_default_automation=True,
                 ),
             ),
