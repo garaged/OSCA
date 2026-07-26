@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: m9-complete
+  status: p5-planning-ready
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:
