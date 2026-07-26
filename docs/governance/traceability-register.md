@@ -137,3 +137,10 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0168-REQ-0176 | P2 intent; ADR-0040; REQ-0167; D-040, D-046 | [P2 intent](../milestones/p2/intent.md) | [P2 no-cost provider discovery](../specifications/p2-no-cost-provider-discovery.md) | [P2 acceptance](../milestones/p2/acceptance.md) | [P2 evidence plan](../milestones/p2/evidence-plan.md) | [Provider discovery catalog](../milestones/p2/provider-discovery-catalog.md), [Manual testing and usage](../testing/manual-testing.md) | ADR-0040 | Verified |
+
+
+## P3 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Code | Tests | Documentation | ADRs | Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0177-REQ-0183 | P3 intent; ADR-0041; P2 catalog; REQ-0168-REQ-0176 | [P3 intent](../milestones/p3/intent.md) | [P3 no-cost provider profile catalog](../specifications/p3-no-cost-provider-profile-catalog.md) | [P3 acceptance](../milestones/p3/acceptance.md) | [P3 evidence plan](../milestones/p3/evidence-plan.md) | src/osca/provider_catalog/contracts.py; src/osca/provider_catalog/services.py | tests/test_provider_catalog.py | [Manual testing and usage](../testing/manual-testing.md) | ADR-0041 | In review |
