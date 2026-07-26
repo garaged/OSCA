@@ -297,7 +297,6 @@ def provider_adapter_validate_fixture(
     typer.echo(decision.model_dump_json(indent=2))
 
 
-
 @app.command("local-ohlcv-import")
 def local_ohlcv_import(
     input_file: Path,
