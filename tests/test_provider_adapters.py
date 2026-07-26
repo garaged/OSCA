@@ -56,7 +56,9 @@ def test_fred_adapter_contract_requires_named_api_key_reference() -> None:
     )
 
     assert fred_contract is not None
-    assert fred_contract.endpoints == (ProviderAdapterEndpoint.FRED_SERIES_OBSERVATIONS,)
+    assert fred_contract.endpoints == (
+        ProviderAdapterEndpoint.FRED_SERIES_OBSERVATIONS,
+    )
     assert "API-key" in fred_contract.rate_limit_policy
 
 
