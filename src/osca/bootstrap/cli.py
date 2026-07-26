@@ -303,13 +303,16 @@ def local_ohlcv_import(
     input_file: Path,
     symbol: str,
     timeframe: LocalOHLCVTimeframe,
-    storage_root: Annotated[Path, typer.Option("--storage-root")] = Path("osca-local-data"),
+    storage_root: Annotated[
+        Path,
+        typer.Option("--storage-root"),
+    ] = Path("osca-local-data"),
     input_format: Annotated[str | None, typer.Option("--input-format")] = None,
     calendar_assumption: Annotated[str, typer.Option("--calendar-assumption")] = "source-provided",
 ) -> None:
     """Import user-supplied local OHLCV CSV or Parquet data."""
 
-    parsed_format = None
+    parsed_format: LocalOHLCVImportFormat | None = None
     if input_format is not None:
         try:
             parsed_format = LocalOHLCVImportFormat(input_format)
