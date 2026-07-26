@@ -21,6 +21,19 @@ from osca.configuration.application import validate_configuration
 from osca.extensions.api import ExtensionManifest
 from osca.extensions.application import create_installation_record, decide_activation
 from osca.extensions.persistence import SQLiteExtensionLifecycleStore
+from osca.provider_adapters import (
+    ProviderAdapterEndpoint,
+    ProviderAdapterFixture,
+    build_default_preferred_no_cost_adapter_contracts,
+    provider_adapter_contract_by_id,
+    validate_adapter_fixture_for_contract,
+)
+from osca.provider_catalog import (
+    ProviderCatalogIdentifier,
+    build_default_no_cost_provider_profiles,
+    classify_provider_implementation_readiness,
+)
+from osca.provider_promotion import ProviderIdentifier
 from osca.recovery.api import CreateBackup, ExecuteRestore, PreviewRestore, VerifyBackup
 from osca.security.api import SecretReference
 from osca.shared_kernel.api import CorrelationId
@@ -183,6 +196,102 @@ def backtest_list(
     typer.echo(json.dumps([record.model_dump(mode="json") for record in records], indent=2))
 
 
+
+@app.command("provider-catalog-list")
+def provider_catalog_list(
+    include_readiness: Annotated[
+        bool,
+        typer.Option("--include-readiness", help="Include deterministic implementation readiness."),
+    ] = False,
+) -> None:
+    """List governed no-cost provider catalog profiles."""
+
+    profiles = build_default_no_cost_provider_profiles()
+    if include_readiness:
+        payload = [
+            {
+                "profile": profile.model_dump(mode="json"),
+                "implementation_readiness": classify_provider_implementation_readiness(
+                    profile
+                ).model_dump(mode="json"),
+            }
+            for profile in profiles
+        ]
+    else:
+        payload = [profile.model_dump(mode="json") for profile in profiles]
+    typer.echo(json.dumps(payload, indent=2))
+
+
+@app.command("provider-promotion-status")
+def provider_promotion_status() -> None:
+    """Report production-provider promotion candidates and deferred runtime boundaries."""
+
+    payload = {
+        "providers": [
+            {
+                "provider_id": provider_id.value,
+                "production_promotion_required": True,
+                "provider_enabled": False,
+                "evidence_required": [
+                    "license",
+                    "credential_reference",
+                    "quota",
+                    "retention_policy",
+                    "export_policy",
+                    "backup_policy",
+                ],
+            }
+            for provider_id in ProviderIdentifier
+        ],
+        "deferred_boundaries": _provider_deferred_boundaries(),
+    }
+    typer.echo(json.dumps(payload, indent=2))
+
+
+@app.command("provider-adapter-contracts")
+def provider_adapter_contracts() -> None:
+    """List fixture-backed preferred no-cost provider adapter contracts."""
+
+    profiles = build_default_no_cost_provider_profiles()
+    contracts = build_default_preferred_no_cost_adapter_contracts(profiles)
+    payload = {
+        "contracts": [contract.model_dump(mode="json") for contract in contracts],
+        "deferred_boundaries": _provider_deferred_boundaries(),
+    }
+    typer.echo(json.dumps(payload, indent=2))
+
+
+@app.command("provider-adapter-validate-fixture")
+def provider_adapter_validate_fixture(
+    provider_id: ProviderCatalogIdentifier,
+    endpoint: ProviderAdapterEndpoint,
+    fixture_name: str,
+    resource_id: str,
+    payload_sha256: str,
+    record_count: int,
+    source_uri: Annotated[str, typer.Option("--source-uri")] = "fixture://operator",
+) -> None:
+    """Validate fixture metadata against the governed adapter contract."""
+
+    profiles = build_default_no_cost_provider_profiles()
+    contracts = build_default_preferred_no_cost_adapter_contracts(profiles)
+    contract = provider_adapter_contract_by_id(contracts, provider_id)
+    if contract is None:
+        raise typer.BadParameter(f"provider has no P4 adapter contract: {provider_id.value}")
+
+    fixture = ProviderAdapterFixture(
+        provider_id=provider_id,
+        endpoint=endpoint,
+        fixture_name=fixture_name,
+        resource_id=resource_id,
+        payload_sha256=payload_sha256,
+        source_uri=source_uri,
+        record_count=record_count,
+    )
+    decision = validate_adapter_fixture_for_contract(contract, fixture)
+    typer.echo(decision.model_dump_json(indent=2))
+
+
 @app.command("backup-create")
 def backup_create(destination: Path, recipient: str) -> None:
     """Create an encrypted age v1 backup of governed M1 state."""
@@ -265,6 +374,16 @@ def restore_isolated(package: Path, destination: Path, identity_name: str) -> No
             )
         )
     typer.echo(record.model_dump_json(indent=2))
+
+
+def _provider_deferred_boundaries() -> dict[str, bool]:
+    return {
+        "live_provider_calls_enabled": False,
+        "credential_materialization_enabled": False,
+        "runtime_provider_routing_enabled": False,
+        "production_ingestion_enabled": False,
+        "real_capital_orders_enabled": False,
+    }
 
 
 def _load_backtest_request(request_file: Path) -> BacktestRequest:
