@@ -169,3 +169,13 @@ Use this document as the durable baseline for future milestones. When M9 or late
 |---|---|
 | Review P5-P17 sequence | P5 precedes P6; local/imported OHLCV precedes live provider work; real-money work is gated behind P16 approval. |
 | Review phase separation | Minimum demo, analyst workflow, production-capable, and real-money readiness milestones are visibly separated. |
+
+## P6 Local OHLCV Import Smoke Checklist
+
+| Check | Expected result |
+|---|---|
+| Import sample CSV | `osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p6-smoke` writes SQLite metadata and a Parquet payload. |
+| Inspect import output | Output includes dataset revision identity, symbol, timeframe, row count, source checksum, payload URI, metadata URI, and disabled network access. |
+| Missing column failure | A CSV missing one of `timestamp`, `open`, `high`, `low`, `close`, or `volume` fails closed with a validation error. |
+| Timestamp failure | Duplicate or non-increasing timestamps fail closed and are not accepted as a dataset revision. |
+| Deferred boundaries | Import output still reports live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders as disabled. |
