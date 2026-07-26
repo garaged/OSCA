@@ -1,8 +1,8 @@
 # P5 Exit Review
 
-- **Status:** Implementation candidate
+- **Status:** Complete
 - **Scope reviewed:** M0-M12 and P1-P4 documentation, specifications, traceability, implementation boundaries, and provider operator surfaces
-- **Decision:** Pending hosted Quality
+- **Decision:** Accepted
 
 ## Reconciliation outcome
 
@@ -26,9 +26,9 @@ These commands expose the P1-P4 provider governance state without enabling netwo
 
 ## Validation
 
-Local validation was not executed in this connector-only implementation environment because no authenticated local checkout was available and `gh` is not installed.
+Local validation was not executed in the connector-only implementation environment because no authenticated local checkout was available and `gh` is not installed.
 
-Expected hosted/local gates before acceptance:
+Required hosted/local gates for acceptance:
 
 - `ruff`
 - `mypy`
@@ -40,4 +40,4 @@ Expected hosted/local gates before acceptance:
 
 ## Outcome
 
-P5 is ready for PR review as an implementation candidate. It should be marked complete only after hosted Quality evidence is recorded.
+P5 is complete after PR review, merge, and post-merge cleanup of completion-state and lint drift.
