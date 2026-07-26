@@ -4,6 +4,7 @@ from osca.provider_promotion import (
     PromotionOutcome,
     ProviderAssetClass,
     ProviderCapabilityScope,
+    ProviderCostModel,
     ProviderCredentialEvidence,
     ProviderIdentifier,
     ProviderLicenseEvidence,
@@ -26,7 +27,9 @@ def _evidence(provider_id: ProviderIdentifier) -> ProviderProductionEvidenceBund
         ),
         license_evidence=ProviderLicenseEvidence(
             provider_id=provider_id,
-            account_plan_id="paid-plan",
+            account_plan_id="free-tier-plan",
+            cost_model=ProviderCostModel.FREE_TIER,
+            payment_required=False,
             terms_reference_uri="https://provider.example/terms",
             allowed_permissions=(
                 ProviderPermission.RETRIEVAL,
