@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 import sqlite3
 from collections.abc import Iterable, Mapping
 from datetime import datetime
@@ -115,7 +116,16 @@ def _read_csv_rows(input_path: Path) -> tuple[Mapping[str, Any], ...]:
 def _read_parquet_rows(input_path: Path) -> tuple[Mapping[str, Any], ...]:
     table = pq.read_table(input_path)
     _require_columns(table.column_names)
-    return tuple(row for row in table.to_pylist())
+    raw_rows: Any = table.to_pylist()
+    if not isinstance(raw_rows, list):
+        raise ValueError("local OHLCV parquet input did not produce row records")
+    return tuple(_ensure_mapping(row) for row in raw_rows)
+
+
+def _ensure_mapping(row: Any) -> Mapping[str, Any]:
+    if not isinstance(row, dict):
+        raise ValueError("local OHLCV parquet rows must be key-value records")
+    return row
 
 
 def _require_columns(columns: Iterable[str] | None) -> None:
@@ -154,7 +164,7 @@ def _parse_float(value: Any) -> float:
     if value is None:
         raise ValueError("numeric OHLCV values must be present")
     parsed = float(value)
-    if parsed != parsed or parsed in {float("inf"), float("-inf")}:
+    if not math.isfinite(parsed):
         raise ValueError("numeric OHLCV values must be finite")
     return parsed
 
