@@ -1,16 +1,17 @@
 # P5 - State Reconciliation and Operator Surface
 
-- **Status:** Planned
+- **Status:** Implementation candidate
 - **Governing role:** Product authority
 - **Phase:** Minimum usable local/demo tool
 - **Authoritative outcome:** Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI/API commands.
 - **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
 - **Last reviewed:** 2026-07-26
-- **Validation:** Planned
+- **Validation:** Pending hosted Quality
 
 ## Current artifacts
 
 - [Milestone plan](README.md)
+- [Exit review](exit-review.md)
 - [Specification](../../specifications/p5-state-reconciliation-operator-surface.md)
 - [Accepted OpenSpec specification](../../../openspec/specs/p5-state-reconciliation-operator-surface/spec.md)
 
@@ -26,7 +27,7 @@ Maintainers can see exactly what is complete, specified, fixture-backed, deferre
 
 - Review M0-M12 and P1-P4 docs, specs, ADRs, traceability, manual tests, and source layout for drift or partial implementation claims.
 - Fix stale status, navigation, architecture registry, ADR index, traceability, and manual-testing references found during review.
-- Add CLI/API inspection paths for provider production evidence gates, no-cost provider profiles, adapter contracts, and fixture-validation outcomes.
+- Add CLI inspection paths for provider production evidence gates, no-cost provider profiles, adapter contracts, and fixture-validation outcomes.
 - Add tests proving operator surfaces report deferred live-provider, runtime-routing, credential, production-ingestion, and real-capital boundaries.
 
 ## Explicit non-scope
@@ -58,3 +59,15 @@ P1-P4 provider governance and completed M0-M12 roadmap.
 ## Risks and decisions
 
 Review may uncover implementation drift that requires small corrective patches before operator surfaces are trustworthy.
+
+
+## P5 reconciliation findings
+
+P5 implementation review found the M0-M12 and P1-P4 foundation consistent with the current product boundary: most milestone behavior is contract, metadata, validation, and persistence oriented; P1-P4 provider work remains governed and fixture-backed; and live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders remain deferred.
+
+Corrective actions in this implementation candidate:
+
+- Adds supported CLI inspection commands for provider promotion status, no-cost provider profiles, adapter contracts, and fixture validation.
+- Records deferred runtime boundaries directly in operator output.
+- Adds automated CLI smoke tests for provider readiness, adapter contracts, fixture validation, and promotion-disabled status.
+- Adds P5 exit-review evidence pending hosted Quality.
