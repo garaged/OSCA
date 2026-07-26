@@ -22,7 +22,7 @@ Maintainers can see exactly what is complete, specified, fixture-backed, deferre
 
 - Review M0-M12 and P1-P4 docs, specs, ADRs, traceability, manual tests, and source layout for drift or partial implementation claims.
 - Fix stale status, navigation, architecture registry, ADR index, traceability, and manual-testing references found during review.
-- Add CLI/API inspection paths for provider production evidence gates, no-cost provider profiles, adapter contracts, and fixture-validation outcomes.
+- Add CLI inspection paths for provider production evidence gates, no-cost provider profiles, adapter contracts, and fixture-validation outcomes.
 - Add tests proving operator surfaces report deferred live-provider, runtime-routing, credential, production-ingestion, and real-capital boundaries.
 
 ## Explicit non-scope
@@ -47,3 +47,15 @@ P1-P4 provider governance and completed M0-M12 roadmap.
 ## Risks and decisions
 
 Review may uncover implementation drift that requires small corrective patches before operator surfaces are trustworthy.
+
+
+## Operator commands
+
+P5 exposes the existing P1-P4 provider governance state through these CLI commands:
+
+| Command | Purpose | Boundary |
+|---|---|---|
+| `provider-catalog-list --include-readiness` | Lists no-cost provider profiles and deterministic implementation readiness. | Does not implement provider adapters or invoke providers. |
+| `provider-promotion-status` | Lists production promotion candidates and required evidence classes. | Keeps provider enablement false without accepted evidence. |
+| `provider-adapter-contracts` | Lists fixture-backed SEC EDGAR and FRED adapter contracts. | Keeps network access disabled. |
+| `provider-adapter-validate-fixture` | Validates fixture metadata against adapter contracts. | Validates metadata only; does not fetch live data. |
