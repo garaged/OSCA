@@ -10,3 +10,4 @@
 - **Deferred scope:** Real provider calls, credential materialization, production ingestion jobs, external redistribution, runtime provider scheduling, live trading, and real-capital orders
 
 - Added explicit no-cost/free-tier provider baseline coverage after product-authority clarification.
+- No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
