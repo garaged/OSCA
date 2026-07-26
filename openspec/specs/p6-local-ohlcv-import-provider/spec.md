@@ -32,3 +32,26 @@ P6 SHALL retain requirements, traceability, OpenSpec, manual-testing review, aut
 - **GIVEN** P6 implementation work
 - **WHEN** completion is evaluated
 - **THEN** exit review evidence must identify implemented, specified-only, fixture-backed, and deferred behavior.
+
+### Requirement: Local OHLCV canonical import
+
+P6 SHALL import user-supplied CSV and Parquet OHLCV files using the canonical timestamp, open, high, low, close, and volume schema.
+
+#### Scenario: Valid local CSV is imported
+- **GIVEN** a local CSV file with timezone-aware strictly increasing OHLCV rows
+- **WHEN** the operator runs the local OHLCV import command
+- **THEN** OSCA writes a Parquet payload, SQLite metadata, source checksum, row count, timestamp range, and dataset revision identity without using network access.
+
+#### Scenario: Invalid local file is rejected
+- **GIVEN** a local OHLCV file with missing columns or non-increasing timestamps
+- **WHEN** import validation runs
+- **THEN** OSCA fails closed and does not treat the file as an accepted dataset revision.
+
+### Requirement: P6 local-only boundary
+
+P6 SHALL keep live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders disabled.
+
+#### Scenario: Import result reports deferred boundaries
+- **GIVEN** a successful local OHLCV import
+- **WHEN** the import result is inspected
+- **THEN** the result reports network access disabled and preserves the deferred-boundary flags.
