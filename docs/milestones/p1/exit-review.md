@@ -10,3 +10,4 @@
 - **Residual deferred scope:** Real Twelve Data or Kraken calls, credential value access, production ingestion jobs, external redistribution/export implementation, runtime provider scheduling, live execution, and real-capital orders.
 
 - Product clarification: P1 now explicitly preserves a no-cost provider baseline through account-plan cost evidence and no-cost eligibility tests.
+- No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
