@@ -3,8 +3,8 @@ from osca.provider_promotion.contracts import (
     PromotionFindingSeverity,
     PromotionOutcome,
     ProviderPermission,
-    ProviderProductionEvidenceBundle,
     ProviderPromotionDecision,
+    ProviderProductionEvidenceBundle,
 )
 
 
