@@ -132,3 +132,12 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Capability fit | Inspect provider capability fit and non-fit. | Macro/fundamental/event sources are not treated as OHLCV substitutes. |
 | Uncertainty disposition | Inspect Stooq and Yahoo Finance entries. | Unclear automation/licensing stays research-only or excluded. |
 | Implementation sequence | Review the recommended sequence. | Future work starts with official and policy-clear sources, then returns to P1 gates before promotion. |
+
+
+## P3 Provider Catalog Manual Review
+
+| Check | Expected result |
+|---|---|
+| Review default provider profiles | SEC EDGAR and FRED are preferred; Alpha Vantage and Nasdaq Data Link are conditional; Stooq is research-only; Yahoo Finance unofficial paths are excluded. |
+| Review readiness classification | Preferred candidates are ready for adapter-contract planning, conditional candidates need evidence, and research-only/excluded providers are blocked from default automation. |
+| Review runtime boundary | P3 does not implement adapters, invoke provider APIs, materialize credentials, change routing, or promote providers. |
