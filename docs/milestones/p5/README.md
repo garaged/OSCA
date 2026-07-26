@@ -1,12 +1,12 @@
 # P5 - State Reconciliation and Operator Surface
 
-- **Status:** Implementation candidate
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Phase:** Minimum usable local/demo tool
 - **Authoritative outcome:** Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI commands.
 - **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
 - **Last reviewed:** 2026-07-26
-- **Validation:** Pending hosted Quality
+- **Validation:** Accepted
 
 ## Current artifacts
 
@@ -44,7 +44,7 @@ Maintainers can see exactly what is complete, specified, fixture-backed, deferre
 - The implementation proves the stated scope with automated tests where code changes are made.
 - Manual testing and usage is updated when operator-visible behavior changes.
 - Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
+- Hosted Quality and post-merge cleanup findings are resolved before completion is marked.
 
 ## Validation gates
 
@@ -65,9 +65,9 @@ Review may uncover implementation drift that requires small corrective patches b
 
 P5 implementation review found the M0-M12 and P1-P4 foundation consistent with the current product boundary: most milestone behavior is contract, metadata, validation, and persistence oriented; P1-P4 provider work remains governed and fixture-backed; and live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders remain deferred.
 
-Corrective actions in this implementation candidate:
+Corrective actions in P5:
 
 - Adds supported CLI inspection commands for provider promotion status, no-cost provider profiles, adapter contracts, and fixture validation.
 - Records deferred runtime boundaries directly in operator output.
 - Adds automated CLI smoke tests for provider readiness, adapter contracts, fixture validation, and promotion-disabled status.
-- Adds P5 exit-review evidence pending hosted Quality.
+- Adds P5 exit-review evidence.
