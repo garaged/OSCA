@@ -136,4 +136,4 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0168-REQ-0176 | P2 intent; ADR-0040; REQ-0167; D-040, D-046 | [P2 intent](../milestones/p2/intent.md) | [P2 no-cost provider discovery](../specifications/p2-no-cost-provider-discovery.md) | [P2 acceptance](../milestones/p2/acceptance.md) | [P2 evidence plan](../milestones/p2/evidence-plan.md) | [Provider discovery catalog](../milestones/p2/provider-discovery-catalog.md), [Manual testing and usage](../testing/manual-testing.md) | ADR-0040 | In review |
+| REQ-0168-REQ-0176 | P2 intent; ADR-0040; REQ-0167; D-040, D-046 | [P2 intent](../milestones/p2/intent.md) | [P2 no-cost provider discovery](../specifications/p2-no-cost-provider-discovery.md) | [P2 acceptance](../milestones/p2/acceptance.md) | [P2 evidence plan](../milestones/p2/evidence-plan.md) | [Provider discovery catalog](../milestones/p2/provider-discovery-catalog.md), [Manual testing and usage](../testing/manual-testing.md) | ADR-0040 | Verified |
