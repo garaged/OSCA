@@ -144,3 +144,13 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Code | Tests | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
 | REQ-0177-REQ-0183 | P3 intent; ADR-0041; P2 catalog; REQ-0168-REQ-0176 | [P3 intent](../milestones/p3/intent.md) | [P3 no-cost provider profile catalog](../specifications/p3-no-cost-provider-profile-catalog.md) | [P3 acceptance](../milestones/p3/acceptance.md) | [P3 evidence plan](../milestones/p3/evidence-plan.md) | src/osca/provider_catalog/contracts.py; src/osca/provider_catalog/services.py | tests/test_provider_catalog.py | [Manual testing and usage](../testing/manual-testing.md) | ADR-0041 | Verified |
+
+
+## P4 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Code | Tests | Documentation | ADRs | Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-0184-REQ-0190 | P4 intent; ADR-0042; P3 provider catalog; REQ-0177-REQ-0183 | [P4 intent](../milestones/p4/intent.md) | [P4 no-cost provider adapter contracts](../specifications/p4-no-cost-provider-adapter-contracts.md) | [P4 acceptance](../milestones/p4/acceptance.md) | [P4 evidence plan](../milestones/p4/evidence-plan.md) | src/osca/provider_adapters/contracts.py; src/osca/provider_adapters/services.py | tests/test_provider_adapters.py | [Manual testing and usage](../testing/manual-testing.md) | ADR-0042 | Verified |
+
+
+- P4 Quality: `30191624710` at `fef440b...`.

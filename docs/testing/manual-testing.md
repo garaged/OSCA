@@ -141,3 +141,14 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Review default provider profiles | SEC EDGAR and FRED are preferred; Alpha Vantage and Nasdaq Data Link are conditional; Stooq is research-only; Yahoo Finance unofficial paths are excluded. |
 | Review readiness classification | Preferred candidates are ready for adapter-contract planning, conditional candidates need evidence, and research-only/excluded providers are blocked from default automation. |
 | Review runtime boundary | P3 does not implement adapters, invoke provider APIs, materialize credentials, change routing, or promote providers. |
+
+
+## P4 Provider Adapter Contract Manual Review
+
+| Check | Expected result |
+|---|---|
+| Review default adapter contracts | Only SEC EDGAR and FRED have fixture-backed adapter contracts. |
+| Review SEC EDGAR constraints | SEC EDGAR requires declared user-agent and fair-access policy while using public no-key access. |
+| Review FRED constraints | FRED requires a named API-key reference and does not store credential values. |
+| Review request and fixture validation | Mismatched providers, unsupported endpoints, invalid checksums, and empty fixtures fail closed. |
+| Review runtime boundary | P4 does not invoke provider APIs, materialize credentials, change routing, promote providers, or enable production ingestion. |

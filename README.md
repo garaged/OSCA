@@ -2,7 +2,7 @@
 
 OSCA is a modular market-intelligence and quantitative-research platform for stocks and cryptocurrencies.
 
-The M0 architecture foundation, M0.x operational controls, M1 secure walking skeleton, M2 governed daily-data vertical slice, M3 multi-timeframe temporal correctness, M4 research projects analytics foundation, M5 independent extension packaging foundation, M6 backtesting and strategy validation foundation, M7 F2 event-driven validation foundation, M8 F3 paper evaluation and automation foundation, M9 governed ML lifecycle foundation, M10 LLM lifecycle and gateway foundation, M11 analytical breadth and portfolio intelligence foundation, M12 release readiness and operational resilience foundation, P1 provider production promotion evidence gates, P2 no-cost provider discovery baseline, and P3 no-cost provider profile catalog are authoritative. The initial M0-M12 roadmap is complete; P1 starts the governed post-roadmap sequence, P2 expands the no-cost provider selection baseline, and P3 makes provider profile selection deterministic.
+The M0 architecture foundation, M0.x operational controls, M1 secure walking skeleton, M2 governed daily-data vertical slice, M3 multi-timeframe temporal correctness, M4 research projects analytics foundation, M5 independent extension packaging foundation, M6 backtesting and strategy validation foundation, M7 F2 event-driven validation foundation, M8 F3 paper evaluation and automation foundation, M9 governed ML lifecycle foundation, M10 LLM lifecycle and gateway foundation, M11 analytical breadth and portfolio intelligence foundation, M12 release readiness and operational resilience foundation, P1 provider production promotion evidence gates, P2 no-cost provider discovery baseline, and P3 no-cost provider profile catalog are authoritative. The initial M0-M12 roadmap is complete; P1 starts the governed post-roadmap sequence, P2 expands the no-cost provider selection baseline, P3 makes provider profile selection deterministic, and P4 defines fixture-backed adapter contracts for the preferred no-cost providers.
 
 ## Start here
 
@@ -31,6 +31,7 @@ The M0 architecture foundation, M0.x operational controls, M1 secure walking ske
 23. [P1 milestone](docs/milestones/p1/README.md)
 24. [P2 milestone](docs/milestones/p2/README.md)
 25. [P3 milestone](docs/milestones/p3/README.md)
+26. [P4 milestone](docs/milestones/p4/README.md)
 
 ## Governing baseline
 
