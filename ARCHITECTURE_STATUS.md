@@ -21,7 +21,7 @@
 - **M12 release readiness and operational resilience:** Complete
 - **P1 provider production promotion evidence gates:** Complete
 - **P2 no-cost provider discovery baseline:** Complete
-- **P3 no-cost provider profile catalog:** In review
+- **P3 no-cost provider profile catalog:** Complete
 - **Current activity:** P3 no-cost provider profile catalog
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -159,6 +159,8 @@ P2 is complete through its governed exit review and hosted Quality evidence. P2 
 - P2 Quality: `30184477700` at `0e13f84...`.
 
 
-## P3 in-review boundary
+## P3 completion boundary
 
-P3 is in review for deterministic no-cost provider profile catalog contracts. It adds executable profile selection and implementation-readiness classification while keeping provider adapters, provider API calls, credential materialization, runtime routing, production promotion, and external redistribution/export enablement deferred until later governed milestone intents.
+P3 is complete through its governed exit review and hosted Quality evidence. It adds executable no-cost provider profile selection and implementation-readiness classification while keeping provider adapters, provider API calls, credential materialization, runtime routing, production promotion, and external redistribution/export enablement deferred until later governed milestone intents.
+
+- P3 Quality: 30186073205 at 31d0d11....
