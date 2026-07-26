@@ -20,7 +20,7 @@
 - **M11 analytical breadth and portfolio intelligence:** Complete
 - **M12 release readiness and operational resilience:** Complete
 - **P1 provider production promotion evidence gates:** Complete
-- **P2 no-cost provider discovery baseline:** In review
+- **P2 no-cost provider discovery baseline:** Complete
 - **Current activity:** P2 no-cost provider discovery baseline
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -150,6 +150,8 @@ Real provider calls, credential value access, production ingestion jobs, externa
 - No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
 
 
-## P2 review boundary
+## P2 completion boundary
 
-P2 is in review as the governed no-cost provider discovery and selection baseline. It records candidate provider dispositions, official-source notes, no-cost constraints, and exclusion policy without implementing adapters, invoking provider APIs, changing runtime routing, or promoting providers to production.
+P2 is complete through its governed exit review and hosted Quality evidence. P2 records candidate provider dispositions, official-source notes, no-cost constraints, and exclusion policy without implementing adapters, invoking provider APIs, changing runtime routing, or promoting providers to production.
+
+- P2 Quality: `30184477700` at `0e13f84...`.
