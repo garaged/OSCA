@@ -7,5 +7,5 @@
 
 ## Evidence status
 
-- Initial implementation evidence: Pending hosted Quality.
-- Final evidence head: Pending hosted Quality.
+- Initial implementation evidence: Quality `30191624710` at `fef440b...`.
+- Final evidence head: Pending final docs-only validation.
