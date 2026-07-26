@@ -1,16 +1,16 @@
 # P2 Exit Review
 
-- **Status:** In review
+- **Status:** Complete
 - **Review date:** 2026-07-25
 - **Scope:** No-cost provider discovery and selection governance
 
 ## Completion Review
 
-P2 will be complete when the discovery catalog, requirements, specification, ADR, OpenSpec archive, traceability, manual testing, and hosted Quality evidence are accepted.
+P2 is complete for the no-cost provider discovery baseline. It adds a governed provider catalog, requirements, specification, ADR, OpenSpec archive, traceability, manual testing coverage, and hosted Quality evidence.
 
 ## Evidence
 
-Pending hosted Quality.
+- Hosted Quality: `30184477700` at `0e13f84...`.
 
 ## Deferred Scope
 
