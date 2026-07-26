@@ -120,3 +120,15 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Quota headroom | Try promotion with insufficient quota headroom where supported. | Promotion is blocked and the quota finding is visible. |
 | Warning finding | Try promotion with otherwise complete evidence plus a warning where supported. | Promotion is degraded/deferred and production enablement remains false. |
 | Persistence scope | Persist and query provider promotion metadata using a disposable SQLite file. | Evidence and decisions round trip by provider identity. |
+
+
+## P2 Smoke Checklist
+
+| Area | Manual check | Expected result |
+|---|---|---|
+| No-cost discovery boundary | Review P2 docs and catalog. | P2 is presented as provider discovery and selection governance, not provider implementation or promotion. |
+| Official-source evidence | Inspect each provider entry. | Official-source URLs are recorded where available, and evidence gaps are explicit. |
+| Cost and credential classification | Inspect provider cost model, payment requirement, account requirement, and API-key notes. | No-cost and free-tier claims remain separate from production approval. |
+| Capability fit | Inspect provider capability fit and non-fit. | Macro/fundamental/event sources are not treated as OHLCV substitutes. |
+| Uncertainty disposition | Inspect Stooq and Yahoo Finance entries. | Unclear automation/licensing stays research-only or excluded. |
+| Implementation sequence | Review the recommended sequence. | Future work starts with official and policy-clear sources, then returns to P1 gates before promotion. |

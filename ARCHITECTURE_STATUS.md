@@ -20,7 +20,8 @@
 - **M11 analytical breadth and portfolio intelligence:** Complete
 - **M12 release readiness and operational resilience:** Complete
 - **P1 provider production promotion evidence gates:** Complete
-- **Current activity:** P1 provider production promotion evidence gates
+- **P2 no-cost provider discovery baseline:** Complete
+- **Current activity:** P2 no-cost provider discovery baseline
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -111,6 +112,7 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M11 milestone](docs/milestones/m11/README.md)
 - [M12 milestone](docs/milestones/m12/README.md)
 - [P1 milestone](docs/milestones/p1/README.md)
+- [P2 milestone](docs/milestones/p2/README.md)
 
 ## M9 completion boundary
 
@@ -146,3 +148,10 @@ Real provider calls, credential value access, production ingestion jobs, externa
 
 - P1 clarification: provider promotion now preserves an explicit no-cost provider baseline so OSCA can function without requiring user spend when complete free-tier/no-cost evidence is available.
 - No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
+
+
+## P2 completion boundary
+
+P2 is complete through its governed exit review and hosted Quality evidence. P2 records candidate provider dispositions, official-source notes, no-cost constraints, and exclusion policy without implementing adapters, invoking provider APIs, changing runtime routing, or promoting providers to production.
+
+- P2 Quality: `30184477700` at `0e13f84...`.
