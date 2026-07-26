@@ -88,7 +88,10 @@ class ProviderLicenseEvidence(BaseModel):
             raise ValueError("license expiration time must be timezone-aware")
         if len(set(self.allowed_permissions)) != len(self.allowed_permissions):
             raise ValueError("provider permissions must be unique")
-        if ProviderPermission.REDISTRIBUTION in self.allowed_permissions and not self.redistribution_allowed:
+        has_redistribution_permission = (
+            ProviderPermission.REDISTRIBUTION in self.allowed_permissions
+        )
+        if has_redistribution_permission and not self.redistribution_allowed:
             raise ValueError("redistribution permission requires explicit redistribution_allowed")
         return self
 
