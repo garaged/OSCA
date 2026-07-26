@@ -106,3 +106,17 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Missed workflow safety | Try a financially meaningful missed-run record without approval where supported. | Validation fails closed instead of scheduling automatic replay. |
 | Risk control boundary | Try approving a breached strict risk control where supported. | The decision is rejected or validation fails closed. |
 | Persistence scope | Persist and query operations metadata using a disposable SQLite file. | Records round trip by component, workflow, or policy identity. |
+
+
+## P1 Smoke Checklist
+
+| Area | Manual check | Expected result |
+|---|---|---|
+| Provider promotion boundary | Review P1 CLI/help/docs and available developer surfaces. | P1 is presented as governed provider promotion evidence and decisions, not live provider retrieval or production ingestion. |
+| Twelve Data evidence | Inspect a Twelve Data provider evidence bundle where supported. | Capability scope, licensing/account-plan permissions, named credential reference, quota, retention, export, backup policy, reviewer, and findings are visible. |
+| Kraken evidence | Inspect a Kraken provider evidence bundle where supported. | Capability scope, licensing/account-plan permissions, named credential reference, quota, retention, export, backup policy, reviewer, and findings are visible. |
+| Missing license permission | Try promotion with missing retention or export permission where supported. | Promotion is blocked and production enablement remains false. |
+| Secret-reference safety | Try recording credential evidence with a secret-looking value where supported. | Validation fails closed and no secret value is retained. |
+| Quota headroom | Try promotion with insufficient quota headroom where supported. | Promotion is blocked and the quota finding is visible. |
+| Warning finding | Try promotion with otherwise complete evidence plus a warning where supported. | Promotion is degraded/deferred and production enablement remains false. |
+| Persistence scope | Persist and query provider promotion metadata using a disposable SQLite file. | Evidence and decisions round trip by provider identity. |

@@ -120,3 +120,13 @@ M2 verification is complete for the governed daily-data scope. Production promot
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0145-REQ-0156 | PRD sections 26-30, 37-39; REQ-0112 | [M12 intent](../milestones/m12/intent.md) | [M12 release readiness and operational resilience](../specifications/m12-release-readiness-resilience.md) | [M12 acceptance](../milestones/m12/acceptance.md) | [M12 evidence plan](../milestones/m12/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0038 | Verified |
+
+
+## P1 allocation
+
+| Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
+|---|---|---|---|---|---|---|---|---|
+| REQ-0157-REQ-0166 | PRD sections 11-14, 26-27, 37-39; D-004, D-016, D-040, D-046; REQ-0112 | [P1 intent](../milestones/p1/intent.md) | [P1 provider production promotion](../specifications/p1-provider-production-promotion.md) | [P1 acceptance](../milestones/p1/acceptance.md) | [P1 evidence plan](../milestones/p1/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0039 | Verified |
+
+| REQ-0167 | docs/specifications/p1-provider-production-promotion.md; openspec/specs/p1-provider-production-promotion/spec.md | src/osca/provider_promotion/contracts.py; src/osca/provider_promotion/services.py | tests/test_provider_promotion.py | docs/milestones/p1/exit-review.md | Verified | No-cost provider baseline is represented explicitly and remains gated by evidence. |
+- No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
