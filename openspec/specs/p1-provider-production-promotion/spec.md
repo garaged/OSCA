@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Index the verified P1 provider production promotion semantics under REQ-0157-REQ-0166 and ADR-0039.
+Index the verified P1 provider production promotion semantics under REQ-0157-REQ-0167 and ADR-0039.
 
 ## Requirements
 
@@ -19,10 +19,17 @@ P1 provider promotion evidence SHALL preserve provider identity, capability scop
 
 Provider promotion SHALL require explicit retrieval, retention, transformation, export, and backup permission evidence before production enablement.
 
+Provider promotion SHALL preserve whether the account plan is no-cost, free-tier, or paid, and complete no-cost evidence SHALL remain eligible for promotion without requiring user payment.
+
 #### Scenario: Missing export permission
 - **GIVEN** provider license evidence without export permission
 - **WHEN** promotion is evaluated
 - **THEN** promotion is blocked.
+
+#### Scenario: Free-tier provider evidence
+- **GIVEN** complete free-tier provider evidence that does not require user payment
+- **WHEN** promotion is evaluated
+- **THEN** the provider remains eligible for the no-cost baseline.
 
 ### Requirement: Credential evidence safety
 
