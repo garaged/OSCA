@@ -21,7 +21,8 @@
 - **M12 release readiness and operational resilience:** Complete
 - **P1 provider production promotion evidence gates:** Complete
 - **P2 no-cost provider discovery baseline:** Complete
-- **Current activity:** P2 no-cost provider discovery baseline
+- **P3 no-cost provider profile catalog:** In review
+- **Current activity:** P3 no-cost provider profile catalog
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -113,6 +114,7 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M12 milestone](docs/milestones/m12/README.md)
 - [P1 milestone](docs/milestones/p1/README.md)
 - [P2 milestone](docs/milestones/p2/README.md)
+- [P3 milestone](docs/milestones/p3/README.md)
 
 ## M9 completion boundary
 
@@ -155,3 +157,8 @@ Real provider calls, credential value access, production ingestion jobs, externa
 P2 is complete through its governed exit review and hosted Quality evidence. P2 records candidate provider dispositions, official-source notes, no-cost constraints, and exclusion policy without implementing adapters, invoking provider APIs, changing runtime routing, or promoting providers to production.
 
 - P2 Quality: `30184477700` at `0e13f84...`.
+
+
+## P3 in-review boundary
+
+P3 is in review for deterministic no-cost provider profile catalog contracts. It adds executable profile selection and implementation-readiness classification while keeping provider adapters, provider API calls, credential materialization, runtime routing, production promotion, and external redistribution/export enablement deferred until later governed milestone intents.
