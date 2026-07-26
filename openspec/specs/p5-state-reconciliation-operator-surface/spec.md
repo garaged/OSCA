@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Index the planned P5 semantics for State Reconciliation and Operator Surface.
+Index the P5 semantics for State Reconciliation and Operator Surface.
 
 ## Requirements
 
@@ -32,3 +32,13 @@ P5 SHALL retain requirements, traceability, OpenSpec, manual-testing review, aut
 - **GIVEN** P5 implementation work
 - **WHEN** completion is evaluated
 - **THEN** exit review evidence must identify implemented, specified-only, fixture-backed, and deferred behavior.
+
+
+### Requirement: P5 operator inspection
+
+P5 SHALL expose provider governance state through supported operator commands without enabling deferred runtime behavior.
+
+#### Scenario: Provider state is inspected
+- **GIVEN** the P5 implementation
+- **WHEN** an operator lists provider catalog, promotion, adapter contract, or fixture-validation state
+- **THEN** OSCA reports deterministic P1-P4 provider governance data and explicit disabled states for live calls, credentials, routing, production ingestion, and real-capital orders.
