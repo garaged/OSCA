@@ -8,3 +8,5 @@
 | OpenSpec strict validation | Verify accepted P1 specification shape. | Green on `30182281457` |
 | Manual testing update | Preserve operator smoke checklist for provider promotion behavior. | Implemented |
 | Exit review | Retain residual deferred scope and validation evidence. | Accepted |
+
+- Contract and service tests cover no-cost/free-tier provider account-plan evidence and the no-cost baseline eligibility helper.
