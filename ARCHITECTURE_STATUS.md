@@ -19,7 +19,8 @@
 - **M10 LLM lifecycle and gateway foundation:** Complete
 - **M11 analytical breadth and portfolio intelligence:** Complete
 - **M12 release readiness and operational resilience:** Complete
-- **Current activity:** Initial M0-M12 roadmap complete; next governed milestone intent pending
+- **P1 provider production promotion evidence gates:** In review
+- **Current activity:** P1 provider production promotion evidence gates
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -109,6 +110,7 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [M10 milestone](docs/milestones/m10/README.md)
 - [M11 milestone](docs/milestones/m11/README.md)
 - [M12 milestone](docs/milestones/m12/README.md)
+- [P1 milestone](docs/milestones/p1/README.md)
 
 ## M9 completion boundary
 
@@ -134,3 +136,10 @@ Runtime fundamental, macro, event, news, sentiment, on-chain, specialized ML, an
 M12 is complete through its governed exit review and archived OpenSpec change. M12 provides governed release-readiness and operational-resilience contracts for backup manifests, restore verification, disaster-recovery exercises, health findings, alert policies, workflow run records, deterministic risk-policy decisions, and SQLite metadata persistence.
 
 Real off-device backup transport, active restore execution, external alert delivery, runtime scheduler execution, personal-server transport implementation, live execution, real-capital orders, and provider production promotion remain deferred until later governed milestone intents.
+
+
+## P1 completion boundary
+
+P1 is in review. P1 defines provider production evidence bundles, deterministic promotion decisions, and SQLite metadata persistence for Twelve Data and Kraken provider production promotion evidence.
+
+Real provider calls, credential value access, production ingestion jobs, external redistribution/export implementation, runtime provider scheduling, live execution, and real-capital orders remain deferred until later governed milestone intents.
