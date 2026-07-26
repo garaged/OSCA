@@ -126,4 +126,4 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0157-REQ-0166 | PRD sections 11-14, 26-27, 37-39; D-004, D-016, D-040, D-046; REQ-0112 | [P1 intent](../milestones/p1/intent.md) | [P1 provider production promotion](../specifications/p1-provider-production-promotion.md) | [P1 acceptance](../milestones/p1/acceptance.md) | [P1 evidence plan](../milestones/p1/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0039 | In review |
+| REQ-0157-REQ-0166 | PRD sections 11-14, 26-27, 37-39; D-004, D-016, D-040, D-046; REQ-0112 | [P1 intent](../milestones/p1/intent.md) | [P1 provider production promotion](../specifications/p1-provider-production-promotion.md) | [P1 acceptance](../milestones/p1/acceptance.md) | [P1 evidence plan](../milestones/p1/evidence-plan.md) | [Manual testing and usage](../testing/manual-testing.md) | ADR-0039 | Verified |
