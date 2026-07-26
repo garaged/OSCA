@@ -2,8 +2,8 @@
 
 ## Automated Evidence
 
-- pytest tests/test_provider_catalog.py
-- Existing hosted Quality workflow, including Ruff, mypy, tests, architecture checks, OpenSpec strict validation, and secret scanning.
+- Hosted Quality: passed in run 30186073205 at 31d0d11...
+- Ruff, mypy, tests, architecture checks, OpenSpec strict validation, and secret scanning: passed in hosted Quality run 30186073205.
 
 ## Inspection Evidence
 
