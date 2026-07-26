@@ -20,3 +20,7 @@
 - Runtime provider scheduling.
 - Live brokerage or exchange execution.
 - Real-capital orders.
+
+## No-cost baseline
+
+P1 must preserve a no-cost market-data path by allowing complete free-tier or no-cost provider evidence to satisfy promotion gates without requiring user payment. No-cost providers remain subject to the same licensing, quota, credential-reference, retention, export, backup, and review evidence as paid providers.
