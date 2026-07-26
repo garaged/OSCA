@@ -69,3 +69,5 @@ ADR-0001 through ADR-0010 are the validated and Frozen M0 Baseline. Changes requ
 ## Template
 
 Use [adr-template.md](adr-template.md) for new decisions.
+
+- [ADR-0042: No-Cost Provider Adapter Contracts](ADR-0042-no-cost-provider-adapter-contracts.md)
