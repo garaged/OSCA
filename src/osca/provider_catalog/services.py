@@ -73,7 +73,10 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
             constraints=(
                 ProviderCatalogConstraint(
                     constraint_id="free-tier-quota-limited",
-                    description="Free-tier requests are low-volume and unsuitable for broad refresh.",
+                    description=(
+                        "Free-tier requests are low-volume and unsuitable for "
+                        "broad refresh."
+                    ),
                     blocks_default_automation=True,
                 ),
             ),
@@ -129,7 +132,10 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
                     blocks_default_automation=True,
                 ),
             ),
-            notes="Research-only until official automation and redistribution evidence is accepted.",
+            notes=(
+                "Research-only until official automation and redistribution "
+                "evidence is accepted."
+            ),
         ),
         ProviderCatalogProfile(
             provider_id=ProviderCatalogIdentifier.YAHOO_FINANCE_UNOFFICIAL,
