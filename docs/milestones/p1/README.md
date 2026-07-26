@@ -1,6 +1,6 @@
 # P1 - Provider Production Promotion Evidence Gates
 
-- **Status:** In review
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, security, licensing, data, operations, and quality review:** Required for P1 scope
 - **Authoritative outcome:** Post-roadmap provider production promotion evidence boundary
