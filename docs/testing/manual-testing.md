@@ -159,8 +159,8 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Check | Expected result |
 |---|---|
 | Review M0-M12 and P1-P4 status | Completed milestones distinguish implemented, specified-only, fixture-backed, and deferred behavior without stale current-activity claims. |
-| Review provider governance surfaces | Provider promotion, no-cost provider catalog, and adapter-contract state can be inspected through supported operator paths after P5 implementation. |
-| Review deferred boundaries | Live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders remain disabled or policy-blocked. |
+| Review provider governance surfaces | `osca provider-promotion-status`, `osca provider-catalog-list --include-readiness`, and `osca provider-adapter-contracts` expose governed provider state. |
+| Review deferred boundaries | P5 provider CLI output reports live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders as disabled. |
 | Review P6 readiness | The next implementation milestone can start from clean requirements, traceability, status, ADR navigation, and manual-testing guidance. |
 
 ## Remaining P Planning Manual Review
