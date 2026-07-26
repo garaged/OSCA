@@ -36,7 +36,9 @@ def build_default_preferred_no_cost_adapter_contracts(
                     ProviderAdapterEndpoint.SEC_COMPANY_FACTS,
                     ProviderAdapterEndpoint.SEC_SUBMISSIONS,
                 ),
-                credential_requirement=ProviderAdapterCredentialRequirement.PUBLIC_NO_KEY,
+                credential_requirement=(
+                    ProviderAdapterCredentialRequirement.PUBLIC_NO_KEY
+                ),
                 source_uri=(
                     "https://www.sec.gov/search-filings/"
                     "edgar-application-programming-interfaces"
@@ -61,13 +63,19 @@ def build_default_preferred_no_cost_adapter_contracts(
                 credential_requirement=(
                     ProviderAdapterCredentialRequirement.NAMED_API_KEY_REFERENCE
                 ),
-                source_uri="https://fred.stlouisfed.org/docs/api/fred/series_observations.html",
+                source_uri=(
+                    "https://fred.stlouisfed.org/docs/api/fred/"
+                    "series_observations.html"
+                ),
                 user_agent_required=False,
                 rate_limit_policy=(
                     "Adapter implementations must enforce API-key, quota, and "
                     "terms evidence before network access is enabled."
                 ),
-                notes="Fixture-backed adapter contract for macroeconomic series enrichment.",
+                notes=(
+                    "Fixture-backed adapter contract for macroeconomic series "
+                    "enrichment."
+                ),
             )
         )
 
