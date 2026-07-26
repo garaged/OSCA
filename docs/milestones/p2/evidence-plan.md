@@ -2,9 +2,9 @@
 
 ## Automated Evidence
 
-- OpenSpec strict validation.
-- Repository Quality workflow.
-- Link and governance-shape checks where covered by existing CI.
+- OpenSpec strict validation: passed in hosted Quality run `30184477700` at `0e13f84...`.
+- Repository Quality workflow: passed in hosted Quality run `30184477700` at `0e13f84...`.
+- Link and governance-shape checks where covered by existing CI: passed in hosted Quality run `30184477700` at `0e13f84...`.
 
 ## Inspection Evidence
 
