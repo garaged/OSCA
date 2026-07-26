@@ -3,10 +3,9 @@ from osca.provider_promotion.contracts import (
     PromotionFindingSeverity,
     PromotionOutcome,
     ProviderPermission,
-    ProviderPromotionDecision,
     ProviderProductionEvidenceBundle,
+    ProviderPromotionDecision,
 )
-
 
 _REQUIRED_PERMISSIONS = {
     ProviderPermission.RETRIEVAL,
