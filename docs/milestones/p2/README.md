@@ -1,6 +1,6 @@
 # P2 - No-Cost Provider Discovery and Selection
 
-- **Status:** In review
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Architecture, licensing, data, operations, and quality review:** Required for P2 scope
 - **Authoritative outcome:** No-cost provider discovery catalog and selection policy
