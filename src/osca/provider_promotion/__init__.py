@@ -4,6 +4,7 @@ from osca.provider_promotion.contracts import (
     PromotionOutcome,
     ProviderAssetClass,
     ProviderCapabilityScope,
+    ProviderCostModel,
     ProviderCredentialEvidence,
     ProviderIdentifier,
     ProviderLicenseEvidence,
@@ -16,6 +17,7 @@ from osca.provider_promotion.persistence import SQLiteProviderPromotionStore
 from osca.provider_promotion.services import (
     evaluate_provider_promotion,
     promotion_is_enabled,
+    provider_supports_no_cost_baseline,
 )
 
 __all__ = [
@@ -24,6 +26,7 @@ __all__ = [
     "PromotionOutcome",
     "ProviderAssetClass",
     "ProviderCapabilityScope",
+    "ProviderCostModel",
     "ProviderCredentialEvidence",
     "ProviderIdentifier",
     "ProviderLicenseEvidence",
@@ -34,4 +37,5 @@ __all__ = [
     "SQLiteProviderPromotionStore",
     "evaluate_provider_promotion",
     "promotion_is_enabled",
+    "provider_supports_no_cost_baseline",
 ]
