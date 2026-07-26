@@ -23,7 +23,7 @@
 - **P2 no-cost provider discovery baseline:** Complete
 - **P3 no-cost provider profile catalog:** Complete
 - **P4 no-cost provider adapter contracts:** Complete
-- **Current activity:** P5 state reconciliation and operator surface planning
+- **Current activity:** P5 state reconciliation and operator surface implementation candidate
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -184,3 +184,10 @@ The remaining P milestone sequence is planned in [Remaining P Milestone Roadmap]
 - **P8-P12:** Useful analyst workflow through backtest-to-paper, official enrichment preview, routing, workspace, and optional ML/LLM preview.
 - **P13-P15:** Production-capable version through promoted provider ingestion, production operations, and runtime extensions.
 - **P16-P17:** Real-money readiness only if explicitly approved through a go/no-go study and controlled pilot gates.
+
+
+## P5 implementation boundary
+
+P5 is an implementation candidate pending hosted Quality evidence. It reconciles the M0-M12 and P1-P4 status boundary and exposes provider promotion status, no-cost provider catalog readiness, fixture-backed adapter contracts, and fixture validation through CLI operator commands.
+
+Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
