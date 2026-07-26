@@ -3,7 +3,7 @@
 - **Status:** Implementation candidate
 - **Governing role:** Product authority
 - **Phase:** Minimum usable local/demo tool
-- **Authoritative outcome:** Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI/API commands.
+- **Authoritative outcome:** Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI commands.
 - **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
 - **Last reviewed:** 2026-07-26
 - **Validation:** Pending hosted Quality
@@ -17,7 +17,7 @@
 
 ## Objective
 
-Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI/API commands.
+Reconcile M0-M12 and P1-P4 documentation, specifications, traceability, and implementation boundaries, then expose the existing provider catalog and adapter-contract state through operator-facing CLI commands.
 
 ## User-visible value
 
