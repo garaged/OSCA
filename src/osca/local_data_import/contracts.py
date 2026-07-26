@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 Identifier = Annotated[str, Field(min_length=1, max_length=128)]
+LocalPath = Annotated[str, Field(min_length=1, max_length=4096)]
 Description = Annotated[str, Field(min_length=1, max_length=2048)]
 
 
@@ -72,8 +73,8 @@ class LocalOHLCVImportRequest(BaseModel):
     family: Literal["osca.local-ohlcv-import.request"] = "osca.local-ohlcv-import.request"
     version: Literal["1.0.0"] = "1.0.0"
     request_id: UUID = Field(default_factory=uuid4)
-    input_path: Identifier
-    storage_root: Identifier
+    input_path: LocalPath
+    storage_root: LocalPath
     symbol: Identifier
     timeframe: LocalOHLCVTimeframe
     input_format: LocalOHLCVImportFormat | None = None
@@ -95,8 +96,8 @@ class LocalOHLCVImportResult(BaseModel):
     first_timestamp: datetime
     last_timestamp: datetime
     source_sha256: Annotated[str, Field(min_length=64, max_length=64)]
-    payload_uri: Identifier
-    metadata_uri: Identifier
+    payload_uri: LocalPath
+    metadata_uri: LocalPath
     calendar_assumption: Identifier
     quality_findings: tuple[LocalOHLCVQualityFinding, ...] = ()
     network_access_enabled: Literal[False] = False
