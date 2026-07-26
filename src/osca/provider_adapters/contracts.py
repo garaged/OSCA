@@ -57,14 +57,14 @@ class ProviderAdapterContract(BaseModel):
                 )
             if not self.user_agent_required:
                 raise ValueError("SEC EDGAR adapter contract must require a user-agent")
-        if self.provider_id is ProviderCatalogIdentifier.FRED:
-            if (
-                self.credential_requirement
-                is not ProviderAdapterCredentialRequirement.NAMED_API_KEY_REFERENCE
-            ):
-                raise ValueError(
-                    "FRED adapter contract must require a named API-key reference"
-                )
+        if (
+            self.provider_id is ProviderCatalogIdentifier.FRED
+            and self.credential_requirement
+            is not ProviderAdapterCredentialRequirement.NAMED_API_KEY_REFERENCE
+        ):
+            raise ValueError(
+                "FRED adapter contract must require a named API-key reference"
+            )
         return self
 
 
