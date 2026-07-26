@@ -150,4 +150,7 @@ M2 verification is complete for the governed daily-data scope. Production promot
 
 | Requirements | Authority | Intent | Specification | Acceptance criteria | Evidence plan | Code | Tests | Documentation | ADRs | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| REQ-0184-REQ-0190 | P4 intent; ADR-0042; P3 provider catalog; REQ-0177-REQ-0183 | [P4 intent](../milestones/p4/intent.md) | [P4 no-cost provider adapter contracts](../specifications/p4-no-cost-provider-adapter-contracts.md) | [P4 acceptance](../milestones/p4/acceptance.md) | [P4 evidence plan](../milestones/p4/evidence-plan.md) | src/osca/provider_adapters/contracts.py; src/osca/provider_adapters/services.py | tests/test_provider_adapters.py | [Manual testing and usage](../testing/manual-testing.md) | ADR-0042 | Planned |
+| REQ-0184-REQ-0190 | P4 intent; ADR-0042; P3 provider catalog; REQ-0177-REQ-0183 | [P4 intent](../milestones/p4/intent.md) | [P4 no-cost provider adapter contracts](../specifications/p4-no-cost-provider-adapter-contracts.md) | [P4 acceptance](../milestones/p4/acceptance.md) | [P4 evidence plan](../milestones/p4/evidence-plan.md) | src/osca/provider_adapters/contracts.py; src/osca/provider_adapters/services.py | tests/test_provider_adapters.py | [Manual testing and usage](../testing/manual-testing.md) | ADR-0042 | Verified |
+
+
+- P4 Quality: `30191624710` at `fef440b...`.
