@@ -10,3 +10,4 @@
 | Exit review | Retain residual deferred scope and validation evidence. | Accepted |
 
 - Contract and service tests cover no-cost/free-tier provider account-plan evidence and the no-cost baseline eligibility helper.
+- No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
