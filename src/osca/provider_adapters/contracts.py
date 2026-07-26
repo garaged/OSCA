@@ -24,7 +24,9 @@ class ProviderAdapterCredentialRequirement(StrEnum):
 class ProviderAdapterContract(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    family: Literal["osca.provider-adapters.contract"] = "osca.provider-adapters.contract"
+    family: Literal["osca.provider-adapters.contract"] = (
+        "osca.provider-adapters.contract"
+    )
     version: Literal["1.0.0"] = "1.0.0"
     contract_id: UUID = Field(default_factory=uuid4)
     provider_id: ProviderCatalogIdentifier
@@ -46,8 +48,13 @@ class ProviderAdapterContract(BaseModel):
         for endpoint in self.endpoints:
             _validate_provider_endpoint(self.provider_id, endpoint)
         if self.provider_id is ProviderCatalogIdentifier.SEC_EDGAR:
-            if self.credential_requirement is not ProviderAdapterCredentialRequirement.PUBLIC_NO_KEY:
-                raise ValueError("SEC EDGAR adapter contract must not require an API key")
+            if (
+                self.credential_requirement
+                is not ProviderAdapterCredentialRequirement.PUBLIC_NO_KEY
+            ):
+                raise ValueError(
+                    "SEC EDGAR adapter contract must not require an API key"
+                )
             if not self.user_agent_required:
                 raise ValueError("SEC EDGAR adapter contract must require a user-agent")
         if self.provider_id is ProviderCatalogIdentifier.FRED:
@@ -55,7 +62,9 @@ class ProviderAdapterContract(BaseModel):
                 self.credential_requirement
                 is not ProviderAdapterCredentialRequirement.NAMED_API_KEY_REFERENCE
             ):
-                raise ValueError("FRED adapter contract must require a named API-key reference")
+                raise ValueError(
+                    "FRED adapter contract must require a named API-key reference"
+                )
         return self
 
 
@@ -105,7 +114,9 @@ class ProviderAdapterFixture(BaseModel):
     @model_validator(mode="after")
     def validate_fixture(self) -> Self:
         _validate_provider_endpoint(self.provider_id, self.endpoint)
-        if not all(character in "0123456789abcdef" for character in self.payload_sha256):
+        if not all(
+            character in "0123456789abcdef" for character in self.payload_sha256
+        ):
             raise ValueError("fixture payload sha256 must be lowercase hexadecimal")
         return self
 
@@ -136,9 +147,13 @@ def _validate_provider_endpoint(
     if provider_id is ProviderCatalogIdentifier.FRED and endpoint not in {
         ProviderAdapterEndpoint.FRED_SERIES_OBSERVATIONS,
     }:
-        raise ValueError("FRED adapter endpoints are limited to macro series observations")
+        raise ValueError(
+            "FRED adapter endpoints are limited to macro series observations"
+        )
     if provider_id not in {
         ProviderCatalogIdentifier.SEC_EDGAR,
         ProviderCatalogIdentifier.FRED,
     }:
-        raise ValueError("provider adapter contracts are limited to preferred candidates")
+        raise ValueError(
+            "provider adapter contracts are limited to preferred candidates"
+        )
