@@ -26,6 +26,12 @@ class ProviderAssetClass(StrEnum):
     SPOT_CRYPTO = "spot_crypto"
 
 
+class ProviderCostModel(StrEnum):
+    NO_COST = "no_cost"
+    FREE_TIER = "free_tier"
+    PAID = "paid"
+
+
 class ProviderPermission(StrEnum):
     RETRIEVAL = "retrieval"
     RETENTION = "retention"
@@ -73,6 +79,8 @@ class ProviderLicenseEvidence(BaseModel):
 
     provider_id: ProviderIdentifier
     account_plan_id: Identifier
+    cost_model: ProviderCostModel
+    payment_required: bool
     terms_reference_uri: Identifier
     allowed_permissions: tuple[ProviderPermission, ...]
     redistribution_allowed: bool = False
@@ -88,6 +96,10 @@ class ProviderLicenseEvidence(BaseModel):
             raise ValueError("license expiration time must be timezone-aware")
         if len(set(self.allowed_permissions)) != len(self.allowed_permissions):
             raise ValueError("provider permissions must be unique")
+        if self.cost_model is ProviderCostModel.PAID and not self.payment_required:
+            raise ValueError("paid provider plans must require payment")
+        if self.cost_model is not ProviderCostModel.PAID and self.payment_required:
+            raise ValueError("no-cost provider plans must not require payment")
         has_redistribution_permission = (
             ProviderPermission.REDISTRIBUTION in self.allowed_permissions
         )
