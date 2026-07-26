@@ -196,7 +196,6 @@ def backtest_list(
     typer.echo(json.dumps([record.model_dump(mode="json") for record in records], indent=2))
 
 
-
 @app.command("provider-catalog-list")
 def provider_catalog_list(
     include_readiness: Annotated[

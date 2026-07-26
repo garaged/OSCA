@@ -4,7 +4,6 @@ from typer.testing import CliRunner
 
 from osca.bootstrap.cli import app
 
-
 runner = CliRunner()
 
 
