@@ -22,7 +22,7 @@
 - **P1 provider production promotion evidence gates:** Complete
 - **P2 no-cost provider discovery baseline:** Complete
 - **P3 no-cost provider profile catalog:** Complete
-- **P4 no-cost provider adapter contracts:** In review
+- **P4 no-cost provider adapter contracts:** Complete
 - **Current activity:** P4 no-cost provider adapter contracts
 - **Freeze point:** Reached; changes require superseding ADRs
 
@@ -168,6 +168,8 @@ P3 is complete through its governed exit review and hosted Quality evidence. It 
 - P3 Quality: 30186073205 at 31d0d11....
 
 
-## P4 in-review boundary
+## P4 completion boundary
 
-P4 defines fixture-backed adapter contracts for SEC EDGAR and FRED. Live provider calls, credential materialization, runtime routing, production promotion, and production ingestion remain deferred until later governed milestone intents.
+P4 is complete through its governed exit review and hosted Quality evidence. It defines fixture-backed adapter contracts for SEC EDGAR and FRED. Live provider calls, credential materialization, runtime routing, production promotion, and production ingestion remain deferred until later governed milestone intents.
+
+- P4 Quality: `30191624710` at `fef440b...`.
