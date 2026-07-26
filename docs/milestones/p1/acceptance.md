@@ -7,3 +7,5 @@
 | P1-AC-005 | REQ-0162, REQ-0163 | Deterministic provider promotion decisions approve only complete evidence, defer warning findings, and block errors. | Service tests |
 | P1-AC-006 | REQ-0164 | SQLite persistence round trips provider evidence and promotion decisions by provider. | Persistence tests |
 | P1-AC-007 | REQ-0165, REQ-0166 | Manual testing, traceability, OpenSpec, ADR, status, and exit evidence are retained. | Inspection and hosted Quality |
+
+- No-cost/free-tier account-plan evidence is represented explicitly, and complete no-cost provider evidence remains eligible for the baseline operating path without requiring user payment.
