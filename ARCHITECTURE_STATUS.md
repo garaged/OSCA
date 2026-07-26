@@ -22,7 +22,8 @@
 - **P1 provider production promotion evidence gates:** Complete
 - **P2 no-cost provider discovery baseline:** Complete
 - **P3 no-cost provider profile catalog:** Complete
-- **Current activity:** P3 no-cost provider profile catalog
+- **P4 no-cost provider adapter contracts:** In review
+- **Current activity:** P4 no-cost provider adapter contracts
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -115,6 +116,7 @@ Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidel
 - [P1 milestone](docs/milestones/p1/README.md)
 - [P2 milestone](docs/milestones/p2/README.md)
 - [P3 milestone](docs/milestones/p3/README.md)
+- [P4 milestone](docs/milestones/p4/README.md)
 
 ## M9 completion boundary
 
@@ -164,3 +166,8 @@ P2 is complete through its governed exit review and hosted Quality evidence. P2 
 P3 is complete through its governed exit review and hosted Quality evidence. It adds executable no-cost provider profile selection and implementation-readiness classification while keeping provider adapters, provider API calls, credential materialization, runtime routing, production promotion, and external redistribution/export enablement deferred until later governed milestone intents.
 
 - P3 Quality: 30186073205 at 31d0d11....
+
+
+## P4 in-review boundary
+
+P4 defines fixture-backed adapter contracts for SEC EDGAR and FRED. Live provider calls, credential materialization, runtime routing, production promotion, and production ingestion remain deferred until later governed milestone intents.
