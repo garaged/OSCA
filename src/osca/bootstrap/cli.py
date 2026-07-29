@@ -21,6 +21,12 @@ from osca.configuration.application import validate_configuration
 from osca.extensions.api import ExtensionManifest
 from osca.extensions.application import create_installation_record, decide_activation
 from osca.extensions.persistence import SQLiteExtensionLifecycleStore
+from osca.local_data_import import (
+    LocalOHLCVImportFormat,
+    LocalOHLCVImportRequest,
+    LocalOHLCVTimeframe,
+    import_local_ohlcv,
+)
 from osca.provider_adapters import (
     ProviderAdapterEndpoint,
     ProviderAdapterFixture,
@@ -289,6 +295,39 @@ def provider_adapter_validate_fixture(
     )
     decision = validate_adapter_fixture_for_contract(contract, fixture)
     typer.echo(decision.model_dump_json(indent=2))
+
+
+@app.command("local-ohlcv-import")
+def local_ohlcv_import(
+    input_file: Path,
+    symbol: str,
+    timeframe: LocalOHLCVTimeframe,
+    storage_root: Annotated[
+        Path,
+        typer.Option("--storage-root"),
+    ] = Path("osca-local-data"),
+    input_format: Annotated[str | None, typer.Option("--input-format")] = None,
+    calendar_assumption: Annotated[str, typer.Option("--calendar-assumption")] = "source-provided",
+) -> None:
+    """Import user-supplied local OHLCV CSV or Parquet data."""
+
+    parsed_format: LocalOHLCVImportFormat | None = None
+    if input_format is not None:
+        try:
+            parsed_format = LocalOHLCVImportFormat(input_format)
+        except ValueError as exc:
+            raise typer.BadParameter("input format must be csv or parquet") from exc
+
+    request = LocalOHLCVImportRequest(
+        input_path=str(input_file),
+        storage_root=str(storage_root),
+        symbol=symbol,
+        timeframe=timeframe,
+        input_format=parsed_format,
+        calendar_assumption=calendar_assumption,
+    )
+    result = import_local_ohlcv(request)
+    typer.echo(result.model_dump_json(indent=2))
 
 
 @app.command("backup-create")

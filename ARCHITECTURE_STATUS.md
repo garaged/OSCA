@@ -24,7 +24,7 @@
 - **P3 no-cost provider profile catalog:** Complete
 - **P4 no-cost provider adapter contracts:** Complete
 - **P5 state reconciliation and operator surface:** Complete
-- **Current activity:** P6 no-cost local OHLCV import provider
+- **Current activity:** P6 no-cost local OHLCV import provider implementation candidate
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -190,5 +190,11 @@ The remaining P milestone sequence is planned in [Remaining P Milestone Roadmap]
 ## P5 completion boundary
 
 P5 is complete through its governed exit review and merged implementation. It reconciles the M0-M12 and P1-P4 status boundary and exposes provider promotion status, no-cost provider catalog readiness, fixture-backed adapter contracts, and fixture validation through CLI operator commands.
+
+Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
+
+## P6 implementation candidate boundary
+
+P6 is an implementation candidate pending hosted Quality evidence. It adds a governed local CSV/Parquet OHLCV import provider, strict canonical schema validation, deterministic dataset revision identity, Parquet payload persistence, SQLite metadata persistence, sample fixture data, shared application API, and CLI operator command.
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
