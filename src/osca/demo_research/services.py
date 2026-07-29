@@ -47,8 +47,9 @@ def run_demo_research_workflow(request: DemoResearchRequest) -> DemoResearchRepo
         return report
 
     output_path = Path(request.output_path)
-    _write_report(output_path, report, request.report_format)
-    return report.model_copy(update={"output_uri": str(output_path)})
+    report_with_output = report.model_copy(update={"output_uri": str(output_path)})
+    _write_report(output_path, report_with_output, request.report_format)
+    return report_with_output
 
 
 def _read_payload_rows(payload_path: Path) -> tuple[Mapping[str, Any], ...]:
