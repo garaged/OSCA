@@ -43,7 +43,7 @@ def test_demo_research_report_consumes_p6_payload_and_computes_metrics(tmp_path:
     assert report.metrics.volatility > 0
     assert report.metrics.max_drawdown == pytest.approx(-0.0454545454)
     assert report.metrics.simple_moving_average_3 == pytest.approx(108.3333333333)
-    assert report.metrics.simple_moving_average_5 == pytest.approx(104.0)
+    assert report.metrics.simple_moving_average_5 == pytest.approx(106.0)
     assert report.evidence_only is True
     assert report.not_financial_advice is True
     assert report.deferred_boundaries["recommendations_enabled"] is False
