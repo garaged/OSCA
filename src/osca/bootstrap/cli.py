@@ -18,14 +18,14 @@ from osca.bootstrap.runtime import readiness_snapshot
 from osca.bootstrap.workflow import workflow_service
 from osca.configuration.api.contracts import RawConfiguration
 from osca.configuration.application import validate_configuration
-from osca.extensions.api import ExtensionManifest
-from osca.extensions.application import create_installation_record, decide_activation
-from osca.extensions.persistence import SQLiteExtensionLifecycleStore
 from osca.demo_research import (
     DemoResearchReportFormat,
     DemoResearchRequest,
     run_demo_research_workflow,
 )
+from osca.extensions.api import ExtensionManifest
+from osca.extensions.application import create_installation_record, decide_activation
+from osca.extensions.persistence import SQLiteExtensionLifecycleStore
 from osca.local_data_import import (
     LocalOHLCVImportFormat,
     LocalOHLCVImportRequest,
@@ -333,7 +333,6 @@ def local_ohlcv_import(
     )
     result = import_local_ohlcv(request)
     typer.echo(result.model_dump_json(indent=2))
-
 
 
 @app.command("demo-research-report")
