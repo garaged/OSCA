@@ -194,14 +194,14 @@ P5 is complete through its governed exit review and merged implementation. It re
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
 
-## P7 implementation candidate boundary
-
-P7 is an implementation candidate pending hosted Quality evidence. It adds a deterministic first demo research workflow that consumes P6 local OHLCV Parquet payloads, computes evidence metrics, renders CLI JSON, writes optional Markdown or JSON static reports, and preserves evidence-only/not-financial-advice boundaries.
-
-Live provider calls, credential materialization, runtime provider routing, production ingestion, ML execution, LLM execution, recommendations, scheduler execution, and real-capital orders remain disabled and deferred until later governed milestone intents.
-
 ## P6 completion boundary
 
 P6 is complete through PR #42 and hosted Quality evidence. It adds a governed local CSV/Parquet OHLCV import provider, strict canonical schema validation, deterministic dataset revision identity, Parquet payload persistence, SQLite metadata persistence, sample fixture data, shared application API, and CLI operator command.
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
+
+## P7 implementation candidate boundary
+
+P7 is an implementation candidate pending hosted Quality evidence. It adds a deterministic first demo research workflow that consumes P6 local OHLCV Parquet payloads, computes evidence metrics, renders CLI JSON, writes optional Markdown or JSON static reports, and preserves evidence-only/not-financial-advice boundaries.
+
+Live provider calls, credential materialization, runtime provider routing, production ingestion, ML execution, LLM execution, recommendations, scheduler execution, and real-capital orders remain disabled and deferred until later governed milestone intents.
