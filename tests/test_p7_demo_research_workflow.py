@@ -13,7 +13,12 @@ from osca.demo_research import (
     DemoResearchRequest,
     run_demo_research_workflow,
 )
-from osca.local_data_import import LocalOHLCVImportRequest, LocalOHLCVTimeframe, import_local_ohlcv
+from osca.local_data_import import (
+    LocalOHLCVImportRequest,
+    LocalOHLCVImportResult,
+    LocalOHLCVTimeframe,
+    import_local_ohlcv,
+)
 
 runner = CliRunner()
 
@@ -121,7 +126,7 @@ def test_cli_demo_research_report_writes_static_file_and_reports_boundaries(tmp_
     assert report_path.is_file()
 
 
-def _import_sample_payload(tmp_path: Path):
+def _import_sample_payload(tmp_path: Path) -> LocalOHLCVImportResult:
     source = tmp_path / "aapl.csv"
     _write_csv(
         source,
