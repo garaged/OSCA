@@ -1,12 +1,12 @@
 # P6 - No-Cost Local OHLCV Import Provider
 
-- **Status:** Implementation candidate
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Phase:** Minimum usable local/demo tool
 - **Authoritative outcome:** Add a governed local file import path for OHLCV history so OSCA can analyze real user-supplied data without paid providers.
 - **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
 - **Last reviewed:** 2026-07-26
-- **Validation:** Pending hosted Quality
+- **Validation:** Hosted Quality passed in PR #42
 
 ## Current artifacts
 
@@ -58,7 +58,7 @@ P5 reconciliation, M2 storage model, M3 temporal correctness.
 
 CSV schemas vary; P6 must choose one canonical format and reject ambiguous files.
 
-## Implementation candidate
+## Completion boundary
 
 P6 adds the `osca.local_data_import` package and `osca local-ohlcv-import` CLI command.
 
