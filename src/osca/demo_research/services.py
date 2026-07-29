@@ -190,7 +190,8 @@ def _render_markdown(report: DemoResearchReport) -> str:
 
 ## Deferred Boundaries
 
-Live providers, credentials, runtime routing, production ingestion, ML, LLM, recommendations,\nscheduler execution, and real-capital orders remain disabled.
+Live providers, credentials, runtime routing, production ingestion, ML, LLM,
+recommendations, scheduler execution, and real-capital orders remain disabled.
 """
 
 
