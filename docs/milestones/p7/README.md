@@ -1,12 +1,12 @@
 # P7 - First Demo Research Workflow
 
-- **Status:** Implementation candidate
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Phase:** Minimum usable local/demo tool
 - **Authoritative outcome:** Connect imported or bundled data to a narrow analyst workflow that produces a deterministic research report.
 - **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
 - **Last reviewed:** 2026-07-26
-- **Validation:** Pending hosted Quality
+- **Validation:** Hosted Quality passed
 
 ## Current artifacts
 
@@ -56,7 +56,7 @@ P6 local OHLCV import.
 The report must communicate evidence and limitations without implying financial advice.
 
 
-## Implementation candidate
+## Completion summary
 
 P7 adds the `osca.demo_research` package and `osca demo-research-report` CLI command.
 
