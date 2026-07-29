@@ -37,7 +37,7 @@ class StrategyHypothesis(BaseModel):
     @model_validator(mode="after")
     def require_ordered_windows(
         self,
-    ) -> "StrategyHypothesis":
+    ) -> StrategyHypothesis:
         if self.short_window >= self.long_window:
             raise ValueError("short_window must be less than long_window")
         return self
