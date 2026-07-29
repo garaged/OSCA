@@ -179,3 +179,14 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Missing column failure | A CSV missing one of `timestamp`, `open`, `high`, `low`, `close`, or `volume` fails closed with a validation error. |
 | Timestamp failure | Duplicate or non-increasing timestamps fail closed and are not accepted as a dataset revision. |
 | Deferred boundaries | Import output still reports live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders as disabled. |
+
+
+## P7 Demo Research Workflow Smoke Checklist
+
+| Check | Expected result |
+|---|---|
+| Import sample CSV | `osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p7-smoke` writes the P6 payload and metadata. |
+| Run demo report | `osca demo-research-report /tmp/osca-p7-smoke/payloads/<dataset-revision-id>.parquet AAPL 1d --output-file /tmp/osca-p7-smoke/report.md` returns CLI JSON and writes a Markdown report. |
+| Inspect metrics | Output includes bar count, first/latest close, total return, mean period return, volatility, max drawdown, SMA 3, and SMA 5. |
+| Inspect evidence boundary | Output states evidence-only and not-financial-advice semantics; recommendations, ML, LLM, scheduler execution, live providers, production ingestion, and real-capital orders remain disabled. |
+| Invalid payload failure | A Parquet payload missing any canonical OHLCV column fails closed before report generation. |
