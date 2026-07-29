@@ -25,7 +25,8 @@
 - **P4 no-cost provider adapter contracts:** Complete
 - **P5 state reconciliation and operator surface:** Complete
 - **P6 no-cost local OHLCV import provider:** Complete
-- **Current activity:** P7 first demo research workflow implementation candidate
+- **P7 first demo research workflow:** Complete
+- **Current activity:** P8 backtest-to-paper happy path implementation candidate
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -200,8 +201,14 @@ P6 is complete through PR #42 and hosted Quality evidence. It adds a governed lo
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
 
-## P7 implementation candidate boundary
+## P7 completion boundary
 
-P7 is an implementation candidate pending hosted Quality evidence. It adds a deterministic first demo research workflow that consumes P6 local OHLCV Parquet payloads, computes evidence metrics, renders CLI JSON, writes optional Markdown or JSON static reports, and preserves evidence-only/not-financial-advice boundaries.
+P7 is complete through PR #43 and hosted Quality evidence. It adds a deterministic first demo research workflow that consumes P6 local OHLCV Parquet payloads, computes evidence metrics, renders CLI JSON, writes optional Markdown or JSON static reports, and preserves evidence-only/not-financial-advice boundaries.
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, ML execution, LLM execution, recommendations, scheduler execution, and real-capital orders remain disabled and deferred until later governed milestone intents.
+
+## P8 implementation candidate boundary
+
+P8 is an implementation candidate pending hosted Quality evidence. It adds a built-in transparent SMA trend strategy, deterministic local-data backtest execution, comparison against buy-and-hold, paper-evaluation evidence records, CLI JSON output, and optional Markdown or JSON evidence report export.
+
+Live paper broker integration, autonomous execution, live provider calls, credential materialization, runtime provider routing, production ingestion, recommendations, and real-capital orders remain disabled and deferred until later governed milestone intents.
