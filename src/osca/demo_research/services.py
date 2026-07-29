@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import json
 import math
 from collections.abc import Mapping, Sequence
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -110,7 +110,7 @@ def _metric_summary(bars: tuple[LocalOHLCVBar, ...]) -> DemoResearchMetricSummar
 
 
 def _period_returns(closes: tuple[float, ...]) -> tuple[float, ...]:
-    return tuple((current / previous) - 1.0 for previous, current in zip(closes, closes[1:]))
+    return tuple((current / previous) - 1.0 for previous, current in pairwise(closes))
 
 
 def _sample_standard_deviation(values: tuple[float, ...]) -> float:
@@ -190,7 +190,7 @@ def _render_markdown(report: DemoResearchReport) -> str:
 
 ## Deferred Boundaries
 
-Live providers, credentials, runtime routing, production ingestion, ML, LLM, recommendations, scheduler execution, and real-capital orders remain disabled.
+Live providers, credentials, runtime routing, production ingestion, ML, LLM, recommendations,\nscheduler execution, and real-capital orders remain disabled.
 """
 
 
