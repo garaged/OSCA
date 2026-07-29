@@ -24,7 +24,8 @@
 - **P3 no-cost provider profile catalog:** Complete
 - **P4 no-cost provider adapter contracts:** Complete
 - **P5 state reconciliation and operator surface:** Complete
-- **Current activity:** P6 no-cost local OHLCV import provider implementation candidate
+- **P6 no-cost local OHLCV import provider:** Complete
+- **Current activity:** P7 first demo research workflow implementation candidate
 - **Freeze point:** Reached; changes require superseding ADRs
 
 ## Governing baseline
@@ -193,8 +194,14 @@ P5 is complete through its governed exit review and merged implementation. It re
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
 
-## P6 implementation candidate boundary
+## P6 completion boundary
 
-P6 is an implementation candidate pending hosted Quality evidence. It adds a governed local CSV/Parquet OHLCV import provider, strict canonical schema validation, deterministic dataset revision identity, Parquet payload persistence, SQLite metadata persistence, sample fixture data, shared application API, and CLI operator command.
+P6 is complete through PR #42 and hosted Quality evidence. It adds a governed local CSV/Parquet OHLCV import provider, strict canonical schema validation, deterministic dataset revision identity, Parquet payload persistence, SQLite metadata persistence, sample fixture data, shared application API, and CLI operator command.
 
 Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
+
+## P7 implementation candidate boundary
+
+P7 is an implementation candidate pending hosted Quality evidence. It adds a deterministic first demo research workflow that consumes P6 local OHLCV Parquet payloads, computes evidence metrics, renders CLI JSON, writes optional Markdown or JSON static reports, and preserves evidence-only/not-financial-advice boundaries.
+
+Live provider calls, credential materialization, runtime provider routing, production ingestion, ML execution, LLM execution, recommendations, scheduler execution, and real-capital orders remain disabled and deferred until later governed milestone intents.
