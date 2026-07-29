@@ -71,7 +71,10 @@ def _read_bars(payload_path: Path) -> tuple[LocalOHLCVBar, ...]:
     raw_rows: Any = table.to_pylist()
     if not isinstance(raw_rows, list):
         raise ValueError("backtest-to-paper payload did not produce row records")
-    return tuple(_bar_from_row(_ensure_mapping(row), index) for index, row in enumerate(raw_rows, 1))
+    return tuple(
+        _bar_from_row(_ensure_mapping(row), index)
+        for index, row in enumerate(raw_rows, 1)
+    )
 
 
 def _ensure_mapping(row: Any) -> Mapping[str, Any]:
