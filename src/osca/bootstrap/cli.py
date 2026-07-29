@@ -21,6 +21,11 @@ from osca.configuration.application import validate_configuration
 from osca.extensions.api import ExtensionManifest
 from osca.extensions.application import create_installation_record, decide_activation
 from osca.extensions.persistence import SQLiteExtensionLifecycleStore
+from osca.demo_research import (
+    DemoResearchReportFormat,
+    DemoResearchRequest,
+    run_demo_research_workflow,
+)
 from osca.local_data_import import (
     LocalOHLCVImportFormat,
     LocalOHLCVImportRequest,
@@ -328,6 +333,33 @@ def local_ohlcv_import(
     )
     result = import_local_ohlcv(request)
     typer.echo(result.model_dump_json(indent=2))
+
+
+
+@app.command("demo-research-report")
+def demo_research_report(
+    payload_file: Path,
+    symbol: str,
+    timeframe: LocalOHLCVTimeframe,
+    output_file: Annotated[Path | None, typer.Option("--output-file")] = None,
+    report_format: Annotated[
+        DemoResearchReportFormat,
+        typer.Option("--report-format"),
+    ] = DemoResearchReportFormat.MARKDOWN,
+    project_name: Annotated[str, typer.Option("--project-name")] = "first-demo-research",
+) -> None:
+    """Run the deterministic first demo research workflow from local OHLCV payload data."""
+
+    request = DemoResearchRequest(
+        project_name=project_name,
+        payload_path=str(payload_file),
+        symbol=symbol,
+        timeframe=timeframe,
+        report_format=report_format,
+        output_path=str(output_file) if output_file is not None else None,
+    )
+    report = run_demo_research_workflow(request)
+    typer.echo(report.model_dump_json(indent=2))
 
 
 @app.command("backup-create")
