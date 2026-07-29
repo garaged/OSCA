@@ -23,7 +23,7 @@ Users can compare a strategy hypothesis against historical data and retain paper
 - Implement one built-in transparent strategy.
 - Execute deterministic backtests from imported data.
 - Publish F2/F3 evidence bundles and comparison summaries.
-- Expose CLI/API commands for run, inspect, and export.
+- Expose shared application contracts plus CLI commands for run, inspect, and export.
 
 ## Explicit non-scope
 
@@ -31,8 +31,8 @@ Users can compare a strategy hypothesis against historical data and retain paper
 
 ## Acceptance criteria
 
-- The milestone objective is demonstrable from supported CLI, API, UI, or documented operator workflow surfaces, as applicable.
-- Automated tests cover new code paths and negative/deferred-boundary behavior.
+- The milestone objective is demonstrable from the supported shared application API and CLI operator workflow.
+- Automated tests cover P6 payload consumption, strategy execution, paper evidence generation, report export, insufficient-data failure, invalid-payload failure, and negative/deferred-boundary behavior.
 - Documentation and traceability identify implemented, specified-only, fixture-backed, and deferred behavior.
 - The milestone exit review records validation evidence and remaining deferrals.
 
