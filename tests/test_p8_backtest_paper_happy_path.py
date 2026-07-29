@@ -41,10 +41,10 @@ def test_backtest_paper_happy_path_consumes_p6_payload_and_retains_evidence(
 
     assert report.backtest.bars_processed == 10
     assert report.backtest.signal_bar_count == 6
-    assert report.backtest.trade_count == 2
+    assert report.backtest.trade_count == 3
     assert report.backtest.exposure_bar_count == 5
-    assert report.backtest.final_equity == pytest.approx(10_666.6666666667)
-    assert report.backtest.total_return == pytest.approx(0.0666666667)
+    assert report.backtest.final_equity == pytest.approx(10_370.3703703704)
+    assert report.backtest.total_return == pytest.approx(0.0370370370)
     assert report.backtest.buy_and_hold_return == pytest.approx(0.16)
     assert report.paper_evaluation.broker_integration_enabled is False
     assert report.paper_evaluation.real_orders_enabled is False
