@@ -13,6 +13,7 @@
 - [Milestone plan](README.md)
 - [Specification](../../specifications/p8-backtest-paper-happy-path.md)
 - [Accepted OpenSpec specification](../../../openspec/specs/p8-backtest-paper-happy-path/spec.md)
+- [User testing quickstart](user-testing-quickstart.md)
 
 ## Objective
 
