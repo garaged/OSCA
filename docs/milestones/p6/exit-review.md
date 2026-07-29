@@ -1,8 +1,8 @@
 # P6 Exit Review
 
-- **Status:** Implementation candidate
+- **Status:** Complete
 - **Scope reviewed:** Governed local CSV/Parquet OHLCV import, strict validation, metadata and payload persistence, operator CLI, documentation, and deferred boundaries
-- **Decision:** Pending hosted Quality and PR review
+- **Decision:** Accepted after PR #42 merge and hosted Quality
 
 ## Implementation evidence
 
@@ -34,9 +34,9 @@ P6 does not implement:
 
 ## Validation
 
-Local validation was not executed in this connector-only implementation environment because no authenticated local checkout was available and `gh` is not installed.
+Hosted Quality passed in PR #42 for commit `e944dca` before merge. Local validation remained connector-limited in this environment.
 
-Required hosted/local gates for acceptance:
+Retained gates:
 
 - `ruff`
 - `mypy`
@@ -48,4 +48,4 @@ Required hosted/local gates for acceptance:
 
 ## Outcome
 
-P6 should be marked complete only after PR review, merge, and hosted Quality evidence.
+P6 is complete and provides the local no-cost OHLCV import foundation consumed by P7.
