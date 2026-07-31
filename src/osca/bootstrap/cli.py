@@ -9,6 +9,11 @@ from uuid import UUID
 import typer
 
 from osca import __version__
+from osca.backtest_paper import (
+    BacktestPaperReportFormat,
+    BacktestPaperRequest,
+    run_backtest_paper_happy_path,
+)
 from osca.backtesting.api import BacktestRequest
 from osca.backtesting.application import plan_backtest_execution
 from osca.backtesting.persistence import SQLiteBacktestLifecycleStore
@@ -358,6 +363,37 @@ def demo_research_report(
         output_path=str(output_file) if output_file is not None else None,
     )
     report = run_demo_research_workflow(request)
+    typer.echo(report.model_dump_json(indent=2))
+
+
+@app.command("backtest-paper-run")
+def backtest_paper_run(
+    payload_file: Path,
+    symbol: str,
+    timeframe: LocalOHLCVTimeframe,
+    output_file: Annotated[Path | None, typer.Option("--output-file")] = None,
+    report_format: Annotated[
+        BacktestPaperReportFormat,
+        typer.Option("--report-format"),
+    ] = BacktestPaperReportFormat.MARKDOWN,
+    initial_cash: Annotated[float, typer.Option("--initial-cash")] = 10_000.0,
+    project_name: Annotated[
+        str,
+        typer.Option("--project-name"),
+    ] = "p8-backtest-paper-happy-path",
+) -> None:
+    """Run the P8 built-in strategy from local OHLCV data into paper evidence."""
+
+    request = BacktestPaperRequest(
+        project_name=project_name,
+        payload_path=str(payload_file),
+        symbol=symbol,
+        timeframe=timeframe,
+        initial_cash=initial_cash,
+        report_format=report_format,
+        output_path=str(output_file) if output_file is not None else None,
+    )
+    report = run_backtest_paper_happy_path(request)
     typer.echo(report.model_dump_json(indent=2))
 
 

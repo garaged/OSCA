@@ -1,8 +1,8 @@
 # P7 Exit Review
 
-- **Status:** Implementation candidate
+- **Status:** Complete
 - **Scope reviewed:** First demo research workflow, P6 payload consumption, deterministic metrics, CLI JSON output, static report output, documentation, and deferred boundaries
-- **Decision:** Pending hosted Quality and PR review
+- **Decision:** Complete after PR #43 merge and hosted Quality
 
 ## Implementation evidence
 
@@ -31,7 +31,7 @@ P7 does not implement:
 
 ## Validation
 
-Local validation was not executed in this connector-only implementation environment because no authenticated local checkout was available and `gh` is not installed.
+Hosted Quality passed for PR #43 before merge. Local validation was not executed in the connector-only implementation environment because no authenticated local checkout was available and `gh` is not installed.
 
 Required hosted/local gates for acceptance:
 
@@ -45,4 +45,4 @@ Required hosted/local gates for acceptance:
 
 ## Outcome
 
-P7 should be marked complete only after PR review, merge, and hosted Quality evidence.
+P7 is complete and P8 may consume its local demo workflow output.

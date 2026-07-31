@@ -190,3 +190,15 @@ Use this document as the durable baseline for future milestones. When M9 or late
 | Inspect metrics | Output includes bar count, first/latest close, total return, mean period return, volatility, max drawdown, SMA 3, and SMA 5. |
 | Inspect evidence boundary | Output states evidence-only and not-financial-advice semantics; recommendations, ML, LLM, scheduler execution, live providers, production ingestion, and real-capital orders remain disabled. |
 | Invalid payload failure | A Parquet payload missing any canonical OHLCV column fails closed before report generation. |
+
+
+## P8 Backtest-to-Paper Happy Path Smoke Checklist
+
+| Check | Expected result |
+|---|---|
+| Import sample CSV | `osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p8-smoke` writes the P6 payload and metadata. |
+| Run backtest-to-paper report | `osca backtest-paper-run /tmp/osca-p8-smoke/payloads/<dataset-revision-id>.parquet AAPL 1d --output-file /tmp/osca-p8-smoke/backtest-paper.md` returns CLI JSON and writes a Markdown evidence report. |
+| Inspect backtest evidence | Output includes strategy identity, bars processed, signal bars, initial cash, final equity, strategy return, buy-and-hold return, max drawdown, exposure, and evidence trade count. |
+| Inspect paper evidence | Output includes a linked paper-evaluation record with broker integration, autonomous execution, and real orders disabled. |
+| Inspect evidence boundary | Output states evidence-only and not-financial-advice semantics; live paper brokers, autonomous execution, recommendations, live providers, production ingestion, and real-capital orders remain disabled. |
+| Insufficient data failure | A payload with fewer than five bars fails closed before strategy execution. |

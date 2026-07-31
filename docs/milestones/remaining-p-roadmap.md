@@ -4,11 +4,11 @@
 - **Governing role:** Product authority
 - **Purpose:** Define the remaining P milestone sequence needed to move OSCA from governed foundation to usable local/demo tool, useful analyst workflow, production-capable version, and real-money readiness only if explicitly approved.
 - **Workflow:** One coherent branch and PR per meaningful milestone by default; batch foreseeable decisions early; continue implementation without asking unless a product, legal/licensing, security, or architecture decision is required.
-- **Next milestone:** P5 state reconciliation and operator surface
+- **Next milestone:** P8 backtest-to-paper happy path
 
 ## Shortest responsible path
 
-The shortest responsible path is P5, then P6, then P7. OSCA should become useful with local/imported no-cost OHLCV data before spending implementation effort on live providers. SEC EDGAR and FRED are valuable enrichment sources, but they do not replace market-price history.
+The shortest responsible path through the local/demo phase is P5, then P6, then P7, then P8. OSCA should become useful with local/imported no-cost OHLCV data before spending implementation effort on live providers. SEC EDGAR and FRED are valuable enrichment sources, but they do not replace market-price history.
 
 ## Milestone sequence
 

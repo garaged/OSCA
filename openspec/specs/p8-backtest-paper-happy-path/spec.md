@@ -24,6 +24,15 @@ P8 SHALL preserve explicit deferred boundaries for behavior outside its approved
 - **WHEN** a caller attempts deferred behavior
 - **THEN** OSCA fails closed or reports a policy-blocked state rather than silently enabling the behavior.
 
+### Requirement: P8 backtest-to-paper happy path
+
+P8 SHALL provide a deterministic local-data workflow from imported OHLCV payload to backtest evidence and paper-evaluation record.
+
+#### Scenario: Local payload is evaluated
+- **GIVEN** a canonical P6 OHLCV Parquet payload
+- **WHEN** the P8 happy path runs the built-in transparent strategy
+- **THEN** OSCA returns backtest metrics, buy-and-hold comparison, paper-evaluation evidence, and optional static report output.
+
 ### Requirement: P8 evidence retention
 
 P8 SHALL retain requirements, traceability, OpenSpec, manual-testing review, automated validation, and hosted Quality evidence.
