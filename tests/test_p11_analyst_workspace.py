@@ -4,6 +4,7 @@ import json
 import sqlite3
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from osca.analyst_workspace import (
@@ -157,26 +158,27 @@ def test_unknown_workspace_section_returns_404(tmp_path: Path) -> None:
     assert response.status_code == 404
 
 
-def test_snapshot_cli_outputs_json(tmp_path: Path, capsys: object) -> None:
+def test_snapshot_cli_outputs_json(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     _write_dataset_metadata(tmp_path)
 
     result = main(["--storage-root", str(tmp_path), "--snapshot"])
 
     assert result == 0
-    captured = capsys.readouterr()  # type: ignore[attr-defined]
-    document = json.loads(captured.out)
+    document = json.loads(capsys.readouterr().out)
     assert document["read_only"] is True
     assert document["total_items"] == 1
 
 
 def test_workspace_server_rejects_non_loopback_binding(
     tmp_path: Path,
-    capsys: object,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     result = main(
         ["--storage-root", str(tmp_path), "--host", "0.0.0.0", "--port", "8000"]
     )
 
     assert result == 2
-    captured = capsys.readouterr()  # type: ignore[attr-defined]
-    assert "loopback" in captured.err
+    assert "loopback" in capsys.readouterr().err
