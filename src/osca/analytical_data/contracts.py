@@ -72,7 +72,7 @@ class ChartRow(BaseModel):
     close: float
     volume: float
     complete: bool = True
-    derived: dict[str, float | None] = {}
+    derived: dict[str, float | None] = Field(default_factory=dict)
 
 
 class DerivedSeriesEvidence(BaseModel):
