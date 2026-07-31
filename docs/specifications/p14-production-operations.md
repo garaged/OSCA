@@ -1,8 +1,8 @@
-# P14 Production Operations Specification
+# P14 Personal-Server Production Operations Specification
 
 ## Purpose
 
-Make personal-server operation credible with scheduler execution, external alerts, backup transport, restore execution, release packaging, and security hardening.
+Provide explicit, evidence-retaining operations for a trusted single-user OSCA host.
 
 ## Phase
 
@@ -10,36 +10,42 @@ Production-capable version
 
 ## User-visible value
 
-A user can operate OSCA as a durable local/personal service rather than a demo script.
+An operator can schedule governed commands, deliver configured alerts, create and restore off-source backups, and deploy hardened service templates.
 
 ## Requirements
 
-- REQ-0254-REQ-0260: OSCA must implement the P14 scope described by this specification before P14 is marked complete.
-- REQ-0254-REQ-0260: P14 must preserve explicit non-scope boundaries and fail closed when a caller attempts deferred behavior.
-- REQ-0254-REQ-0260: P14 completion requires updated requirements, traceability, milestone status, manual-testing review, OpenSpec evidence, automated validation, and hosted Quality evidence.
+- **REQ-0254:** OSCA must validate personal-server exposure and reject non-loopback binding unless TLS and authentication are enabled.
+- **REQ-0255:** OSCA must execute only explicitly enabled scheduled commands with bounded timeout and retained run evidence.
+- **REQ-0256:** OSCA must deliver alerts only through explicitly enabled file or HTTPS-webhook transports and must redact webhook destinations from evidence.
+- **REQ-0257:** OSCA must create backups outside the source tree with a manifest, file count, and SHA-256 digest.
+- **REQ-0258:** OSCA must restore archives through path-safe staging and require explicit overwrite permission for non-empty destinations.
+- **REQ-0259:** OSCA must provide hardened single-user deployment templates without representing them as complete infrastructure automation.
+- **REQ-0260:** P14 completion requires manual usage, traceability, OpenSpec, automated validation, and hosted Quality evidence.
 
 ## Implementation scope
 
-- Implement scheduler execution for governed jobs.
-- Implement external alert delivery where configured.
-- Implement off-device backup transport and active restore execution.
-- Harden TLS/session/auth configuration and release packaging.
+- Frozen scheduler, alert, backup, restore, security, and evidence contracts.
+- CLI-controlled operational execution with explicit enablement.
+- File and HTTPS-webhook alerts.
+- tar.gz backup and active restore execution.
+- systemd service/timer templates with common hardening directives.
 
 ## Explicit non-scope
 
-- Multi-tenant SaaS, real-money execution.
+- Multi-tenant SaaS, public anonymous access, managed infrastructure provisioning, remote arbitrary command control, broker/exchange connections, autonomous trading, or real-money execution.
 
 ## Acceptance criteria
 
-- The milestone objective is demonstrable from supported CLI, API, UI, or documented operator workflow surfaces, as applicable.
-- Automated tests cover new code paths and negative/deferred-boundary behavior.
-- Documentation and traceability identify implemented, specified-only, fixture-backed, and deferred behavior.
-- The milestone exit review records validation evidence and remaining deferrals.
+- Disabled operations return structured `policy_blocked` evidence.
+- Security validation fails closed for unsafe exposure.
+- Backup/restore tests cover source separation, archive safety, and overwrite behavior.
+- Scheduler and alert tests cover successful and blocked behavior.
+- Documentation distinguishes implementation from operator-owned infrastructure controls.
 
 ## Dependencies
 
-P10-P13 and M12 contracts.
+P10-P13 and M12 operations/recovery contracts.
 
 ## Risks and decisions
 
-Security review is required before exposing personal-server surfaces.
+A trusted single-user host remains the supported deployment model. Operators own host patching, firewalling, TLS certificates, identities, off-device storage access, and post-restore application validation.

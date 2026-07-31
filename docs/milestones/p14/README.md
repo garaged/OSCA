@@ -1,56 +1,62 @@
-# P14 - Production Operations
+# P14 - Personal-Server Production Operations
 
-- **Status:** Planned
+- **Status:** Implementation candidate
 - **Governing role:** Product authority
 - **Phase:** Production-capable version
-- **Authoritative outcome:** Make personal-server operation credible with scheduler execution, external alerts, backup transport, restore execution, release packaging, and security hardening.
-- **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
-- **Last reviewed:** 2026-07-26
-- **Validation:** Planned
-
-## Current artifacts
-
-- [Milestone plan](README.md)
-- [Specification](../../specifications/p14-production-operations.md)
-- [Accepted OpenSpec specification](../../../openspec/specs/p14-production-operations/spec.md)
+- **Authoritative outcome:** Make single-user personal-server operation credible through explicit scheduler execution, alerts, backup/restore, hardened deployment templates, and fail-closed security controls.
+- **Baseline:** P1-P13 complete
+- **Last reviewed:** 2026-07-31
+- **Validation:** Hosted Quality pending
 
 ## Objective
 
-Make personal-server operation credible with scheduler execution, external alerts, backup transport, restore execution, release packaging, and security hardening.
+Turn the retained OSCA workflow into an operable single-user service without creating a multi-tenant SaaS or enabling autonomous trading.
 
 ## User-visible value
 
-A user can operate OSCA as a durable local/personal service rather than a demo script.
+An operator can run governed commands on a schedule, deliver configured alerts, create off-source backups, restore through validated staging, and deploy hardened systemd units.
 
-## Implementation scope
+## Implemented scope
 
-- Implement scheduler execution for governed jobs.
-- Implement external alert delivery where configured.
-- Implement off-device backup transport and active restore execution.
-- Harden TLS/session/auth configuration and release packaging.
+- Immutable scheduler, alert, backup, restore, security, and evidence contracts.
+- Explicit scheduled-command execution with timeout and stdout/stderr retention.
+- File and HTTPS-webhook alerts, disabled by default.
+- Off-source-tree tar.gz backups with manifest and SHA-256 evidence.
+- Active restore through path-safe temporary staging and explicit overwrite permission.
+- Non-loopback security gate requiring TLS and authentication.
+- Hardened systemd service and timer templates.
+- CLI through `python -m osca.personal_server`.
+
+## Explicit behavior
+
+- Operational actions require explicit `--enable` flags or enabled contracts.
+- Loopback operation is allowed without TLS/auth; non-loopback binding is rejected unless both are enabled.
+- Webhook destinations require HTTPS and are redacted in evidence.
+- Backup destinations inside the source tree are rejected.
+- Restore to a non-empty destination requires explicit overwrite permission.
 
 ## Explicit non-scope
 
-- Multi-tenant SaaS, real-money execution.
+- Multi-tenant SaaS or public anonymous access.
+- Embedded secret values or credential materialization.
+- Arbitrary shell scheduling controlled by remote callers.
+- Managed cloud orchestration, Kubernetes operators, or automatic infrastructure provisioning.
+- Recommendations, broker/exchange connections, autonomous execution, or real-capital orders.
 
 ## Acceptance criteria
 
-- REQ-0254-REQ-0260 are allocated before implementation begins.
-- The implementation proves the stated scope with automated tests where code changes are made.
-- Manual testing and usage is updated when operator-visible behavior changes.
-- Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
-
-## Validation gates
-
-- Ruff, mypy, pytest, architecture validation, OpenSpec validation, and secret scanning.
-- Documentation, traceability, and manual-testing review.
-- Exit review recording final evidence.
+- REQ-0254-REQ-0260 map to implementation and tests.
+- Operator actions remain disabled by default and retain structured evidence.
+- Backup and restore prove path safety and explicit overwrite behavior.
+- Non-loopback exposure fails closed without TLS and authentication.
+- Automated tests, manual usage, OpenSpec, traceability, and hosted Quality are current before completion.
 
 ## Dependencies
 
-P10-P13 and M12 contracts.
+P10-P13 routing, workspace, and ingestion capabilities plus M12 operations/recovery contracts.
 
 ## Risks and decisions
 
-Security review is required before exposing personal-server surfaces.
+- P14 targets a trusted single-user host, not a public service.
+- systemd templates are deployment examples; the operator still owns OS hardening, TLS termination, identities, firewalling, and off-device storage permissions.
+- Restore success requires an operator post-restore functional check.
