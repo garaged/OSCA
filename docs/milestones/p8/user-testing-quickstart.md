@@ -15,11 +15,13 @@ The project uses Python 3.13. If uv sync cannot find that interpreter, install i
 
 The import command takes input_file, symbol, and timeframe as positional arguments. Its output includes the exact payload_uri that the next two commands need.
 
+The built-in `sma-trend-long-only` backtest strategy needs at least five bars. The fixture below has ten daily bars, so the entire P6-to-P8 workflow is runnable without changing inputs.
+
 Run the following block as-is. It prints the import result and stores its emitted payload_uri in PAYLOAD_URI, so there is no path or revision ID to type manually.
 
 ~~~bash
 IMPORT_RESULT="$(uv run osca local-ohlcv-import \
-  tests/fixtures/local_ohlcv/aapl_daily.csv \
+  tests/fixtures/local_ohlcv/aapl_backtest_daily.csv \
   AAPL \
   1d \
   --storage-root .osca/manual-test)"
@@ -32,7 +34,7 @@ PAYLOAD_URI="$(printf '%s\n' "$IMPORT_RESULT" | uv run python -c \
 printf 'Using payload: %s\n' "$PAYLOAD_URI"
 ~~~
 
-The sample import should report three rows. Its payload_uri is the source of truth for the remaining commands; do not type placeholder text such as <dataset-revision-id> into the shell.
+The sample import should report ten rows. Its payload_uri is the source of truth for the remaining commands; do not type placeholder text such as <dataset-revision-id> into the shell.
 
 ## Run the Demo Research Report
 
