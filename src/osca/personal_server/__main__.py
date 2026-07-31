@@ -29,6 +29,7 @@ def main() -> None:
     run.add_argument("--job-id", required=True)
     run.add_argument("--evidence-root", required=True)
     run.add_argument("--working-directory", default=".")
+    run.add_argument("--interval-seconds", type=int, default=900)
     run.add_argument("--enable", action="store_true")
     run.add_argument("job_command", nargs=argparse.REMAINDER)
 
@@ -51,28 +52,29 @@ def main() -> None:
 
     args = parser.parse_args()
     if args.command == "security-check":
-        result = PersonalServerSecurity(
+        security_result = PersonalServerSecurity(
             bind_host=args.host,
             tls_enabled=args.tls,
             authentication_enabled=args.auth,
         )
-        print(result.model_dump_json(indent=2))
+        print(security_result.model_dump_json(indent=2))
     elif args.command == "run-job":
         command = tuple(args.job_command)
         if not command:
             parser.error("run-job requires a command after --")
-        result = run_scheduled_job(
+        job_result = run_scheduled_job(
             ScheduledJob(
                 job_id=args.job_id,
                 command=command,
+                interval_seconds=args.interval_seconds,
                 enabled=args.enable,
                 working_directory=args.working_directory,
             ),
             evidence_root=args.evidence_root,
         )
-        print(result.model_dump_json(indent=2))
+        print(job_result.model_dump_json(indent=2))
     elif args.command == "alert-file":
-        result = deliver_alert(
+        alert_result = deliver_alert(
             AlertRequest(
                 transport=AlertTransport.FILE,
                 subject=args.subject,
@@ -81,18 +83,18 @@ def main() -> None:
                 enabled=args.enable,
             )
         )
-        print(result.model_dump_json(indent=2))
+        print(alert_result.model_dump_json(indent=2))
     elif args.command == "backup":
-        result = create_backup(
+        backup_result = create_backup(
             BackupRequest(
                 source_root=args.source_root,
                 destination_root=args.destination_root,
                 enabled=args.enable,
             )
         )
-        print(result.model_dump_json(indent=2))
+        print(backup_result.model_dump_json(indent=2))
     else:
-        result = restore_backup(
+        restore_result = restore_backup(
             RestoreRequest(
                 archive_path=args.archive,
                 destination_root=args.destination_root,
@@ -100,7 +102,7 @@ def main() -> None:
                 overwrite=args.overwrite,
             )
         )
-        print(result.model_dump_json(indent=2))
+        print(restore_result.model_dump_json(indent=2))
 
 
 if __name__ == "__main__":
