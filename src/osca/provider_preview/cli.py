@@ -23,12 +23,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    for command, endpoint in (
-        ("sec-company-facts", ProviderAdapterEndpoint.SEC_COMPANY_FACTS),
-        ("sec-submissions", ProviderAdapterEndpoint.SEC_SUBMISSIONS),
-    ):
+    for command in ("sec-company-facts", "sec-submissions"):
         sec_parser = subparsers.add_parser(command)
-        sec_parser.set_defaults(endpoint=endpoint)
         sec_parser.add_argument("cik")
         sec_parser.add_argument("--storage-root", type=Path, default=Path(".osca"))
         sec_parser.add_argument("--fixture-file", type=Path)
@@ -47,30 +43,52 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     command = cast(str, args.command)
     try:
-        if command in {"sec-company-facts", "sec-submissions"}:
-            request = SecPreviewRequest(
-                endpoint=cast(ProviderAdapterEndpoint, args.endpoint),
+        if command == "sec-company-facts":
+            sec_request = SecPreviewRequest(
+                endpoint=ProviderAdapterEndpoint.SEC_COMPANY_FACTS,
                 cik=cast(str, args.cik),
                 network_access_enabled=cast(bool, args.enable_network),
                 fixture_path=cast(Path | None, args.fixture_file),
                 user_agent=cast(str | None, args.user_agent),
                 force_refresh=cast(bool, args.force_refresh),
             )
-            evidence = SecPreviewService().run(
-                request,
+            return _run_sec_preview(
+                sec_request,
                 storage_root=cast(Path, args.storage_root),
             )
-            print(json.dumps(evidence.model_dump(mode="json"), indent=2, sort_keys=True))
-            return 0
 
-        request = FredPreviewRequest(
+        if command == "sec-submissions":
+            sec_request = SecPreviewRequest(
+                endpoint=ProviderAdapterEndpoint.SEC_SUBMISSIONS,
+                cik=cast(str, args.cik),
+                network_access_enabled=cast(bool, args.enable_network),
+                fixture_path=cast(Path | None, args.fixture_file),
+                user_agent=cast(str | None, args.user_agent),
+                force_refresh=cast(bool, args.force_refresh),
+            )
+            return _run_sec_preview(
+                sec_request,
+                storage_root=cast(Path, args.storage_root),
+            )
+
+        fred_request = FredPreviewRequest(
             series_id=cast(str, args.series_id),
             network_access_enabled=cast(bool, args.enable_network),
             secret_reference=cast(str | None, args.secret_reference),
         )
-        evidence = evaluate_fred_preview(request)
+        evidence = evaluate_fred_preview(fred_request)
         print(json.dumps(evidence.model_dump(mode="json"), indent=2, sort_keys=True))
         return 2
     except (ProviderPreviewError, ValidationError, ValueError) as exc:
         print(json.dumps({"error": str(exc)}, indent=2), file=sys.stderr)
         return 2
+
+
+def _run_sec_preview(
+    request: SecPreviewRequest,
+    *,
+    storage_root: Path,
+) -> int:
+    evidence = SecPreviewService().run(request, storage_root=storage_root)
+    print(json.dumps(evidence.model_dump(mode="json"), indent=2, sort_keys=True))
+    return 0
