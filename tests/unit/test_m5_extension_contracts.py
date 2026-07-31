@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
@@ -18,7 +20,7 @@ DIGEST = "sha256:" + "a" * 64
 
 
 def manifest(**overrides: object) -> ExtensionManifest:
-    values: dict[str, object] = {
+    values: dict[str, Any] = {
         "package_id": "momentum-extension",
         "name": "Momentum Extension",
         "publisher": "garaged",
