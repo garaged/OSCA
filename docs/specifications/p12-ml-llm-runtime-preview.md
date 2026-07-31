@@ -1,45 +1,55 @@
-# P12 ML/LLM Runtime Preview Specification
+# P12 Local Model-Assisted Preview Specification
 
 ## Purpose
 
-Turn governed ML and LLM lifecycle contracts into opt-in local runtime previews with budgets, provenance, and fail-closed controls.
-
-## Phase
-
-Useful analyst workflow
-
-## User-visible value
-
-Users can experiment with model-assisted analysis while retaining evidence and cost/privacy boundaries.
+Turn the M9-M10 ML/LLM governance contracts into optional local previews without introducing a required model provider.
 
 ## Requirements
 
-- REQ-0240-REQ-0246: OSCA must implement the P12 scope described by this specification before P12 is marked complete.
-- REQ-0240-REQ-0246: P12 must preserve explicit non-scope boundaries and fail closed when a caller attempts deferred behavior.
-- REQ-0240-REQ-0246: P12 completion requires updated requirements, traceability, milestone status, manual-testing review, OpenSpec evidence, automated validation, and hosted Quality evidence.
+- **REQ-0240:** P12 SHALL provide one deterministic local numeric inference path.
+- **REQ-0241:** P12 SHALL provide fixture-backed LLM analysis with exact provider, model, and prompt identity.
+- **REQ-0242:** P12 SHALL enforce input, output, cost, and latency budgets before evidence is accepted.
+- **REQ-0243:** P12 SHALL retain immutable input digest, model identity, prompt identity, output, metrics, findings, cost, latency, and review status.
+- **REQ-0244:** P12 SHALL disable network/model calls by default and fail closed when no fixture is supplied.
+- **REQ-0245:** P12 SHALL require human review for every LLM-derived output and SHALL not label it as financial advice.
+- **REQ-0246:** P12 SHALL preserve all deferred provider, credential, production-serving, recommendation, broker, autonomous-action, and real-order boundaries.
 
-## Implementation scope
+## Implemented paths
 
-- Implement one small ML training/inference path over imported data.
-- Implement optional LLM analysis generation through existing gateway contracts.
-- Record budgets, inputs, prompts, model identity, outputs, and review status.
-- Disable network/model calls by default.
+### Deterministic local trend preview
+
+The local preview fits an ordinary-least-squares line to explicit numeric values and emits slope, intercept, mean-squared error, direction, and next-value evidence. It is deterministic, network-disabled, and zero-cost.
+
+### Fixture-backed LLM analysis preview
+
+The LLM preview accepts explicit input text, prompt identity, exact provider/model identity, budgets, and a fixture response. Fixture output is retained as `review_required` with human-review and not-financial-advice findings.
+
+When network access is disabled and no fixture exists, the result is `policy_blocked`. When a caller explicitly checks live mode, the result is `provider_unavailable` until a separately governed executor exists. No credential is resolved and no network call occurs.
+
+## Evidence statuses
+
+- `succeeded`
+- `review_required`
+- `budget_exceeded`
+- `policy_blocked`
+- `provider_unavailable`
 
 ## Explicit non-scope
 
-- Autonomous recommendations, production model serving, real orders.
+- Remote model invocation and credential resolution
+- Automatic training, retraining, promotion, or production serving
+- Tool execution or state mutation
+- Authoritative recommendations or financial advice
+- Broker/exchange connectivity, autonomous execution, or real-capital orders
 
 ## Acceptance criteria
 
-- The milestone objective is demonstrable from supported CLI, API, UI, or documented operator workflow surfaces, as applicable.
-- Automated tests cover new code paths and negative/deferred-boundary behavior.
-- Documentation and traceability identify implemented, specified-only, fixture-backed, and deferred behavior.
-- The milestone exit review records validation evidence and remaining deferrals.
+- The two preview paths are available through API and CLI.
+- Evidence is retained atomically under the configured storage root.
+- Missing fixtures, live executor absence, and budget violations are explicit and fail closed.
+- Tests cover positive and negative boundaries.
+- Manual usage, traceability, OpenSpec, exit evidence, and hosted Quality are current before P12 is complete.
 
 ## Dependencies
 
 P7-P11 and M9-M10 contracts.
-
-## Risks and decisions
-
-Cost, privacy, and hallucination boundaries require explicit validation.
