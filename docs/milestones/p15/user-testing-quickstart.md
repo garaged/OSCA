@@ -1,51 +1,31 @@
 # P15 User Testing Quickstart
 
-Use only disposable local packs you trust. P15 is not a hostile-code sandbox.
+Use only local packs you trust. P15 is not a hostile-code sandbox.
 
-## Prepare a sample pack
+## Prepare the committed dry-run pack
 
 ```bash
-rm -rf .osca/p15-manual /tmp/osca-example-pack
-mkdir -p /tmp/osca-example-pack
-cat >/tmp/osca-example-pack/run.py <<'PY'
-#!/usr/bin/env python3
-import json
-import sys
-payload = json.load(sys.stdin)
-print(json.dumps({"pack": "example-analysis", "received": payload}))
-PY
-chmod 700 /tmp/osca-example-pack/run.py
-DIGEST="sha256:$(shasum -a 256 /tmp/osca-example-pack/run.py | awk '{print $1}')"
-cat >/tmp/osca-example-pack/osca-pack.json <<JSON
-{
-  "package_id": "example-analysis",
-  "package_version": "1.0.0",
-  "publisher": "local-operator",
-  "category": "analysis",
-  "executable": "run.py",
-  "osca_min_version": "0.1.0",
-  "trust_tier": "local_trusted",
-  "integrity_digest": "$DIGEST",
-  "permissions": [],
-  "max_runtime_seconds": 10,
-  "max_output_bytes": 10000
-}
-JSON
+rm -rf .osca/p15-manual
+python examples/runtime-packs/dry-run/prepare.py
 ```
+
+The helper makes the example executable and writes `osca-pack.json` with the current SHA-256 digest. Run it again after editing `run.py`.
 
 ## Validate
 
 ```bash
-uv run python -m osca.runtime_extensions validate /tmp/osca-example-pack \
+uv run python -m osca.runtime_extensions validate \
+  examples/runtime-packs/dry-run \
   --storage-root .osca/p15-manual
 ```
 
-Expected: `validated`, exact package/version and digest, no process execution.
+Expected: `validated`, exact package/version and digest, and no process execution.
 
 ## Confirm execution is disabled by default
 
 ```bash
-uv run python -m osca.runtime_extensions run /tmp/osca-example-pack \
+uv run python -m osca.runtime_extensions run \
+  examples/runtime-packs/dry-run \
   --storage-root .osca/p15-manual \
   --input '{"symbol":"AAPL"}'
 ```
@@ -55,26 +35,40 @@ Expected: `policy_blocked` and `execution-disabled`.
 ## Execute explicitly
 
 ```bash
-uv run python -m osca.runtime_extensions run /tmp/osca-example-pack \
+uv run python -m osca.runtime_extensions run \
+  examples/runtime-packs/dry-run \
   --storage-root .osca/p15-manual \
   --input '{"symbol":"AAPL"}' \
   --enable
 ```
 
-Expected: `succeeded`, exit code `0`, retained stdout/stderr URIs, and output digest under `.osca/p15-manual/runtime-extensions/example-analysis/evidence/`.
+Expected: `succeeded`, exit code `0`, retained stdout/stderr URIs, and output under `.osca/p15-manual/runtime-extensions/osca-dry-run/evidence/`.
+
+The output echoes the input and reports both runtime markers as disabled:
+
+```json
+{
+  "input": {"symbol": "AAPL"},
+  "network": "disabled",
+  "ok": true,
+  "pack": "osca-dry-run",
+  "secrets": "disabled"
+}
+```
 
 ## Install
 
 ```bash
-uv run python -m osca.runtime_extensions install /tmp/osca-example-pack \
+uv run python -m osca.runtime_extensions install \
+  examples/runtime-packs/dry-run \
   --storage-root .osca/p15-manual
 ```
 
-Expected: `installed`, versioned package directory, and `active.json` pointer.
+Expected: `installed`, a versioned package directory, and an `active.json` pointer.
 
 ## Negative checks
 
-- Change one byte in `run.py`; validation must fail with digest mismatch.
+- Change one byte in `run.py` after preparing the pack; validation must fail with digest mismatch.
 - Change `trust_tier` to `untrusted`; validation must return `policy_blocked`.
 - Change `osca_min_version` to `9.0.0`; validation must return `incompatible`.
 - Add a manifest permission without supplying an exact approved permission through the Python API; validation must return `policy_blocked`.
@@ -83,3 +77,5 @@ Expected: `installed`, versioned package directory, and `active.json` pointer.
 ## Boundaries
 
 Confirm no workflow enables remote pack discovery, public marketplace behavior, in-process imports, untrusted execution, implicit permissions, credentials, provider promotion, recommendations, brokers, autonomous trading, or real-capital orders.
+
+The example-specific guide is at `examples/runtime-packs/dry-run/README.md`.
