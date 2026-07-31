@@ -1,55 +1,70 @@
-# P11 - Useful Analyst Workspace
+# P11 - Read-Only Analyst Workspace
 
-- **Status:** Planned
+- **Status:** Implementation candidate, review ready
 - **Governing role:** Product authority
 - **Phase:** Useful analyst workflow
-- **Authoritative outcome:** Add a focused analyst workspace for projects, datasets, reports, backtests, and enrichment evidence.
-- **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
-- **Last reviewed:** 2026-07-26
-- **Validation:** Planned
+- **Authoritative outcome:** Provide a focused local browser/API workspace for inspecting retained OSCA datasets and evidence while preserving provenance and fail-closed states.
+- **Baseline:** Completed M0-M12 roadmap and P1-P10
+- **Last reviewed:** 2026-07-31
+- **Validation:** Hosted Quality run `30643690550` passed on PR #54
 
 ## Current artifacts
 
 - [Milestone plan](README.md)
 - [Specification](../../specifications/p11-analyst-workspace.md)
 - [Accepted OpenSpec specification](../../../openspec/specs/p11-analyst-workspace/spec.md)
+- [Requirements and traceability reconciliation](../../governance/p10-p11-reconciliation.md)
+- [User testing quickstart](user-testing-quickstart.md)
+- [Exit review](exit-review.md)
 
 ## Objective
 
-Add a focused analyst workspace for projects, datasets, reports, backtests, and enrichment evidence.
+Turn the P6-P10 local evidence path into an approachable read-only product surface without introducing a frontend toolchain, mutation APIs, or provider activity.
 
 ## User-visible value
 
-Users can browse and inspect OSCA output without reading raw metadata tables.
+Users can inspect retained projects, watchlists, datasets, reports, backtests, SEC evidence, and routing outcomes from a local browser or JSON API. Empty sections are explicit, and policy blocks remain visible.
 
-## Implementation scope
+## Implemented scope
 
-- Add a minimal local web/API-backed workspace or equivalent product UI.
-- Show projects, watchlists, imported datasets, data quality, reports, backtests, and enrichment evidence.
-- Add empty/error/loading states and manual smoke tests.
+- Immutable workspace snapshot, section, item, and status contracts.
+- P6 local dataset discovery from SQLite.
+- Retained P7 research and P8 backtest/paper report discovery.
+- P9 SEC metadata and P10 routing-decision discovery where retained.
+- Optional local project/watchlist JSON summary discovery.
+- Preserved `available`, `warning`, `policy_blocked`, and `provider_unavailable` states.
+- `/`, `/health`, `/api/workspace`, and `/api/workspace/{section}`.
+- `python -m osca.analyst_workspace --snapshot` and loopback-only server mode.
+- Credential-like metadata key filtering before presentation.
 
 ## Explicit non-scope
 
-- Full BI platform, multi-user SaaS, extension marketplace UI.
+- Creating, editing, deleting, importing, backtesting, or invoking providers.
+- Full BI, chart authoring, multi-user SaaS, remote/public hosting, or marketplace UI.
+- Provider credentials, recommendations, brokers, autonomous execution, or real-capital orders.
+
+## Validation evidence
+
+- Ruff passed.
+- Strict mypy passed across 188 source files.
+- 317 tests passed, including all eight P11 workspace tests.
+- Contracts, migrations, links, and architecture checks passed.
+- OpenSpec doctor and strict validation passed.
+- Secret scanning passed.
+- Quality run `30643690550` is the accepted assembled-implementation evidence.
 
 ## Acceptance criteria
 
-- REQ-0233-REQ-0239 are allocated before implementation begins.
-- The implementation proves the stated scope with automated tests where code changes are made.
-- Manual testing and usage is updated when operator-visible behavior changes.
-- Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
-
-## Validation gates
-
-- Ruff, mypy, pytest, architecture validation, OpenSpec validation, and secret scanning.
-- Documentation, traceability, and manual-testing review.
-- Exit review recording final evidence.
-
-## Dependencies
-
-P7-P10.
+- REQ-0233-REQ-0239 reflect the read-only workspace scope.
+- Empty storage presents all sections with honest empty states.
+- Existing artifacts are discoverable with provenance and stable status.
+- P10 blocked/unavailable routing decisions remain unchanged in presentation.
+- The API has no mutation endpoints and non-loopback startup fails closed.
+- Manual usage, traceability, OpenSpec, exit evidence, and hosted Quality are current.
 
 ## Risks and decisions
 
-UI scope can sprawl; P11 must stay read-mostly and evidence-oriented.
+- The interface is deliberately read-only and loopback-only.
+- No project/watchlist records are synthesized when none exist.
+- P11 displays evidence and routing rationale; it does not produce financial advice.
+- Any future mutation or remote-access capability requires a separate governed milestone.
