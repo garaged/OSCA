@@ -1,17 +1,17 @@
 # P13 Exit Review
 
 - **Milestone:** P13 governed production provider admission and ingestion
-- **Status:** Implementation candidate; hosted Quality and review pending
+- **Status:** Implementation candidate, review ready
 - **Branch:** `agent/p13-governed-production-ingestion`
 - **Pull request:** #56
 - **Baseline:** merged P12 commit `03aca9f71db0087c2ef6df5b176baae219cbf99e`
+- **Hosted Quality:** Run `30647675952` passed on head `ff8ca0504131beb46fce5d2765ada21c27e4f890`
 
 ## Implemented evidence
 
 - Immutable provider admission, ingestion request, and ingestion evidence contracts.
 - Auditable admission matrix for six provider candidates.
-- Approved bounded SEC EDGAR company-facts/submissions scope.
-- Approved bounded Kraken public spot-OHLC scope.
+- Bounded SEC EDGAR company-facts/submissions and Kraken public spot-OHLC scopes.
 - Explicit `needs_evidence` decisions for Twelve Data, Alpha Vantage, and Nasdaq Data Link.
 - Explicit `policy_blocked` decision for FRED.
 - HTTPS host/path allowlists, explicit network opt-in, SEC user-agent requirement, bounded timeout, response size, and retries.
@@ -20,26 +20,19 @@
 
 ## Safety behavior
 
-- Non-admitted providers fail before transport invocation.
-- Resources outside an admitted scope are policy-blocked.
-- External redistribution and public SaaS display are not enabled.
-- No API keys or credentials are materialized.
-- No production trading, recommendations, brokers, autonomous execution, or real-capital orders are enabled.
+Non-admitted providers fail before transport invocation. Resources outside admitted scope are blocked. External redistribution, public SaaS display, credential materialization, production trading, recommendations, brokers, autonomous execution, and real-capital orders remain disabled.
 
-## Automated validation
+## Automated and hosted validation
 
-Tests cover admission classification, explicit network permission, non-admitted providers, endpoint allowlists, atomic retention, bounded retries, response-size limits, and network-free policy inspection.
+- Ruff passed.
+- Strict mypy passed across 199 source files.
+- 332 tests passed, including all eight P13 tests.
+- Contracts, migrations, document links, and architecture checks passed.
+- OpenSpec doctor and strict validation passed.
+- Secret scanning passed.
 
-## Hosted validation
-
-Pending final review-ready run:
-
-- Ruff
-- strict mypy
-- pytest, contracts, migrations, links, and architecture checks
-- OpenSpec doctor and strict validation
-- secret scanning
+An earlier run found two strict-typing issues in the urllib response and cache-state literal; these were corrected without changing behavior. A later run found one missing OpenSpec completion scenario; the scenario was added and the final run passed.
 
 ## Completion decision
 
-P13 remains an implementation candidate until the final Quality run is green, documentation and traceability are reconciled, the branch diff is reviewed, and PR #56 is merged.
+REQ-0247 through REQ-0253 are implemented for the approved P13 scope. P13 should be marked complete after PR #56 is reviewed and merged. P14 remains the next planned production-operations milestone.
