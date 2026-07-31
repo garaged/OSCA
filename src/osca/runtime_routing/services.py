@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
+from typing import Literal
 from urllib.parse import unquote, urlparse
 
 from pydantic import ValidationError
@@ -190,7 +191,10 @@ class RuntimeRouter:
                 finding_ids=("sec-source-not-supplied",),
                 provider_id=ProviderCatalogIdentifier.SEC_EDGAR,
             )
-        endpoint = (
+        endpoint: Literal[
+            ProviderAdapterEndpoint.SEC_COMPANY_FACTS,
+            ProviderAdapterEndpoint.SEC_SUBMISSIONS,
+        ] = (
             ProviderAdapterEndpoint.SEC_COMPANY_FACTS
             if request.capability is RuntimeRoutingCapability.COMPANY_FACTS
             else ProviderAdapterEndpoint.SEC_SUBMISSIONS
