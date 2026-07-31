@@ -1,4 +1,5 @@
 import sqlite3
+from pathlib import Path
 
 import pytest
 
@@ -53,7 +54,7 @@ def manifest(package_id: str = "stored-extension") -> ExtensionManifest:
     )
 
 
-def test_sqlite_store_round_trips_installation_records(tmp_path) -> None:
+def test_sqlite_store_round_trips_installation_records(tmp_path: Path) -> None:
     store = SQLiteExtensionLifecycleStore(tmp_path / "extensions.sqlite")
     store.initialize()
     package = manifest()
@@ -72,7 +73,7 @@ def test_sqlite_store_round_trips_installation_records(tmp_path) -> None:
     assert store.list_installations(package_id="missing") == ()
 
 
-def test_sqlite_store_round_trips_activation_decisions(tmp_path) -> None:
+def test_sqlite_store_round_trips_activation_decisions(tmp_path: Path) -> None:
     store = SQLiteExtensionLifecycleStore(tmp_path / "extensions.sqlite")
     store.initialize()
     package = manifest()
@@ -99,7 +100,7 @@ def test_sqlite_store_round_trips_activation_decisions(tmp_path) -> None:
     assert store.list_activation_decisions_for_package("missing") == ()
 
 
-def test_sqlite_store_preserves_distinct_package_installations(tmp_path) -> None:
+def test_sqlite_store_preserves_distinct_package_installations(tmp_path: Path) -> None:
     store = SQLiteExtensionLifecycleStore(tmp_path / "extensions.sqlite")
     store.initialize()
     first = manifest(package_id="first-extension")
@@ -123,7 +124,7 @@ def test_sqlite_store_preserves_distinct_package_installations(tmp_path) -> None
     assert store.list_installations(package_id="second-extension") == (second_record,)
 
 
-def test_sqlite_store_requires_installation_before_activation_decision(tmp_path) -> None:
+def test_sqlite_store_requires_installation_before_activation_decision(tmp_path: Path) -> None:
     store = SQLiteExtensionLifecycleStore(tmp_path / "extensions.sqlite")
     store.initialize()
     package = manifest()

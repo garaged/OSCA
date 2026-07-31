@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from osca.llm import (
     LLMCapability,
     LLMPrivacyClass,
@@ -11,7 +13,7 @@ from osca.llm import (
 )
 
 
-def test_llm_lifecycle_store_round_trips_request_scoped_records(tmp_path) -> None:
+def test_llm_lifecycle_store_round_trips_request_scoped_records(tmp_path: Path) -> None:
     store = SQLiteLLMLifecycleStore(tmp_path / "llm.sqlite3")
     store.initialize()
     provider = LLMProviderCapability(

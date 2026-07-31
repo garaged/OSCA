@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from pathlib import Path
 from uuid import uuid4
 
 from osca.backtesting.eventing import PromotionGateDecision
@@ -20,7 +21,7 @@ from osca.paper import (
 )
 
 
-def test_paper_evaluation_store_round_trips_metadata_records(tmp_path) -> None:
+def test_paper_evaluation_store_round_trips_metadata_records(tmp_path: Path) -> None:
     account = PaperAccount(name="mean-reversion-paper", created_at=datetime(2026, 1, 1, tzinfo=UTC))
     gate = PromotionGateDecision(
         request_id=uuid4(),
@@ -97,7 +98,7 @@ def test_paper_evaluation_store_round_trips_metadata_records(tmp_path) -> None:
     assert store.list_forward_comparisons(request.paper_run_id) == (comparison,)
 
 
-def test_paper_evaluation_store_filters_by_account_and_run(tmp_path) -> None:
+def test_paper_evaluation_store_filters_by_account_and_run(tmp_path: Path) -> None:
     selected_account = PaperAccount(name="selected")
     other_account = PaperAccount(name="other")
     selected_request = PaperEvaluationRequest(

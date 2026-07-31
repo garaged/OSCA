@@ -116,11 +116,13 @@ def test_backtest_paper_rejects_deferred_live_execution_flags(tmp_path: Path) ->
     import_result = _import_sample_payload(tmp_path)
 
     with pytest.raises(ValueError, match="Input should be False"):
-        BacktestPaperRequest(
-            payload_path=import_result.payload_uri,
-            symbol="AAPL",
-            timeframe=LocalOHLCVTimeframe.ONE_DAY,
-            enable_real_orders=True,
+        BacktestPaperRequest.model_validate(
+            {
+                "payload_path": import_result.payload_uri,
+                "symbol": "AAPL",
+                "timeframe": LocalOHLCVTimeframe.ONE_DAY,
+                "enable_real_orders": True,
+            }
         )
 
 

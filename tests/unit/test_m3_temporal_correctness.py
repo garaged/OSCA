@@ -1,5 +1,6 @@
 from datetime import UTC, date, datetime, time, timedelta
 from decimal import Decimal
+from typing import cast
 from uuid import uuid4
 
 import pytest
@@ -149,7 +150,7 @@ def test_intraday_bar_contract_rejects_float_and_wrong_duration() -> None:
             open=Decimal("1"),
             high=Decimal("2"),
             low=Decimal("1"),
-            close=1.5,
+            close=cast(Decimal, 1.5),
             volume=Decimal("10"),
             currency="USD",
             volume_unit="shares",

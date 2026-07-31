@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from pathlib import Path
 
 from osca.provider_promotion import (
     PromotionOutcome,
@@ -65,7 +66,7 @@ def _evidence(provider_id: ProviderIdentifier) -> ProviderProductionEvidenceBund
     )
 
 
-def test_provider_promotion_store_round_trips_evidence_and_decisions(tmp_path) -> None:
+def test_provider_promotion_store_round_trips_evidence_and_decisions(tmp_path: Path) -> None:
     store = SQLiteProviderPromotionStore(tmp_path / "provider-promotion.sqlite3")
     store.initialize()
     evidence = _evidence(ProviderIdentifier.KRAKEN)
