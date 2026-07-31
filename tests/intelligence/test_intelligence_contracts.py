@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from pydantic import ValidationError
@@ -45,7 +45,7 @@ def build_manifest() -> AnalysisPackManifest:
     )
 
 
-def build_result(project_id: object, pack_id: str = "fundamental-core") -> AnalyticalResultBundle:
+def build_result(project_id: UUID, pack_id: str = "fundamental-core") -> AnalyticalResultBundle:
     evidence = EvidenceReference(
         evidence_id=uuid4(),
         evidence_kind=EvidenceKind.OBSERVATION,
