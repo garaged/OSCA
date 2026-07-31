@@ -1,10 +1,11 @@
 # P14 Exit Review
 
 - **Milestone:** P14 personal-server production operations
-- **Status:** Implementation candidate; hosted Quality and review pending
+- **Status:** Implementation candidate; review and merge pending
 - **Branch:** `agent/p14-personal-server-operations`
 - **Pull request:** #57
 - **Baseline:** merged P13 commit `b22d23970be25f6425c4e5bd4d8a8ea51bb38335`
+- **Validated head:** `fe941548ca1aa81228d968a4c8c4aa3a6a609d0b`
 
 ## Implemented evidence
 
@@ -27,18 +28,21 @@
 
 ## Automated validation
 
-Tests cover security validation, disabled and successful job execution, alert enablement and HTTPS enforcement, backup source separation, successful backup/restore, restore enablement, and overwrite protection.
+All eight P14 tests passed, covering security validation, disabled and successful job execution, alert enablement and HTTPS enforcement, backup source separation, successful backup/restore, restore enablement, and overwrite protection.
 
 ## Hosted validation
 
-Pending final review-ready run:
+Quality run `30650308948` passed on the validated implementation head:
 
-- Ruff
-- strict mypy
-- pytest, contracts, migrations, links, and architecture checks
-- OpenSpec doctor and strict validation
-- secret scanning
+- Ruff passed.
+- Strict mypy passed across 203 source files.
+- 340 tests passed, including all eight P14 tests.
+- Contract, migration, document-link, and architecture checks passed.
+- OpenSpec doctor and strict validation passed.
+- Secret scanning passed.
+
+Earlier validation found unused CLI imports, result-variable type narrowing, a missing scheduler interval argument, and a missing default scheduler interval. Each issue was corrected without changing the milestone safety boundaries.
 
 ## Completion decision
 
-P14 remains an implementation candidate until final Quality is green, documentation and traceability are reconciled, the branch diff is reviewed, and PR #57 is merged.
+P14 is review ready. It remains an implementation candidate until PR #57 is merged. Operator-owned host, TLS, identity, firewall, storage-mount, and post-restore checks remain documented residual responsibilities.
