@@ -4,8 +4,8 @@ from uuid import uuid4
 
 from osca.backtesting.api import OrderIntent, OrderIntentSide, OrderIntentType
 from osca.backtesting.eventing import (
-    OrderLifecycleState,
     FillModelMetadata,
+    OrderLifecycleState,
     PortfolioProjection,
     SQLiteF2ValidationStore,
     ValuationSnapshot,
