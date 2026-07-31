@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -33,7 +34,7 @@ def make_request() -> BacktestRequest:
     )
 
 
-def test_backtest_plan_persists_request_and_plan(tmp_path) -> None:
+def test_backtest_plan_persists_request_and_plan(tmp_path: Path) -> None:
     request = make_request()
     request_file = tmp_path / "request.json"
     database = tmp_path / "backtests.sqlite"
@@ -50,7 +51,7 @@ def test_backtest_plan_persists_request_and_plan(tmp_path) -> None:
     assert payload["can_execute"] is True
 
 
-def test_backtest_list_filters_persisted_requests(tmp_path) -> None:
+def test_backtest_list_filters_persisted_requests(tmp_path: Path) -> None:
     request = make_request()
     request_file = tmp_path / "request.json"
     database = tmp_path / "backtests.sqlite"
