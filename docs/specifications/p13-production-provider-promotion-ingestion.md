@@ -1,8 +1,8 @@
-# P13 Production Provider Promotion and Ingestion Specification
+# P13 Governed Production Provider Admission and Ingestion Specification
 
 ## Purpose
 
-Promote eligible providers through P1 evidence gates and implement production ingestion jobs only for providers with accepted licensing, quota, credential, and redistribution evidence.
+Admit only provider/resource scopes with accepted evidence and implement durable internal-use ingestion with explicit operator control and retained lineage.
 
 ## Phase
 
@@ -10,36 +10,42 @@ Production-capable version
 
 ## User-visible value
 
-OSCA can ingest governed provider data without relying on fixtures or manual imports.
+OSCA can retrieve and retain approved SEC and Kraken public data without fixtures or manual imports while explaining why every other candidate remains unavailable or blocked.
 
 ## Requirements
 
-- REQ-0247-REQ-0253: OSCA must implement the P13 scope described by this specification before P13 is marked complete.
-- REQ-0247-REQ-0253: P13 must preserve explicit non-scope boundaries and fail closed when a caller attempts deferred behavior.
-- REQ-0247-REQ-0253: P13 completion requires updated requirements, traceability, milestone status, manual-testing review, OpenSpec evidence, automated validation, and hosted Quality evidence.
+- REQ-0247: Provider admission decisions must be explicit, auditable, resource-scoped, and evidence-dated.
+- REQ-0248: Non-admitted providers must fail before transport or credential activity.
+- REQ-0249: Production network use must be explicit and endpoints must be HTTPS allowlisted.
+- REQ-0250: Provider requests must use bounded timeout, response-size, and retry controls.
+- REQ-0251: Successful jobs must atomically retain payload and metadata with SHA-256 lineage.
+- REQ-0252: Admission must be reversible for future runs without deleting historical evidence.
+- REQ-0253: Redistribution, unsupported providers, credentials outside named references, advice, brokers, autonomous execution, and real-capital orders remain disabled.
+
+## Approved scope
+
+- SEC EDGAR company facts and submissions through official `data.sec.gov` endpoints with a declared organization/contact user agent.
+- Kraken public spot OHLC through the official public REST endpoint for personal/internal use.
+
+## Evidence-gated or blocked scope
+
+- Twelve Data: exact account-plan and dataset rights required.
+- Alpha Vantage: commercial onboarding and exact market-data rights required.
+- Nasdaq Data Link: dataset and order-form rights required.
+- FRED: policy-blocked pending retention and software/AI-use evidence.
 
 ## Implementation scope
 
-- Re-evaluate Twelve Data, Kraken, Alpha Vantage, Nasdaq Data Link, SEC, and FRED evidence.
-- Enable credentials by named secret reference only.
-- Add durable ingestion jobs with retries, rate limits, cache, lineage, and quality findings.
-- Keep promotion decisions auditable and reversible.
+- Immutable admission, request, and ingestion evidence contracts.
+- Network-free admission-policy inspection.
+- Explicit network opt-in, HTTPS host/path allowlists, SEC user-agent enforcement, bounded retries, timeout, and response size.
+- Atomic raw JSON and metadata retention with digest, attempts, network state, and admission status.
+- CLI commands for policy inspection, SEC company facts, and Kraken OHLC.
 
 ## Explicit non-scope
 
-- Real-capital execution, unsupported/unofficial provider APIs.
+External redistribution, public SaaS display, unsupported endpoints, paid/authenticated provider promotion, real-time streaming, recommendations, broker connections, autonomous execution, and real-capital orders.
 
 ## Acceptance criteria
 
-- The milestone objective is demonstrable from supported CLI, API, UI, or documented operator workflow surfaces, as applicable.
-- Automated tests cover new code paths and negative/deferred-boundary behavior.
-- Documentation and traceability identify implemented, specified-only, fixture-backed, and deferred behavior.
-- The milestone exit review records validation evidence and remaining deferrals.
-
-## Dependencies
-
-P1 gates, P5, P10.
-
-## Risks and decisions
-
-Licensing/account-plan evidence may block or narrow scope.
+The P13 quickstart and tests demonstrate policy inspection, network fail-closed behavior, non-admitted-provider rejection, endpoint allowlists, successful retained lineage, bounded retries, and response-size enforcement. Hosted Quality and governance reconciliation must pass before completion.
