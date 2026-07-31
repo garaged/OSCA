@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: p12-local-model-assisted-preview-implementation-candidate
+  status: p13-governed-production-ingestion-implementation-candidate
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:
@@ -46,44 +46,13 @@ artifact_types:
     lifecycle: [draft, complete, accepted, invalidated, retained]
     review_authority: quality-authority
 
-adrs:
-  - { id: ADR-0001, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0002, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0003, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0004, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0005, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0006, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0007, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0008, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0009, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0010, status: frozen, tier: foundational, owner: architecture-authority }
-  - { id: ADR-0011, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0012, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0013, status: accepted, tier: implementation, owner: workflow-capability-owner }
-  - { id: ADR-0014, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0015, status: accepted, tier: implementation, owner: security-authority }
-  - { id: ADR-0016, status: accepted, tier: implementation, owner: security-authority }
-  - { id: ADR-0017, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0018, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0019, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0020, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0021, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0022, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0023, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0024, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0025, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0032, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0033, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0034, status: accepted, tier: implementation, owner: architecture-authority }
-  - { id: ADR-0035, status: accepted, tier: implementation, owner: architecture-authority }
-
 governed_indexes:
   requirements: docs/governance/requirements-catalog.md
   contracts: docs/governance/contract-catalog.md
   deferred_decisions: docs/governance/deferred-decisions.md
   exceptions: docs/governance/architecture-exceptions.md
   traceability: docs/governance/traceability-register.md
-  milestone_reconciliation: docs/governance/p11-p12-reconciliation.md
+  milestone_reconciliation: docs/governance/p12-p13-reconciliation.md
   validation: docs/validation/checks.yaml
 
 relationship_types:
