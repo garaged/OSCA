@@ -1,8 +1,10 @@
 from datetime import UTC, datetime
+from pathlib import Path
 from uuid import uuid4
 
 from osca.backtesting.api import OrderIntent, OrderIntentSide, OrderIntentType
 from osca.backtesting.eventing import (
+    OrderLifecycleState,
     FillModelMetadata,
     PortfolioProjection,
     SQLiteF2ValidationStore,
@@ -24,13 +26,13 @@ def make_order() -> OrderIntent:
     )
 
 
-def test_f2_validation_store_round_trips_validation_records(tmp_path) -> None:
+def test_f2_validation_store_round_trips_validation_records(tmp_path: Path) -> None:
     request_id = uuid4()
     order = make_order()
     lifecycle = build_order_lifecycle_event(
         request_id=request_id,
         order_intent=order,
-        state="created",
+        state=OrderLifecycleState.CREATED,
         rationale="created from M6 order intent",
         effective_at=datetime(2026, 1, 1, tzinfo=UTC),
     )
@@ -80,7 +82,7 @@ def test_f2_validation_store_round_trips_validation_records(tmp_path) -> None:
     assert store.list_promotion_gates(request_id) == (gate,)
 
 
-def test_f2_validation_store_filters_by_request(tmp_path) -> None:
+def test_f2_validation_store_filters_by_request(tmp_path: Path) -> None:
     selected_request_id = uuid4()
     other_request_id = uuid4()
     selected_order = make_order()
@@ -88,14 +90,14 @@ def test_f2_validation_store_filters_by_request(tmp_path) -> None:
     selected_lifecycle = build_order_lifecycle_event(
         request_id=selected_request_id,
         order_intent=selected_order,
-        state="created",
+        state=OrderLifecycleState.CREATED,
         rationale="selected",
         effective_at=datetime(2026, 1, 1, tzinfo=UTC),
     )
     other_lifecycle = build_order_lifecycle_event(
         request_id=other_request_id,
         order_intent=other_order,
-        state="created",
+        state=OrderLifecycleState.CREATED,
         rationale="other",
         effective_at=datetime(2026, 1, 1, tzinfo=UTC),
     )
