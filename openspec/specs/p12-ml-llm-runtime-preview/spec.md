@@ -2,33 +2,57 @@
 
 ## Purpose
 
-Index the planned P12 semantics for ML/LLM Runtime Preview.
+Govern optional local model-assisted previews with budgets, provenance, review, and fail-closed controls.
 
 ## Requirements
 
-### Requirement: P12 milestone scope
+### Requirement: Deterministic local preview
 
-P12 SHALL implement the governed scope in docs/specifications/p12-ml-llm-runtime-preview.md before it is marked complete.
+P12 SHALL provide a deterministic zero-cost local trend preview over explicit numeric evidence.
 
-#### Scenario: P12 scope is reviewed
-- **GIVEN** the P12 milestone specification
-- **WHEN** implementation readiness is reviewed
-- **THEN** objective, user-visible value, implementation scope, non-scope, acceptance criteria, validation gates, dependencies, and risks are documented.
+#### Scenario: Local trend succeeds
+- **GIVEN** at least three numeric values within budget
+- **WHEN** the local preview runs
+- **THEN** it records exact model identity, input digest, metrics, output, zero cost, and disabled network/recommendation/order boundaries.
 
-### Requirement: P12 deferred-boundary enforcement
+#### Scenario: Local input exceeds budget
+- **GIVEN** more records than the approved budget
+- **WHEN** the local preview is requested
+- **THEN** it returns `budget_exceeded` without output.
 
-P12 SHALL preserve explicit deferred boundaries for behavior outside its approved scope.
+### Requirement: Governed LLM fixture preview
 
-#### Scenario: Out-of-scope behavior is attempted
-- **GIVEN** a P12 implementation
-- **WHEN** a caller attempts deferred behavior
-- **THEN** OSCA fails closed or reports a policy-blocked state rather than silently enabling the behavior.
+P12 SHALL permit fixture-backed LLM analysis with exact provider, model, prompt, budget, and review evidence.
 
-### Requirement: P12 evidence retention
+#### Scenario: Fixture analysis is generated
+- **GIVEN** explicit input, exact identities, budgets, and a fixture response
+- **WHEN** the preview runs with network disabled
+- **THEN** it returns `review_required`, retains the fixture output, and records human-review and not-financial-advice findings.
 
-P12 SHALL retain requirements, traceability, OpenSpec, manual-testing review, automated validation, and hosted Quality evidence.
+#### Scenario: No fixture is available
+- **GIVEN** network access is disabled and no fixture response exists
+- **WHEN** LLM analysis is requested
+- **THEN** the preview returns `policy_blocked` without output.
 
-#### Scenario: P12 completion is requested
-- **GIVEN** P12 implementation work
-- **WHEN** completion is evaluated
-- **THEN** exit review evidence must identify implemented, specified-only, fixture-backed, and deferred behavior.
+#### Scenario: Live executor is absent
+- **GIVEN** a caller explicitly checks live model mode
+- **WHEN** no governed executor is configured
+- **THEN** the preview returns `provider_unavailable` without network use or credential resolution.
+
+### Requirement: Evidence retention
+
+P12 SHALL retain immutable preview evidence atomically under the configured storage root.
+
+#### Scenario: Evidence is retained
+- **GIVEN** any completed preview decision
+- **WHEN** retention is requested
+- **THEN** the exact request linkage, status, identities, digest, output, metrics, findings, cost, latency, and safety boundaries are persisted.
+
+### Requirement: Deferred-boundary enforcement
+
+P12 SHALL NOT enable production serving, recommendations, brokers, autonomous actions, or real-capital orders.
+
+#### Scenario: Evidence is validated
+- **GIVEN** preview evidence
+- **WHEN** a forbidden capability is marked enabled
+- **THEN** contract validation fails closed.
