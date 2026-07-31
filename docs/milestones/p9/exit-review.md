@@ -1,10 +1,11 @@
 # P9 Exit Review
 
-- **Status:** Implementation candidate
+- **Status:** Implementation candidate, review ready
 - **Scope reviewed:** P8 closeout, SEC fixture replay, opt-in SEC live preview, cache/provenance, fair-access controls, FRED terms gate, provider readiness, module CLI, tests, documentation, OpenSpec, and deferred boundaries
-- **Decision:** Pending hosted Quality and PR review
+- **Decision:** Hosted Quality accepted; pending PR review and merge
 - **Review branch:** `agent/p9-sec-preview-fred-terms-gate`
 - **Pull request:** #52
+- **Hosted Quality:** Run `30637790634` succeeded on head `1f911311d30bb172f606296d573a3ea4423acc7e`
 
 ## P8 closeout evidence
 
@@ -54,15 +55,26 @@ The isolated P9 implementation was exercised under Python 3.13 before publicatio
 - Python compilation passed.
 - Covered fixture replay, network opt-in validation, non-placeholder user-agent enforcement, bounded cache reuse, fair-access ceiling, FRED policy blocking, secret-value rejection, and module CLI behavior.
 
-Full repository Ruff and strict-mypy execution was unavailable in the connector-only workspace because package-registry access for those tools was unavailable. Hosted Quality is authoritative for repository-wide validation.
+## Hosted validation
 
-## Required hosted gates
+Quality run `30637790634` passed:
 
 - Ruff.
-- Strict mypy.
-- Pytest, contracts, migrations, links, and architecture validation.
-- OpenSpec strict validation.
+- Strict mypy across 177 source files.
+- 299 pytest cases, including contracts, migrations, document links, and architecture checks.
+- OpenSpec doctor and strict validation.
 - Secret scanning.
+
+Two earlier runs provided useful fail-fast evidence:
+
+- Run `30636927815` found four strict-mypy issues; the transport and CLI narrowing defects were corrected.
+- Run `30637649692` then passed Ruff and mypy and found one stale P5 FRED-readiness expectation; the operator-surface test was corrected.
+
+## Manual validation disposition
+
+Deterministic SEC fixture replay is covered by automated and local focused tests and is documented in the P9 quickstart. Optional real SEC network access requires an operator-supplied real organization/contact identity and is not required for PR acceptance; it should be used only as a post-merge provider-access smoke check when appropriate.
+
+FRED live validation is intentionally impossible in P9 because the correct behavior is a structured policy block with no network or credential use.
 
 ## Deferred boundaries
 
@@ -75,6 +87,6 @@ P9 does not implement:
 - Paid provider calls.
 - Recommendations, broker connections, autonomous execution, or real-capital orders.
 
-## Completion condition
+## Outcome
 
-P9 may be marked complete only after PR #52 review, hosted Quality success, final evidence reconciliation, and any required manual smoke validation.
+REQ-0219 through REQ-0225 are implemented and evidenced for the approved P9 candidate scope. P9 should be marked complete only after PR #52 is reviewed and merged. P10 remains the next planned milestone and owns governed runtime provider/source routing.
