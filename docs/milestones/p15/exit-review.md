@@ -19,6 +19,7 @@
 - Retained stdout, stderr, output digest, exit code, package/version, rationale, and findings.
 - Versioned installation plus rollback to an already installed revalidated version.
 - CLI and manual quickstart.
+- Committed `examples/runtime-packs/dry-run` pack with a digest preparation helper and operator guide.
 
 ## Safety behavior
 
@@ -26,20 +27,23 @@
 - Untrusted and quarantined packs are blocked.
 - Tampered and incompatible packs fail before execution.
 - Pack executables must be direct regular files inside the pack directory.
+- The dry-run pack performs no market analysis and requests no permissions.
 - Public marketplace, remote discovery, in-process arbitrary imports, broad hostile-code sandboxing, and implicit permission renewal remain deferred.
 - Provider admission, credentials, recommendations, brokers, autonomous trading, and real-capital orders remain unchanged and disabled where previously deferred.
 
 ## Automated validation
 
-Eight focused tests cover trusted validation, untrusted blocking, compatibility blocking, digest tampering, disabled execution, successful execution evidence, versioned installation and rollback, and missing rollback versions.
+Eight focused runtime tests cover trusted validation, untrusted blocking, compatibility blocking, digest tampering, disabled execution, successful execution evidence, versioned installation and rollback, and missing rollback versions.
+
+A ninth P15 smoke test copies the committed dry-run pack, regenerates its digest, validates it, proves default execution blocking, executes it explicitly, and confirms the retained output reports network and secret markers as disabled.
 
 ## Hosted validation
 
-Quality run `30651509867` passed the assembled implementation and Quality run `30651618407` passed the review documentation head:
+Quality run `30654987099` passed the final dry-run-pack head `c69f7dc743b550c4c89f5d1be67827c60b3f176b`:
 
 - Ruff passed.
 - Strict mypy passed across 207 source files.
-- 348 tests passed, including all eight P15 tests.
+- 349 tests passed, including all nine P15 tests.
 - Contract, migration, document-link, and architecture checks passed.
 - OpenSpec doctor and strict validation passed.
 - Secret scanning passed.
