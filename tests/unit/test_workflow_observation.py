@@ -1,5 +1,5 @@
 import logging
-from typing import Any, cast
+from typing import Any
 
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
@@ -47,8 +47,8 @@ def test_observation_contains_correlation_but_not_input() -> None:
     logger.addHandler(Capture())
     WorkflowObserver(logger).record("submitted", run)
     assert getattr(records[-1], "correlation_id", None) == str(run.correlation_id.value)
-    assert "protected" not in record.getMessage()
-    assert "secret-key" not in record.getMessage()
+    assert "protected" not in records[-1].getMessage()
+    assert "secret-key" not in records[-1].getMessage()
 
 
 def test_cancellation_emits_distinct_safe_audit_record() -> None:
