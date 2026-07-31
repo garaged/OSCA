@@ -4,6 +4,7 @@ import hashlib
 import json
 import time
 from pathlib import Path
+from uuid import UUID
 
 from osca.model_preview.contracts import (
     LLMAnalysisRequest,
@@ -16,6 +17,7 @@ from osca.model_preview.contracts import (
 
 def run_local_trend_preview(request: LocalTrendRequest) -> ModelPreviewEvidence:
     started = time.perf_counter()
+    input_digest = _digest(request.values)
     if len(request.values) > request.budget.max_input_records:
         return _evidence(
             request_id=request.request_id,
@@ -24,7 +26,7 @@ def run_local_trend_preview(request: LocalTrendRequest) -> ModelPreviewEvidence:
             provider_id="local",
             model_id="ordinary-least-squares-trend",
             model_version="1.0.0",
-            input_digest=_digest(request.values),
+            input_digest=input_digest,
             findings=("input-record-budget-exceeded",),
             started=started,
         )
@@ -62,7 +64,7 @@ def run_local_trend_preview(request: LocalTrendRequest) -> ModelPreviewEvidence:
         provider_id="local",
         model_id="ordinary-least-squares-trend",
         model_version="1.0.0",
-        input_digest=_digest(request.values),
+        input_digest=input_digest,
         output=output if status is PreviewStatus.SUCCEEDED else None,
         metrics={
             "record_count": count,
@@ -80,76 +82,54 @@ def run_local_trend_preview(request: LocalTrendRequest) -> ModelPreviewEvidence:
 def run_llm_analysis_preview(request: LLMAnalysisRequest) -> ModelPreviewEvidence:
     started = time.perf_counter()
     input_digest = _digest(request.input_text)
+    common = {
+        "request_id": request.request_id,
+        "kind": PreviewKind.LLM_ANALYSIS,
+        "provider_id": request.provider_id,
+        "model_id": request.model_id,
+        "model_version": request.model_version,
+        "input_digest": input_digest,
+        "prompt_id": request.prompt_id,
+        "prompt_version": request.prompt_version,
+        "started": started,
+    }
     if len(request.input_text) > request.budget.max_input_records:
         return _evidence(
-            request_id=request.request_id,
-            kind=PreviewKind.LLM_ANALYSIS,
+            **common,
             status=PreviewStatus.BUDGET_EXCEEDED,
-            provider_id=request.provider_id,
-            model_id=request.model_id,
-            model_version=request.model_version,
-            input_digest=input_digest,
-            prompt_id=request.prompt_id,
-            prompt_version=request.prompt_version,
             findings=("input-budget-exceeded",),
-            started=started,
         )
     if request.network_access_enabled:
         return _evidence(
-            request_id=request.request_id,
-            kind=PreviewKind.LLM_ANALYSIS,
+            **common,
             status=PreviewStatus.PROVIDER_UNAVAILABLE,
-            provider_id=request.provider_id,
-            model_id=request.model_id,
-            model_version=request.model_version,
-            input_digest=input_digest,
-            prompt_id=request.prompt_id,
-            prompt_version=request.prompt_version,
             findings=("live-llm-executor-not-configured",),
-            started=started,
         )
     if request.fixture_response is None:
         return _evidence(
-            request_id=request.request_id,
-            kind=PreviewKind.LLM_ANALYSIS,
+            **common,
             status=PreviewStatus.POLICY_BLOCKED,
-            provider_id=request.provider_id,
-            model_id=request.model_id,
-            model_version=request.model_version,
-            input_digest=input_digest,
-            prompt_id=request.prompt_id,
-            prompt_version=request.prompt_version,
             findings=("network-disabled-and-no-fixture-response",),
-            started=started,
         )
     if len(request.fixture_response) > request.budget.max_output_characters:
         return _evidence(
-            request_id=request.request_id,
-            kind=PreviewKind.LLM_ANALYSIS,
+            **common,
             status=PreviewStatus.BUDGET_EXCEEDED,
-            provider_id=request.provider_id,
-            model_id=request.model_id,
-            model_version=request.model_version,
-            input_digest=input_digest,
-            prompt_id=request.prompt_id,
-            prompt_version=request.prompt_version,
             findings=("output-budget-exceeded",),
-            started=started,
         )
     return _evidence(
-        request_id=request.request_id,
-        kind=PreviewKind.LLM_ANALYSIS,
+        **common,
         status=PreviewStatus.REVIEW_REQUIRED,
-        provider_id=request.provider_id,
-        model_id=request.model_id,
-        model_version=request.model_version,
-        input_digest=input_digest,
-        prompt_id=request.prompt_id,
-        prompt_version=request.prompt_version,
         output=request.fixture_response,
-        metrics={"input_characters": len(request.input_text), "output_characters": len(request.fixture_response)},
-        findings=("fixture-backed-output", "human-review-required", "not-financial-advice"),
-        started=started,
+        metrics={
+            "input_characters": len(request.input_text),
+            "output_characters": len(request.fixture_response),
+        },
+        findings=(
+            "fixture-backed-output",
+            "human-review-required",
+            "not-financial-advice",
+        ),
     )
 
 
@@ -170,7 +150,7 @@ def _digest(value: object) -> str:
 
 def _evidence(
     *,
-    request_id: object,
+    request_id: UUID,
     kind: PreviewKind,
     status: PreviewStatus,
     provider_id: str,
