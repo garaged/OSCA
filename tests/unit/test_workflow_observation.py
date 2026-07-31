@@ -46,8 +46,7 @@ def test_observation_contains_correlation_but_not_input() -> None:
     logger.setLevel(logging.INFO)
     logger.addHandler(Capture())
     WorkflowObserver(logger).record("submitted", run)
-    record = cast(Any, records[-1])
-    assert record.correlation_id == str(run.correlation_id.value)
+    assert getattr(records[-1], "correlation_id", None) == str(run.correlation_id.value)
     assert "protected" not in record.getMessage()
     assert "secret-key" not in record.getMessage()
 
