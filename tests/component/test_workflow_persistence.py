@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -23,7 +23,7 @@ from osca.workflow.infrastructure.executor import EmbeddedExecutor
 
 
 @pytest.fixture
-def session() -> Iterator[Session]:
+def session() -> Generator[Session, None, None]:
     engine = create_engine("sqlite://")
     WorkflowBase.metadata.create_all(engine)
     CatalogBase.metadata.create_all(engine)
