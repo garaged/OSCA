@@ -1,7 +1,7 @@
 # P15 Exit Review
 
 - **Milestone:** P15 governed runtime extension packs
-- **Status:** Implementation candidate; final hosted Quality and review pending
+- **Status:** Review-ready implementation candidate
 - **Branch:** `agent/p15-governed-runtime-extension-packs`
 - **Pull request:** #58
 - **Baseline:** merged P14 commit `3aa884b4894e4f956fa93e1d70cf1930329b83b4`
@@ -35,14 +35,17 @@ Eight focused tests cover trusted validation, untrusted blocking, compatibility 
 
 ## Hosted validation
 
-Pending final review-ready run:
+Quality run `30651509867` passed the assembled implementation:
 
-- Ruff
-- strict mypy
-- pytest, contracts, migrations, links, and architecture checks
-- OpenSpec doctor and strict validation
-- secret scanning
+- Ruff passed.
+- Strict mypy passed across 207 source files.
+- 348 tests passed, including all eight P15 tests.
+- Contract, migration, document-link, and architecture checks passed.
+- OpenSpec doctor and strict validation passed.
+- Secret scanning passed.
+
+The remaining warning is the pre-existing duplicate ZIP entry warning in the recovery tampering test.
 
 ## Completion decision
 
-P15 remains an implementation candidate until final hosted Quality is green, documentation and traceability are reconciled, the branch diff is reviewed, and PR #58 is merged.
+P15 is ready for review. It remains an implementation candidate until the final documentation-only Quality run is green and PR #58 is merged.
