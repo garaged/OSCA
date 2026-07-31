@@ -7,6 +7,7 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 from pathlib import Path
+from typing import Literal, cast
 from urllib.parse import urlparse
 
 from osca.production_ingestion.contracts import (
@@ -19,6 +20,7 @@ from osca.production_ingestion.contracts import (
 from osca.production_ingestion.policy import admission_for
 
 Transport = Callable[[ProductionIngestionRequest], bytes]
+CacheState = Literal["not_applicable", "retained"]
 
 _ALLOWED_HOSTS = {
     ProductionProvider.SEC_EDGAR: "data.sec.gov",
@@ -133,7 +135,7 @@ def _urllib_transport(request: ProductionIngestionRequest) -> bytes:
             http_request,
             timeout=request.timeout_seconds,
         ) as response:
-            return response.read(request.max_response_bytes + 1)
+            return cast(bytes, response.read(request.max_response_bytes + 1))
     except urllib.error.URLError as exc:
         raise OSError(str(exc)) from exc
 
@@ -186,7 +188,7 @@ def _evidence(
     response_bytes: int = 0,
     attempt_count: int = 0,
     network_used: bool = False,
-    cache_state: str = "not_applicable",
+    cache_state: CacheState = "not_applicable",
 ) -> ProductionIngestionEvidence:
     return ProductionIngestionEvidence(
         request_id=request.request_id,
