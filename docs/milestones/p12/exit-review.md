@@ -1,10 +1,11 @@
 # P12 Exit Review
 
 - **Milestone:** P12 local model-assisted preview
-- **Status:** Implementation candidate; hosted Quality and review pending
+- **Status:** Implementation candidate, review ready
 - **Branch:** `agent/p12-local-model-assisted-preview`
-- **Pull request:** pending
+- **Pull request:** #55
 - **Baseline:** merged P11 commit `cdd5c3d50c4166ae8f01be2bcee45eb5f411cbb7`
+- **Hosted Quality:** Run `30645896227` passed on implementation head `cb3db8c2e6010601f7bedb074a27c9528010b12c`
 
 ## Implemented evidence
 
@@ -23,28 +24,19 @@
 - Fixture-backed LLM output always requires human review.
 - Recommendations, brokers, autonomous actions, and real-capital orders remain disabled.
 
-## Automated validation
+## Automated and hosted validation
 
-Tests cover:
-
-- deterministic local inference
-- local input-budget rejection
-- fixture-backed LLM review state
-- missing-fixture policy block
-- unavailable live executor
-- atomic evidence retention
-- CLI evidence output
-
-## Hosted validation
-
-Pending:
+Quality run `30645896227` passed:
 
 - Ruff
-- strict mypy
-- pytest, contracts, migrations, links, and architecture checks
+- strict mypy across 193 source files
+- 324 tests, including all seven P12 tests
+- contracts, migrations, links, and architecture checks
 - OpenSpec doctor and strict validation
 - secret scanning
 
+The seven P12 tests cover deterministic inference, input budget rejection, fixture review state, missing-fixture policy block, unavailable live executor, atomic retention, and CLI evidence output.
+
 ## Completion decision
 
-P12 remains an implementation candidate until Quality is green, documentation and traceability are reconciled, the branch diff is reviewed, and the PR is merged.
+REQ-0240 through REQ-0246 are implemented and evidenced for the approved optional P12 scope. P12 remains an implementation candidate until PR #55 is reviewed and merged. P13 remains evidence-gated and is not implied by P12 completion.
