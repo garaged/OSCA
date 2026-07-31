@@ -49,14 +49,36 @@ def build_default_no_cost_provider_profiles() -> tuple[ProviderCatalogProfile, .
             access_mode=ProviderCatalogAccessMode.API_KEY_REQUIRED,
             capabilities=(ProviderCatalogCapability.MACRO,),
             disposition=ProviderCatalogDisposition.PREFERRED_CANDIDATE,
-            source_uris=("https://fred.stlouisfed.org/docs/api/terms_of_use.html",),
+            source_uris=(
+                "https://fred.stlouisfed.org/legal/terms/",
+                "https://fred.stlouisfed.org/docs/api/terms_of_use.html",
+            ),
             constraints=(
                 ProviderCatalogConstraint(
                     constraint_id="registered-api-key-required",
                     description="FRED API use requires a registered API key.",
                 ),
+                ProviderCatalogConstraint(
+                    constraint_id="fred-content-retention-prohibited",
+                    description=(
+                        "Current FRED terms prohibit storing, caching, or archiving "
+                        "FRED API content."
+                    ),
+                    blocks_default_automation=True,
+                ),
+                ProviderCatalogConstraint(
+                    constraint_id="fred-software-ai-legal-review-required",
+                    description=(
+                        "Current FRED terms require separate legal evidence before "
+                        "OSCA software or AI-related use can be enabled."
+                    ),
+                    blocks_default_automation=True,
+                ),
             ),
-            notes="Official macroeconomic enrichment source; not an OHLCV substitute.",
+            notes=(
+                "Official macroeconomic enrichment candidate; fixture contracts remain "
+                "available, but live preview is policy-blocked pending accepted terms evidence."
+            ),
         ),
         ProviderCatalogProfile(
             provider_id=ProviderCatalogIdentifier.ALPHA_VANTAGE,
