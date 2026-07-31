@@ -52,7 +52,7 @@ class UrllibProviderPreviewTransport:
                     raise ProviderPreviewError(
                         "SEC preview response exceeds configured byte limit"
                     )
-                payload = response.read(max_response_bytes + 1)
+                payload = cast(bytes, response.read(max_response_bytes + 1))
         except HTTPError as exc:
             raise ProviderPreviewError(
                 f"SEC preview request failed with HTTP status {exc.code}"
