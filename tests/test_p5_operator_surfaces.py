@@ -19,7 +19,7 @@ def test_provider_catalog_list_includes_readiness() -> None:
     }
 
     assert readiness_by_provider["sec_edgar"] == "ready_for_contracts"
-    assert readiness_by_provider["fred"] == "ready_for_contracts"
+    assert readiness_by_provider["fred"] == "needs_evidence"
     assert readiness_by_provider["yahoo_finance_unofficial"] == "blocked"
 
 
