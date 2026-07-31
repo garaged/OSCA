@@ -2,44 +2,33 @@
 
 ## Purpose
 
-If and only if P16 approves, implement a tiny controlled live-order pilot with hard limits, manual approval, reconciliation, and rollback.
+Record that P17 is blocked because P16 produced a binding NO-GO decision for real-money order execution.
 
-## Phase
+## Decision
 
-Real-money/order-execution readiness
-
-## User-visible value
-
-OSCA can test live execution mechanics under strict safety controls.
+ADR-0044 is authoritative. P17 SHALL NOT implement broker connectivity, trading credentials, order APIs, sandbox orders, production orders, or any real-capital pilot.
 
 ## Requirements
 
-- REQ-0275-REQ-0281: OSCA must implement the P17 scope described by this specification before P17 is marked complete.
-- REQ-0275-REQ-0281: P17 must preserve explicit non-scope boundaries and fail closed when a caller attempts deferred behavior.
-- REQ-0275-REQ-0281: P17 completion requires updated requirements, traceability, milestone status, manual-testing review, OpenSpec evidence, automated validation, and hosted Quality evidence.
-
-## Implementation scope
-
-- Implement one approved broker/exchange adapter in manual-approval mode.
-- Enforce hard spend, position, frequency, and symbol limits.
-- Record pre-trade, order, fill, reconciliation, and rollback evidence.
-- Add emergency stop and post-trade audit.
+- REQ-0275: P17 remains blocked unless ADR-0044 is explicitly superseded.
+- REQ-0276: No broker or exchange adapter may be added under P17.
+- REQ-0277: No trading credential material may be stored, requested, or consumed.
+- REQ-0278: No order intent, approval, submission, cancellation, or reconciliation path may be introduced.
+- REQ-0279: Existing research, paper, model, scheduler, and extension surfaces must remain unable to place orders.
+- REQ-0280: Reconsideration requires closure of every P16 control-matrix blocker and a superseding ADR.
+- REQ-0281: Documentation, OpenSpec, architecture status, roadmap, and hosted Quality must record the blocked disposition.
 
 ## Explicit non-scope
 
-- Autonomous capital control, broad broker coverage, leveraged/derivative trading by default.
+All live-order implementation work.
 
 ## Acceptance criteria
 
-- The milestone objective is demonstrable from supported CLI, API, UI, or documented operator workflow surfaces, as applicable.
-- Automated tests cover new code paths and negative/deferred-boundary behavior.
-- Documentation and traceability identify implemented, specified-only, fixture-backed, and deferred behavior.
-- The milestone exit review records validation evidence and remaining deferrals.
+- P17 is visibly marked blocked and unauthorized.
+- No executable order path is added.
+- P16 NO-GO boundaries remain authoritative.
+- The roadmap redirects to usability and release hardening of the non-trading product.
 
 ## Dependencies
 
-P16 approval ADR, P14 production operations.
-
-## Risks and decisions
-
-High financial and compliance risk; P17 must not start without explicit approval.
+ADR-0044 and the P16 exit review.

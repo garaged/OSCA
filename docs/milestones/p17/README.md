@@ -1,56 +1,33 @@
 # P17 - Real-Money Controlled Pilot
 
-- **Status:** Planned
+- **Status:** Blocked and not authorized
 - **Governing role:** Product authority
 - **Phase:** Real-money/order-execution readiness
-- **Authoritative outcome:** If and only if P16 approves, implement a tiny controlled live-order pilot with hard limits, manual approval, reconciliation, and rollback.
-- **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
-- **Last reviewed:** 2026-07-26
-- **Validation:** Planned
+- **Authoritative outcome:** Preserve the P16 NO-GO decision and prevent implementation of a live-order pilot unless ADR-0044 is superseded.
+- **Baseline:** P16 merge commit `81297ed1f6c781bd1256304e4b94667dde55f8f8`
+- **Last reviewed:** 2026-07-31
+- **Validation:** Documentation-only disposition pending hosted Quality
 
-## Current artifacts
+## Disposition
 
-- [Milestone plan](README.md)
-- [Specification](../../specifications/p17-real-money-controlled-pilot.md)
-- [Accepted OpenSpec specification](../../../openspec/specs/p17-real-money-controlled-pilot/spec.md)
+P17 cannot start because its mandatory prerequisite was not satisfied. P16 concluded with ADR-0044: NO-GO for real-money order execution.
 
-## Objective
+## Prohibited work
 
-If and only if P16 approves, implement a tiny controlled live-order pilot with hard limits, manual approval, reconciliation, and rollback.
+- Broker or exchange adapters.
+- Trading credential storage or retrieval.
+- Order intent, approval, submission, cancellation, or reconciliation APIs.
+- Sandbox or production orders.
+- Autonomous or manually approved real-capital pilots.
 
-## User-visible value
+## Reconsideration rule
 
-OSCA can test live execution mechanics under strict safety controls.
+P17 may be reconsidered only after every blocker in the P16 control matrix is closed and a new ADR explicitly supersedes ADR-0044. Repository code, documentation, examples, and extensions must continue to fail closed until then.
 
-## Implementation scope
+## Safe roadmap direction
 
-- Implement one approved broker/exchange adapter in manual-approval mode.
-- Enforce hard spend, position, frequency, and symbol limits.
-- Record pre-trade, order, fill, reconciliation, and rollback evidence.
-- Add emergency stop and post-trade audit.
+The next product work should improve the already usable research product: onboarding, integrated manual workflows, release packaging, usability validation, diagnostics, and evidence export. It must not create an execution path.
 
-## Explicit non-scope
+## Completion meaning
 
-- Autonomous capital control, broad broker coverage, leveraged/derivative trading by default.
-
-## Acceptance criteria
-
-- REQ-0275-REQ-0281 are allocated before implementation begins.
-- The implementation proves the stated scope with automated tests where code changes are made.
-- Manual testing and usage is updated when operator-visible behavior changes.
-- Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
-
-## Validation gates
-
-- Ruff, mypy, pytest, architecture validation, OpenSpec validation, and secret scanning.
-- Documentation, traceability, and manual-testing review.
-- Exit review recording final evidence.
-
-## Dependencies
-
-P16 approval ADR, P14 production operations.
-
-## Risks and decisions
-
-High financial and compliance risk; P17 must not start without explicit approval.
+P17 is not implemented and is not marked complete as a pilot. This disposition closes the planned sequence by recording that the prerequisite failed and the capability remains unauthorized.

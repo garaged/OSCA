@@ -2,33 +2,33 @@
 
 ## Purpose
 
-Index the planned P17 semantics for Real-Money Controlled Pilot.
+Preserve the P16 NO-GO decision and prevent unauthorized real-money execution work.
 
 ## Requirements
 
-### Requirement: P17 milestone scope
+### Requirement: P17 remains blocked
 
-P17 SHALL implement the governed scope in docs/specifications/p17-real-money-controlled-pilot.md before it is marked complete.
+P17 SHALL remain blocked while ADR-0044 is authoritative.
 
-#### Scenario: P17 scope is reviewed
-- **GIVEN** the P17 milestone specification
-- **WHEN** implementation readiness is reviewed
-- **THEN** objective, user-visible value, implementation scope, non-scope, acceptance criteria, validation gates, dependencies, and risks are documented.
+#### Scenario: P17 implementation is requested
+- **GIVEN** ADR-0044 records a NO-GO decision
+- **WHEN** broker, credential, order, reconciliation, sandbox, production, or pilot work is proposed
+- **THEN** the proposal is rejected as not authorized.
 
-### Requirement: P17 deferred-boundary enforcement
+### Requirement: Existing surfaces cannot place orders
 
-P17 SHALL preserve explicit deferred boundaries for behavior outside its approved scope.
+Research, paper evaluation, model previews, schedulers, and extension packs SHALL remain unable to submit real orders.
 
-#### Scenario: Out-of-scope behavior is attempted
-- **GIVEN** a P17 implementation
-- **WHEN** a caller attempts deferred behavior
-- **THEN** OSCA fails closed or reports a policy-blocked state rather than silently enabling the behavior.
+#### Scenario: An existing surface attempts execution
+- **GIVEN** an existing OSCA workflow
+- **WHEN** it attempts to initiate a real-capital order
+- **THEN** OSCA fails closed or reports a policy-blocked state.
 
-### Requirement: P17 evidence retention
+### Requirement: Reconsideration requires supersession
 
-P17 SHALL retain requirements, traceability, OpenSpec, manual-testing review, automated validation, and hosted Quality evidence.
+P17 SHALL be reconsidered only after every P16 control-matrix blocker is closed and an accepted ADR explicitly supersedes ADR-0044.
 
-#### Scenario: P17 completion is requested
-- **GIVEN** P17 implementation work
-- **WHEN** completion is evaluated
-- **THEN** exit review evidence must identify implemented, specified-only, fixture-backed, and deferred behavior.
+#### Scenario: Reconsideration is proposed
+- **GIVEN** a future execution proposal
+- **WHEN** any control blocker remains open or no superseding ADR exists
+- **THEN** P17 remains blocked.
