@@ -4,36 +4,76 @@ Use this after P8 is merged to get a compact sense of OSCA's current app shape.
 
 ## Start from a Clean Checkout
 
-```bash
+~~~bash
 uv sync --all-groups
-```
+uv run osca --help
+~~~
+
+The project uses Python 3.13. If uv sync cannot find that interpreter, install it once with uv python install 3.13 and rerun the command.
 
 ## Import Local OHLCV Data
 
-```bash
-osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p8-smoke
-```
+The import command takes input_file, symbol, and timeframe as positional arguments. Its output includes the exact payload_uri that the next two commands need.
 
-Copy the `dataset_revision_id` from the JSON output and use it in the payload path below.
+Run the following block as-is. It prints the import result and stores its emitted payload_uri in PAYLOAD_URI, so there is no path or revision ID to type manually.
+
+~~~bash
+IMPORT_RESULT="$(uv run osca local-ohlcv-import \
+  tests/fixtures/local_ohlcv/aapl_daily.csv \
+  AAPL \
+  1d \
+  --storage-root .osca/manual-test)"
+
+printf '%s\n' "$IMPORT_RESULT"
+
+PAYLOAD_URI="$(printf '%s\n' "$IMPORT_RESULT" | uv run python -c \
+  'import json, sys; print(json.load(sys.stdin)["payload_uri"])')"
+
+printf 'Using payload: %s\n' "$PAYLOAD_URI"
+~~~
+
+The sample import should report three rows. Its payload_uri is the source of truth for the remaining commands; do not type placeholder text such as <dataset-revision-id> into the shell.
 
 ## Run the Demo Research Report
 
-```bash
-osca demo-research-report /tmp/osca-p8-smoke/payloads/<dataset-revision-id>.parquet AAPL 1d --output-file /tmp/osca-p8-smoke/demo-research.md
-```
+~~~bash
+uv run osca demo-research-report \
+  "$PAYLOAD_URI" \
+  AAPL \
+  1d \
+  --output-file .osca/manual-test/demo-research.md
+~~~
+
+Open the generated report with your operating system's usual file viewer, for example on macOS:
+
+~~~bash
+open .osca/manual-test/demo-research.md
+~~~
 
 ## Run the Backtest-to-Paper Evidence Report
 
-```bash
-osca backtest-paper-run /tmp/osca-p8-smoke/payloads/<dataset-revision-id>.parquet AAPL 1d --output-file /tmp/osca-p8-smoke/backtest-paper.md
-```
+~~~bash
+uv run osca backtest-paper-run \
+  "$PAYLOAD_URI" \
+  AAPL \
+  1d \
+  --initial-cash 10000 \
+  --output-file .osca/manual-test/backtest-paper.md
+~~~
+
+Then inspect the evidence report:
+
+~~~bash
+open .osca/manual-test/backtest-paper.md
+~~~
 
 ## What to Inspect
 
-- JSON output should be readable and evidence-oriented.
-- Markdown reports should be created under `/tmp/osca-p8-smoke`.
-- The backtest-to-paper output should include strategy metrics and a paper-evaluation record.
-- Deferred boundaries should remain false for live providers, live brokers, recommendations, autonomous execution, production ingestion, and real-capital orders.
+- The import JSON is readable and clearly identifies the local payload it created.
+- Both Markdown reports are created under .osca/manual-test.
+- The backtest-to-paper output includes strategy metrics and a paper-evaluation record.
+- The workflow remains local and evidence-oriented: deferred boundaries stay false for live providers, live brokers, recommendations, autonomous execution, production ingestion, and real-capital orders.
+- Commands fail with a clear message if the input file or payload path does not exist.
 
 ## Current Product Meaning
 
