@@ -1,56 +1,48 @@
 # P16 - Live-Order Readiness Study
 
-- **Status:** Planned
-- **Governing role:** Product authority
+- **Status:** Study candidate
+- **Governing role:** Product, architecture, and security authorities
 - **Phase:** Real-money/order-execution readiness
-- **Authoritative outcome:** Decide whether OSCA should support real-money order execution by producing threat models, controls, and a go/no-go ADR.
-- **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
-- **Last reviewed:** 2026-07-26
-- **Validation:** Planned
-
-## Current artifacts
-
-- [Milestone plan](README.md)
-- [Specification](../../specifications/p16-live-order-readiness-study.md)
-- [Accepted OpenSpec specification](../../../openspec/specs/p16-live-order-readiness-study/spec.md)
+- **Authoritative outcome:** Decide whether OSCA should support real-money order execution without implementing an order path.
+- **Baseline:** P15 merge commit `5d3e7966a53668c9f38a3ad9feaf0a953afe8e14`
+- **Last reviewed:** 2026-07-31
+- **Decision:** NO-GO
 
 ## Objective
 
-Decide whether OSCA should support real-money order execution by producing threat models, controls, and a go/no-go ADR.
+Evaluate capital-execution risks, mandatory controls, legal/accountability boundaries, and explicit reconsideration preconditions.
 
-## User-visible value
+## Delivered artifacts
 
-The project avoids drifting into capital execution without explicit product, legal, and security acceptance.
+- [Threat model](threat-model.md)
+- [Mandatory control matrix](control-matrix.md)
+- [Legal and accountability review](legal-accountability-review.md)
+- [Exit review](exit-review.md)
+- [ADR-0044](../../decisions/ADR-0044-live-order-execution-readiness-decision.md)
+- [Specification](../../specifications/p16-live-order-readiness-study.md)
+- [OpenSpec](../../../openspec/specs/p16-live-order-readiness-study/spec.md)
+- [P15-P16 reconciliation](../../governance/p15-p16-reconciliation.md)
 
-## Implementation scope
+## Outcome
 
-- Document broker/exchange execution risks.
-- Define kill switches, reconciliation, limits, audit, manual approval, and incident controls.
-- Assess regulatory, tax, custody, and liability boundaries.
-- Produce a go/no-go ADR and implementation preconditions.
+OSCA is not ready for real-money order execution. Current architecture lacks independent per-order authorization, externally enforced limits, venue-specific order state and reconciliation, independently operable kill switches, hardened trading credential custody, completed legal/account review, and operational coverage.
 
 ## Explicit non-scope
 
-- Placing real orders, broker/exchange adapter implementation.
+- Broker or exchange adapters.
+- Trading credentials.
+- Order intent, approval, submission, cancellation, or reconciliation code.
+- Sandbox or production orders.
+- Autonomous execution or real-capital pilots.
 
-## Acceptance criteria
+## Reconsideration
 
-- REQ-0268-REQ-0274 are allocated before implementation begins.
-- The implementation proves the stated scope with automated tests where code changes are made.
-- Manual testing and usage is updated when operator-visible behavior changes.
-- Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
+A future proposal requires every blocker in the control matrix to be closed and an accepted ADR superseding ADR-0044. P17 remains unauthorized.
 
 ## Validation gates
 
-- Ruff, mypy, pytest, architecture validation, OpenSpec validation, and secret scanning.
-- Documentation, traceability, and manual-testing review.
-- Exit review recording final evidence.
-
-## Dependencies
-
-P13-P14.
-
-## Risks and decisions
-
-The responsible outcome may be no-go or permanently manual-only.
+- Documentation and link validation.
+- Requirements and architecture traceability.
+- OpenSpec doctor and strict validation.
+- Secret scanning.
+- Hosted Quality before completion is marked.
