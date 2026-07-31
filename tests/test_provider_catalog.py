@@ -74,7 +74,7 @@ def test_conditional_candidates_need_more_evidence() -> None:
     assert decision.blocking_constraint_ids == ("free-tier-quota-limited",)
 
 
-def test_preferred_candidates_are_ready_for_contract_planning() -> None:
+def test_fred_live_readiness_requires_terms_evidence() -> None:
     fred = next(
         profile
         for profile in build_default_no_cost_provider_profiles()
@@ -83,8 +83,11 @@ def test_preferred_candidates_are_ready_for_contract_planning() -> None:
 
     decision = classify_provider_implementation_readiness(fred)
 
-    assert decision.readiness is ProviderImplementationReadiness.READY_FOR_CONTRACTS
-    assert decision.blocking_constraint_ids == ()
+    assert decision.readiness is ProviderImplementationReadiness.NEEDS_EVIDENCE
+    assert decision.blocking_constraint_ids == (
+        "fred-content-retention-prohibited",
+        "fred-software-ai-legal-review-required",
+    )
 
 
 def test_catalog_profiles_reject_duplicate_capabilities_and_sources() -> None:
