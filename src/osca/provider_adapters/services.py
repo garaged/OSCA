@@ -9,8 +9,6 @@ from osca.provider_adapters.contracts import (
 from osca.provider_catalog import (
     ProviderCatalogIdentifier,
     ProviderCatalogProfile,
-    ProviderImplementationReadiness,
-    classify_provider_implementation_readiness,
     preferred_no_cost_profiles,
 )
 
@@ -18,16 +16,12 @@ from osca.provider_catalog import (
 def build_default_preferred_no_cost_adapter_contracts(
     profiles: tuple[ProviderCatalogProfile, ...],
 ) -> tuple[ProviderAdapterContract, ...]:
-    ready_profiles = tuple(
-        profile
-        for profile in preferred_no_cost_profiles(profiles)
-        if classify_provider_implementation_readiness(profile).readiness
-        is ProviderImplementationReadiness.READY_FOR_CONTRACTS
-    )
-    ready_ids = {profile.provider_id for profile in ready_profiles}
+    preferred_ids = {
+        profile.provider_id for profile in preferred_no_cost_profiles(profiles)
+    }
 
     contracts: list[ProviderAdapterContract] = []
-    if ProviderCatalogIdentifier.SEC_EDGAR in ready_ids:
+    if ProviderCatalogIdentifier.SEC_EDGAR in preferred_ids:
         contracts.append(
             ProviderAdapterContract(
                 provider_id=ProviderCatalogIdentifier.SEC_EDGAR,
@@ -54,7 +48,7 @@ def build_default_preferred_no_cost_adapter_contracts(
                 ),
             )
         )
-    if ProviderCatalogIdentifier.FRED in ready_ids:
+    if ProviderCatalogIdentifier.FRED in preferred_ids:
         contracts.append(
             ProviderAdapterContract(
                 provider_id=ProviderCatalogIdentifier.FRED,
@@ -63,18 +57,15 @@ def build_default_preferred_no_cost_adapter_contracts(
                 credential_requirement=(
                     ProviderAdapterCredentialRequirement.NAMED_API_KEY_REFERENCE
                 ),
-                source_uri=(
-                    "https://fred.stlouisfed.org/docs/api/fred/"
-                    "series_observations.html"
-                ),
+                source_uri="https://fred.stlouisfed.org/legal/terms/",
                 user_agent_required=False,
                 rate_limit_policy=(
-                    "Adapter implementations must enforce API-key, quota, and "
-                    "terms evidence before network access is enabled."
+                    "Fixture contract only. Live API-key resolution, requests, and "
+                    "content retention remain policy-blocked pending accepted terms evidence."
                 ),
                 notes=(
-                    "Fixture-backed adapter contract for macroeconomic series "
-                    "enrichment."
+                    "Fixture-backed macroeconomic adapter contract retained for deterministic "
+                    "contract tests without FRED network access or content caching."
                 ),
             )
         )

@@ -4,211 +4,111 @@
 
 - **Product baseline:** Approved
 - **M0 architecture foundation:** Merged through PR #2
-- **Tier-1 ADRs:** Frozen at M1 implementation entry
-- **Architecture review:** Approved
 - **M0.x operationalization:** Complete
-- **M1 secure walking skeleton:** Accepted
-- **M2 governed daily-data vertical slice:** Complete
-- **M3 multi-timeframe temporal correctness:** Complete
-- **M4 research projects, analytics, and visualization:** Complete
-- **M5 independent extension packaging and activation:** Complete
-- **M6 backtesting and strategy validation foundation:** Complete
-- **M7 F2 event-driven validation foundation:** Complete
-- **M8 F3 paper evaluation and automation foundation:** Complete
-- **M9 governed ML lifecycle foundation:** Complete
-- **M10 LLM lifecycle and gateway foundation:** Complete
-- **M11 analytical breadth and portfolio intelligence:** Complete
-- **M12 release readiness and operational resilience:** Complete
-- **P1 provider production promotion evidence gates:** Complete
-- **P2 no-cost provider discovery baseline:** Complete
-- **P3 no-cost provider profile catalog:** Complete
-- **P4 no-cost provider adapter contracts:** Complete
-- **P5 state reconciliation and operator surface:** Complete
-- **P6 no-cost local OHLCV import provider:** Complete
-- **P7 first demo research workflow:** Complete
-- **Current activity:** P8 backtest-to-paper happy path implementation candidate
-- **Freeze point:** Reached; changes require superseding ADRs
+- **M1-M12 governed foundation roadmap:** Complete
+- **P1-P5 provider governance and reconciliation:** Complete
+- **P6 no-cost local OHLCV import:** Complete
+- **P7 deterministic demo research workflow:** Complete
+- **P8 backtest-to-paper evidence path:** Complete, including macOS Apple Silicon/Python 3.13 manual validation
+- **Current activity:** P9 SEC preview and FRED terms gate implementation candidate in PR #52
+- **Next practical product path:** P10 governed runtime routing, then P11 analyst workspace
+- **Freeze point:** Foundational ADR freeze remains in effect; semantic changes require governed supersession
 
-## Governing baseline
+## Authoritative navigation
 
-ADR-0001 through ADR-0010 are authoritative and have passed the [M0.6 validation program](docs/validation/m0x-validation-record.md). They remain governed by the [architecture evolution policy](engineering/architecture-evolution-policy.md).
-
-M0.x does not redesign M0. It supplies application guidance, validation evidence, lifecycle/exception mechanics, and repeatable M1 initiation controls.
-
-## M0.x completion evidence
-
-- [x] Repository-backed gap analysis
-- [x] Non-duplicative architecture handbook
-- [x] Technology-neutral reference capability
-- [x] Repeatable validation procedure and check manifest
-- [x] Validation record and findings disposition
-- [x] Harmonized lifecycle and expanded architecture registry
-- [x] Architecture exception register
-- [x] M1 initiation and review controls
-- [x] Evidence record template
-- [x] Executable-architecture backlog
-- [x] Corrected navigation and stale baseline references
-
-## M1 completion boundary
-
-M1 is accepted through its governed exit review. M1.1-M1.8 provide the secure walking skeleton and retained evidence. Subsequent product work must begin with a new milestone intent, exact requirement allocation, triggered decisions, accepted specification, and proportional evidence plan; M1 acceptance does not authorize implementing later PRD scope early.
-
-## M2 completion boundary
-
-M2 is complete through its governed exit review and archived OpenSpec change. M2 provides canonical stock and spot-crypto identity, provider-neutral daily-data contracts, deterministic fixture adapters, governed source/canonical persistence, retrieval and repair jobs, quality findings, inspection, and protected cleanup behavior.
-
-Production promotion for paid, authenticated, or license-sensitive provider use is deferred beyond M2 and remains disabled until exact provider-specific licensing, account-plan, credential, quota, and policy evidence is accepted.
-
-## M3 completion boundary
-
-M3 is complete through its governed exit review and archived OpenSpec change. M3 provides approved interval semantics, UTC completed-bar windows, stock exchange-session and crypto UTC boundary models, calendar-aware gap and repair eligibility classification, deterministic resampling lineage, interval-aware dataset/retrieval/storage identity, governed OHLCV Parquet payloads, and interval-aware non-daily OHLCV publication.
-
-Provider production promotion remains deferred and disabled until exact provider-specific evidence is accepted.
-
-## M4 completion boundary
-
-M4 is complete through its governed exit review and archived OpenSpec change. M4 provides governed research-project contracts, hypothesis lifecycle evidence, project timeline and promotion behavior, analysis graph validation and planning, analytical output provenance, evidence-report assembly, declarative visualization specifications, visualization export metadata, and dashboard composition.
-
-ML training, backtesting, paper trading, live execution, and provider production promotion remain deferred to later milestones.
-
-## M5 completion boundary
-
-M5 is complete through its governed exit review and archived OpenSpec change. M5 provides governed extension manifest contracts, fail-closed validation, installation records, explicit activation decisions, permission-renewal checks, disable/uninstall impact previews, SQLite lifecycle persistence, and metadata-only CLI administration.
-
-Runtime loading or execution of third-party extension code, public registry operation, HTTP API/UI administration, strategy/backtesting, ML, LLM, paper trading, live execution, and provider production promotion remain deferred to later milestones.
-
-## M6 completion boundary
-
-M6 is complete through its governed exit review and archived OpenSpec change. M6 provides deterministic backtest contracts, fidelity profiles, execution modes, point-in-time data requirements, pinned assumptions, strategy decisions, simulated order intents, execution plans, result metrics, SQLite lifecycle persistence, and metadata-only CLI administration.
-
-Event matching, fills, portfolio accounting, paper journals, runtime strategy execution, ML, LLM, paper trading, live execution, and provider production promotion remain deferred until their exact contracts and evidence are accepted.
-
-## M7 completion boundary
-
-M7 is complete through its governed exit review and archived OpenSpec change. M7 provides deterministic F2 event-driven validation contracts, order lifecycle evidence, simulated fills, fill model metadata, deterministic risk decisions, balanced journal transactions, valuation snapshots, rebuildable projections, promotion gates, validation services, fill settlement helpers, and SQLite metadata persistence for F2 validation evidence.
-
-F3 forward paper evaluation, independent paper accounts, durable market-aware schedules, runtime strategy execution, ML, LLM, live execution, tick/quote/order-book fidelity, and provider production promotion remain deferred until later governed milestone intents.
-
-## M8 completion boundary
-
-M8 is complete through its governed exit review and archived OpenSpec change. M8 provides F3 paper evaluation contracts, independent paper account identity, approved-candidate linkage from M7 promotion gates, forward paper run requests, data and operational health gates, pause and kill-switch controls, backtest-versus-forward comparison records, durable schedule identity, missed-run policy, checkpoint and recovery decisions, SQLite metadata persistence, notification inbox records, digests, delivery-adapter declarations, and skipped delivery attempts for disabled adapters.
-
-Live execution, broker/exchange adapters, real-capital orders, ML, LLM, F4 fidelity, and provider production promotion remain deferred until later governed milestone intents.
-
-## Key navigation
-
-- [M0.x index](docs/milestones/m0x/README.md)
-- [Gap analysis](docs/milestones/m0x/gap-analysis.md)
+- [Product requirements](docs/product-requirements.md)
+- [Decision log](docs/decision-log.md)
 - [Architecture handbook](docs/handbook/README.md)
-- [Validation record](docs/validation/m0x-validation-record.md)
+- [Architecture decisions](docs/decisions/README.md)
+- [Requirements catalog](docs/governance/requirements-catalog.md)
+- [Traceability register](docs/governance/traceability-register.md)
+- [P8-P9 requirements and traceability reconciliation](docs/governance/p8-p9-reconciliation.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
-- [Engineering bootstrap](engineering/bootstrap/README.md)
-- [M0.x roadmap](docs/milestones/m0x-roadmap.md)
-- [M1 milestone](docs/milestones/m1/README.md)
-- [M2 milestone](docs/milestones/m2/README.md)
-- [M3 milestone](docs/milestones/m3/README.md)
-- [M4 milestone](docs/milestones/m4/README.md)
-- [M5 milestone](docs/milestones/m5/README.md)
-- [M6 milestone](docs/milestones/m6/README.md)
-- [M7 milestone](docs/milestones/m7/README.md)
-- [M8 milestone](docs/milestones/m8/README.md)
-- [M9 milestone](docs/milestones/m9/README.md)
-- [M10 milestone](docs/milestones/m10/README.md)
-- [M11 milestone](docs/milestones/m11/README.md)
-- [M12 milestone](docs/milestones/m12/README.md)
-- [P1 milestone](docs/milestones/p1/README.md)
-- [P2 milestone](docs/milestones/p2/README.md)
-- [P3 milestone](docs/milestones/p3/README.md)
-- [P4 milestone](docs/milestones/p4/README.md)
+- [Manual testing and usage](docs/testing/manual-testing.md)
+- [Remaining P roadmap](docs/milestones/remaining-p-roadmap.md)
 
-## M9 completion boundary
+## Completed foundation boundary
 
-M9 is complete through its governed exit review and archived OpenSpec change. M9 provides governed ML feature and label definitions, training workflow metadata, experiment and model artifact records, evaluation and calibration reports, deterministic promotion decisions, SQLite lifecycle metadata persistence, F2 event-validation links, champion/challenger paper deployment decisions, drift/outcome monitoring reports, and retraining records without automatic promotion.
+M0-M12 provide the governed modular-monolith foundation, secure local-first operation, canonical data and temporal contracts, research-project and extension contracts, backtesting and event-driven simulation foundations, paper-evaluation/accounting foundations, ML and LLM lifecycle governance, analytical-pack metadata, and operational-resilience contracts.
 
-Trainer execution, production model serving, LLM behavior, live execution, real-capital orders, F4 fidelity, and provider production promotion remain deferred to later governed milestone intents.
+Many M0-M12 capabilities are contract, metadata, persistence, or validation foundations rather than complete production runtime engines. Their milestone exit records and OpenSpec artifacts remain authoritative for exact implemented versus specified-only scope.
 
-## M10 completion boundary
+## Provider governance boundary
 
-M10 is complete through its governed exit review and archived OpenSpec change. M10 provides governed LLM provider/model capability records, prompt templates, bounded tool definitions, explicit project-context policies, structured-output contracts, request envelopes, deterministic route decisions, privacy and budget gates, evaluation reports, and SQLite lifecycle metadata persistence without invoking providers.
+P1-P5 provide provider promotion evidence gates, a no-cost provider catalog, readiness classification, fixture-backed SEC EDGAR and FRED adapter contracts, and operator-facing provider-governance surfaces.
 
-Provider adapters, prompt execution, retrieval materialization, generated recommendations, LLM tool orchestration, state-changing execution, live execution, real-capital orders, and provider production promotion remain deferred to later governed milestone intents.
+Technical accessibility is not licensing permission. D-040 requires retrieval, retention, transformation, export, backup, redistribution, credential, quota, and account-plan evidence where applicable. Unknown or conflicting provider rights fail closed.
 
+- SEC EDGAR remains the preferred public no-key enrichment source subject to declared user-agent and fair-access controls.
+- FRED remains a preferred official macro candidate at the catalog level, but live implementation readiness is `NEEDS_EVIDENCE` under current terms.
+- The FRED fixture contract remains available for deterministic conformance only.
+- Twelve Data and Kraken remain production-promotion candidates, not enabled runtime providers.
+- Alpha Vantage and Nasdaq Data Link remain conditional.
+- Stooq remains research-only.
+- Unofficial Yahoo Finance paths remain excluded.
 
-## M11 completion boundary
+## P6-P8 usable local workflow boundary
 
-M11 is complete through its governed exit review and archived OpenSpec change. M11 provides governed analytical pack manifests, deterministic pack validation, analytical result bundles, method comparison, outcome calibration, portfolio scenario evidence, cross-family synthesis records, visualization pack metadata, and SQLite metadata persistence for analytical breadth and portfolio intelligence.
+P6-P8 provide the first genuinely usable no-cost local evidence workflow:
 
-Runtime fundamental, macro, event, news, sentiment, on-chain, specialized ML, and visualization engines; provider calls; LLM-generated synthesis; recommendation execution; live execution; real-capital orders; and provider production promotion remain deferred to later governed milestone intents.
+1. Import user-supplied CSV or Parquet OHLCV into governed local metadata and Parquet payload storage.
+2. Generate a deterministic evidence-only research report.
+3. Run the transparent built-in `sma-trend-long-only` strategy against the exact imported payload.
+4. Compare strategy evidence with buy-and-hold and retain a linked local paper-evaluation record.
 
-## M12 completion boundary
+P8 manual validation imported `tests/fixtures/local_ohlcv/aapl_backtest_daily.csv` with `row_count: 10`, processed ten AAPL daily bars, generated three simulated evidence trades, and retained paper run `aaad0f77-aebd-455b-832a-9df9feafb680` in `local-evidence-only` mode. See [retained P8 evidence](evidence/p8/manual-backtest-paper-report.md).
 
-M12 is complete through its governed exit review and archived OpenSpec change. M12 provides governed release-readiness and operational-resilience contracts for backup manifests, restore verification, disaster-recovery exercises, health findings, alert policies, workflow run records, deterministic risk-policy decisions, and SQLite metadata persistence.
+This is a local analyst/engineering CLI path. It is not live paper trading, a broker integration, a recommendation engine, a scheduler, or real-capital execution.
 
-Real off-device backup transport, active restore execution, external alert delivery, runtime scheduler execution, personal-server transport implementation, live execution, real-capital orders, and provider production promotion remain deferred until later governed milestone intents.
+## P9 implementation-candidate boundary
 
+P9 adds `osca.provider_preview` as an isolated preview surface:
 
-## P1 completion boundary
+- Deterministic SEC company-facts fixture replay with network disabled.
+- Explicit opt-in SEC company-facts and submissions requests.
+- Required organization/contact user agent.
+- Approved HTTPS `data.sec.gov` host and path restrictions.
+- Conservative fair-access throttling, bounded timeout, and bounded response size.
+- Atomic local SEC cache plus source, checksum, record-count, cache-state, and safety-boundary evidence.
+- Structured FRED policy-blocked evidence with no API request, no credential resolution, and no content retention.
 
-P1 is complete through its governed exit review and hosted Quality evidence. P1 defines provider production evidence bundles, deterministic promotion decisions, and SQLite metadata persistence for Twelve Data and Kraken provider production promotion evidence.
+P9 does not introduce general runtime provider routing. P10 owns one governed resolution surface across local imports, fixtures, approved previews, stale/unavailable states, and policy blocks.
 
-Real provider calls, credential value access, production ingestion jobs, external redistribution/export implementation, runtime provider scheduling, live execution, and real-capital orders remain deferred until later governed milestone intents.
+## Practical analyst-product gap
 
-- P1 clarification: provider promotion now preserves an explicit no-cost provider baseline so OSCA can function without requiring user spend when complete free-tier/no-cost evidence is available.
-- No-cost baseline clarification Quality: `30183593760` at `eba603a...`.
+Capabilities usable now:
 
+- Local CSV/Parquet OHLCV import.
+- Deterministic research metrics and static reports.
+- Transparent historical strategy evidence.
+- Buy-and-hold comparison.
+- Local paper-evaluation evidence.
+- Deterministic SEC fixture enrichment and optional bounded SEC live preview after P9 acceptance.
 
-## P2 completion boundary
+Major gaps before a practical local analyst product:
 
-P2 is complete through its governed exit review and hosted Quality evidence. P2 records candidate provider dispositions, official-source notes, no-cost constraints, and exclusion policy without implementing adapters, invoking provider APIs, changing runtime routing, or promoting providers to production.
+- P10: coherent source and enrichment routing with visible provenance and blocked/stale states.
+- P11: a workspace for projects, datasets, reports, backtests, and enrichment evidence without manual payload-path handling.
+- Executable analytical and visualization depth beyond the current narrow research/backtest path should be explicitly owned by P11 or a later governed milestone.
 
-- P2 Quality: `30184477700` at `0e13f84...`.
+P12 ML/LLM previews are optional enhancements and are not required for deterministic local usefulness.
 
+## Deferred production and trading boundary
 
-## P3 completion boundary
+The following remain disabled unless a later milestone explicitly owns them and passes all gates:
 
-P3 is complete through its governed exit review and hosted Quality evidence. It adds executable no-cost provider profile selection and implementation-readiness classification while keeping provider adapters, provider API calls, credential materialization, runtime routing, production promotion, and external redistribution/export enablement deferred until later governed milestone intents.
+- FRED live API access, key resolution, caching, or archival.
+- Broad live provider routing or automatic fallback.
+- Scheduled production ingestion.
+- Provider production promotion without exact accepted evidence.
+- Paid-provider use without explicit cost/account-plan approval.
+- Generated investment recommendations presented as authoritative facts.
+- Broker or exchange connections.
+- Autonomous strategy execution.
+- Live or real-capital orders.
 
-- P3 Quality: 30186073205 at 31d0d11....
+P13-P15 remain deferred behind licensing, security, operational, packaging, and recovery evidence. P16 is only a go/no-go study for live-order readiness. P17 is not authorized unless P16 explicitly approves it through a separate governed decision.
 
+## Validation state
 
-## P4 completion boundary
-
-P4 is complete through its governed exit review and hosted Quality evidence. It defines fixture-backed adapter contracts for SEC EDGAR and FRED. Live provider calls, credential materialization, runtime routing, production promotion, and production ingestion remain deferred until later governed milestone intents.
-
-- P4 Quality: `30191624710` at `fef440b...`.
-
-
-## Planned P5-P17 implementation sequence
-
-The remaining P milestone sequence is planned in [Remaining P Milestone Roadmap](docs/milestones/remaining-p-roadmap.md). P5 completed the required M0-M12 and P1-P4 documentation and implementation drift review before the next functional work begins.
-
-- **P5:** State reconciliation and operator surface complete.
-- **P6-P7:** Minimum usable local/demo tool through local OHLCV import and first demo research workflow.
-- **P8-P12:** Useful analyst workflow through backtest-to-paper, official enrichment preview, routing, workspace, and optional ML/LLM preview.
-- **P13-P15:** Production-capable version through promoted provider ingestion, production operations, and runtime extensions.
-- **P16-P17:** Real-money readiness only if explicitly approved through a go/no-go study and controlled pilot gates.
-
-
-## P5 completion boundary
-
-P5 is complete through its governed exit review and merged implementation. It reconciles the M0-M12 and P1-P4 status boundary and exposes provider promotion status, no-cost provider catalog readiness, fixture-backed adapter contracts, and fixture validation through CLI operator commands.
-
-Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
-
-## P6 completion boundary
-
-P6 is complete through PR #42 and hosted Quality evidence. It adds a governed local CSV/Parquet OHLCV import provider, strict canonical schema validation, deterministic dataset revision identity, Parquet payload persistence, SQLite metadata persistence, sample fixture data, shared application API, and CLI operator command.
-
-Live provider calls, credential materialization, runtime provider routing, production ingestion, and real-capital orders remain disabled and deferred until later governed milestone intents.
-
-## P7 completion boundary
-
-P7 is complete through PR #43 and hosted Quality evidence. It adds a deterministic first demo research workflow that consumes P6 local OHLCV Parquet payloads, computes evidence metrics, renders CLI JSON, writes optional Markdown or JSON static reports, and preserves evidence-only/not-financial-advice boundaries.
-
-Live provider calls, credential materialization, runtime provider routing, production ingestion, ML execution, LLM execution, recommendations, scheduler execution, and real-capital orders remain disabled and deferred until later governed milestone intents.
-
-## P8 implementation candidate boundary
-
-P8 is an implementation candidate pending hosted Quality evidence. It adds a built-in transparent SMA trend strategy, deterministic local-data backtest execution, comparison against buy-and-hold, paper-evaluation evidence records, CLI JSON output, and optional Markdown or JSON evidence report export.
-
-Live paper broker integration, autonomous execution, live provider calls, credential materialization, runtime provider routing, production ingestion, recommendations, and real-capital orders remain disabled and deferred until later governed milestone intents.
+P8 implementation, compatibility, documentation, and manual-validation evidence is complete. P9 remains an implementation candidate until PR #52 passes hosted Ruff, strict mypy, tests/contracts/migrations/links/architecture, OpenSpec, secret scanning, review, and any required manual smoke validation.

@@ -1,0 +1,16 @@
+{
+  "cik": 320193,
+  "entityName": "Apple Inc.",
+  "facts": {
+    "dei": {
+      "EntityCommonStockSharesOutstanding": {
+        "label": "Entity Common Stock Shares Outstanding",
+        "units": {"shares": []}
+      }
+    },
+    "us-gaap": {
+      "Assets": {"label": "Assets", "units": {"USD": []}},
+      "Revenues": {"label": "Revenues", "units": {"USD": []}}
+    }
+  }
+}
