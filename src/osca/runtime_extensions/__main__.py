@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 
 from osca.runtime_extensions import (
+    RuntimePackEvidence,
     RuntimePackRequest,
+    RuntimePackRollbackEvidence,
     execute_runtime_pack,
     install_runtime_pack,
     rollback_runtime_pack,
@@ -27,6 +29,7 @@ def main() -> None:
     rollback.add_argument("--storage-root", default=".osca")
 
     args = parser.parse_args()
+    result: RuntimePackEvidence | RuntimePackRollbackEvidence
     if args.command == "rollback":
         result = rollback_runtime_pack(
             storage_root=args.storage_root,
