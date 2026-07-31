@@ -1,56 +1,43 @@
-# P13 - Production Provider Promotion and Ingestion
+# P13 - Governed Production Provider Admission and Ingestion
 
-- **Status:** Planned
+- **Status:** Implementation candidate
 - **Governing role:** Product authority
 - **Phase:** Production-capable version
-- **Authoritative outcome:** Promote eligible providers through P1 evidence gates and implement production ingestion jobs only for providers with accepted licensing, quota, credential, and redistribution evidence.
-- **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
-- **Last reviewed:** 2026-07-26
-- **Validation:** Planned
+- **Authoritative outcome:** Admit only provider/resource scopes with accepted evidence and retain durable ingestion lineage under explicit operator control.
+- **Baseline:** Completed M0-M12 roadmap and P1-P12
+- **Last reviewed:** 2026-07-31
+- **Validation:** Hosted Quality pending on PR #56
 
-## Current artifacts
+## Approved candidate scope
 
-- [Milestone plan](README.md)
-- [Specification](../../specifications/p13-production-provider-promotion-ingestion.md)
-- [Accepted OpenSpec specification](../../../openspec/specs/p13-production-provider-promotion-ingestion/spec.md)
+- **SEC EDGAR:** `company_facts` and `submissions`, official `data.sec.gov`, public no-key, declared user agent, internal use only.
+- **Kraken:** public spot `OHLC`, official `api.kraken.com`, public no-key, personal/internal use only.
 
-## Objective
+## Not promoted
 
-Promote eligible providers through P1 evidence gates and implement production ingestion jobs only for providers with accepted licensing, quota, credential, and redistribution evidence.
-
-## User-visible value
-
-OSCA can ingest governed provider data without relying on fixtures or manual imports.
+- **Twelve Data:** `needs_evidence` for exact account plan, market coverage, retention, display/non-display, export, and redistribution rights.
+- **Alpha Vantage:** `needs_evidence` for commercial onboarding and exact market-data rights.
+- **Nasdaq Data Link:** `needs_evidence` because rights are dataset/order-form specific.
+- **FRED:** `policy_blocked` by unresolved retention and software/AI-use constraints.
 
 ## Implementation scope
 
-- Re-evaluate Twelve Data, Kraken, Alpha Vantage, Nasdaq Data Link, SEC, and FRED evidence.
-- Enable credentials by named secret reference only.
-- Add durable ingestion jobs with retries, rate limits, cache, lineage, and quality findings.
-- Keep promotion decisions auditable and reversible.
+- Immutable admission, request, and ingestion-evidence contracts.
+- Auditable provider/resource admission matrix with evidence review date and terms reference.
+- Explicit network opt-in, HTTPS host/path allowlists, SEC user-agent requirement, bounded timeout, size, and retry controls.
+- Atomic raw JSON and metadata retention with SHA-256 lineage, attempts, admission state, and network state.
+- CLI policy inspection plus SEC company-facts and Kraken OHLC ingestion commands.
+- Reversible admission: removing or downgrading a policy decision prevents future network activity without deleting retained evidence.
 
 ## Explicit non-scope
 
-- Real-capital execution, unsupported/unofficial provider APIs.
+- Redistribution, external SaaS display, unsupported provider endpoints, credential materialization, paid-plan promotion, real-time streaming, recommendations, brokers, autonomous execution, or real-capital orders.
 
 ## Acceptance criteria
 
-- REQ-0247-REQ-0253 are allocated before implementation begins.
-- The implementation proves the stated scope with automated tests where code changes are made.
-- Manual testing and usage is updated when operator-visible behavior changes.
-- Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
-
-## Validation gates
-
-- Ruff, mypy, pytest, architecture validation, OpenSpec validation, and secret scanning.
-- Documentation, traceability, and manual-testing review.
-- Exit review recording final evidence.
-
-## Dependencies
-
-P1 gates, P5, P10.
-
-## Risks and decisions
-
-Licensing/account-plan evidence may block or narrow scope.
+- REQ-0247-REQ-0253 map to code and tests.
+- Non-admitted providers fail before network access.
+- Approved scopes require explicit network enablement and exact endpoint allowlists.
+- Successful jobs retain payload and metadata atomically with verifiable lineage.
+- Retries and response limits are bounded and visible.
+- Documentation, OpenSpec, traceability, manual usage, exit evidence, and hosted Quality are current before completion.
