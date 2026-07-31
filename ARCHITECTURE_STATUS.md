@@ -6,32 +6,37 @@
 - **M0-M12 governed foundation roadmap:** Complete
 - **P1-P11 deterministic local analyst path:** Complete
 - **P12 optional model-assisted preview:** Complete through PR #55
-- **Current activity:** P13 governed production provider admission and ingestion candidate in PR #56
+- **P13 governed production ingestion:** Complete through PR #56
+- **Current activity:** P14 personal-server operations candidate in PR #57
 - **Freeze point:** Foundational ADR freeze remains in effect; semantic changes require governed supersession
 
-## P13 admission boundary
+## P14 operations boundary
 
-P13 adds `osca.production_ingestion` with an auditable provider/resource admission decision before every run.
+P14 adds `osca.personal_server` as an explicit operator-controlled runtime for a trusted single-user host.
 
-- **SEC EDGAR:** approved only for company facts and submissions from official `data.sec.gov`, with a declared user agent and internal-use-only retention.
-- **Kraken:** approved only for public spot OHLC from official `api.kraken.com`, for personal/internal use.
-- **Twelve Data, Alpha Vantage, Nasdaq Data Link:** `needs_evidence` pending exact account-plan, dataset, retention, export, and redistribution rights.
-- **FRED:** `policy_blocked` pending retention and software/AI-use evidence.
+- **Exposure:** loopback is the default; non-loopback configuration requires TLS and authentication.
+- **Scheduler:** only locally configured and explicitly enabled commands execute, with bounded timeouts and retained stdout/stderr evidence.
+- **Alerts:** file and HTTPS webhook transports are supported; delivery is disabled by default and webhook destinations are redacted.
+- **Backup:** selected state is archived to a filesystem destination outside the source tree with manifest, file count, and SHA-256 evidence.
+- **Restore:** archives are validated and extracted to temporary staging before copy; non-empty destinations require explicit overwrite permission.
+- **Packaging:** systemd service and timer templates include common least-privilege hardening directives.
 
-Approved runs require explicit network opt-in, HTTPS allowlists, bounded timeout/size/retries, valid JSON, and atomic payload/metadata retention with SHA-256 lineage. A policy downgrade blocks future runs without deleting historical evidence.
+## Operator-owned controls
+
+P14 does not provision certificates, identities, firewall policy, host patching, storage mounts, filesystem ownership, or cloud infrastructure. Operators must adapt and validate these controls for their host.
 
 ## Preserved boundaries
 
-P13 does not enable external redistribution, public multi-user data service, paid/authenticated provider promotion without evidence, real-time streaming, recommendations, brokers, autonomous execution, or real-capital orders.
+P14 does not enable multi-tenant SaaS, anonymous public access, remote arbitrary command submission, provider scope expansion, recommendations, brokers, autonomous execution, or real-capital orders.
 
 ## Authoritative navigation
 
-- [P13 milestone](docs/milestones/p13/README.md)
-- [P13 quickstart](docs/milestones/p13/user-testing-quickstart.md)
-- [P12-P13 reconciliation](docs/governance/p12-p13-reconciliation.md)
+- [P14 milestone](docs/milestones/p14/README.md)
+- [P14 quickstart](docs/milestones/p14/user-testing-quickstart.md)
+- [P13-P14 reconciliation](docs/governance/p13-p14-reconciliation.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
 - [Remaining P roadmap](docs/milestones/remaining-p-roadmap.md)
 
 ## Validation state
 
-P12 is complete with final Quality run `30646021643` and merge commit `03aca9f71db0087c2ef6df5b176baae219cbf99e`. P13 remains an implementation candidate until PR #56 passes final hosted Quality, review, and evidence reconciliation.
+P13 is complete with final Quality run `30647766605` and merge commit `b22d23970be25f6425c4e5bd4d8a8ea51bb38335`. P14 remains an implementation candidate until PR #57 passes final hosted Quality, review, and evidence reconciliation.
