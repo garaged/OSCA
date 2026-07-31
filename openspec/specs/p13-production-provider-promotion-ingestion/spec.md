@@ -2,33 +2,61 @@
 
 ## Purpose
 
-Index the planned P13 semantics for Production Provider Promotion and Ingestion.
+Define evidence-gated provider admission and durable internal-use ingestion.
 
 ## Requirements
 
-### Requirement: P13 milestone scope
+### Requirement: Auditable provider admission
 
-P13 SHALL implement the governed scope in docs/specifications/p13-production-provider-promotion-ingestion.md before it is marked complete.
+P13 SHALL classify each candidate provider as `approved`, `needs_evidence`, or `policy_blocked`, with exact resource scope, terms reference, evidence-review time, and findings.
 
-#### Scenario: P13 scope is reviewed
-- **GIVEN** the P13 milestone specification
-- **WHEN** implementation readiness is reviewed
-- **THEN** objective, user-visible value, implementation scope, non-scope, acceptance criteria, validation gates, dependencies, and risks are documented.
+#### Scenario: Admission policy is inspected
+- **GIVEN** the P13 policy command
+- **WHEN** the operator inspects provider admission
+- **THEN** SEC and Kraken expose only their admitted resources, account-specific providers remain evidence-gated, and FRED remains blocked.
 
-### Requirement: P13 deferred-boundary enforcement
+### Requirement: Fail closed before network use
 
-P13 SHALL preserve explicit deferred boundaries for behavior outside its approved scope.
+P13 SHALL reject non-admitted providers, non-admitted resources, disabled network access, and non-allowlisted endpoints before provider transport is invoked.
 
-#### Scenario: Out-of-scope behavior is attempted
-- **GIVEN** a P13 implementation
-- **WHEN** a caller attempts deferred behavior
-- **THEN** OSCA fails closed or reports a policy-blocked state rather than silently enabling the behavior.
+#### Scenario: Deferred provider is requested
+- **GIVEN** a provider in `needs_evidence`
+- **WHEN** ingestion is requested
+- **THEN** OSCA returns `provider_unavailable` without network use.
 
-### Requirement: P13 evidence retention
+#### Scenario: FRED is requested
+- **GIVEN** FRED remains `policy_blocked`
+- **WHEN** ingestion is requested
+- **THEN** OSCA returns `policy_blocked` without credential resolution, network use, or retention.
 
-P13 SHALL retain requirements, traceability, OpenSpec, manual-testing review, automated validation, and hosted Quality evidence.
+### Requirement: Bounded durable ingestion
 
-#### Scenario: P13 completion is requested
-- **GIVEN** P13 implementation work
-- **WHEN** completion is evaluated
-- **THEN** exit review evidence must identify implemented, specified-only, fixture-backed, and deferred behavior.
+P13 SHALL apply bounded timeout, response-size, and retry controls and SHALL atomically retain successful JSON payloads with metadata and SHA-256 lineage.
+
+#### Scenario: Approved ingestion succeeds
+- **GIVEN** an admitted resource and explicit network permission
+- **WHEN** a valid provider payload is returned
+- **THEN** OSCA retains the payload and metadata with provider, resource, endpoint, attempts, network state, size, and digest.
+
+#### Scenario: Provider response is invalid
+- **GIVEN** an admitted request
+- **WHEN** the provider returns invalid JSON or exceeds the response limit
+- **THEN** OSCA fails after bounded attempts and does not publish a successful evidence record.
+
+### Requirement: Reversible and internal-use-only admission
+
+P13 SHALL evaluate admission before every run so a downgraded decision stops future ingestion without deleting historical evidence. Redistribution and external public display SHALL remain disabled.
+
+#### Scenario: Admission is revoked
+- **GIVEN** retained historical evidence and a provider admission changed away from `approved`
+- **WHEN** another run is requested
+- **THEN** OSCA blocks the new run while preserving prior retained evidence.
+
+### Requirement: P13 completion evidence
+
+P13 SHALL retain requirements, traceability, manual usage, automated validation, OpenSpec, and hosted Quality evidence before completion is marked.
+
+#### Scenario: P13 completion is evaluated
+- **GIVEN** the P13 implementation candidate
+- **WHEN** maintainers evaluate milestone completion
+- **THEN** the exit review identifies approved, evidence-gated, policy-blocked, implemented, tested, and deferred behavior with final Quality evidence.
