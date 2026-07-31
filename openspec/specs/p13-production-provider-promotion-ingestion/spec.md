@@ -55,3 +55,8 @@ P13 SHALL evaluate admission before every run so a downgraded decision stops fut
 ### Requirement: P13 completion evidence
 
 P13 SHALL retain requirements, traceability, manual usage, automated validation, OpenSpec, and hosted Quality evidence before completion is marked.
+
+#### Scenario: P13 completion is evaluated
+- **GIVEN** the P13 implementation candidate
+- **WHEN** maintainers evaluate milestone completion
+- **THEN** the exit review identifies approved, evidence-gated, policy-blocked, implemented, tested, and deferred behavior with final Quality evidence.
