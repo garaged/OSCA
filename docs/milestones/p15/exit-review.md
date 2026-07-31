@@ -35,7 +35,7 @@ Eight focused tests cover trusted validation, untrusted blocking, compatibility 
 
 ## Hosted validation
 
-Quality run `30651509867` passed the assembled implementation:
+Quality run `30651509867` passed the assembled implementation and Quality run `30651618407` passed the review documentation head:
 
 - Ruff passed.
 - Strict mypy passed across 207 source files.
@@ -48,4 +48,4 @@ The remaining warning is the pre-existing duplicate ZIP entry warning in the rec
 
 ## Completion decision
 
-P15 is ready for review. It remains an implementation candidate until the final documentation-only Quality run is green and PR #58 is merged.
+P15 is ready for review. It remains an implementation candidate until PR #58 is merged. P16 remains a study-only milestone and does not authorize real-money execution.
