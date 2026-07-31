@@ -1,12 +1,12 @@
 # P14 - Personal-Server Production Operations
 
-- **Status:** Implementation candidate
+- **Status:** Complete through PR #57
 - **Governing role:** Product authority
 - **Phase:** Production-capable version
 - **Authoritative outcome:** Make single-user personal-server operation credible through explicit scheduler execution, alerts, backup/restore, hardened deployment templates, and fail-closed security controls.
 - **Baseline:** P1-P13 complete
 - **Last reviewed:** 2026-07-31
-- **Validation:** Hosted Quality pending
+- **Validation:** Quality run `30650397785`; merge commit `3aa884b4894e4f956fa93e1d70cf1930329b83b4`
 
 ## Objective
 
@@ -43,13 +43,12 @@ An operator can run governed commands on a schedule, deliver configured alerts, 
 - Managed cloud orchestration, Kubernetes operators, or automatic infrastructure provisioning.
 - Recommendations, broker/exchange connections, autonomous execution, or real-capital orders.
 
-## Acceptance criteria
+## Completion evidence
 
-- REQ-0254-REQ-0260 map to implementation and tests.
-- Operator actions remain disabled by default and retain structured evidence.
-- Backup and restore prove path safety and explicit overwrite behavior.
-- Non-loopback exposure fails closed without TLS and authentication.
-- Automated tests, manual usage, OpenSpec, traceability, and hosted Quality are current before completion.
+- REQ-0254-REQ-0260 reconciled in `docs/governance/p13-p14-reconciliation.md`.
+- 340 tests passed, including all eight P14 tests.
+- Ruff, strict mypy, architecture checks, OpenSpec validation, and secret scanning passed.
+- P14 was merged through PR #57.
 
 ## Dependencies
 

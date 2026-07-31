@@ -7,36 +7,38 @@
 - **P1-P11 deterministic local analyst path:** Complete
 - **P12 optional model-assisted preview:** Complete through PR #55
 - **P13 governed production ingestion:** Complete through PR #56
-- **Current activity:** P14 personal-server operations candidate in PR #57
+- **P14 personal-server operations:** Complete through PR #57
+- **Current activity:** P15 governed runtime extension packs candidate in PR #58
 - **Freeze point:** Foundational ADR freeze remains in effect; semantic changes require governed supersession
 
-## P14 operations boundary
+## P15 extension boundary
 
-P14 adds `osca.personal_server` as an explicit operator-controlled runtime for a trusted single-user host.
+P15 adds `osca.runtime_extensions` as a trusted-local runtime built on the accepted M5 extension contracts.
 
-- **Exposure:** loopback is the default; non-loopback configuration requires TLS and authentication.
-- **Scheduler:** only locally configured and explicitly enabled commands execute, with bounded timeouts and retained stdout/stderr evidence.
-- **Alerts:** file and HTTPS webhook transports are supported; delivery is disabled by default and webhook destinations are redacted.
-- **Backup:** selected state is archived to a filesystem destination outside the source tree with manifest, file count, and SHA-256 evidence.
-- **Restore:** archives are validated and extracted to temporary staging before copy; non-empty destinations require explicit overwrite permission.
-- **Packaging:** systemd service and timer templates include common least-privilege hardening directives.
+- **Trust:** only built-in, verified, or independently accepted local-trusted packs may execute.
+- **Integrity:** the manifest SHA-256 must match the direct pack executable.
+- **Compatibility:** the pack's declared OSCA minimum version must be satisfied.
+- **Permissions:** approved permissions must exactly match the manifest; any change requires renewed approval.
+- **Execution:** explicit enablement, direct subprocess without a shell, minimized environment, bounded runtime/output, and JSON-object output validation.
+- **Evidence:** package/version, digest, permissions, stdout/stderr, output digest, exit code, rationale, and findings are retained.
+- **Lifecycle:** validated versions install into explicit package/version paths and rollback targets only an already installed revalidated version.
 
-## Operator-owned controls
+## Security interpretation
 
-P14 does not provision certificates, identities, firewall policy, host patching, storage mounts, filesystem ownership, or cloud infrastructure. Operators must adapt and validate these controls for their host.
+The direct subprocess boundary reduces in-process blast radius but is not a complete hostile-code sandbox. P15 does not authorize untrusted or quarantined code execution. Broader isolation using containers, VMs, seccomp, or mandatory-access-control profiles requires a separate architecture and security decision.
 
 ## Preserved boundaries
 
-P14 does not enable multi-tenant SaaS, anonymous public access, remote arbitrary command submission, provider scope expansion, recommendations, brokers, autonomous execution, or real-capital orders.
+P15 does not enable public marketplaces, remote pack discovery, in-process arbitrary imports, implicit permission renewal, provider admission expansion, credentials, recommendations, brokers, autonomous execution, or real-capital orders.
 
 ## Authoritative navigation
 
-- [P14 milestone](docs/milestones/p14/README.md)
-- [P14 quickstart](docs/milestones/p14/user-testing-quickstart.md)
-- [P13-P14 reconciliation](docs/governance/p13-p14-reconciliation.md)
+- [P15 milestone](docs/milestones/p15/README.md)
+- [P15 quickstart](docs/milestones/p15/user-testing-quickstart.md)
+- [P14-P15 reconciliation](docs/governance/p14-p15-reconciliation.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
 - [Remaining P roadmap](docs/milestones/remaining-p-roadmap.md)
 
 ## Validation state
 
-P13 is complete with final Quality run `30647766605` and merge commit `b22d23970be25f6425c4e5bd4d8a8ea51bb38335`. P14 remains an implementation candidate until PR #57 passes final hosted Quality, review, and evidence reconciliation.
+P14 is complete with final Quality run `30650397785` and merge commit `3aa884b4894e4f956fa93e1d70cf1930329b83b4`. P15 remains an implementation candidate until PR #58 passes final hosted Quality, review, and evidence reconciliation.
