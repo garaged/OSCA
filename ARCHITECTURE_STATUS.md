@@ -4,41 +4,33 @@
 
 - **Product baseline:** Approved
 - **M0-M12 governed foundation roadmap:** Complete
-- **P1-P11 deterministic local analyst path:** Complete
-- **P12 optional model-assisted preview:** Complete through PR #55
-- **P13 governed production ingestion:** Complete through PR #56
-- **P14 personal-server operations:** Complete through PR #57
-- **Current activity:** P15 governed runtime extension packs candidate in PR #58
+- **P1-P15 governed analyst, ingestion, operations, and extension path:** Complete
+- **Current activity:** P16 live-order readiness study
+- **Live-order decision:** NO-GO through ADR-0044
 - **Freeze point:** Foundational ADR freeze remains in effect; semantic changes require governed supersession
 
-## P15 extension boundary
+## P16 decision boundary
 
-P15 adds `osca.runtime_extensions` as a trusted-local runtime built on the accepted M5 extension contracts.
+P16 evaluates whether OSCA may proceed toward real-money execution without implementing an order path.
 
-- **Trust:** only built-in, verified, or independently accepted local-trusted packs may execute.
-- **Integrity:** the manifest SHA-256 must match the direct pack executable.
-- **Compatibility:** the pack's declared OSCA minimum version must be satisfied.
-- **Permissions:** approved permissions must exactly match the manifest; any change requires renewed approval.
-- **Execution:** explicit enablement, direct subprocess without a shell, minimized environment, bounded runtime/output, and JSON-object output validation.
-- **Evidence:** package/version, digest, permissions, stdout/stderr, output digest, exit code, rationale, and findings are retained.
-- **Lifecycle:** validated versions install into explicit package/version paths and rollback targets only an already installed revalidated version.
-
-## Security interpretation
-
-The direct subprocess boundary reduces in-process blast radius but is not a complete hostile-code sandbox. P15 does not authorize untrusted or quarantined code execution. Broader isolation using containers, VMs, seccomp, or mandatory-access-control profiles requires a separate architecture and security decision.
+- **Threat model:** capital, credentials, approvals, limits, venue ambiguity, replay, partial fills, reconciliation, emergency stops, audit, operations, and legal risk.
+- **Control matrix:** every independent authorization, credential, limit, reconciliation, kill-switch, testing, release, incident, and accountability control is a mandatory blocker.
+- **Decision:** current residual risk is unacceptable; real-money execution is NO-GO.
+- **Reconsideration:** all blockers plus qualified external review and a superseding ADR are required.
 
 ## Preserved boundaries
 
-P15 does not enable public marketplaces, remote pack discovery, in-process arbitrary imports, implicit permission renewal, provider admission expansion, credentials, recommendations, brokers, autonomous execution, or real-capital orders.
+No broker or exchange adapter, trading credential, order-intent surface, order submission, sandbox/production order, autonomous execution, or capital pilot is authorized. Research, paper evidence, schedules, and extension packs remain incapable of directly creating or submitting real orders.
 
 ## Authoritative navigation
 
-- [P15 milestone](docs/milestones/p15/README.md)
-- [P15 quickstart](docs/milestones/p15/user-testing-quickstart.md)
-- [P14-P15 reconciliation](docs/governance/p14-p15-reconciliation.md)
+- [P16 milestone](docs/milestones/p16/README.md)
+- [P16 threat model](docs/milestones/p16/threat-model.md)
+- [P16 control matrix](docs/milestones/p16/control-matrix.md)
+- [ADR-0044](docs/decisions/ADR-0044-live-order-execution-readiness-decision.md)
+- [P15-P16 reconciliation](docs/governance/p15-p16-reconciliation.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
-- [Remaining P roadmap](docs/milestones/remaining-p-roadmap.md)
 
 ## Validation state
 
-P14 is complete with final Quality run `30650397785` and merge commit `3aa884b4894e4f956fa93e1d70cf1930329b83b4`. P15 remains an implementation candidate until PR #58 passes final hosted Quality, review, and evidence reconciliation.
+P15 completed through PR #58 at merge commit `5d3e7966a53668c9f38a3ad9feaf0a953afe8e14`. P16 remains a study candidate until documentation, OpenSpec, traceability, hosted Quality, review, and merge are complete. Completion does not authorize P17.
