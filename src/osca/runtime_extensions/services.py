@@ -139,7 +139,7 @@ def execute_runtime_pack(request: RuntimePackRequest) -> RuntimePackEvidence:
             update={
                 "status": RuntimeExtensionStatus.POLICY_BLOCKED,
                 "rationale": "runtime pack execution requires explicit enablement",
-                "findings": validation.findings + ("execution-disabled",),
+                "findings": (*validation.findings, "execution-disabled"),
             }
         )
     pack_directory = Path(request.pack_directory).resolve()
@@ -179,7 +179,7 @@ def execute_runtime_pack(request: RuntimePackRequest) -> RuntimePackEvidence:
                 "status": RuntimeExtensionStatus.FAILED,
                 "stderr_uri": str(stderr_path),
                 "rationale": "runtime pack exceeded its declared timeout",
-                "findings": validation.findings + ("runtime-timeout",),
+                "findings": (*validation.findings, "runtime-timeout"),
             }
         )
     stdout_bytes = completed.stdout.encode()
@@ -190,7 +190,7 @@ def execute_runtime_pack(request: RuntimePackRequest) -> RuntimePackEvidence:
                 "status": RuntimeExtensionStatus.FAILED,
                 "exit_code": completed.returncode,
                 "rationale": "runtime pack output exceeded its declared byte budget",
-                "findings": validation.findings + ("output-budget-exceeded",),
+                "findings": (*validation.findings, "output-budget-exceeded"),
             }
         )
     try:
