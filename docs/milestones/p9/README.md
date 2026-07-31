@@ -1,12 +1,12 @@
 # P9 - SEC Preview and FRED Terms Gate
 
-- **Status:** Implementation candidate
+- **Status:** Implementation candidate, review ready
 - **Governing role:** Product authority
 - **Phase:** Useful analyst workflow
 - **Authoritative outcome:** Add safe opt-in SEC EDGAR enrichment preview while keeping FRED live access policy-blocked until accepted licensing evidence permits OSCA's intended use and retention model.
 - **Baseline:** Completed M0-M12 roadmap and P1-P8
 - **Last reviewed:** 2026-07-31
-- **Validation:** Focused local tests passed; hosted Quality pending on PR #52
+- **Validation:** Hosted Quality run `30637790634` passed on PR #52; merge pending
 
 ## Current artifacts
 
