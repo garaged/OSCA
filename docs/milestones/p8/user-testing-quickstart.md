@@ -34,7 +34,9 @@ PAYLOAD_URI="$(printf '%s\n' "$IMPORT_RESULT" | uv run python -c \
 printf 'Using payload: %s\n' "$PAYLOAD_URI"
 ~~~
 
-The sample import should report ten rows. Its payload_uri is the source of truth for the remaining commands; do not type placeholder text such as <dataset-revision-id> into the shell.
+Before continuing, confirm the JSON contains `"row_count": 10`. The `aapl_daily.csv` fixture has only three bars: it is valid for an import-only smoke test but **must not** be used for the backtest walkthrough. If the output says `"row_count": 3`, stop here, rerun the block above without changing the fixture name, and let it replace `PAYLOAD_URI`.
+
+Its emitted `payload_uri` is the source of truth for the remaining commands; do not reuse a value from an earlier import or type placeholder text such as `<dataset-revision-id>` into the shell.
 
 ## Run the Demo Research Report
 
