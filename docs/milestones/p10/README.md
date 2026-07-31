@@ -1,12 +1,12 @@
 # P10 - Capability-Based Runtime Provider Routing
 
-- **Status:** Implementation candidate
+- **Status:** Implementation candidate, review ready
 - **Governing role:** Product authority
 - **Phase:** Useful analyst workflow
 - **Authoritative outcome:** Route supported data capabilities through explicit governed sources while recording selected, stale, policy-blocked, provider-unavailable, and partial outcomes.
 - **Baseline:** Completed M0-M12 roadmap and P1-P9
 - **Last reviewed:** 2026-07-31
-- **Validation:** Hosted Quality pending on PR #53
+- **Validation:** Hosted Quality run `30640551759` passed on PR #53; merge pending
 
 ## Current artifacts
 
