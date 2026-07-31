@@ -1,10 +1,11 @@
 # P11 Exit Review
 
 - **Milestone:** P11 read-only analyst workspace
-- **Status:** Implementation candidate; hosted Quality and review pending
+- **Status:** Implementation candidate, review ready
 - **Branch:** `agent/p11-read-only-analyst-workspace`
 - **Pull request:** #54
 - **Baseline:** merged P10 commit `30375cdfdf45c1f5f522bff7a209416ccac1f93f`
+- **Hosted Quality:** Run `30643690550` passed on assembled head `0236d3113b808245f90fa1c9ca21eb6997766e9c`
 
 ## Implemented evidence
 
@@ -27,45 +28,26 @@ Projects and watchlists are shown as governed sections even when no retained JSO
 - P10 routing decisions retain `policy_blocked`, `provider_unavailable`, warning, or available status.
 - SEC is not substituted for missing macro-series data.
 
-## Deferred boundaries
+## Automated and hosted validation
 
-P11 does not implement:
+Quality run `30643690550` passed:
 
-- project/watchlist mutation
-- data import or artifact deletion
-- report or backtest execution
-- provider requests or credential resolution
-- remote/public hosting or multi-user authentication
-- chart/dashboard authoring
-- recommendations, brokers, autonomous execution, or real-capital orders
+- Ruff.
+- Strict mypy across 188 source files.
+- 317 tests, including all eight P11 tests plus contracts, migrations, links, and architecture checks.
+- OpenSpec doctor and strict validation.
+- Secret scanning.
 
-## Automated validation
-
-Repository tests cover:
-
-- complete empty snapshot and safety boundaries
-- local dataset/report/backtest discovery
-- SEC evidence discovery and credential-key filtering
-- P10 policy-blocked status preservation
-- browser/API read-only behavior
-- unknown-section error state
-- snapshot CLI output
-- non-loopback startup rejection
-
-## Hosted validation
-
-Pending on PR #54:
-
-- Ruff
-- strict mypy
-- pytest, contracts, migrations, links, and architecture checks
-- OpenSpec doctor and strict validation
-- secret scanning
+An earlier run found four embedded HTML/JavaScript line-length violations and one unused import. These formatting-only defects were corrected before the green assembled run.
 
 ## Manual validation
 
 The supported post-merge workflow is documented in [P11 user testing quickstart](user-testing-quickstart.md). It exercises snapshot output, browser rendering, API endpoints, empty states, method rejection, and loopback enforcement.
 
+## Deferred boundaries
+
+P11 does not implement project/watchlist mutation, data import, artifact deletion, report/backtest execution, provider requests, credential resolution, remote/public hosting, multi-user authentication, chart authoring, recommendations, brokers, autonomous execution, or real-capital orders.
+
 ## Completion decision
 
-P11 remains an implementation candidate until hosted Quality is green, documentation and traceability are reconciled, the final branch diff is reviewed, and PR #54 is merged.
+REQ-0233 through REQ-0239 are implemented and evidenced for the approved P11 candidate scope. P11 should be marked complete only after PR #54 is reviewed and merged.
