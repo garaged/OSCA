@@ -82,44 +82,43 @@ def run_local_trend_preview(request: LocalTrendRequest) -> ModelPreviewEvidence:
 def run_llm_analysis_preview(request: LLMAnalysisRequest) -> ModelPreviewEvidence:
     started = time.perf_counter()
     input_digest = _digest(request.input_text)
-    common = {
-        "request_id": request.request_id,
-        "kind": PreviewKind.LLM_ANALYSIS,
-        "provider_id": request.provider_id,
-        "model_id": request.model_id,
-        "model_version": request.model_version,
-        "input_digest": input_digest,
-        "prompt_id": request.prompt_id,
-        "prompt_version": request.prompt_version,
-        "started": started,
-    }
     if len(request.input_text) > request.budget.max_input_records:
-        return _evidence(
-            **common,
+        return _llm_evidence(
+            request,
             status=PreviewStatus.BUDGET_EXCEEDED,
+            input_digest=input_digest,
+            started=started,
             findings=("input-budget-exceeded",),
         )
     if request.network_access_enabled:
-        return _evidence(
-            **common,
+        return _llm_evidence(
+            request,
             status=PreviewStatus.PROVIDER_UNAVAILABLE,
+            input_digest=input_digest,
+            started=started,
             findings=("live-llm-executor-not-configured",),
         )
     if request.fixture_response is None:
-        return _evidence(
-            **common,
+        return _llm_evidence(
+            request,
             status=PreviewStatus.POLICY_BLOCKED,
+            input_digest=input_digest,
+            started=started,
             findings=("network-disabled-and-no-fixture-response",),
         )
     if len(request.fixture_response) > request.budget.max_output_characters:
-        return _evidence(
-            **common,
+        return _llm_evidence(
+            request,
             status=PreviewStatus.BUDGET_EXCEEDED,
+            input_digest=input_digest,
+            started=started,
             findings=("output-budget-exceeded",),
         )
-    return _evidence(
-        **common,
+    return _llm_evidence(
+        request,
         status=PreviewStatus.REVIEW_REQUIRED,
+        input_digest=input_digest,
+        started=started,
         output=request.fixture_response,
         metrics={
             "input_characters": len(request.input_text),
@@ -141,6 +140,33 @@ def retain_preview_evidence(evidence: ModelPreviewEvidence, storage_root: Path) 
     temporary.write_text(evidence.model_dump_json(indent=2), encoding="utf-8")
     temporary.replace(target)
     return target
+
+
+def _llm_evidence(
+    request: LLMAnalysisRequest,
+    *,
+    status: PreviewStatus,
+    input_digest: str,
+    started: float,
+    output: str | None = None,
+    metrics: dict[str, float | int | str | bool] | None = None,
+    findings: tuple[str, ...] = (),
+) -> ModelPreviewEvidence:
+    return _evidence(
+        request_id=request.request_id,
+        kind=PreviewKind.LLM_ANALYSIS,
+        status=status,
+        provider_id=request.provider_id,
+        model_id=request.model_id,
+        model_version=request.model_version,
+        input_digest=input_digest,
+        prompt_id=request.prompt_id,
+        prompt_version=request.prompt_version,
+        output=output,
+        metrics=metrics,
+        findings=findings,
+        started=started,
+    )
 
 
 def _digest(value: object) -> str:
