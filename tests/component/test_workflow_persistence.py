@@ -23,7 +23,7 @@ from osca.workflow.infrastructure.executor import EmbeddedExecutor
 
 
 @pytest.fixture
-def session() -> Generator[Session, None, None]:
+def session() -> Generator[Session]:
     engine = create_engine("sqlite://")
     WorkflowBase.metadata.create_all(engine)
     CatalogBase.metadata.create_all(engine)
