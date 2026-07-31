@@ -1,12 +1,12 @@
 # P12 - Local Model-Assisted Preview
 
-- **Status:** Implementation candidate
+- **Status:** Implementation candidate, review ready
 - **Governing role:** Product authority
 - **Phase:** Useful analyst workflow
 - **Authoritative outcome:** Add opt-in, evidence-retaining local model previews with explicit budgets and fail-closed LLM boundaries.
 - **Baseline:** Completed M0-M12 roadmap and P1-P11
 - **Last reviewed:** 2026-07-31
-- **Validation:** Hosted Quality pending
+- **Validation:** Quality run `30645896227` passed on PR #55
 
 ## Objective
 
@@ -40,13 +40,22 @@ Users can experiment with model-assisted analysis, retain exact model/input/prom
 - Production model serving, automated retraining, or model promotion.
 - Authoritative recommendations, autonomous actions, brokers, or real-capital orders.
 
+## Validation evidence
+
+- Ruff passed.
+- Strict mypy passed across 193 source files.
+- 324 tests passed, including all seven P12 tests.
+- Contracts, migrations, document links, and architecture checks passed.
+- OpenSpec doctor and strict validation passed.
+- Secret scanning passed.
+
 ## Acceptance criteria
 
 - REQ-0240-REQ-0246 map to implementation and tests.
 - Model, input, prompt, budget, output, review state, and provenance remain inspectable.
 - Network/model calls remain disabled unless a future governed milestone enables an executor.
 - Automated tests cover success, budget, block, unavailable, retention, and CLI behavior.
-- Documentation, OpenSpec, traceability, manual usage, and hosted Quality are current before completion.
+- Documentation, OpenSpec, traceability, manual usage, and hosted Quality are current.
 
 ## Dependencies
 
