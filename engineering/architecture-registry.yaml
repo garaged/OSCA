@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: p9-sec-preview-fred-terms-gate-implementation-candidate
+  status: p10-capability-runtime-routing-implementation-candidate
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:
@@ -83,7 +83,7 @@ governed_indexes:
   deferred_decisions: docs/governance/deferred-decisions.md
   exceptions: docs/governance/architecture-exceptions.md
   traceability: docs/governance/traceability-register.md
-  milestone_reconciliation: docs/governance/p8-p9-reconciliation.md
+  milestone_reconciliation: docs/governance/p9-p10-reconciliation.md
   validation: docs/validation/checks.yaml
 
 relationship_types:

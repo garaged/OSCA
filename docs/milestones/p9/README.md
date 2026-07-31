@@ -1,12 +1,12 @@
 # P9 - SEC Preview and FRED Terms Gate
 
-- **Status:** Implementation candidate, review ready
+- **Status:** Complete
 - **Governing role:** Product authority
 - **Phase:** Useful analyst workflow
 - **Authoritative outcome:** Add safe opt-in SEC EDGAR enrichment preview while keeping FRED live access policy-blocked until accepted licensing evidence permits OSCA's intended use and retention model.
 - **Baseline:** Completed M0-M12 roadmap and P1-P8
 - **Last reviewed:** 2026-07-31
-- **Validation:** Hosted Quality run `30637790634` passed on PR #52; merge pending
+- **Validation:** Final hosted Quality run `30637941143` passed; PR #52 merged as `70f9eba856e096299d8afc73d547626dbb0595d6`
 
 ## Current artifacts
 
@@ -80,4 +80,4 @@ SEC official guidance permits scripted EDGAR access when callers declare a meani
 
 - Provider terms and access policies can change and must be rechecked before later promotion.
 - SEC preview data is enrichment evidence, not an OHLCV substitute or recommendation.
-- The module CLI is an isolated preview surface; P10 remains responsible for governed runtime routing.
+- P10 owns governed routing while preserving every P9 preview and policy gate.
