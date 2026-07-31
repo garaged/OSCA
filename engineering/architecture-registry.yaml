@@ -2,7 +2,7 @@ registry_version: 2
 project:
   id: OSCA
   architecture_baseline: M0
-  status: p15-governed-runtime-extension-packs-implementation-candidate
+  status: p16-live-order-readiness-study-no-go-candidate
   validated_by: docs/validation/m0x-validation-record.md
 
 authorities:
@@ -76,6 +76,7 @@ adrs:
   - { id: ADR-0033, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0034, status: accepted, tier: implementation, owner: architecture-authority }
   - { id: ADR-0035, status: accepted, tier: implementation, owner: architecture-authority }
+  - { id: ADR-0044, status: accepted, tier: implementation, owner: architecture-authority }
 
 governed_indexes:
   requirements: docs/governance/requirements-catalog.md
@@ -83,7 +84,7 @@ governed_indexes:
   deferred_decisions: docs/governance/deferred-decisions.md
   exceptions: docs/governance/architecture-exceptions.md
   traceability: docs/governance/traceability-register.md
-  milestone_reconciliation: docs/governance/p14-p15-reconciliation.md
+  milestone_reconciliation: docs/governance/p15-p16-reconciliation.md
   validation: docs/validation/checks.yaml
 
 relationship_types:
