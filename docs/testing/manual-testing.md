@@ -2,203 +2,246 @@
 
 - **Status:** Active from M8
 - **First covered milestone:** M8 F3 paper evaluation and automation foundation
+- **Current coverage:** Through P9 implementation candidate
 - **Audience:** Maintainers and early operators
-- **Purpose:** Keep a small manual smoke-test checklist for behavior that is easier to validate through real usage than through automated checks alone.
+- **Purpose:** Keep executable reality checks for user- and operator-visible behavior while preserving safety boundaries.
+- **Last reviewed:** 2026-07-31
 
 ## Governance
 
-M8 is the first OSCA milestone that documents manual tests and usage flows.
+Every milestone from M8 onward must review this guide when it changes CLI, storage, provider, research, backtest, paper-evaluation, scheduling, recovery, notification, or other operator-visible behavior.
 
-Every later milestone specification must review this document when the milestone adds, removes, or changes user-visible or operator-visible behavior. The milestone must either update this document or explicitly state why no manual testing or usage change is required.
+Manual checks supplement but never replace:
 
-Manual checks do not replace automated tests, OpenSpec validation, architecture checks, or hosted Quality. They are a lightweight reality check for setup, CLI/admin usage, persisted metadata, failure handling, and milestone boundaries.
+- Ruff and strict mypy.
+- Automated tests and contract checks.
+- Migration, link, and architecture validation.
+- OpenSpec strict validation.
+- Secret scanning.
+- Hosted Quality.
 
-## When to Run
-
-Run this checklist after merging a milestone that changes any of these surfaces:
-
-- CLI or admin commands.
-- Local storage, migrations, or metadata persistence.
-- Provider configuration or data ingestion.
-- Backtesting, event-driven validation, or paper evaluation flows.
-- Notifications, schedules, recovery, or operator controls.
-- Documentation that changes setup or usage expectations.
-
-For M8, run the checklist after PR #29 is merged and before starting broad product-style testing.
+When real behavior differs from documentation, treat the mismatch as product-quality evidence: correct the documentation or implementation and rerun the exact workflow.
 
 ## Preparation
 
-1. Start from a clean checkout of main after the milestone merge.
-2. Install the project using the repository's documented development setup.
-3. Use local, non-production configuration.
-4. Do not configure real-capital broker or exchange execution credentials.
-5. Use disposable local metadata files for any SQLite-backed checks.
+1. Start from a clean checkout of the intended `main` or PR head.
+2. Use Python 3.13.
+3. Recreate or synchronize the environment:
 
-## M8 Smoke Checklist
+~~~bash
+uv sync
+uv run ruff check .
+uv run mypy src tests
+uv run pytest
+~~~
 
-| Area | Manual check | Expected result |
+4. Use disposable local storage, such as `.osca/manual-test` or `/tmp/osca-manual-test`.
+5. Do not configure broker or exchange execution credentials.
+6. Do not use real-capital accounts or orders.
+7. For provider previews, start with deterministic fixtures before optional network checks.
+
+## Historical milestone coverage
+
+The detailed milestone specifications, exit reviews, tests, and retained evidence remain authoritative for earlier manual-review expectations.
+
+| Milestone range | Manual-review focus | Current boundary |
 |---|---|---|
-| Repository health | Run the documented hosted/local Quality-equivalent checks available to the operator. | Checks pass or failures are understood before usage testing continues. |
-| CLI discovery | Inspect available CLI/admin commands. | Existing commands remain discoverable and no M8 command implies live trading. |
-| Paper account model | Create or inspect a paper account through the available developer/operator surface. | The account has stable identity, base currency, lifecycle status, and no live-execution identity. |
-| Candidate gate | Try paper evaluation with an approved candidate and with a blocked/unapproved candidate. | Approved candidates can proceed; blocked or unapproved candidates fail closed. |
-| Health controls | Exercise blocked data or operational health state where supported. | Paper processing is blocked when health findings are errors or blocked states. |
-| Pause and kill switch | Inspect pause and kill-switch behavior where supported. | Controls are explicit and block paper processing without affecting live execution, which is absent. |
-| Metadata persistence | Persist and query paper metadata using a disposable SQLite file. | Records round trip by paper account or paper run identity. |
-| Schedules and recovery | Inspect schedule and missed-run recovery decisions. | Recovery does not replay unsafe work and remains blocked when required evidence is missing. |
-| Notifications | Generate or inspect paper notification/digest records. | Notifications remain local evidence; external delivery adapters do not send messages unless explicitly implemented and enabled in a later milestone. |
-| Deferred boundaries | Review M8 docs and CLI/help text for live execution, ML, LLM, F4 fidelity, and provider promotion. | Deferred scope remains visible and no user path suggests those capabilities are production-ready. |
+| M8 | Paper-account identity, approved-candidate gates, health controls, pause/kill switch, schedule/recovery evidence, local notification evidence | No live broker or real orders. |
+| M9 | Feature/label registries, evaluation reports, promotion gates, drift monitoring, retraining evidence | No runtime trainer or automatic promotion. |
+| M10 | LLM routes, prompts, tools, budgets, privacy gates, evaluation evidence | No provider calls, recommendations, or state-changing tools. |
+| M11 | Analytical-pack manifests, evidence synthesis, comparison, calibration, portfolio scenarios, visualization metadata | Metadata/evidence foundation, not complete runtime engines. |
+| M12 | Backup/restore/DR/health/alert/workflow/risk metadata | No active restore, external delivery, or runtime scheduler. |
+| P1-P5 | Provider promotion evidence, no-cost catalog, readiness, fixture contracts, operator state | No live provider calls, credential materialization, routing, or production ingestion. |
+| P6 | Local CSV/Parquet OHLCV import, schema validation, Parquet payload, SQLite metadata | Network access remains disabled. |
+| P7 | Deterministic local research report and evidence-only framing | No ML/LLM execution or recommendations. |
 
-## Usage Notes
+## P6 local OHLCV import smoke check
 
-At M8, OSCA is still a governed engineering foundation. Manual testing should focus on operational smoke checks and safety boundaries, not strategy profitability, broad UX polish, or production trading readiness.
+~~~bash
+uv run osca local-ohlcv-import \
+  tests/fixtures/local_ohlcv/aapl_daily.csv \
+  AAPL \
+  1d \
+  --storage-root /tmp/osca-p6-smoke
+~~~
 
-Use this document as the durable baseline for future milestones. When M9 or later introduces new usage surfaces, append focused checks instead of rewriting historical milestone coverage.
+Expected:
 
-## M9 Smoke Checklist
+- SQLite metadata and a Parquet payload are written under the selected storage root.
+- Output includes dataset revision, symbol, timeframe, row count, checksum, payload URI, and metadata URI.
+- Missing canonical columns, duplicate/non-increasing timestamps, invalid OHLC relationships, and invalid input files fail closed.
+- Live providers, credential materialization, runtime routing, production ingestion, and real-capital orders remain disabled.
 
-| Area | Manual check | Expected result |
-|---|---|---|
-| ML scope boundary | Review M9 CLI/help/docs and available developer surfaces. | ML lifecycle is presented as governed evidence; no path suggests live trading or automatic promotion. |
-| Feature registry | Create or inspect feature definitions where supported. | Features preserve source dataset, transformation, value type, and point-in-time safety. |
-| Label registry | Create or inspect label definitions where supported. | Labels preserve objective, horizon, source dataset, and leakage-check evidence. |
-| Evaluation report | Inspect a model evaluation report where supported. | Holdout metrics and calibration methodology are visible before promotion. |
-| Promotion gate | Try promotion with passing and blocked evidence where supported. | Passing evidence can approve event validation; error findings or missed thresholds fail closed. |
-| Drift monitoring | Inspect monitoring reports where supported. | Drift threshold breaches are visible as degraded or blocked, not silently healthy. |
-| Retraining boundary | Review retraining docs and records where supported. | Retraining creates evidence but does not automatically promote a model. |
+The three-row `aapl_daily.csv` fixture is valid for import-only smoke testing. Do not use it for the P8 backtest walkthrough.
 
-## M10 Smoke Checklist
+## P7 deterministic research smoke check
 
-| Area | Manual check | Expected result |
-|---|---|---|
-| LLM scope boundary | Review M10 CLI/help/docs and available developer surfaces. | LLM behavior is presented as governed lifecycle evidence; no path suggests provider calls, generated recommendations, live trading, or automatic state changes are ready. |
-| Provider route evidence | Inspect an LLM route decision where supported. | The decision preserves exact provider/model identity, capability, privacy class, budget, and rationale. |
-| Tool boundary | Inspect registered LLM tool definitions where supported. | Tools declare read or state-changing mode, permission scope, and live-order prohibition. |
-| Prompt and context versioning | Inspect prompt template and context policy records where supported. | Records preserve version identity, selected project context, approved references, and no unrelated project mixing. |
-| Budget and privacy gates | Try route evaluation with over-budget or sensitive-disclosure inputs where supported. | Evaluation fails closed before any provider call. |
-| Evaluation evidence | Inspect LLM evaluation records where supported. | Grounding, structured-output validity, boundary behavior, cost, and latency findings are visible as evidence. |
+Use the emitted `payload_uri` from a P6 import:
 
+~~~bash
+uv run osca demo-research-report \
+  "$PAYLOAD_URI" \
+  AAPL \
+  1d \
+  --output-file /tmp/osca-p7-smoke/report.md
+~~~
 
-## M11 Smoke Checklist
+Expected:
 
-| Area | Manual check | Expected result |
-|---|---|---|
-| Analytical breadth boundary | Review M11 CLI/help/docs and available developer surfaces. | M11 is presented as governed analytical-pack metadata and evidence, not as complete runtime analytics engines. |
-| Pack manifest review | Inspect a fundamental, macro, events, news, crypto, portfolio, visualization, or synthesis pack manifest where supported. | Pack family, version, data requirements, methodology, assumptions, limitations, and documentation are visible. |
-| Validation failure | Try pack validation with missing methodology documentation where supported. | Validation fails closed with a blocking finding. |
-| Evidence synthesis | Inspect cross-family synthesis evidence where supported. | Supporting and contradicting evidence references remain visible. |
-| Method comparison | Try selecting a preferred method outside the compared set where supported. | The comparison is blocked instead of accepting an unrelated winner. |
-| Outcome calibration | Inspect expected-versus-realized outcome records where supported. | Calibration status and error metric are retained. |
-| Portfolio scenario | Inspect portfolio scenario evidence where supported. | Scenario reports remain analytical evidence and do not imply order authority. |
-| Visualization metadata | Inspect visualization pack metadata where supported. | Accessible summaries and export metadata are required. |
+- CLI JSON and the Markdown report are produced.
+- Evidence includes bar count, first/latest close, total return, mean period return, volatility, max drawdown, SMA 3, and SMA 5.
+- The report states evidence-only and not-financial-advice semantics.
+- Invalid or incomplete OHLCV payloads fail closed.
 
+## P8 backtest-to-paper happy-path smoke check
 
-## M12 Smoke Checklist
+The built-in `sma-trend-long-only` strategy requires at least five bars. Use the ten-row fixture and confirm `row_count: 10` before continuing.
 
-| Area | Manual check | Expected result |
-|---|---|---|
-| Release-readiness boundary | Review M12 CLI/help/docs and available developer surfaces. | M12 is presented as governed operational metadata and evidence, not production backup delivery, restore execution, scheduler execution, or live trading. |
-| Backup manifest review | Inspect a lightweight, standard, or archival backup manifest where supported. | Profile, recovery point, encryption, integrity digest, recovery classes, exclusions, off-device intent, and secret-reference-only behavior are visible. |
-| Restore verification | Inspect restore verification evidence where supported. | Verification uses an isolated target and blocks when integrity, compatibility, or journal reconciliation fails. |
-| DR exercise evidence | Inspect disaster-recovery exercise records where supported. | Scenario, objectives, duration, linked restore verification, findings, and status are retained. |
-| Health finding | Inspect a degraded or blocked health finding where supported. | Impact, remediation guidance, correlation identity, and findings are visible. |
-| Alert policy | Inspect alert policy metadata where supported. | Dedupe, escalation, and destination metadata are present, while external delivery remains disabled. |
-| Missed workflow safety | Try a financially meaningful missed-run record without approval where supported. | Validation fails closed instead of scheduling automatic replay. |
-| Risk control boundary | Try approving a breached strict risk control where supported. | The decision is rejected or validation fails closed. |
-| Persistence scope | Persist and query operations metadata using a disposable SQLite file. | Records round trip by component, workflow, or policy identity. |
+~~~bash
+rm -rf .osca/manual-test
 
+IMPORT_RESULT="$(uv run osca local-ohlcv-import \
+  tests/fixtures/local_ohlcv/aapl_backtest_daily.csv \
+  AAPL \
+  1d \
+  --storage-root .osca/manual-test)"
 
-## P1 Smoke Checklist
+printf '%s\n' "$IMPORT_RESULT"
 
-| Area | Manual check | Expected result |
-|---|---|---|
-| Provider promotion boundary | Review P1 CLI/help/docs and available developer surfaces. | P1 is presented as governed provider promotion evidence and decisions, not live provider retrieval or production ingestion. |
-| Twelve Data evidence | Inspect a Twelve Data provider evidence bundle where supported. | Capability scope, licensing/account-plan permissions, named credential reference, quota, retention, export, backup policy, reviewer, and findings are visible. |
-| Kraken evidence | Inspect a Kraken provider evidence bundle where supported. | Capability scope, licensing/account-plan permissions, named credential reference, quota, retention, export, backup policy, reviewer, and findings are visible. |
-| Missing license permission | Try promotion with missing retention or export permission where supported. | Promotion is blocked and production enablement remains false. |
-| Secret-reference safety | Try recording credential evidence with a secret-looking value where supported. | Validation fails closed and no secret value is retained. |
-| Quota headroom | Try promotion with insufficient quota headroom where supported. | Promotion is blocked and the quota finding is visible. |
-| Warning finding | Try promotion with otherwise complete evidence plus a warning where supported. | Promotion is degraded/deferred and production enablement remains false. |
-| Persistence scope | Persist and query provider promotion metadata using a disposable SQLite file. | Evidence and decisions round trip by provider identity. |
+PAYLOAD_URI="$(printf '%s\n' "$IMPORT_RESULT" | uv run python -c \
+  'import json, sys; print(json.load(sys.stdin)["payload_uri"])')"
 
+printf 'Using payload: %s\n' "$PAYLOAD_URI"
+~~~
 
-## P2 Smoke Checklist
+Stop if the import output does not contain `"row_count": 10`. The emitted `payload_uri` is the source of truth; do not type shell placeholders such as `<dataset-revision-id>`.
 
-| Area | Manual check | Expected result |
-|---|---|---|
-| No-cost discovery boundary | Review P2 docs and catalog. | P2 is presented as provider discovery and selection governance, not provider implementation or promotion. |
-| Official-source evidence | Inspect each provider entry. | Official-source URLs are recorded where available, and evidence gaps are explicit. |
-| Cost and credential classification | Inspect provider cost model, payment requirement, account requirement, and API-key notes. | No-cost and free-tier claims remain separate from production approval. |
-| Capability fit | Inspect provider capability fit and non-fit. | Macro/fundamental/event sources are not treated as OHLCV substitutes. |
-| Uncertainty disposition | Inspect Stooq and Yahoo Finance entries. | Unclear automation/licensing stays research-only or excluded. |
-| Implementation sequence | Review the recommended sequence. | Future work starts with official and policy-clear sources, then returns to P1 gates before promotion. |
+Run both evidence reports:
 
+~~~bash
+uv run osca demo-research-report \
+  "$PAYLOAD_URI" \
+  AAPL \
+  1d \
+  --output-file .osca/manual-test/demo-research.md
 
-## P3 Provider Catalog Manual Review
+uv run osca backtest-paper-run \
+  "$PAYLOAD_URI" \
+  AAPL \
+  1d \
+  --initial-cash 10000 \
+  --output-file .osca/manual-test/backtest-paper.md
+~~~
 
-| Check | Expected result |
+Expected:
+
+- Both Markdown reports exist.
+- Backtest evidence includes strategy identity, bars processed, signal bars, initial/final equity, strategy return, buy-and-hold return, max drawdown, exposure, and evidence-trade count.
+- Paper evidence is linked to the backtest and remains `local-evidence-only`.
+- Live providers, live brokers, recommendations, autonomous execution, production ingestion, and real-capital orders remain disabled.
+- A payload with fewer than five bars fails closed before strategy execution.
+
+The accepted manual validation processed ten AAPL daily bars and produced three simulated evidence trades. See [retained P8 evidence](../../evidence/p8/manual-backtest-paper-report.md) and the [P8 quickstart](../milestones/p8/user-testing-quickstart.md).
+
+## P9 SEC preview and FRED terms-gate smoke check
+
+Use the [P9 user testing quickstart](../milestones/p9/user-testing-quickstart.md) as the executable source of truth.
+
+### Discover the isolated preview CLI
+
+~~~bash
+uv run python -m osca.provider_preview --help
+~~~
+
+P9 intentionally does not add general runtime provider routing; P10 owns that surface.
+
+### Replay the deterministic SEC fixture
+
+~~~bash
+uv run python -m osca.provider_preview sec-company-facts \
+  320193 \
+  --fixture-file tests/fixtures/provider_preview/sec_companyfacts_aapl.json \
+  --storage-root .osca/manual-test
+~~~
+
+Expected:
+
+- `provider_id: sec_edgar`
+- `endpoint: sec_company_facts`
+- `mode: fixture_replay`
+- `outcome: succeeded`
+- `record_count: 3`
+- `network_access_used: false`
+- `network_access_enabled: false`
+- Production ingestion, runtime routing, credential materialization, recommendations, and real-capital orders remain false.
+
+### Confirm SEC network access is fail-closed by default
+
+~~~bash
+uv run python -m osca.provider_preview sec-company-facts 320193
+~~~
+
+Expected: non-zero exit with an actionable message requiring a fixture path or explicit network access.
+
+### Optional bounded SEC live preview
+
+Replace both placeholders with real identity values; the implementation rejects placeholder identity.
+
+~~~bash
+uv run python -m osca.provider_preview sec-company-facts \
+  320193 \
+  --enable-network \
+  --user-agent "YOUR_ORGANIZATION YOUR_CONTACT_EMAIL" \
+  --storage-root .osca/manual-test
+~~~
+
+Expected:
+
+- Only the approved HTTPS `data.sec.gov` company-facts path is used.
+- The first successful request writes a bounded payload and metadata sidecar under `.osca/manual-test/provider-preview/sec-edgar/`.
+- Repeating the request returns `outcome: cache_hit` and `network_access_used: false`, unless `--force-refresh` is supplied.
+- Provider errors, malformed JSON, oversized content, and unsupported paths fail closed.
+- The implementation defaults to two requests per second and rejects configuration above nine requests per second.
+
+### Confirm FRED live use is policy-blocked
+
+~~~bash
+uv run python -m osca.provider_preview fred-series GDP \
+  --enable-network \
+  --secret-reference secret:fred/default
+~~~
+
+Expected: intentional non-zero exit after structured evidence containing:
+
+- `mode: policy_blocked`
+- `outcome: blocked`
+- `network_access_used: false`
+- `credential_materialized: false`
+- no payload URI or checksum
+- findings for prohibited retention and unresolved legal/software-use evidence
+
+No FRED network request is issued, no key is resolved, and no FRED content is cached or archived.
+
+## Provider-state interpretation after P9
+
+| Provider | Contract/readiness meaning |
 |---|---|
-| Review default provider profiles | SEC EDGAR and FRED are preferred; Alpha Vantage and Nasdaq Data Link are conditional; Stooq is research-only; Yahoo Finance unofficial paths are excluded. |
-| Review readiness classification | Preferred candidates are ready for adapter-contract planning, conditional candidates need evidence, and research-only/excluded providers are blocked from default automation. |
-| Review runtime boundary | P3 does not implement adapters, invoke provider APIs, materialize credentials, change routing, or promote providers. |
+| SEC EDGAR | Preferred official enrichment source; fixture replay available; opt-in bounded preview implemented in P9. |
+| FRED | Preferred official macro candidate; network-disabled fixture contract retained; live readiness is `NEEDS_EVIDENCE`. |
+| Alpha Vantage / Nasdaq Data Link | Conditional; exact account-plan, quota, endpoint, and terms evidence required. |
+| Stooq | Research-only. |
+| Yahoo Finance unofficial paths | Excluded. |
+| Twelve Data / Kraken | Governed production-promotion candidates, not enabled by P9. |
 
+## Universal deferred-boundary check
 
-## P4 Provider Adapter Contract Manual Review
+After every manual workflow, confirm no output or documentation claims that OSCA currently provides:
 
-| Check | Expected result |
-|---|---|
-| Review default adapter contracts | Only SEC EDGAR and FRED have fixture-backed adapter contracts. |
-| Review SEC EDGAR constraints | SEC EDGAR requires declared user-agent and fair-access policy while using public no-key access. |
-| Review FRED constraints | FRED requires a named API-key reference and does not store credential values. |
-| Review request and fixture validation | Mismatched providers, unsupported endpoints, invalid checksums, and empty fixtures fail closed. |
-| Review runtime boundary | P4 does not invoke provider APIs, materialize credentials, change routing, promote providers, or enable production ingestion. |
+- Authoritative investment recommendations.
+- Live broker or exchange connections.
+- Autonomous strategy execution.
+- Real-capital order placement.
+- General production provider routing or ingestion.
+- Credential values in logs, URLs, metadata, reports, or portable configuration.
 
-
-## P5 Reconciliation Manual Review
-
-| Check | Expected result |
-|---|---|
-| Review M0-M12 and P1-P4 status | Completed milestones distinguish implemented, specified-only, fixture-backed, and deferred behavior without stale current-activity claims. |
-| Review provider governance surfaces | `osca provider-promotion-status`, `osca provider-catalog-list --include-readiness`, and `osca provider-adapter-contracts` expose governed provider state. |
-| Review deferred boundaries | P5 provider CLI output reports live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders as disabled. |
-| Review P6 readiness | The next implementation milestone can start from clean requirements, traceability, status, ADR navigation, and manual-testing guidance. |
-
-## Remaining P Planning Manual Review
-
-| Check | Expected result |
-|---|---|
-| Review P5-P17 sequence | P5 precedes P6; local/imported OHLCV precedes live provider work; real-money work is gated behind P16 approval. |
-| Review phase separation | Minimum demo, analyst workflow, production-capable, and real-money readiness milestones are visibly separated. |
-
-## P6 Local OHLCV Import Smoke Checklist
-
-| Check | Expected result |
-|---|---|
-| Import sample CSV | `osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p6-smoke` writes SQLite metadata and a Parquet payload. |
-| Inspect import output | Output includes dataset revision identity, symbol, timeframe, row count, source checksum, payload URI, metadata URI, and disabled network access. |
-| Missing column failure | A CSV missing one of `timestamp`, `open`, `high`, `low`, `close`, or `volume` fails closed with a validation error. |
-| Timestamp failure | Duplicate or non-increasing timestamps fail closed and are not accepted as a dataset revision. |
-| Deferred boundaries | Import output still reports live provider calls, credential materialization, runtime routing, production ingestion, and real-capital orders as disabled. |
-
-
-## P7 Demo Research Workflow Smoke Checklist
-
-| Check | Expected result |
-|---|---|
-| Import sample CSV | `osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p7-smoke` writes the P6 payload and metadata. |
-| Run demo report | `osca demo-research-report /tmp/osca-p7-smoke/payloads/<dataset-revision-id>.parquet AAPL 1d --output-file /tmp/osca-p7-smoke/report.md` returns CLI JSON and writes a Markdown report. |
-| Inspect metrics | Output includes bar count, first/latest close, total return, mean period return, volatility, max drawdown, SMA 3, and SMA 5. |
-| Inspect evidence boundary | Output states evidence-only and not-financial-advice semantics; recommendations, ML, LLM, scheduler execution, live providers, production ingestion, and real-capital orders remain disabled. |
-| Invalid payload failure | A Parquet payload missing any canonical OHLCV column fails closed before report generation. |
-
-
-## P8 Backtest-to-Paper Happy Path Smoke Checklist
-
-| Check | Expected result |
-|---|---|
-| Import sample CSV | `osca local-ohlcv-import tests/fixtures/local_ohlcv/aapl_daily.csv AAPL 1d --storage-root /tmp/osca-p8-smoke` writes the P6 payload and metadata. |
-| Run backtest-to-paper report | `osca backtest-paper-run /tmp/osca-p8-smoke/payloads/<dataset-revision-id>.parquet AAPL 1d --output-file /tmp/osca-p8-smoke/backtest-paper.md` returns CLI JSON and writes a Markdown evidence report. |
-| Inspect backtest evidence | Output includes strategy identity, bars processed, signal bars, initial cash, final equity, strategy return, buy-and-hold return, max drawdown, exposure, and evidence trade count. |
-| Inspect paper evidence | Output includes a linked paper-evaluation record with broker integration, autonomous execution, and real orders disabled. |
-| Inspect evidence boundary | Output states evidence-only and not-financial-advice semantics; live paper brokers, autonomous execution, recommendations, live providers, production ingestion, and real-capital orders remain disabled. |
-| Insufficient data failure | A payload with fewer than five bars fails closed before strategy execution. |
+Any discrepancy is a release-blocking documentation or product defect and must be corrected before the milestone is marked complete.
