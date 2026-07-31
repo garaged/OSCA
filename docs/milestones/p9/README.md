@@ -13,6 +13,7 @@
 - [Milestone plan](README.md)
 - [Specification](../../specifications/p9-sec-fred-live-preview-adapters.md)
 - [Accepted OpenSpec specification](../../../openspec/specs/p9-sec-fred-live-preview-adapters/spec.md)
+- [Requirements and traceability reconciliation](../../governance/p8-p9-reconciliation.md)
 - [User testing quickstart](user-testing-quickstart.md)
 - [Exit review](exit-review.md)
 
