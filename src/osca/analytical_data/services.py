@@ -104,14 +104,25 @@ def _normalize_row(row: Any) -> ChartRow:
     timestamp = row.get("timestamp")
     if not isinstance(timestamp, datetime):
         raise ValueError("analytical payload timestamp must be a datetime")
-    values = {name: _finite_float(row.get(name), name) for name in _REQUIRED_COLUMNS[1:]}
-    if values["high"] < max(values["open"], values["close"], values["low"]):
+    open_value = _finite_float(row.get("open"), "open")
+    high = _finite_float(row.get("high"), "high")
+    low = _finite_float(row.get("low"), "low")
+    close = _finite_float(row.get("close"), "close")
+    volume = _finite_float(row.get("volume"), "volume")
+    if high < max(open_value, close, low):
         raise ValueError("OHLC high is inconsistent")
-    if values["low"] > min(values["open"], values["close"], values["high"]):
+    if low > min(open_value, close, high):
         raise ValueError("OHLC low is inconsistent")
-    if values["volume"] < 0:
+    if volume < 0:
         raise ValueError("volume must not be negative")
-    return ChartRow(timestamp=timestamp, **values)
+    return ChartRow(
+        timestamp=timestamp,
+        open=open_value,
+        high=high,
+        low=low,
+        close=close,
+        volume=volume,
+    )
 
 
 def _finite_float(value: Any, name: str) -> float:
