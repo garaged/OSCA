@@ -1,56 +1,59 @@
-# P12 - ML/LLM Runtime Preview
+# P12 - Local Model-Assisted Preview
 
-- **Status:** Planned
+- **Status:** Implementation candidate
 - **Governing role:** Product authority
 - **Phase:** Useful analyst workflow
-- **Authoritative outcome:** Turn governed ML and LLM lifecycle contracts into opt-in local runtime previews with budgets, provenance, and fail-closed controls.
-- **Baseline:** Completed M0-M12 roadmap and P1-P4 provider governance
-- **Last reviewed:** 2026-07-26
-- **Validation:** Planned
-
-## Current artifacts
-
-- [Milestone plan](README.md)
-- [Specification](../../specifications/p12-ml-llm-runtime-preview.md)
-- [Accepted OpenSpec specification](../../../openspec/specs/p12-ml-llm-runtime-preview/spec.md)
+- **Authoritative outcome:** Add opt-in, evidence-retaining local model previews with explicit budgets and fail-closed LLM boundaries.
+- **Baseline:** Completed M0-M12 roadmap and P1-P11
+- **Last reviewed:** 2026-07-31
+- **Validation:** Hosted Quality pending
 
 ## Objective
 
-Turn governed ML and LLM lifecycle contracts into opt-in local runtime previews with budgets, provenance, and fail-closed controls.
+Provide one deterministic local inference path and one fixture-backed LLM analysis path without making a paid model, network connection, or model provider a platform dependency.
 
 ## User-visible value
 
-Users can experiment with model-assisted analysis while retaining evidence and cost/privacy boundaries.
+Users can experiment with model-assisted analysis, retain exact model/input/prompt/budget evidence, and see when a request is blocked, unavailable, over budget, or awaiting human review.
 
 ## Implementation scope
 
-- Implement one small ML training/inference path over imported data.
-- Implement optional LLM analysis generation through existing gateway contracts.
-- Record budgets, inputs, prompts, model identity, outputs, and review status.
-- Disable network/model calls by default.
+- Deterministic ordinary-least-squares trend preview over explicit numeric evidence.
+- Fixture-backed LLM analysis preview with exact provider/model/prompt identity.
+- Immutable budget, request, status, review, and evidence contracts.
+- Input digests, model identity, prompt version, output, metrics, findings, cost, latency, and safety boundaries.
+- Atomic local evidence retention under `model-preview/`.
+- CLI commands through `python -m osca.model_preview`.
+- Network/model calls disabled by default.
+
+## Explicit behavior
+
+- Local trend preview uses no network and has zero estimated cost.
+- LLM fixture output is always `review_required` and labeled not financial advice.
+- Missing fixture plus disabled network returns `policy_blocked`.
+- Explicit live-model checks return `provider_unavailable` until a separately governed executor exists.
+- Budget violations return `budget_exceeded` without output.
 
 ## Explicit non-scope
 
-- Autonomous recommendations, production model serving, real orders.
+- Remote model invocation or credential resolution.
+- Production model serving, automated retraining, or model promotion.
+- Authoritative recommendations, autonomous actions, brokers, or real-capital orders.
 
 ## Acceptance criteria
 
-- REQ-0240-REQ-0246 are allocated before implementation begins.
-- The implementation proves the stated scope with automated tests where code changes are made.
-- Manual testing and usage is updated when operator-visible behavior changes.
-- Deferred provider, credential, production-ingestion, and real-capital boundaries remain visible and fail closed unless this milestone explicitly owns them.
-- Hosted Quality passes before completion is marked.
-
-## Validation gates
-
-- Ruff, mypy, pytest, architecture validation, OpenSpec validation, and secret scanning.
-- Documentation, traceability, and manual-testing review.
-- Exit review recording final evidence.
+- REQ-0240-REQ-0246 map to implementation and tests.
+- Model, input, prompt, budget, output, review state, and provenance remain inspectable.
+- Network/model calls remain disabled unless a future governed milestone enables an executor.
+- Automated tests cover success, budget, block, unavailable, retention, and CLI behavior.
+- Documentation, OpenSpec, traceability, manual usage, and hosted Quality are current before completion.
 
 ## Dependencies
 
-P7-P11 and M9-M10 contracts.
+P7-P11 retained evidence plus M9-M10 ML/LLM governance contracts.
 
 ## Risks and decisions
 
-Cost, privacy, and hallucination boundaries require explicit validation.
+- P12 is optional and must not weaken the deterministic P6-P11 workflow.
+- Fixture output is untrusted until reviewed.
+- Cost, privacy, hallucination, and data-disclosure controls fail closed.
