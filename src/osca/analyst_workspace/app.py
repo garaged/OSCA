@@ -80,7 +80,14 @@ section h2 { display: flex; justify-content: space-between; margin: 0 0 .8rem; f
 .item:first-of-type { border-top: 0; }
 .item h3 { margin: 0 0 .3rem; font-size: .98rem; }
 .item p, .empty { margin: 0; color: #9ca3af; line-height: 1.45; }
-.badge { display: inline-block; margin-top: .45rem; padding: .15rem .45rem; border-radius: 999px; background: #374151; font-size: .75rem; }
+.badge {
+  display: inline-block;
+  margin-top: .45rem;
+  padding: .15rem .45rem;
+  border-radius: 999px;
+  background: #374151;
+  font-size: .75rem;
+}
 .warning { color: #fde68a; }
 .error { color: #fca5a5; }
 footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
@@ -89,7 +96,10 @@ footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
 <body>
 <header>
   <h1>OSCA Analyst Workspace</h1>
-  <p>Read-only inspection of local datasets, reports, backtests, enrichment, and routing evidence.</p>
+  <p>
+    Read-only inspection of local datasets, reports, backtests, enrichment,
+    and routing evidence.
+  </p>
 </header>
 <main>
   <div id="status">Loading retained evidence…</div>
@@ -106,9 +116,13 @@ function node(tag, text, className) {
   return element;
 }
 fetch('/api/workspace')
-  .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
   .then(data => {
-    status.textContent = `${data.total_items} retained items · ${data.read_only ? 'read-only' : 'writable'}`;
+    const mode = data.read_only ? 'read-only' : 'writable';
+    status.textContent = `${data.total_items} retained items · ${mode}`;
     data.sections.forEach(group => {
       const section = node('section');
       const heading = node('h2');
