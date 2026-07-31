@@ -16,6 +16,12 @@ from osca.runtime_extensions import (
     validate_runtime_pack,
 )
 
+DEFAULT_BODY = (
+    "#!/usr/bin/env python3\n"
+    "import json,sys\n"
+    "print(json.dumps({'ok': True, 'input': json.load(sys.stdin)}))\n"
+)
+
 
 def _pack(
     root: Path,
@@ -23,7 +29,7 @@ def _pack(
     version: str = "1.0.0",
     trust: str = "local_trusted",
     min_version: str = "0.1.0",
-    body: str = "#!/usr/bin/env python3\nimport json,sys\nprint(json.dumps({'ok': True, 'input': json.load(sys.stdin)}))\n",
+    body: str = DEFAULT_BODY,
 ) -> Path:
     pack = root / f"pack-{version}"
     pack.mkdir()
@@ -102,10 +108,16 @@ def test_trusted_pack_executes_and_retains_evidence(tmp_path: Path) -> None:
 def test_install_and_rollback_use_existing_validated_versions(tmp_path: Path) -> None:
     storage = tmp_path / "storage"
     first = install_runtime_pack(
-        RuntimePackRequest(pack_directory=str(_pack(tmp_path, version="1.0.0")), storage_root=str(storage))
+        RuntimePackRequest(
+            pack_directory=str(_pack(tmp_path, version="1.0.0")),
+            storage_root=str(storage),
+        )
     )
     second = install_runtime_pack(
-        RuntimePackRequest(pack_directory=str(_pack(tmp_path, version="2.0.0")), storage_root=str(storage))
+        RuntimePackRequest(
+            pack_directory=str(_pack(tmp_path, version="2.0.0")),
+            storage_root=str(storage),
+        )
     )
     assert first.status is RuntimeExtensionStatus.INSTALLED
     assert second.status is RuntimeExtensionStatus.INSTALLED
