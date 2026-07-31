@@ -1,10 +1,11 @@
 # P10 Exit Review
 
 - **Milestone:** P10 capability-based runtime provider routing
-- **Status:** Implementation candidate; hosted Quality and review pending
+- **Status:** Implementation candidate, review ready
 - **Branch:** `agent/p10-capability-runtime-routing`
 - **Pull request:** #53
 - **Baseline:** `main` at merge commit `70f9eba856e096299d8afc73d547626dbb0595d6`
+- **Hosted Quality:** Run `30640551759` passed on implementation head `e163ae65f7055f67a87c6ad6cb042fa7540ae069`
 
 ## Implemented evidence
 
@@ -48,7 +49,7 @@ The following remain disabled:
 
 ## Automated validation
 
-Focused implementation-workspace tests passed before publication. Repository tests cover:
+The repository suite covers:
 
 - selected local OHLCV
 - stale fail-closed and explicit stale use
@@ -63,13 +64,15 @@ Focused implementation-workspace tests passed before publication. Repository tes
 
 ## Hosted validation
 
-Pending on PR #53:
+Quality run `30640551759` passed:
 
 - Ruff
-- strict mypy
-- pytest, contracts, migrations, links, and architecture checks
-- OpenSpec strict validation
+- strict mypy across 182 source files
+- 309 tests, including all 10 P10 routing tests, contracts, migrations, links, and architecture checks
+- OpenSpec doctor and strict validation
 - secret scanning
+
+Run `30640369979` previously found one strict-mypy endpoint-literal narrowing issue. The SEC endpoint type was narrowed without changing runtime behavior, after which the complete Quality suite passed.
 
 ## Manual validation
 
@@ -77,4 +80,4 @@ The supported workflow is documented in [P10 user testing quickstart](user-testi
 
 ## Completion decision
 
-P10 must remain an implementation candidate until hosted Quality is green, the branch diff is reviewed, documentation and traceability are reconciled, and final evidence is recorded here.
+REQ-0226 through REQ-0232 are implemented and evidenced for the approved P10 candidate scope. P10 should be marked complete after PR #53 is reviewed and merged. P11 remains the next planned milestone and must preserve P10 source/status provenance.
