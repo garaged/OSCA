@@ -5,6 +5,7 @@ import json
 import math
 from collections.abc import Iterable
 from datetime import datetime
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -121,13 +122,15 @@ def _finite_float(value: Any, name: str) -> float:
 
 
 def _validate_monotonic(rows: tuple[ChartRow, ...]) -> None:
-    for previous, current in zip(rows, rows[1:], strict=False):
+    for previous, current in pairwise(rows):
         if current.timestamp <= previous.timestamp:
             raise ValueError("analytical payload timestamps must be strictly increasing")
 
 
 def _series_id(definition: DerivedSeriesRequest) -> str:
-    return definition.kind.value if definition.window is None else f"{definition.kind.value}_{definition.window}"
+    if definition.window is None:
+        return definition.kind.value
+    return f"{definition.kind.value}_{definition.window}"
 
 
 def _warmup_rows(definition: DerivedSeriesRequest) -> int:
@@ -161,7 +164,7 @@ def _derive(
 
 def _returns(values: tuple[float, ...], *, logarithmic: bool) -> tuple[float | None, ...]:
     result: list[float | None] = [None]
-    for previous, current in zip(values, values[1:], strict=False):
+    for previous, current in pairwise(values):
         if previous <= 0 or (logarithmic and current <= 0):
             result.append(None)
         elif logarithmic:
