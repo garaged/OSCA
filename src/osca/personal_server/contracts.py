@@ -49,7 +49,7 @@ class ScheduledJob(BaseModel):
 
     job_id: Identifier
     command: tuple[Identifier, ...] = Field(min_length=1)
-    interval_seconds: int = Field(ge=60, le=604800)
+    interval_seconds: int = Field(default=900, ge=60, le=604800)
     enabled: bool = False
     timeout_seconds: int = Field(default=300, ge=1, le=3600)
     working_directory: str = "."
