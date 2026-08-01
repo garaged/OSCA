@@ -4,11 +4,9 @@ from datetime import datetime
 from pathlib import Path
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 
 from osca.quantitative_analysis import QuantitativeAnalysisRequest, analyze_dataset
-
-_MAX_ROWS = Query(default=50_000, ge=2, le=50_000)
 
 
 def quantitative_router() -> APIRouter:
@@ -32,7 +30,6 @@ def quantitative_router() -> APIRouter:
         slow_window: int = 26,
         signal_window: int = 9,
     ) -> dict[str, object]:
-        del _MAX_ROWS
         try:
             result = analyze_dataset(
                 QuantitativeAnalysisRequest(
