@@ -10,6 +10,7 @@ from osca.analyst_workspace.contracts import (
     WorkspaceSection,
     WorkspaceSectionResult,
 )
+from osca.analyst_workspace.model_validation import model_validation_router
 from osca.analyst_workspace.prediction_lab import prediction_lab_router
 from osca.analyst_workspace.quantitative import quantitative_router
 from osca.analyst_workspace.services import AnalystWorkspaceService
@@ -25,12 +26,16 @@ def create_app(
     root = storage_root.resolve()
     app = FastAPI(
         title="OSCA Analyst Workspace",
-        version="1.3.0",
-        description="Read-only local workspace for evidence, charts, analysis, and ML diagnostics.",
+        version="1.4.0",
+        description=(
+            "Read-only local workspace for evidence, charts, analysis, ML diagnostics, "
+            "and research validation."
+        ),
     )
     app.include_router(visualization_router())
     app.include_router(quantitative_router())
     app.include_router(prediction_lab_router())
+    app.include_router(model_validation_router())
 
     @app.get("/", response_class=HTMLResponse)
     def workspace_page() -> str:
@@ -46,6 +51,9 @@ def create_app(
             "interactive_visualization_enabled": True,
             "quantitative_analysis_enabled": True,
             "prediction_lab_enabled": True,
+            "model_research_validation_enabled": True,
+            "automatic_model_promotion_enabled": False,
+            "broker_execution_enabled": False,
         }
 
     @app.get("/api/workspace", response_model=AnalystWorkspaceSnapshot)
@@ -100,7 +108,7 @@ footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
 <body>
 <header>
   <h1>OSCA Analyst Workspace</h1>
-  <p>Read-only inspection of local datasets, reports, charts, quantitative analysis, and ML evidence.</p>
+  <p>Read-only inspection of local datasets, charts, quantitative analysis, ML evidence, and research validation.</p>
   <nav><a href="/charts">Open interactive market-data visualization</a></nav>
 </header>
 <main>
