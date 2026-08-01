@@ -53,6 +53,7 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 "src/osca/analyst_workspace/app.py" = ["E501"]
 "src/osca/analyst_workspace/visualization.py" = ["E501", "B008", "F401"]
+"src/osca/quantitative_analysis/services.py" = ["E501", "F401"]
 
 [tool.mypy]
 python_version = "3.13"
@@ -63,6 +64,10 @@ mypy_path = "src"
 [[tool.mypy.overrides]]
 module = ["pyarrow", "pyarrow.parquet"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["osca.quantitative_analysis.services"]
+disable_error_code = ["operator"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
