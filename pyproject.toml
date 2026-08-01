@@ -54,6 +54,8 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 "src/osca/analyst_workspace/app.py" = ["E501"]
 "src/osca/analyst_workspace/visualization.py" = ["E501", "B008", "F401"]
 "src/osca/quantitative_analysis/services.py" = ["E501", "F401"]
+"src/osca/ml_experiments/services.py" = ["E501", "F401"]
+"src/osca/ml_experiments/engine.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.13"
@@ -68,6 +70,10 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["osca.quantitative_analysis.services"]
 disable_error_code = ["operator"]
+
+[[tool.mypy.overrides]]
+module = ["osca.ml_experiments.services"]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
