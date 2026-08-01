@@ -44,6 +44,12 @@ def _result(*, task: ExperimentTask, score: float = 0.8) -> MLExperimentResult:
         if task is ExperimentTask.CLASSIFICATION
         else ExperimentMetrics(mean_absolute_error=0.4)
     )
+    split = ExperimentSplit(
+        name="test",
+        start=start,
+        end=start + timedelta(days=39),
+        rows=40,
+    )
     return MLExperimentResult(
         experiment_id=uuid4(),
         status=ExperimentStatus.COMPLETED,
@@ -59,7 +65,7 @@ def _result(*, task: ExperimentTask, score: float = 0.8) -> MLExperimentResult:
         ),
         feature_names=("lag_return", "rolling_mean"),
         label_definition="future target",
-        splits=(ExperimentSplit(name="test", start=start, end=start + timedelta(days=39), rows=40),),
+        splits=(split,),
         predictions=tuple(predictions),
         validation_metrics=test_metrics,
         test_metrics=test_metrics,
@@ -78,7 +84,10 @@ def test_regression_diagnostic_contains_residuals_and_regime_breakdowns() -> Non
     assert diagnostic.status is DiagnosticStatus.ELIGIBLE_FOR_F2_VALIDATION
     assert len(diagnostic.residuals) == 40
     assert diagnostic.absolute_error_quantiles["p95"] >= 0
-    assert {item.regime for item in diagnostic.regime_breakdowns} == {"early_test", "late_test"}
+    assert {item.regime for item in diagnostic.regime_breakdowns} == {
+        "early_test",
+        "late_test",
+    }
     assert "not causal" in diagnostic.warnings[0]
     assert diagnostic.automatic_promotion_enabled is False
 
