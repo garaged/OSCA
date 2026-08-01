@@ -49,7 +49,11 @@ def _payload(path: Path) -> tuple[Path, datetime]:
     return path, start
 
 
-def _experiment(start: datetime, *, task: ExperimentTask = ExperimentTask.CLASSIFICATION) -> MLExperimentResult:
+def _experiment(
+    start: datetime,
+    *,
+    task: ExperimentTask = ExperimentTask.CLASSIFICATION,
+) -> MLExperimentResult:
     predictions = tuple(
         PredictionRecord(
             timestamp=start + timedelta(days=index),
