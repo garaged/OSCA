@@ -75,7 +75,7 @@ class ResearchSignalEvent(BaseModel):
     execution_timestamp: datetime
     prediction: float
     probability: float | None = None
-    position: Literal[0, 1]
+    position: int = Field(ge=0, le=1)
     execution_price: float = Field(gt=0.0)
     exit_price: float = Field(gt=0.0)
     gross_return: float
