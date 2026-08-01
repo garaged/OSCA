@@ -159,7 +159,7 @@ def _calibration(
         bucket = tuple(
             item
             for item in probabilistic
-            if _in_bin(float(item.probability), lower, upper, index == bins - 1)
+            if _in_bin(_probability(item), lower, upper, index == bins - 1)
         )
         if bucket:
             output.append(
@@ -167,7 +167,7 @@ def _calibration(
                     lower=lower,
                     upper=upper,
                     count=len(bucket),
-                    mean_probability=fmean(float(item.probability) for item in bucket),
+                    mean_probability=fmean(_probability(item) for item in bucket),
                     positive_rate=fmean(float(item.actual >= 0.5) for item in bucket),
                 )
             )
@@ -184,16 +184,14 @@ def _curves(
     probabilistic = tuple(item for item in predictions if item.probability is not None)
     if not probabilistic:
         return (), ()
-    thresholds = tuple(
-        sorted({0.0, 1.0, *(float(item.probability) for item in probabilistic)})
-    )
+    thresholds = tuple(sorted({0.0, 1.0, *(_probability(item) for item in probabilistic)}))
     roc: list[CurvePoint] = []
     precision_recall: list[CurvePoint] = []
     for threshold in thresholds:
         tp = fp = tn = fn = 0
         for item in probabilistic:
             actual = item.actual >= 0.5
-            predicted = float(item.probability) >= threshold
+            predicted = _probability(item) >= threshold
             tp += int(actual and predicted)
             fp += int(not actual and predicted)
             tn += int(not actual and not predicted)
@@ -204,6 +202,12 @@ def _curves(
         roc.append(CurvePoint(threshold=threshold, x=fpr, y=tpr))
         precision_recall.append(CurvePoint(threshold=threshold, x=tpr, y=precision))
     return tuple(roc), tuple(precision_recall)
+
+
+def _probability(item: PredictionRecord) -> float:
+    if item.probability is None:
+        raise ValueError("classification diagnostic requires retained probabilities")
+    return item.probability
 
 
 def _regime_breakdowns(
