@@ -11,6 +11,7 @@ from osca.analyst_workspace.contracts import (
     WorkspaceSectionResult,
 )
 from osca.analyst_workspace.services import AnalystWorkspaceService
+from osca.analyst_workspace.visualization import visualization_router
 
 
 def create_app(
@@ -22,9 +23,10 @@ def create_app(
     root = storage_root.resolve()
     app = FastAPI(
         title="OSCA Analyst Workspace",
-        version="1.0.0",
-        description="Read-only local workspace for retained OSCA evidence.",
+        version="1.1.0",
+        description="Read-only local workspace for retained OSCA evidence and charts.",
     )
+    app.include_router(visualization_router())
 
     @app.get("/", response_class=HTMLResponse)
     def workspace_page() -> str:
@@ -37,6 +39,7 @@ def create_app(
             "read_only": True,
             "storage_root": str(root),
             "network_access_enabled": False,
+            "interactive_visualization_enabled": True,
         }
 
     @app.get("/api/workspace", response_model=AnalystWorkspaceSnapshot)
@@ -70,6 +73,8 @@ body { margin: 0; background: #111827; color: #e5e7eb; }
 header { padding: 2rem max(1.25rem, 5vw); border-bottom: 1px solid #374151; }
 h1 { margin: 0 0 .5rem; font-size: clamp(1.8rem, 4vw, 3rem); }
 header p { margin: 0; color: #9ca3af; }
+nav { margin-top: 1rem; }
+nav a { color: #93c5fd; }
 main { padding: 1.5rem max(1.25rem, 5vw) 3rem; }
 #status { margin-bottom: 1rem; color: #93c5fd; }
 .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
@@ -80,14 +85,7 @@ section h2 { display: flex; justify-content: space-between; margin: 0 0 .8rem; f
 .item:first-of-type { border-top: 0; }
 .item h3 { margin: 0 0 .3rem; font-size: .98rem; }
 .item p, .empty { margin: 0; color: #9ca3af; line-height: 1.45; }
-.badge {
-  display: inline-block;
-  margin-top: .45rem;
-  padding: .15rem .45rem;
-  border-radius: 999px;
-  background: #374151;
-  font-size: .75rem;
-}
+.badge { display: inline-block; margin-top: .45rem; padding: .15rem .45rem; border-radius: 999px; background: #374151; font-size: .75rem; }
 .warning { color: #fde68a; }
 .error { color: #fca5a5; }
 footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
@@ -96,10 +94,8 @@ footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
 <body>
 <header>
   <h1>OSCA Analyst Workspace</h1>
-  <p>
-    Read-only inspection of local datasets, reports, backtests, enrichment,
-    and routing evidence.
-  </p>
+  <p>Read-only inspection of local datasets, reports, backtests, enrichment, and routing evidence.</p>
+  <nav><a href="/charts">Open interactive market-data visualization</a></nav>
 </header>
 <main>
   <div id="status">Loading retained evidence…</div>
