@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterable
 
 from osca.analytical_data import ChartSeriesRequest, build_chart_series
 from osca.ml_experiments import ExperimentTask, PredictionRecord
-from osca.prediction_lab import DiagnosticStatus
 from osca.model_validation.contracts import (
     ModelValidationRequest,
     ModelValidationResult,
@@ -15,6 +13,7 @@ from osca.model_validation.contracts import (
     ValidationStatus,
     ValidationSummary,
 )
+from osca.prediction_lab import DiagnosticStatus
 
 
 def validate_model_research(request: ModelValidationRequest) -> ModelValidationResult:
@@ -186,7 +185,8 @@ def _findings(
         findings.append("Model-derived research signals did not outperform buy-and-hold.")
     if skipped:
         findings.append(
-            f"{skipped} of {prediction_count} retained test predictions lacked an eligible execution bar."
+            f"{skipped} of {prediction_count} retained test predictions lacked "
+            "an eligible execution bar."
         )
     return tuple(findings)
 
