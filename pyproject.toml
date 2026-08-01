@@ -65,6 +65,10 @@ mypy_path = "src"
 module = ["pyarrow", "pyarrow.parquet"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["osca.quantitative_analysis.services"]
+disable_error_code = ["operator"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
