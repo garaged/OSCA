@@ -50,6 +50,10 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+"src/osca/analyst_workspace/app.py" = ["E501"]
+"src/osca/analyst_workspace/visualization.py" = ["E501"]
+
 [tool.mypy]
 python_version = "3.13"
 strict = true
