@@ -5,7 +5,13 @@ import json
 import math
 from statistics import fmean
 
-from osca.ml_experiments import ExperimentStatus, ExperimentTask, MLExperimentResult
+from osca.ml_experiments import (
+    ExperimentMetrics,
+    ExperimentStatus,
+    ExperimentTask,
+    MLExperimentResult,
+    PredictionRecord,
+)
 from osca.prediction_lab.contracts import (
     CalibrationBin,
     CurvePoint,
@@ -16,7 +22,11 @@ from osca.prediction_lab.contracts import (
 )
 
 
-def diagnose_experiment(result: MLExperimentResult, *, calibration_bins: int = 10) -> ExperimentDiagnostic:
+def diagnose_experiment(
+    result: MLExperimentResult,
+    *,
+    calibration_bins: int = 10,
+) -> ExperimentDiagnostic:
     if calibration_bins < 2 or calibration_bins > 100:
         raise ValueError("calibration_bins must be between 2 and 100")
     predictions = tuple(item for item in result.predictions if item.split == "test")
@@ -33,7 +43,7 @@ def diagnose_experiment(result: MLExperimentResult, *, calibration_bins: int = 1
     status = _status(result, findings)
     warnings = (
         "Coefficients and feature importance are associative evidence, not causal effects.",
-        "Diagnostics describe retained validation/test evidence and are not authoritative forecasts.",
+        "Diagnostics describe retained validation/test evidence, not authoritative forecasts.",
         "No displayed result is an investment recommendation or execution instruction.",
     )
     payload = {
@@ -73,25 +83,21 @@ def diagnose_experiment(result: MLExperimentResult, *, calibration_bins: int = 1
 def compare_experiments(results: tuple[MLExperimentResult, ...]) -> ExperimentComparison:
     if len(results) < 2:
         raise ValueError("at least two experiments are required")
-    tasks = {item.task for item in results}
-    if len(tasks) != 1:
+    if len({item.task for item in results}) != 1:
         raise ValueError("experiments must use the same task")
-    task = results[0].task
-    if task is ExperimentTask.REGRESSION:
+    if results[0].task is ExperimentTask.REGRESSION:
         metric_name = "test_mae_improvement_over_baseline"
-        scores = {
-            str(item.experiment_id): _regression_score(item)
-            for item in results
-        }
+        scores = {str(item.experiment_id): _regression_score(item) for item in results}
     else:
         metric_name = "test_accuracy_improvement_over_baseline"
-        scores = {
-            str(item.experiment_id): _classification_score(item)
-            for item in results
-        }
+        scores = {str(item.experiment_id): _classification_score(item) for item in results}
     ordered = tuple(
         item.experiment_id
-        for item in sorted(results, key=lambda item: scores[str(item.experiment_id)], reverse=True)
+        for item in sorted(
+            results,
+            key=lambda item: scores[str(item.experiment_id)],
+            reverse=True,
+        )
     )
     findings = tuple(
         f"{experiment_id} did not outperform its baseline."
@@ -112,56 +118,77 @@ def _status(result: MLExperimentResult, findings: list[str]) -> DiagnosticStatus
         return DiagnosticStatus.INVALID
     if result.status is ExperimentStatus.REVIEW_REQUIRED or findings:
         return DiagnosticStatus.REVIEW_REQUIRED
-    if len(tuple(item for item in result.predictions if item.split == "test")) < 30:
+    test_count = sum(item.split == "test" for item in result.predictions)
+    if test_count < 30:
         findings.append("Fewer than 30 test observations; keep the experiment exploratory.")
         return DiagnosticStatus.EXPLORATORY
     return DiagnosticStatus.ELIGIBLE_FOR_F2_VALIDATION
 
 
-def _confusion(predictions: tuple[object, ...]) -> dict[str, int]:
-    values = {"true_positive": 0, "true_negative": 0, "false_positive": 0, "false_negative": 0}
+def _confusion(predictions: tuple[PredictionRecord, ...]) -> dict[str, int]:
+    values = {
+        "true_positive": 0,
+        "true_negative": 0,
+        "false_positive": 0,
+        "false_negative": 0,
+    }
     for item in predictions:
-        actual = float(item.actual) >= 0.5
-        predicted = float(item.prediction) >= 0.5
-        key = (
-            "true_positive" if actual and predicted else
-            "true_negative" if not actual and not predicted else
-            "false_positive" if not actual and predicted else
-            "false_negative"
-        )
+        actual = item.actual >= 0.5
+        predicted = item.prediction >= 0.5
+        if actual and predicted:
+            key = "true_positive"
+        elif not actual and not predicted:
+            key = "true_negative"
+        elif not actual and predicted:
+            key = "false_positive"
+        else:
+            key = "false_negative"
         values[key] += 1
     return values
 
 
-def _calibration(predictions: tuple[object, ...], bins: int) -> tuple[CalibrationBin, ...]:
+def _calibration(
+    predictions: tuple[PredictionRecord, ...],
+    bins: int,
+) -> tuple[CalibrationBin, ...]:
     probabilistic = tuple(item for item in predictions if item.probability is not None)
     output: list[CalibrationBin] = []
     for index in range(bins):
         lower = index / bins
         upper = (index + 1) / bins
         bucket = tuple(
-            item for item in probabilistic
-            if lower <= float(item.probability) <= upper if index == bins - 1
-            else lower <= float(item.probability) < upper
+            item
+            for item in probabilistic
+            if _in_bin(float(item.probability), lower, upper, index == bins - 1)
         )
         if bucket:
-            output.append(CalibrationBin(
-                lower=lower,
-                upper=upper,
-                count=len(bucket),
-                mean_probability=fmean(float(item.probability) for item in bucket),
-                positive_rate=fmean(float(item.actual >= 0.5) for item in bucket),
-            ))
+            output.append(
+                CalibrationBin(
+                    lower=lower,
+                    upper=upper,
+                    count=len(bucket),
+                    mean_probability=fmean(float(item.probability) for item in bucket),
+                    positive_rate=fmean(float(item.actual >= 0.5) for item in bucket),
+                )
+            )
     return tuple(output)
 
 
-def _curves(predictions: tuple[object, ...]) -> tuple[tuple[CurvePoint, ...], tuple[CurvePoint, ...]]:
+def _in_bin(value: float, lower: float, upper: float, final: bool) -> bool:
+    return lower <= value <= upper if final else lower <= value < upper
+
+
+def _curves(
+    predictions: tuple[PredictionRecord, ...],
+) -> tuple[tuple[CurvePoint, ...], tuple[CurvePoint, ...]]:
     probabilistic = tuple(item for item in predictions if item.probability is not None)
     if not probabilistic:
         return (), ()
-    thresholds = tuple(sorted({0.0, 1.0, *(float(item.probability) for item in probabilistic)}))
+    thresholds = tuple(
+        sorted({0.0, 1.0, *(float(item.probability) for item in probabilistic)})
+    )
     roc: list[CurvePoint] = []
-    pr: list[CurvePoint] = []
+    precision_recall: list[CurvePoint] = []
     for threshold in thresholds:
         tp = fp = tn = fn = 0
         for item in probabilistic:
@@ -174,13 +201,15 @@ def _curves(predictions: tuple[object, ...]) -> tuple[tuple[CurvePoint, ...], tu
         tpr = 0.0 if tp + fn == 0 else tp / (tp + fn)
         fpr = 0.0 if fp + tn == 0 else fp / (fp + tn)
         precision = 1.0 if tp + fp == 0 else tp / (tp + fp)
-        recall = tpr
         roc.append(CurvePoint(threshold=threshold, x=fpr, y=tpr))
-        pr.append(CurvePoint(threshold=threshold, x=recall, y=precision))
-    return tuple(roc), tuple(pr)
+        precision_recall.append(CurvePoint(threshold=threshold, x=tpr, y=precision))
+    return tuple(roc), tuple(precision_recall)
 
 
-def _regime_breakdowns(task: ExperimentTask, predictions: tuple[object, ...]) -> tuple[RegimeBreakdown, ...]:
+def _regime_breakdowns(
+    task: ExperimentTask,
+    predictions: tuple[PredictionRecord, ...],
+) -> tuple[RegimeBreakdown, ...]:
     midpoint = len(predictions) // 2
     groups = (("early_test", predictions[:midpoint]), ("late_test", predictions[midpoint:]))
     output: list[RegimeBreakdown] = []
@@ -188,14 +217,20 @@ def _regime_breakdowns(task: ExperimentTask, predictions: tuple[object, ...]) ->
         if not group:
             continue
         if task is ExperimentTask.REGRESSION:
-            mae = fmean(abs(item.prediction - item.actual) for item in group)
-            rmse = math.sqrt(fmean((item.prediction - item.actual) ** 2 for item in group))
-            metrics = {"mean_absolute_error": mae, "root_mean_squared_error": rmse}
+            metrics = ExperimentMetrics(
+                mean_absolute_error=fmean(abs(item.prediction - item.actual) for item in group),
+                root_mean_squared_error=math.sqrt(
+                    fmean((item.prediction - item.actual) ** 2 for item in group)
+                ),
+            )
         else:
-            accuracy = fmean(float((item.prediction >= 0.5) == (item.actual >= 0.5)) for item in group)
-            metrics = {"accuracy": accuracy}
-        from osca.ml_experiments import ExperimentMetrics
-        output.append(RegimeBreakdown(regime=name, observations=len(group), metrics=ExperimentMetrics(**metrics)))
+            metrics = ExperimentMetrics(
+                accuracy=fmean(
+                    float((item.prediction >= 0.5) == (item.actual >= 0.5))
+                    for item in group
+                )
+            )
+        output.append(RegimeBreakdown(regime=name, observations=len(group), metrics=metrics))
     return tuple(output)
 
 
@@ -227,5 +262,10 @@ def _quantile(values: tuple[float, ...], probability: float) -> float:
 
 
 def _digest(payload: object) -> str:
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode()
+    encoded = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode()
     return hashlib.sha256(encoded).hexdigest()
