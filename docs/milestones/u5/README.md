@@ -1,27 +1,78 @@
 # U5 - Governed Local ML Experiment Runner
 
-- **Status:** Planned
+- **Status:** Implementation candidate
 - **Depends on:** U2-U4
+- **Baseline:** U4 merge `2f8e931f70d25aecd024a9e53575a09ddeb96ea5`
 
 ## Objective
 
-Add reproducible local trainer execution behind the existing M9 lifecycle contracts.
+Add reproducible local trainer execution behind the existing M9 lifecycle contracts without enabling remote training, automatic promotion, advice, or execution.
 
-## Scope
+## Implemented scope
 
-- Feature/label materialization through U2/U4 transformations.
-- Chronological train/validation/test splits, walk-forward folds, purge/embargo where needed, and training-only fitting of transforms.
-- Naive persistence and moving-average baselines.
-- Linear/ridge regression and logistic classification as initial transparent models.
-- Explicit dependency review before accepting scikit-learn or additional model families.
-- Reproducible seeds, parameters, environment, dataset/code revisions, predictions, metrics, artifact digests, timings, and findings.
-- Regression and classification targets for future return, volatility, direction, or threshold events.
-- Leakage, insufficient-sample, invalid-split, and baseline-underperformance findings.
+### Governed feature and label materialization
 
-## Non-scope
+- Reads an explicit governed OHLCV payload through the U2 analytical runtime.
+- Uses lagged return, rolling mean return, and rolling volatility features.
+- Supports future-return regression and future-direction classification labels.
+- Retains explicit feature names, label definition, dataset revision, and payload digest.
 
-Remote trainers, cloud tuning, GPU requirements, automatic promotion/retraining, production serving, recommendations, brokers, or real orders.
+### Chronological validation
+
+- Chronological train, validation, and test partitions.
+- Horizon-sized purge between partitions.
+- Configurable embargo after split boundaries.
+- Scaling parameters fit on training data only.
+- Minimum-sample and invalid-split checks fail closed.
+
+### Initial transparent models
+
+- Persistence regression baseline.
+- Moving-average regression baseline.
+- Linear regression.
+- Ridge regression.
+- Logistic classification.
+
+The implementation uses deterministic standard-library gradient descent and adds no numerical or ML dependency. scikit-learn and additional model families remain subject to a later dependency, packaging, licensing, and reproducibility review.
+
+### Metrics and evidence
+
+Regression evidence includes MAE, RMSE, and directional accuracy. Classification evidence includes accuracy, precision, recall, log loss, class predictions, and probabilities. Every experiment also records:
+
+- validation and test predictions
+- naive baseline test metrics
+- model coefficients and intercept
+- split timestamps and row counts
+- model and split parameters
+- input/output digests
+- baseline-underperformance findings
+- point-in-time and safety boundaries
+
+## Operator surfaces
+
+```bash
+uv run python -m osca.ml_experiments \
+  <payload.parquet> \
+  <dataset-revision-uuid> \
+  AAPL \
+  1d \
+  --task regression \
+  --model ridge_regression
+```
+
+The loopback analyst workspace also exposes the governed experiment request contract through `/api/ml-experiment`; production serving and automatic retention are not enabled.
+
+## Safety boundary
+
+Network access, credential resolution, remote trainers, automatic promotion, recommendations, broker connectivity, autonomous execution, and real-capital orders remain disabled.
+
+## Deferred
+
+- Walk-forward multi-fold orchestration and visual comparison, assigned to U6.
+- Volatility and threshold-event targets.
+- Tree-based, ensemble, neural, GPU, and externally hosted models.
+- Automatic tuning, retraining, promotion, or production model serving.
 
 ## Acceptance
 
-A local operator can run and compare at least one regression and one classification experiment against naive baselines, with no future leakage and complete M9 evidence retention.
+A local operator can run deterministic regression and classification experiments against naive baselines. Tests verify chronological ordering, purge/embargo evidence, training-only scaling, reproducibility, probability retention, insufficient-sample failure, task/model validation, and disabled execution boundaries.
