@@ -8,7 +8,7 @@ from osca.ml_experiments.contracts import (
     MLExperimentResult,
     PredictionRecord,
 )
-from osca.ml_experiments.services import run_experiment
+from osca.ml_experiments.engine import run_experiment
 
 __all__ = [
     "ExperimentMetrics",
