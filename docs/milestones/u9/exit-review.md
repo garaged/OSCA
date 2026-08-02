@@ -102,7 +102,8 @@ Start the analyst workspace on an available loopback port using the documented w
 
 - the canonical dataset revision;
 - retained historical-acquisition evidence;
-- the U8 experiment, diagnostic, manifest, and validation artifacts;
+- the U8 experiment, diagnostic, and manifest artifacts;
+- validation artifacts when the diagnostic is eligible;
 - no recommendations or execution actions.
 
 Exercise the blocked equity path:
@@ -120,12 +121,12 @@ The expected status is `provider_unavailable`, with CSV fallback guidance and no
 - [x] Real Kraken acquisition succeeds.
 - [x] Raw digest and canonical revision are retained.
 - [x] Canonical quality findings are acceptable.
-- [ ] U8 pipeline consumes the exact acquired payload and revision.
+- [x] U8 pipeline consumes the exact acquired payload and revision.
 - [ ] Workspace discovers the complete evidence chain.
 - [x] Blocked equity behavior is explicit and non-networked.
 - [x] Recommendation and execution boundaries are false for retained acquisition results.
 - [x] Hosted Quality is fully green.
-- [x] Final Kraken acquisition identifiers and interpretation are recorded below.
+- [x] Final Kraken acquisition and pipeline identifiers and interpretation are recorded below.
 
 ## Final retained evidence
 
@@ -156,6 +157,23 @@ Observed retained result:
 
 Interpretation: the admitted Kraken path successfully retained immutable raw evidence, excluded the current uncommitted bar, produced a canonical 720-row OHLCV revision, and preserved every licensing and execution boundary required by U9.
 
+### U8 research-pipeline handoff
+
+The exact acquired canonical payload and revision were submitted to the governed U8 research pipeline.
+
+Observed retained manifest:
+
+- run ID `d2cfcf58-ce0d-4bf9-be04-62ed84abb61d`;
+- experiment ID `7de528ca-64d8-4dd8-be44-8458a28c6c50`;
+- pipeline family `osca.research-pipeline.manifest`, version `1.0.0`;
+- status `diagnostic_not_eligible`;
+- diagnostic status `review_required`;
+- experiment artifact `.osca/u9-acceptance/research-evidence/d2cfcf58-ce0d-4bf9-be04-62ed84abb61d/experiment.json`;
+- diagnostic artifact `.osca/u9-acceptance/research-evidence/d2cfcf58-ce0d-4bf9-be04-62ed84abb61d/diagnostic.json`;
+- automatic promotion, recommendations, broker execution, and real-capital execution remained disabled.
+
+Interpretation: the acquired U9 revision was accepted by the U8 pipeline and produced retained experiment and diagnostic evidence. The diagnostic was not eligible for validation, so the pipeline stopped at the human-review boundary and did not create validation artifacts. This is an expected fail-closed outcome and satisfies the U9 handoff requirement; U9 does not require the model evidence to pass the U6 eligibility gate.
+
 ### Blocked-equity acceptance
 
 Executed on August 2, 2026 against the same U9 acceptance storage root:
@@ -183,10 +201,10 @@ Observed retained result:
 
 Interpretation: the no-cost equity provider boundary failed closed exactly as designed.
 
-### Research handoff and workspace discovery
+### Workspace discovery
 
-Pending the retained U8 pipeline run identifier/status and confirmation that the analyst workspace discovers the canonical dataset, historical-acquisition evidence, and U8 experiment, diagnostic, manifest, and validation artifacts.
+Pending confirmation that the analyst workspace discovers the canonical dataset, historical-acquisition evidence, and U8 experiment, diagnostic, and manifest artifacts. Validation artifacts are not expected for this run because the diagnostic was not eligible.
 
 ## Exit decision
 
-Pending. Hosted validation, successful real Kraken acquisition, canonical lineage, blocked-equity behavior, and safety-boundary evidence pass. U9 may be marked complete after the exact acquired payload and revision are consumed by the U8 research pipeline and the resulting evidence chain is confirmed in the analyst workspace. U10 must not weaken the provider, licensing, provenance, or execution boundaries established here.
+Pending only workspace-discovery confirmation. Hosted validation, successful real Kraken acquisition, canonical lineage, U8 research handoff, blocked-equity behavior, and all safety-boundary evidence pass. U10 must not weaken the provider, licensing, provenance, or execution boundaries established here.
