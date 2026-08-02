@@ -24,7 +24,7 @@ The strict configuration contract rejects unknown fields and refuses attempts to
 
 ## Validation
 
-The final closeout documentation passed the complete hosted Quality suite: Ruff, strict mypy, tests and repository checks, OpenSpec strict validation, and secret scanning.
+The closeout documentation passed the complete hosted Quality suite: Ruff, strict mypy, tests and repository checks, OpenSpec strict validation, and secret scanning.
 
 The clean-profile acceptance initialized and diagnosed a new profile, acquired 720 XBTUSD daily bars through admitted no-cost Kraken history, ran the retained research pipeline, and discovered five linked evidence items through the read-only workspace. The diagnostic-ineligible result stopped fail-closed without creating validation evidence.
 
