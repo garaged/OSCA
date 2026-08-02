@@ -24,7 +24,7 @@ The strict configuration contract rejects unknown fields and refuses attempts to
 
 ## Validation
 
-Quality run #729 passed the complete hosted suite:
+Quality run #733 passed the complete hosted suite on the closeout documentation head:
 
 - Ruff;
 - strict mypy;
