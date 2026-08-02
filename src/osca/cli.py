@@ -10,8 +10,59 @@ import typer
 
 from osca.bootstrap.cli import app
 from osca.historical_acquisition_cli import app as historical_data_app
+from osca.operator_aliases import analyze_command, backtest_command, import_data_command
+from osca.operator_experience import (
+    doctor_command,
+    init_command,
+    load_operator_config,
+)
 
 app.add_typer(historical_data_app, name="historical-data")
+app.command("init")(init_command)
+app.command("doctor")(doctor_command)
+app.command("import-data")(import_data_command)
+app.command("analyze")(analyze_command)
+app.command("backtest")(backtest_command)
+
+
+@app.command("workspace")
+def workspace(
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+    storage_root: Annotated[Path | None, typer.Option("--storage-root")] = None,
+    host: Annotated[str | None, typer.Option("--host")] = None,
+    port: Annotated[int | None, typer.Option("--port")] = None,
+    snapshot: Annotated[bool, typer.Option("--snapshot")] = False,
+) -> None:
+    """Start or snapshot the loopback-only read-only analyst workspace."""
+    try:
+        config = load_operator_config(profile_root)
+    except ValueError as exc:
+        raise typer.BadParameter(
+            f"{exc}. Run 'osca init --profile-root {profile_root}' first."
+        ) from exc
+
+    selected_storage = storage_root or Path(config.storage_root)
+    selected_host = host or config.workspace_host
+    selected_port = port or config.workspace_port
+    if selected_host not in {"127.0.0.1", "localhost", "::1"}:
+        raise typer.BadParameter("workspace host must be loopback-only")
+
+    command = [
+        sys.executable,
+        "-m",
+        "osca.analyst_workspace",
+        "--storage-root",
+        str(selected_storage),
+        "--host",
+        selected_host,
+        "--port",
+        str(selected_port),
+    ]
+    if snapshot:
+        command.append("--snapshot")
+    completed = subprocess.run(command, check=False)
+    if completed.returncode != 0:
+        raise typer.Exit(completed.returncode)
 
 
 @app.command("research-pipeline")
