@@ -1,6 +1,6 @@
 # U11 — First-Run and Unified Operator Experience
 
-- **Status:** In progress; foundation implemented and green
+- **Status:** Implementation complete; clean-profile acceptance pending
 - **Baseline:** U10 merged through PR #73 at `4711c6f2f4ba17a0904515c6ca935e653cbee6ed`
 - **Branch:** `agent/u11-first-run-operator-experience`
 - **Implementation PR:** #74
@@ -9,37 +9,38 @@
 
 Let a technically capable new user complete OSCA's primary local research workflow through the primary `osca` CLI without invoking internal Python modules or hand-authoring JSON.
 
-## Delivered foundation
+## Delivered outcome
 
-1. `osca init` creates a versioned local profile and writable data root with safe defaults.
-2. `osca doctor` reports machine-readable runtime, PyArrow, SQLite, storage, port, and retained-evidence checks with remediation.
+1. `osca init` creates strictly validated versioned local configuration and a writable data root with safe defaults.
+2. `osca doctor` reports machine-readable Python, PyArrow, SQLite, storage, port, provider, credential, and evidence-consistency checks with remediation.
 3. `osca workspace` starts or snapshots the read-only workspace from operator configuration and rejects non-loopback hosts.
-4. `osca import-data`, `osca analyze`, and `osca backtest` provide canonical aliases for existing workflows.
-5. `osca research-pipeline` remains the canonical combined experiment, diagnostic, and human-gated validation path.
-6. zsh, Bash, and PowerShell quickstarts and a compatibility window through U13 are documented.
-7. OpenSpec contracts, focused tests, and initial traceability are present.
+4. `osca import-data`, `osca analyze`, and `osca backtest` provide canonical operator names while retaining compatibility entry points through U13.
+5. `osca research-pipeline` remains the canonical combined experiment, diagnostic, and human-gated local-validation path.
+6. zsh, Bash, and PowerShell quickstarts describe one coherent installation-to-workspace workflow.
+7. The root README and central manual-testing guide use the canonical U11 path.
+8. OpenSpec, traceability, focused tests, manual acceptance, and exit-review authority are present.
 
-Quality run #713 passed on the foundation implementation head:
+The strict configuration contract rejects unknown fields and refuses attempts to enable network-by-default, recommendations, automatic promotion, brokers, autonomous execution, or real-capital orders.
+
+## Validation
+
+Quality run #713 passed on the foundation head. The final implementation-closeout head must pass the same complete hosted suite before manual acceptance:
 
 - Ruff;
-- strict mypy across 244 source files;
+- strict mypy;
 - tests, contracts, migrations, links, and architecture checks;
 - OpenSpec doctor and strict validation;
 - secret scanning.
 
-Documentation-only progress commits follow that green head and remain subject to the next hosted run.
+## Remaining gate
 
-## Remaining implementation
+Run [U11 clean-profile manual acceptance](manual-acceptance.md) and record the retained outputs in the [U11 exit review](exit-review.md).
 
-1. Tighten operator configuration parsing and remove the temporary focused mypy exception.
-2. Add provider capability, credential-reference, and deeper evidence-consistency diagnostics.
-3. Add canonical/compatibility command-equivalence tests.
-4. Reconcile the root README and central manual-testing guide.
-5. Add U11 exit review and clean-profile end-to-end acceptance.
+The exit evidence must prove that a new profile can be initialized, diagnosed, populated through acquisition or import, processed through the retained research pipeline, and inspected through `osca workspace` without hand-authored JSON or internal module commands.
 
-## Exit gate
+## Next milestone
 
-A new user follows one canonical quickstart from installation to a populated read-only workspace without manual JSON composition or `python -m osca.*` commands.
+U12 owns isolated installation, supported macOS/Linux packaging, upgrades, backup-before-migration, failed-upgrade recovery, and rollback evidence.
 
 ## Safety
 
