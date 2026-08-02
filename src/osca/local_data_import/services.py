@@ -53,6 +53,7 @@ def import_local_ohlcv(request: LocalOHLCVImportRequest) -> LocalOHLCVImportResu
         symbol=request.symbol,
         timeframe=request.timeframe.value,
         input_format=input_format.value,
+        revision_salt=request.revision_salt,
     )
 
     storage_root = Path(request.storage_root)
@@ -207,10 +208,12 @@ def _dataset_revision_id(
     symbol: str,
     timeframe: str,
     input_format: str,
+    revision_salt: str | None,
 ) -> UUID:
+    salt = revision_salt or "content-only"
     return uuid5(
         NAMESPACE_URL,
-        f"osca:local-ohlcv:{symbol}:{timeframe}:{input_format}:{source_sha256}",
+        f"osca:local-ohlcv:{symbol}:{timeframe}:{input_format}:{source_sha256}:{salt}",
     )
 
 
