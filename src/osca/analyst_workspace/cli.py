@@ -60,7 +60,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         if cast(str | None, args.export_item):
             output = cast(Path | None, args.output)
             if output is None:
-                print(json.dumps({"error": "--output is required with --export-item"}), file=sys.stderr)
+                message = {"error": "--output is required with --export-item"}
+                print(json.dumps(message), file=sys.stderr)
                 return 2
             payload = evidence.portable_export(storage_root, cast(str, args.export_item))
             output.parent.mkdir(parents=True, exist_ok=True)
