@@ -122,16 +122,13 @@ def test_workspace_discovers_u9_acquisition_and_research_chain(tmp_path: Path) -
 
     snapshot = AnalystWorkspaceService().snapshot(tmp_path)
     sections = {section.section: section for section in snapshot.sections}
-    report_paths = {
-        str(item.metadata["relative_path"])
-        for item in sections[WorkspaceSection.REPORTS].items
-    }
 
     assert sections[WorkspaceSection.DATASETS].item_count == 1
-    assert "historical-acquisition/kraken-XBTUSD.json" in report_paths
-    assert "research-evidence/run-u9/manifest.json" in report_paths
-    assert "research-evidence/run-u9/experiment.json" in report_paths
-    assert "research-evidence/run-u9/diagnostic.json" in report_paths
+    assert sections[WorkspaceSection.ACQUISITIONS].item_count == 1
+    assert sections[WorkspaceSection.EXPERIMENTS].item_count == 1
+    assert sections[WorkspaceSection.DIAGNOSTICS].item_count == 1
+    assert sections[WorkspaceSection.PIPELINE_RUNS].item_count == 1
+    assert sections[WorkspaceSection.REPORTS].item_count == 0
     assert snapshot.read_only is True
     assert snapshot.network_access_enabled is False
     assert snapshot.real_capital_orders_enabled is False
