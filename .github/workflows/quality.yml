@@ -86,7 +86,7 @@ jobs:
           osca init --profile-root "$profile"
           osca lifecycle inspect --profile-root "$profile"
           osca lifecycle backup --profile-root "$profile" --output "$backup"
-          osca lifecycle restore --backup "$backup" --destination "$restored"
+          osca lifecycle restore --backup "$backup" --profile-root "$restored"
           osca lifecycle inspect --profile-root "$restored"
       - uses: actions/upload-artifact@v4
         with:
