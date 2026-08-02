@@ -1,9 +1,9 @@
 # U10 Exit Review
 
 - **Milestone:** U10 research-evidence workspace
-- **Status:** Completion candidate
+- **Status:** Complete and merge-ready
 - **Implementation PR:** #73
-- **Decision gate:** clean-profile detail/filter/export evidence
+- **Decision gate:** satisfied by clean-profile detail/filter/export evidence
 
 ## Delivered outcome
 
@@ -42,7 +42,7 @@ Focused U10 tests cover:
 
 Legacy P11 workspace coverage was reconciled to the U10 section model rather than retaining outdated generic-report expectations.
 
-Quality run #692 passed on the implementation-closeout head:
+Quality run #697 passed on the final producer-contract head:
 
 - Ruff;
 - strict mypy across 242 source files;
@@ -52,20 +52,25 @@ Quality run #692 passed on the implementation-closeout head:
 
 ## Clean-profile manual acceptance
 
-Run `docs/milestones/u10/manual-acceptance.md` against `.osca/u9-acceptance` or another retained U9/U8 chain.
+The final clean-profile run used the retained U9 dataset revision `dee68bf2-e8e1-5521-9e93-d2d6dc606bae` and regenerated the U8 research chain after the versioned experiment and diagnostic contract fix.
 
-Retain:
+Retained identifiers:
 
-- full workspace snapshot;
-- filtered experiment output;
-- one experiment detail output;
-- portable ZIP manifest;
-- selected item identifiers;
-- applicable lineage links;
-- any warnings and their interpretation;
-- confirmation that non-redistributable acquisition evidence was excluded;
-- confirmation that CLI and API identifiers/statuses agree;
-- confirmation that recommendation and execution boundaries remain disabled.
+- pipeline run: `8423afa7-f95f-4e8e-a9e0-041824238b50`;
+- experiment: `d7552f55-93d9-4ec9-9b9a-dc1f1ac16fca`;
+- experiment family/version: `osca.ml-experiment.result` / `1.0.0`;
+- diagnostic family/version: `osca.prediction-diagnostic.result` / `1.0.0`;
+- experiment status: `review_required`;
+- diagnostic status: `review_required`;
+- pipeline workspace status: `not_eligible` from retained `diagnostic_not_eligible` evidence.
+
+The workspace snapshot contained six dedicated items and no warnings. The experiment detail resolved upstream links to the governed XBTUSD dataset and Kraken acquisition, and downstream links to the diagnostic and pipeline manifest. Raw JSON download and portable export were enabled only for the selected local evidence item.
+
+The portable export included the experiment, diagnostic, and pipeline manifest. It excluded the Kraken acquisition because redistribution is disabled and excluded the Parquet dataset because the portable bundle is JSON-only. The export manifest retained all included and excluded item identifiers.
+
+The workspace remained read-only. Network access, credential materialization, production ingestion, recommendations, broker connections, automatic promotion, autonomous execution, and real-capital orders remained disabled.
+
+Validation evidence was correctly absent because the diagnostic did not qualify for U7 validation.
 
 ## Acceptance checklist
 
@@ -98,8 +103,8 @@ Retain:
 - [x] Workspace remains loopback-only and read-only.
 - [x] Network retrieval and credential materialization remain disabled.
 - [x] Recommendations, automatic promotion, brokers, autonomous execution, and real-capital orders remain disabled.
-- [x] Final hosted Quality is green on the implementation-closeout head.
-- [ ] Clean-profile snapshot, detail, filter, and export evidence is retained.
+- [x] Final hosted Quality is green on the producer-contract head.
+- [x] Clean-profile snapshot, detail, filter, and export evidence is retained.
 
 ## Residual limitations
 
@@ -109,4 +114,4 @@ Retain:
 
 ## Exit decision
 
-U10 implementation and automated conformance are complete. Final milestone closure requires only the clean-profile U9/U8 snapshot, detail, filter, and portable-export evidence to be retained and interpreted.
+U10 is complete and merge-ready. The implementation, hosted validation, clean-profile workspace navigation, lineage, filtering, governed export, provider-policy exclusion, and safety-boundary acceptance gates all passed.
