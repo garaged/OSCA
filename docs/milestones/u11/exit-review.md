@@ -1,9 +1,9 @@
 # U11 Exit Review
 
 - **Milestone:** U11 first-run and unified operator experience
-- **Status:** Automated conformance complete; clean-profile acceptance pending
+- **Status:** Complete
 - **Implementation PR:** #74
-- **Decision gate:** clean-profile end-to-end acceptance
+- **Decision gate:** satisfied
 
 ## Delivered outcome
 
@@ -32,13 +32,50 @@ Focused U11 coverage proves:
 - non-loopback workspace startup is rejected;
 - recommendation, promotion, broker, autonomous, and real-capital boundaries stay disabled.
 
-Quality run #727 passed on commit `f72eae9fb9e7ddb1b4666576e1e6b88c99e55446`:
+Quality run #729 passed on the final pre-acceptance documentation head:
 
 - Ruff;
 - strict mypy across the complete source package;
 - all tests plus contract, migration, document-link, and architecture checks;
 - OpenSpec doctor and strict validation;
 - secret scanning.
+
+## Clean-profile manual acceptance
+
+The August 2, 2026 clean-profile run passed the complete canonical U11 path.
+
+### Initialization and pre-workflow diagnostics
+
+- Profile initialized at `.osca/u11-acceptance/profile` with operator contract `osca.operator-init.result` v1.0.0.
+- Network access, recommendations, broker connections, and real-capital orders were disabled.
+- The initial doctor result had zero failed checks, seven passes, and two expected warnings: the default port was already occupied and no retained evidence existed yet.
+
+### Acquisition and research chain
+
+- Kraken XBTUSD 1d acquisition succeeded through admitted public spot OHLC.
+- Dataset revision: `3261fe47-812a-53d8-926e-7a0a801dd18a`.
+- Canonical row count: 720 bars, covering 2024-08-12 through 2026-08-01.
+- Provider pair key `XXBTZUSD` was verified.
+- Current uncommitted bar exclusion, internal-use-only handling, and redistribution-disabled policy were retained.
+- Research run: `73ca1f70-c609-4d1b-bf8a-38494bba82df`.
+- Experiment: `06df1ba4-5bbf-4b63-9de7-adae56a7b5c1`, status `review_required`.
+- Diagnostic status: `review_required`.
+- Pipeline status: `diagnostic_not_eligible`, represented in the workspace as `not_eligible`; validation correctly stopped fail-closed.
+
+### Populated diagnostics and workspace
+
+- Final doctor result had zero failures, eight passes, and one non-blocking warning because port 8765 was already in use.
+- Evidence consistency passed with five retained items and no workspace warnings.
+- Workspace snapshot contract `osca.analyst-workspace.snapshot` v1.1.0 reported:
+  - one dataset;
+  - one acquisition;
+  - one experiment;
+  - one diagnostic;
+  - one pipeline run;
+  - no validation artifact, as expected for a diagnostic-ineligible run.
+- Workspace remained read-only, network-disabled, credential-materialization-disabled, production-ingestion-disabled, recommendation-disabled, broker-disabled, and real-capital-disabled.
+
+The occupied-port warning is informational rather than release-blocking because the snapshot path completed successfully and the doctor supplied explicit remediation to choose another port for server startup.
 
 ## Compatibility policy
 
@@ -82,10 +119,10 @@ Removal requires a later documented decision, release note, and compatibility ev
 ### Quality and manual evidence
 
 - [x] Final hosted Quality is green on the implementation-closeout head.
-- [ ] Clean-profile initialization and pre-workflow doctor evidence are retained.
-- [ ] One acquisition/import-to-research chain is retained.
-- [ ] Populated-profile doctor and workspace snapshot evidence are retained.
-- [ ] Safety boundaries are confirmed in the retained outputs.
+- [x] Clean-profile initialization and pre-workflow doctor evidence are retained.
+- [x] One acquisition-to-research chain is retained.
+- [x] Populated-profile doctor and workspace snapshot evidence are retained.
+- [x] Safety boundaries are confirmed in the retained outputs.
 
 ## Residual limitations
 
@@ -96,4 +133,4 @@ Removal requires a later documented decision, release note, and compatibility ev
 
 ## Exit decision
 
-U11 implementation and automated conformance are complete. Final closure requires only the clean-profile evidence described in `manual-acceptance.md`.
+U11 is complete, accepted, and ready to merge. The next milestone is U12 clean-machine packaging and upgrade safety.
