@@ -1,9 +1,10 @@
 # U9 Governed No-Cost Historical Data Acquisition
 
-- **Status:** Implementation candidate, canonical acquisition slice
+- **Status:** Completion candidate pending hosted validation and manual acceptance
 - **Predecessor:** U8 real-world workflow reconciliation
 - **Roadmap:** [U9-U14 usable release roadmap](../usable-release-roadmap.md)
 - **Provider review:** [U9 provider evidence review](provider-evidence-review.md)
+- **Exit review:** [U9 exit review](exit-review.md)
 
 ## Intent
 
@@ -11,51 +12,26 @@ Allow a new local OSCA user to acquire sufficient historical equity and cryptocu
 
 ## Governing requirements
 
-- REQ-0021 canonical instrument identity
-- REQ-0023 explicit provider mapping
-- REQ-0024 ambiguity protection
-- REQ-0025 provider capability contract
-- REQ-0026 capability routing
-- REQ-0027 visible provider transitions
-- REQ-0028 licensing enforcement
-- REQ-0029 named provider credentials
-- REQ-0030 versioned daily bar contract
-- REQ-0031 source immutability and retention evidence
-- REQ-0032 canonical revisioning
-- REQ-0033 typed dataset metadata
-- REQ-0034 explicit retrieval requirements
-- REQ-0035 structured resolution status
-- REQ-0036 idempotent durable retrieval
-- REQ-0037 gap detection and targeted repair
-- REQ-0038 initial quality rules
-- REQ-0041 approved interval set
-- REQ-0042 UTC interval windows
-- Universal evidence-based milestone exit gate
+U9 implements the selected scope of REQ-0021, REQ-0023 through REQ-0038, REQ-0041, REQ-0042, and the universal evidence-based milestone exit gate.
 
-## Implemented slices
+## Implemented outcome
 
-### Governed acquisition foundation
+The primary CLI exposes `osca historical-data fetch` with these governed outcomes:
 
-- Adds the primary `osca historical-data fetch` surface and versioned request/evidence contracts.
-- Reuses the admitted P13 Kraken endpoint and resource policy.
-- Keeps network use explicit and disabled by default.
-- Retains successful and blocked acquisition outcomes under `<storage-root>/historical-acquisition/`.
-- Keeps equity acquisition fail-closed and preserves governed CSV import as the fallback.
+- Kraken public spot OHLC is admitted for personal/internal use through the bounded P13 production-ingestion path.
+- Network access remains explicit and disabled by default.
+- Raw provider JSON is retained immutably with SHA-256 lineage.
+- Kraken provider errors, malformed payloads, ambiguous pair responses, and low-quality rows fail without creating an accepted canonical revision.
+- Kraken rate-limit and service-unavailable responses are classified as retryable provider-unavailable outcomes.
+- The final current/not-yet-committed Kraken bar is excluded before canonical acceptance.
+- Completed rows pass through the existing OHLCV quality, Parquet, SQLite, and deterministic revision service.
+- Successful evidence returns the dataset revision ID, canonical payload, metadata path, row count, parser version, source attribution, and safety boundaries.
+- Equivalent completed requests durably reuse retained evidence and canonical revisions; concurrent in-process callers share one provider retrieval.
+- Parser-version changes produce a new identifiable revision even when normalized values are otherwise equal.
+- The governed CSV import remains the offline and equity fallback and is regression-tested for canonical row equivalence.
+- A long-form acquired Kraken revision is exercised through the U8 research pipeline with its human gate and disabled execution boundaries.
 
-### Canonical acquisition and handoff
-
-- Parses the Kraken spot OHLC response and rejects provider errors or ambiguous pair payloads.
-- Excludes Kraken's final current, not-yet-committed bar from accepted historical evidence.
-- Converts completed rows into the canonical timestamp/open/high/low/close/volume contract.
-- Routes normalized rows through the existing local OHLCV validation and persistence service.
-- Returns the canonical dataset revision ID, Parquet payload, SQLite metadata path, and row count in acquisition evidence.
-- Retains the original provider JSON and digest independently from normalized evidence.
-- Reuses the same deterministic revision for equivalent provider payloads.
-- Rejects malformed or low-quality provider payloads without creating an accepted canonical revision.
-
-The canonical Parquet payload and dataset revision fields now match the input contract consumed by the U8 research pipeline. Full end-to-end manual U8 execution remains an exit-evidence task rather than a new implementation dependency.
-
-## Required command surface
+## Command surface
 
 ```bash
 uv run osca historical-data fetch XBTUSD crypto kraken \
@@ -64,13 +40,15 @@ uv run osca historical-data fetch XBTUSD crypto kraken \
   --storage-root .osca/manual-test
 ```
 
-Successful output includes:
+A parser migration can be made explicit with:
 
-- `dataset_revision_id`
-- `canonical_payload_uri`
-- `canonical_metadata_uri`
-- `canonical_row_count`
-- raw provider payload lineage and policy findings
+```bash
+uv run osca historical-data fetch XBTUSD crypto kraken \
+  --timeframe 1d \
+  --parser-version kraken-ohlc-v2 \
+  --network-access-enabled \
+  --storage-root .osca/manual-test
+```
 
 Blocked equity evidence can be inspected with:
 
@@ -80,51 +58,70 @@ uv run osca historical-data fetch AAPL equity twelve_data \
   --storage-root .osca/manual-test
 ```
 
-The existing governed CSV import remains the equity fallback.
+The equity result remains `provider_unavailable` and directs the operator to governed CSV import.
 
-## Provider admission gate
+## Provider decision
 
-A provider path is not implementation-ready until the repository records:
+Kraken is the only admitted live historical-data source in U9. Twelve Data, Alpha Vantage, Nasdaq Data Link, and other equity candidates remain unavailable until exact display, retention, transformation, export, backup, redistribution, account-plan, and termination evidence passes the provider gate.
 
-- provider and endpoint identity;
-- supported asset classes, venues, symbols, intervals, and history limits;
-- authentication and credential requirements;
-- free-tier or public-use limits;
-- attribution requirements;
-- retrieval, retention, transformation, export, backup, and redistribution policy;
-- timestamp, adjustment, completion, and quality semantics;
-- quota and retry behavior;
-- raw-payload retention or explicit non-retention evidence;
-- health and capability failure behavior;
-- golden fixtures and conformance tests.
+This is an intentional fail-closed result, not a missing silent fallback.
 
-Licensing or terms uncertainty blocks admission. Convenience alone is not sufficient.
+## Idempotency and revision behavior
 
-## Remaining U9 implementation and evidence
+The acquisition identity includes provider, asset class, symbol, timeframe, range cursor, and parser version.
 
-1. Add durable job-level idempotency and concurrent-request sharing beyond deterministic revision reuse.
-2. Add explicit quota and rate-limit outcome classification with retry guidance.
-3. Add provider correction and parser-version revision evidence.
-4. Prove CSV fallback equivalence with automated coverage.
-5. Exercise the canonical Kraken revision through the full U8 pipeline and workspace in manual acceptance.
-6. Complete the clean-profile manual acceptance exercise and exit review.
+- A completed retained result is reused only when its canonical Parquet and SQLite evidence still exist.
+- Concurrent equivalent calls within one process share a keyed lock and one provider retrieval.
+- A changed payload digest creates a changed canonical source and revision.
+- A changed parser version changes the normalized source evidence and revision identity.
+- Failed, blocked, or incomplete evidence is not reused as successful work.
 
 ## Security and safety
 
-- Credentials use named secret references and never enter logs, URLs, manifests, payload exports, or portable configuration.
-- Network access is limited to admitted provider endpoints.
-- No recommendation, model promotion, broker, exchange-order, autonomous-execution, or real-capital capability is introduced.
-- Acquisition output is research data, not investment advice.
+- Network access is limited to admitted HTTPS endpoints.
+- No provider secret is required for Kraken public OHLC.
+- Named-secret and secret-exclusion requirements remain authoritative for future providers.
+- External redistribution remains disabled.
+- Recommendations, automatic model promotion, broker connectivity, exchange orders, autonomous execution, and real-capital orders remain disabled.
+- Acquisition output is research evidence, not investment advice.
+
+## Validation coverage
+
+Automated coverage includes:
+
+- command discovery and structured blocked-equity output;
+- explicit network opt-in;
+- raw payload lineage and canonical persistence;
+- exclusion of the uncommitted Kraken bar;
+- deterministic revision reuse;
+- durable provider-call avoidance;
+- concurrent request sharing;
+- parser-version revision behavior;
+- rate-limit classification and retry guidance;
+- malformed and ambiguous payload rejection;
+- CSV fallback row equivalence;
+- U9-acquired revision handoff into the U8 research pipeline;
+- preservation of all recommendation and execution boundaries.
+
+## Manual acceptance still required
+
+Before merge or final U9 closeout, run the clean-profile procedure recorded in the exit review:
+
+1. Acquire a real Kraken daily series.
+2. Inspect raw and canonical lineage.
+3. Run the U8 research pipeline with explicit human approval.
+4. Open the loopback-only workspace and confirm discovery.
+5. Exercise one blocked equity request and one unavailable/rate-limited path where practical.
+6. Retain the resulting command output, artifact paths, and interpretation.
 
 ## Exit criteria
 
-U9 is complete only when:
+U9 is complete when:
 
-- at least one no-cost cryptocurrency acquisition path passes;
-- one no-cost equity path passes, or is explicitly blocked with retained terms evidence and the provider-neutral/CSV workflow remains complete;
-- primary CLI discovery and documentation match behavior;
-- canonical provenance, policy, revision, integrity, and quality evidence is retained;
-- failure paths are actionable and non-corrupting;
-- U8 accepts the resulting revision;
-- automated and manual evidence is retained;
-- all hosted quality gates pass.
+- hosted Ruff, strict mypy, pytest, OpenSpec, link, architecture, and secret checks pass;
+- the clean-profile manual acceptance is retained;
+- one admitted no-cost cryptocurrency path produces a canonical revision and U8 evidence;
+- live equity remains explicitly blocked with current terms evidence and a working CSV fallback;
+- failure paths remain actionable and non-corrupting;
+- documentation matches the final CLI and evidence contracts;
+- all recommendation and execution boundaries remain disabled.
