@@ -163,9 +163,11 @@ def create_verified_backup(profile_root: Path, output: Path) -> dict[str, object
             if retained != manifest:
                 raise ValueError("backup manifest verification failed")
             for item in manifest_files:
-                digest = hashlib.sha256(archive.read(item["path"])).hexdigest()
-                if digest != item["sha256"]:
-                    raise ValueError(f"backup digest verification failed: {item['path']}")
+                item_path = str(item["path"])
+                expected_digest = str(item["sha256"])
+                digest = hashlib.sha256(archive.read(item_path)).hexdigest()
+                if digest != expected_digest:
+                    raise ValueError(f"backup digest verification failed: {item_path}")
         temporary.replace(destination)
     except Exception:
         temporary.unlink(missing_ok=True)
