@@ -173,7 +173,11 @@ def _retain_acquisition_evidence(
 ) -> HistoricalAcquisitionEvidence:
     root = Path(request.storage_root).resolve() / "historical-acquisition"
     root.mkdir(parents=True, exist_ok=True)
-    stem = f"{request.provider_id.value}-{request.asset_class.value}-{request.symbol.replace('/', '_')}-{request.timeframe}"
+    symbol = request.symbol.replace("/", "_")
+    stem = (
+        f"{request.provider_id.value}-{request.asset_class.value}-"
+        f"{symbol}-{request.timeframe}"
+    )
     path = root / f"{stem}.json"
     payload = evidence.model_copy(update={"ingestion_evidence_uri": path.as_uri()})
     path.write_text(payload.model_dump_json(indent=2) + "\n", encoding="utf-8")
