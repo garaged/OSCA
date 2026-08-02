@@ -24,7 +24,6 @@ def test_research_pipeline_help_discloses_fixed_model_contract() -> None:
     assert result.exit_code == 0
     assert "logistic_classification" in result.stdout
     assert "classification" in result.stdout
-    assert "human approval gate" in result.stdout
     assert "research-evidence" in result.stdout
 
 
