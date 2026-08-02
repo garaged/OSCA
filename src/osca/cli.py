@@ -9,7 +9,7 @@ from uuid import UUID
 import typer
 
 from osca.bootstrap.cli import app
-from osca.historical_acquisition import app as historical_data_app
+from osca.historical_acquisition_cli import app as historical_data_app
 
 app.add_typer(historical_data_app, name="historical-data")
 
