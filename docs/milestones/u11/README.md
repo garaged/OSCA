@@ -1,30 +1,39 @@
 # U11 — First-Run and Unified Operator Experience
 
-- **Status:** In progress
+- **Status:** In progress; foundation implemented and green
 - **Baseline:** U10 merged through PR #73 at `4711c6f2f4ba17a0904515c6ca935e653cbee6ed`
 - **Branch:** `agent/u11-first-run-operator-experience`
+- **Implementation PR:** #74
 
 ## Intent
 
 Let a technically capable new user complete OSCA's primary local research workflow through the primary `osca` CLI without invoking internal Python modules or hand-authoring JSON.
 
-## Scope
+## Delivered foundation
 
-1. Add canonical primary commands for initialization, diagnostics, workspace startup, acquisition/import, analysis, backtesting, experiments, diagnostics, and validation.
-2. Preserve compatibility aliases for existing entry points during a documented deprecation window.
-3. Provide safe local defaults that keep network access explicit and recommendations, brokers, autonomous execution, and real-capital orders disabled.
-4. Add structured corrective diagnostics with optional machine-readable output.
-5. Add shell-safe quickstarts for zsh, Bash, and PowerShell.
-6. Diagnose runtime compatibility, writable storage, SQLite and Parquet readiness, ports, provider capability, credentials, and retained-evidence consistency.
+1. `osca init` creates a versioned local profile and writable data root with safe defaults.
+2. `osca doctor` reports machine-readable runtime, PyArrow, SQLite, storage, port, and retained-evidence checks with remediation.
+3. `osca workspace` starts or snapshots the read-only workspace from operator configuration and rejects non-loopback hosts.
+4. `osca import-data`, `osca analyze`, and `osca backtest` provide canonical aliases for existing workflows.
+5. `osca research-pipeline` remains the canonical combined experiment, diagnostic, and human-gated validation path.
+6. zsh, Bash, and PowerShell quickstarts and a compatibility window through U13 are documented.
+7. OpenSpec contracts, focused tests, and initial traceability are present.
 
-## Implementation sequence
+Quality run #713 passed on the foundation head:
 
-1. Inventory the current primary CLI and internal-module-only operator paths.
-2. Define U11 OpenSpec contracts and compatibility policy.
-3. Implement `osca init` and `osca doctor` with deterministic local configuration and JSON output.
-4. Promote workspace startup and remaining workflow stages into the primary CLI.
-5. Add compatibility aliases and deprecation evidence.
-6. Add clean-profile quickstarts, end-to-end tests, manual acceptance, traceability, and exit review.
+- Ruff;
+- strict mypy across 244 source files;
+- tests, contracts, migrations, links, and architecture checks;
+- OpenSpec doctor and strict validation;
+- secret scanning.
+
+## Remaining implementation
+
+1. Tighten operator configuration parsing and remove the temporary focused mypy exception.
+2. Add provider capability, credential-reference, and deeper evidence-consistency diagnostics.
+3. Add canonical/compatibility command-equivalence tests.
+4. Reconcile the root README and central manual-testing guide.
+5. Add U11 exit review and clean-profile end-to-end acceptance.
 
 ## Exit gate
 
