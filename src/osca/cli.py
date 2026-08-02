@@ -17,7 +17,13 @@ from osca.operator_experience import (
     init_command,
     load_operator_config,
 )
-from osca.package_lifecycle import create_verified_backup, inspect_profile, version_report
+from osca.package_lifecycle import (
+    create_verified_backup,
+    inspect_profile,
+    restore_verified_backup,
+    upgrade_profile,
+    version_report,
+)
 
 app.add_typer(historical_data_app, name="historical-data")
 app.command("init")(init_command)
@@ -58,6 +64,36 @@ def lifecycle_backup(
     except ValueError as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(result, indent=2, sort_keys=True))
+
+
+@lifecycle_app.command("restore")
+def lifecycle_restore(
+    backup: Annotated[Path, typer.Option("--backup")],
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+    replace: Annotated[bool, typer.Option("--replace")] = False,
+) -> None:
+    """Validate and atomically restore a verified profile backup."""
+    try:
+        result = restore_verified_backup(backup, profile_root, replace=replace)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result, indent=2, sort_keys=True))
+
+
+@lifecycle_app.command("upgrade")
+def lifecycle_upgrade(
+    target_version: Annotated[str, typer.Option("--target-version")],
+    backup: Annotated[Path, typer.Option("--backup")],
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+) -> None:
+    """Create a verified backup before recording a compatible profile upgrade."""
+    try:
+        result = upgrade_profile(profile_root, backup, target_version)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result, indent=2, sort_keys=True))
+    if result["status"] == "recovered":
+        raise typer.Exit(1)
 
 
 @app.command("workspace")
