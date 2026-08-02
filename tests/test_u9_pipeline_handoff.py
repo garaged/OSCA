@@ -59,7 +59,7 @@ def test_acquired_revision_runs_through_u8_pipeline(
             storage_root=str(storage_root),
             network_access_enabled=True,
         ),
-        transport=lambda _: _long_kraken_payload(),
+        transport=lambda _request: _long_kraken_payload(),
     )
 
     assert acquisition.status is HistoricalAcquisitionStatus.SUCCEEDED
