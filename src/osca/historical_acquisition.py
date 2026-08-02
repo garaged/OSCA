@@ -5,10 +5,10 @@ import hashlib
 import json
 import threading
 import time
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Literal, Self
+from typing import Annotated, Literal, Self, cast
 from urllib.parse import unquote, urlencode, urlparse
 from uuid import NAMESPACE_URL, UUID, uuid5
 
@@ -97,7 +97,11 @@ class HistoricalAcquisitionRequest(BaseModel):
     cancel_requested: bool = False
     since: int | None = Field(default=None, ge=0)
     parser_version: str = Field(default="kraken-ohlc-v1", min_length=1, max_length=80)
-    normalizer_version: str = Field(default="canonical-ohlcv-v1", min_length=1, max_length=80)
+    normalizer_version: str = Field(
+        default="canonical-ohlcv-v1",
+        min_length=1,
+        max_length=80,
+    )
     requested_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     @model_validator(mode="after")
@@ -169,7 +173,9 @@ class HistoricalAcquisitionEvidence(BaseModel):
 class AcquisitionJobRecord(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    family: Literal["osca.historical-acquisition.job"] = "osca.historical-acquisition.job"
+    family: Literal["osca.historical-acquisition.job"] = (
+        "osca.historical-acquisition.job"
+    )
     version: Literal["1.0.0"] = "1.0.0"
     job_id: UUID
     request_id: UUID
@@ -195,6 +201,15 @@ _KRAKEN_INTERVALS = {
     "4h": 240,
     "1d": 1440,
 }
+_TIMEFRAME_SECONDS = {
+    "1m": 60,
+    "5m": 300,
+    "15m": 900,
+    "30m": 1800,
+    "1h": 3600,
+    "4h": 14400,
+    "1d": 86400,
+}
 _LOCKS_GUARD = threading.Lock()
 _REQUEST_LOCKS: dict[str, threading.Lock] = {}
 
@@ -219,11 +234,19 @@ def run_historical_acquisition(
                 admission_status=admission_for(request.provider_id).status,
                 source_attribution=request.provider_id.value,
                 rationale="Acquisition was cancelled before provider retrieval.",
-                remediation=("Submit the same request without --cancel-requested to retry.",),
+                remediation=(
+                    "Submit the same request without --cancel-requested to retry.",
+                ),
                 findings=("cancelled-before-network",),
                 reuse_state="recovered" if recovered else "new",
             )
-            _finish_job(request, job, AcquisitionJobStatus.CANCELLED, "cancelled", None)
+            _finish_job(
+                request,
+                job,
+                AcquisitionJobStatus.CANCELLED,
+                "cancelled",
+                None,
+            )
             return _retain_acquisition_evidence(request, cancelled)
         return _run_historical_acquisition(
             request,
@@ -256,7 +279,10 @@ def _run_historical_acquisition(
                 "retention, export, and backup. Use governed CSV import."
             ),
             remediation=("Use osca local-ohlcv-import with a governed CSV file.",),
-            findings=("equity-provider-not-admitted", "csv-import-remains-supported"),
+            findings=(
+                "equity-provider-not-admitted",
+                "csv-import-remains-supported",
+            ),
             reuse_state="recovered" if recovered else "new",
         )
         return _complete(request, job, evidence, started)
@@ -307,12 +333,7 @@ def _run_historical_acquisition(
         duration_ms=int((time.monotonic() - attempt_clock) * 1000),
         retryable=ingestion.status is IngestionStatus.PROVIDER_UNAVAILABLE,
     )
-    status = {
-        IngestionStatus.SUCCEEDED: HistoricalAcquisitionStatus.REFRESHING,
-        IngestionStatus.POLICY_BLOCKED: HistoricalAcquisitionStatus.POLICY_BLOCKED,
-        IngestionStatus.PROVIDER_UNAVAILABLE: HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE,
-        IngestionStatus.FAILED: HistoricalAcquisitionStatus.FAILED,
-    }[ingestion.status]
+    status = _historical_status_for_ingestion(ingestion.status, ingestion.findings)
     evidence = _base_evidence(
         request,
         job,
@@ -346,7 +367,9 @@ def _run_historical_acquisition(
                 "quota_state": exc.quota_state,
                 "retry_after_seconds": exc.retry_after_seconds,
                 "rationale": str(exc),
-                "remediation": ("Retry after the indicated provider recovery window.",),
+                "remediation": (
+                    "Retry after the indicated provider recovery window.",
+                ),
                 "findings": (*evidence.findings, exc.finding),
             }
         )
@@ -356,7 +379,9 @@ def _run_historical_acquisition(
                 "status": HistoricalAcquisitionStatus.CORRUPT,
                 "job_status": AcquisitionJobStatus.FAILED,
                 "rationale": f"Provider payload was not valid JSON: {exc}",
-                "remediation": ("Retry retrieval; do not use the retained corrupt payload.",),
+                "remediation": (
+                    "Retry retrieval; do not use the retained corrupt payload.",
+                ),
                 "findings": (*evidence.findings, "provider-payload-corrupt"),
             }
         )
@@ -366,12 +391,17 @@ def _run_historical_acquisition(
                 "status": HistoricalAcquisitionStatus.INVALID,
                 "job_status": AcquisitionJobStatus.FAILED,
                 "rationale": f"Canonical normalization failed: {exc}",
-                "remediation": ("Review symbol mapping, range, and provider response.",),
+                "remediation": (
+                    "Review symbol mapping, range, and provider response.",
+                ),
                 "findings": (*evidence.findings, "canonical-normalization-invalid"),
             }
         )
     else:
-        predecessor = _latest_predecessor(request, normalized.result.dataset_revision_id)
+        predecessor = _latest_predecessor(
+            request,
+            normalized.result.dataset_revision_id,
+        )
         final_status = _classify_completeness(request, normalized)
         evidence = evidence.model_copy(
             update={
@@ -389,7 +419,9 @@ def _run_historical_acquisition(
                 "canonical_metadata_uri": normalized.result.metadata_uri,
                 "canonical_row_count": normalized.result.row_count,
                 "progress_percent": 100,
-                "rationale": "Provider payload normalized into a canonical OHLCV revision.",
+                "rationale": (
+                    "Provider payload normalized into a canonical OHLCV revision."
+                ),
                 "remediation": _remediation_for_status(final_status),
                 "findings": (
                     *evidence.findings,
@@ -399,6 +431,24 @@ def _run_historical_acquisition(
             }
         )
     return _complete(request, job, evidence, started)
+
+
+def _historical_status_for_ingestion(
+    status: IngestionStatus,
+    findings: tuple[str, ...],
+) -> HistoricalAcquisitionStatus:
+    if status is IngestionStatus.FAILED and any(
+        "JSONDecodeError" in finding for finding in findings
+    ):
+        return HistoricalAcquisitionStatus.CORRUPT
+    return {
+        IngestionStatus.SUCCEEDED: HistoricalAcquisitionStatus.REFRESHING,
+        IngestionStatus.POLICY_BLOCKED: HistoricalAcquisitionStatus.POLICY_BLOCKED,
+        IngestionStatus.PROVIDER_UNAVAILABLE: (
+            HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE
+        ),
+        IngestionStatus.FAILED: HistoricalAcquisitionStatus.FAILED,
+    }[status]
 
 
 class NormalizedKrakenResult(BaseModel):
@@ -466,20 +516,22 @@ def _normalize_kraken_payload(
     pair_key = str(pair_keys[0])
     if request.expected_pair_key and pair_key != request.expected_pair_key:
         raise ValueError(
-            f"provider pair mapping mismatch: expected {request.expected_pair_key}, got {pair_key}"
+            "provider pair mapping mismatch: "
+            f"expected {request.expected_pair_key}, got {pair_key}"
         )
     rows = result[pair_key]
     if not isinstance(rows, list) or len(rows) < 2:
         raise ValueError("Kraken response requires one completed bar and one current bar")
-    completed_rows = rows[:-1]
+    completed_rows = cast(list[object], rows[:-1])
     filtered: list[list[object]] = []
-    for raw_row in completed_rows:
-        if not isinstance(raw_row, list) or len(raw_row) < 7:
+    for raw_value in completed_rows:
+        if not isinstance(raw_value, list) or len(raw_value) < 7:
             raise ValueError("Kraken OHLC row must contain at least seven fields")
-        timestamp = datetime.fromtimestamp(int(raw_row[0]), tz=UTC)
-        if request.start_at and timestamp < request.start_at:
+        raw_row = cast(list[object], raw_value)
+        row_timestamp = _epoch_timestamp(raw_row[0])
+        if request.start_at and row_timestamp < request.start_at:
             continue
-        if request.end_at and timestamp >= request.end_at:
+        if request.end_at and row_timestamp >= request.end_at:
             continue
         filtered.append(raw_row)
     if not filtered:
@@ -491,8 +543,8 @@ def _normalize_kraken_payload(
         writer = csv.writer(handle)
         writer.writerow(["timestamp", "open", "high", "low", "close", "volume"])
         for row in filtered:
-            timestamp = datetime.fromtimestamp(int(row[0]), tz=UTC).isoformat()
-            values = [timestamp, row[1], row[2], row[3], row[4], row[6]]
+            timestamp_text = _epoch_timestamp(row[0]).isoformat()
+            values = [timestamp_text, row[1], row[2], row[3], row[4], row[6]]
             writer.writerow(values)
             digest.update(("|".join(str(value) for value in values) + "\n").encode())
     imported = import_local_ohlcv(
@@ -506,17 +558,21 @@ def _normalize_kraken_payload(
                 f"provider://kraken/spot_ohlc/{pair_key}/"
                 f"{request.parser_version}/{request.normalizer_version}"
             ),
+            revision_salt=(
+                f"{request.parser_version}:{request.normalizer_version}"
+            ),
             calendar_assumption="continuous-crypto-market",
         )
     )
-    first = datetime.fromtimestamp(int(filtered[0][0]), tz=UTC)
-    last = datetime.fromtimestamp(int(filtered[-1][0]), tz=UTC)
+    first = _epoch_timestamp(filtered[0][0])
+    last = _epoch_timestamp(filtered[-1][0])
     findings: list[str] = []
     if len(filtered) < request.minimum_rows:
         findings.append("minimum-row-expectation-not-met")
+    interval = timedelta(seconds=_TIMEFRAME_SECONDS[request.timeframe])
     if request.start_at and first > request.start_at:
         findings.append("requested-range-start-not-covered")
-    if request.end_at and last < request.end_at:
+    if request.end_at and last + interval < request.end_at:
         findings.append("requested-range-end-not-covered")
     return NormalizedKrakenResult(
         result=imported,
@@ -526,6 +582,12 @@ def _normalize_kraken_payload(
         last_timestamp=last,
         findings=tuple(findings),
     )
+
+
+def _epoch_timestamp(value: object) -> datetime:
+    if not isinstance(value, (str, int, float)):
+        raise ValueError("Kraken timestamp must be numeric")
+    return datetime.fromtimestamp(int(value), tz=UTC)
 
 
 def _classify_completeness(
@@ -545,7 +607,9 @@ def _classify_completeness(
     return HistoricalAcquisitionStatus.SUCCEEDED
 
 
-def _remediation_for_status(status: HistoricalAcquisitionStatus) -> tuple[str, ...]:
+def _remediation_for_status(
+    status: HistoricalAcquisitionStatus,
+) -> tuple[str, ...]:
     if status is HistoricalAcquisitionStatus.PARTIAL:
         return ("Adjust the requested range or provider capability expectations.",)
     if status is HistoricalAcquisitionStatus.STALE:
@@ -578,11 +642,16 @@ def _lock_for(key: str) -> threading.Lock:
 def _evidence_path(request: HistoricalAcquisitionRequest) -> Path:
     root = Path(request.storage_root).resolve() / "historical-acquisition"
     symbol = request.symbol.replace("/", "_")
-    return root / f"{request.provider_id.value}-{request.asset_class.value}-{symbol}-{_request_key(request)}.json"
+    filename = (
+        f"{request.provider_id.value}-{request.asset_class.value}-"
+        f"{symbol}-{_request_key(request)}.json"
+    )
+    return root / filename
 
 
 def _job_path(request: HistoricalAcquisitionRequest) -> Path:
-    return Path(request.storage_root).resolve() / "historical-acquisition" / "jobs" / f"{_request_key(request)}.json"
+    root = Path(request.storage_root).resolve() / "historical-acquisition" / "jobs"
+    return root / f"{_request_key(request)}.json"
 
 
 def _start_or_recover_job(
@@ -594,15 +663,24 @@ def _start_or_recover_job(
     recovered = False
     now = datetime.now(UTC)
     if path.is_file():
-        previous = AcquisitionJobRecord.model_validate_json(path.read_text(encoding="utf-8"))
-        if previous.status in {AcquisitionJobStatus.RUNNING, AcquisitionJobStatus.RECOVERING}:
+        previous = AcquisitionJobRecord.model_validate_json(
+            path.read_text(encoding="utf-8")
+        )
+        if previous.status in {
+            AcquisitionJobStatus.RUNNING,
+            AcquisitionJobStatus.RECOVERING,
+        }:
             recovered = True
     job = AcquisitionJobRecord(
         job_id=job_id,
         request_id=request_id,
         correlation_id=correlation_id,
         request_key=key,
-        status=AcquisitionJobStatus.RECOVERING if recovered else AcquisitionJobStatus.PENDING,
+        status=(
+            AcquisitionJobStatus.RECOVERING
+            if recovered
+            else AcquisitionJobStatus.PENDING
+        ),
         progress_percent=0,
         stage="recovering" if recovered else "pending",
         started_at=now,
@@ -624,7 +702,9 @@ def _update_job(
             "status": status,
             "progress_percent": progress,
             "stage": stage,
-            "attempt_count": job.attempt_count + (1 if stage == "provider-retrieval" else 0),
+            "attempt_count": (
+                job.attempt_count + (1 if stage == "provider-retrieval" else 0)
+            ),
             "updated_at": datetime.now(UTC),
         }
     )
@@ -663,7 +743,9 @@ def _load_reusable_evidence(
     path = _evidence_path(request)
     if not path.is_file():
         return None
-    evidence = HistoricalAcquisitionEvidence.model_validate_json(path.read_text(encoding="utf-8"))
+    evidence = HistoricalAcquisitionEvidence.model_validate_json(
+        path.read_text(encoding="utf-8")
+    )
     if evidence.status not in {
         HistoricalAcquisitionStatus.SUCCEEDED,
         HistoricalAcquisitionStatus.FRESH,
@@ -689,7 +771,9 @@ def _latest_predecessor(
     candidates: list[HistoricalAcquisitionEvidence] = []
     for path in root.glob("*.json"):
         try:
-            item = HistoricalAcquisitionEvidence.model_validate_json(path.read_text(encoding="utf-8"))
+            item = HistoricalAcquisitionEvidence.model_validate_json(
+                path.read_text(encoding="utf-8")
+            )
         except (OSError, ValueError):
             continue
         if (
@@ -706,7 +790,11 @@ def _latest_predecessor(
 
 
 def _canonical_source_path(request: HistoricalAcquisitionRequest) -> Path:
-    root = Path(request.storage_root).resolve() / "historical-acquisition" / "normalized"
+    root = (
+        Path(request.storage_root).resolve()
+        / "historical-acquisition"
+        / "normalized"
+    )
     return root / f"{_request_key(request)}.csv"
 
 
@@ -770,13 +858,23 @@ def _complete(
     started: float,
 ) -> HistoricalAcquisitionEvidence:
     duration = int((time.monotonic() - started) * 1000)
-    completed = evidence.model_copy(update={"duration_ms": duration, "progress_percent": 100})
+    completed = evidence.model_copy(
+        update={"duration_ms": duration, "progress_percent": 100}
+    )
     _finish_job(
         request,
         job,
         completed.job_status,
-        "completed" if completed.job_status is AcquisitionJobStatus.SUCCEEDED else "failed",
-        None if completed.job_status is AcquisitionJobStatus.SUCCEEDED else completed.rationale,
+        (
+            "completed"
+            if completed.job_status is AcquisitionJobStatus.SUCCEEDED
+            else "failed"
+        ),
+        (
+            None
+            if completed.job_status is AcquisitionJobStatus.SUCCEEDED
+            else completed.rationale
+        ),
     )
     return _retain_acquisition_evidence(request, completed)
 
@@ -802,23 +900,40 @@ def fetch_historical(
     provider: ProductionProvider,
     timeframe: Literal["1m", "5m", "15m", "30m", "1h", "4h", "1d"] = "1d",
     storage_root: Annotated[Path, typer.Option("--storage-root")] = Path(".osca"),
-    network_access_enabled: Annotated[bool, typer.Option("--network-access-enabled")] = False,
+    network_access_enabled: Annotated[
+        bool,
+        typer.Option("--network-access-enabled"),
+    ] = False,
     since: Annotated[int | None, typer.Option("--since")] = None,
     start_at: Annotated[datetime | None, typer.Option("--start-at")] = None,
     end_at: Annotated[datetime | None, typer.Option("--end-at")] = None,
-    expected_pair_key: Annotated[str | None, typer.Option("--expected-pair-key")] = None,
-    minimum_rows: Annotated[int, typer.Option("--minimum-rows")] = 1,
-    require_complete_range: Annotated[bool, typer.Option("--require-complete-range")] = False,
-    freshness_max_age_seconds: Annotated[
-        int | None, typer.Option("--freshness-max-age-seconds")
+    expected_pair_key: Annotated[
+        str | None,
+        typer.Option("--expected-pair-key"),
     ] = None,
-    cancel_requested: Annotated[bool, typer.Option("--cancel-requested")] = False,
-    parser_version: Annotated[str, typer.Option("--parser-version")] = "kraken-ohlc-v1",
+    minimum_rows: Annotated[int, typer.Option("--minimum-rows")] = 1,
+    require_complete_range: Annotated[
+        bool,
+        typer.Option("--require-complete-range"),
+    ] = False,
+    freshness_max_age_seconds: Annotated[
+        int | None,
+        typer.Option("--freshness-max-age-seconds"),
+    ] = None,
+    cancel_requested: Annotated[
+        bool,
+        typer.Option("--cancel-requested"),
+    ] = False,
+    parser_version: Annotated[
+        str,
+        typer.Option("--parser-version"),
+    ] = "kraken-ohlc-v1",
     normalizer_version: Annotated[
-        str, typer.Option("--normalizer-version")
+        str,
+        typer.Option("--normalizer-version"),
     ] = "canonical-ohlcv-v1",
 ) -> None:
-    """Fetch governed Kraken OHLC or retain an explicit blocked-source decision."""
+    """Fetch governed Kraken OHLC or retain a blocked-source decision."""
     evidence = run_historical_acquisition(
         HistoricalAcquisitionRequest(
             provider_id=provider,
