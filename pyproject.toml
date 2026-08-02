@@ -58,8 +58,6 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 "src/osca/ml_experiments/contracts.py" = ["E501"]
 "src/osca/ml_experiments/services.py" = ["E501", "F401", "B009", "RUF007", "SIM102"]
 "src/osca/ml_experiments/engine.py" = ["E501", "I001", "B009"]
-"src/osca/historical_acquisition.py" = ["E501"]
-"tests/test_u9_historical_acquisition.py" = ["E501", "F401"]
 
 [tool.mypy]
 python_version = "3.13"
@@ -78,10 +76,6 @@ disable_error_code = ["operator"]
 [[tool.mypy.overrides]]
 module = ["osca.ml_experiments.services"]
 ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = ["osca.historical_acquisition"]
-disable_error_code = ["assignment", "call-overload"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
