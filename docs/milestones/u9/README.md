@@ -1,6 +1,6 @@
 # U9 Governed No-Cost Historical Data Acquisition
 
-- **Status:** Implementation candidate, first slice
+- **Status:** Implementation candidate, canonical acquisition slice
 - **Predecessor:** U8 real-world workflow reconciliation
 - **Roadmap:** [U9-U14 usable release roadmap](../usable-release-roadmap.md)
 - **Provider review:** [U9 provider evidence review](provider-evidence-review.md)
@@ -32,19 +32,28 @@ Allow a new local OSCA user to acquire sufficient historical equity and cryptocu
 - REQ-0042 UTC interval windows
 - Universal evidence-based milestone exit gate
 
-## First implementation slice
+## Implemented slices
 
-This branch adds the primary `osca historical-data fetch` surface and a versioned historical-acquisition request/evidence contract.
+### Governed acquisition foundation
 
-Implemented behavior:
+- Adds the primary `osca historical-data fetch` surface and versioned request/evidence contracts.
+- Reuses the admitted P13 Kraken endpoint and resource policy.
+- Keeps network use explicit and disabled by default.
+- Retains successful and blocked acquisition outcomes under `<storage-root>/historical-acquisition/`.
+- Keeps equity acquisition fail-closed and preserves governed CSV import as the fallback.
 
-- Kraken public spot OHLC uses the already admitted P13 endpoint and resource policy.
-- Network use remains explicit and disabled by default.
-- Successful or blocked outcomes retain source attribution, admission state, payload lineage, policy findings, and disabled safety boundaries under `<storage-root>/historical-acquisition/`.
-- Equity requests fail closed with `provider_unavailable` and direct the operator to governed CSV import.
-- Twelve Data, Alpha Vantage, and other equity providers remain unallowlisted pending exact display, retention, export, backup, redistribution, and termination evidence.
+### Canonical acquisition and handoff
 
-This slice intentionally does not claim complete canonical OHLCV normalization or U8 pipeline handoff. Those remain required before U9 exit.
+- Parses the Kraken spot OHLC response and rejects provider errors or ambiguous pair payloads.
+- Excludes Kraken's final current, not-yet-committed bar from accepted historical evidence.
+- Converts completed rows into the canonical timestamp/open/high/low/close/volume contract.
+- Routes normalized rows through the existing local OHLCV validation and persistence service.
+- Returns the canonical dataset revision ID, Parquet payload, SQLite metadata path, and row count in acquisition evidence.
+- Retains the original provider JSON and digest independently from normalized evidence.
+- Reuses the same deterministic revision for equivalent provider payloads.
+- Rejects malformed or low-quality provider payloads without creating an accepted canonical revision.
+
+The canonical Parquet payload and dataset revision fields now match the input contract consumed by the U8 research pipeline. Full end-to-end manual U8 execution remains an exit-evidence task rather than a new implementation dependency.
 
 ## Required command surface
 
@@ -54,6 +63,14 @@ uv run osca historical-data fetch XBTUSD crypto kraken \
   --network-access-enabled \
   --storage-root .osca/manual-test
 ```
+
+Successful output includes:
+
+- `dataset_revision_id`
+- `canonical_payload_uri`
+- `canonical_metadata_uri`
+- `canonical_row_count`
+- raw provider payload lineage and policy findings
 
 Blocked equity evidence can be inspected with:
 
@@ -83,17 +100,14 @@ A provider path is not implementation-ready until the repository records:
 
 Licensing or terms uncertainty blocks admission. Convenience alone is not sufficient.
 
-## Remaining U9 implementation
+## Remaining U9 implementation and evidence
 
-1. Parse and validate Kraken OHLC response semantics.
-2. Normalize admitted responses through the canonical OHLCV import/storage path.
-3. Return a dataset revision ID directly from acquisition.
-4. Add durable idempotency and concurrent-request sharing.
-5. Add quota/rate-limit classification and retry guidance.
-6. Add correction/parser revision behavior.
-7. Prove CSV fallback equivalence.
-8. Prove U8 pipeline compatibility and workspace discovery.
-9. Complete the clean-profile manual acceptance exercise.
+1. Add durable job-level idempotency and concurrent-request sharing beyond deterministic revision reuse.
+2. Add explicit quota and rate-limit outcome classification with retry guidance.
+3. Add provider correction and parser-version revision evidence.
+4. Prove CSV fallback equivalence with automated coverage.
+5. Exercise the canonical Kraken revision through the full U8 pipeline and workspace in manual acceptance.
+6. Complete the clean-profile manual acceptance exercise and exit review.
 
 ## Security and safety
 
