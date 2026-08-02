@@ -30,6 +30,14 @@ _ID_KEYS = {
     "correlation_id",
     "job_id",
 }
+_OWNED_ID_KEYS = {
+    WorkspaceSection.DATASETS: ("dataset_revision_id",),
+    WorkspaceSection.ACQUISITIONS: ("acquisition_id", "dataset_revision_id", "job_id"),
+    WorkspaceSection.EXPERIMENTS: ("experiment_id",),
+    WorkspaceSection.DIAGNOSTICS: ("diagnostic_id",),
+    WorkspaceSection.VALIDATIONS: ("validation_id",),
+    WorkspaceSection.PIPELINE_RUNS: ("run_id",),
+}
 _TIME_KEYS = (
     "completed_at",
     "generated_at",
@@ -149,7 +157,7 @@ class WorkspaceEvidenceService:
 
 def _reconcile(snapshot: AnalystWorkspaceSnapshot) -> AnalystWorkspaceSnapshot:
     all_items = [item for section in snapshot.sections for item in section.items]
-    known_ids = set().union(*(_identifiers(item.metadata) for item in all_items))
+    known_ids = set().union(*(_owned_identifiers(item) for item in all_items))
     sections = []
     warnings = list(snapshot.warnings)
     for section in snapshot.sections:
@@ -184,6 +192,15 @@ def _reconcile(snapshot: AnalystWorkspaceSnapshot) -> AnalystWorkspaceSnapshot:
             section.model_copy(update={"items": tuple(reconciled), "item_count": len(reconciled)})
         )
     return snapshot.model_copy(update={"sections": tuple(sections), "warnings": tuple(warnings)})
+
+
+def _owned_identifiers(item: WorkspaceItem) -> set[str]:
+    keys = _OWNED_ID_KEYS.get(item.section, ())
+    return {
+        str(item.metadata[key])
+        for key in keys
+        if item.metadata.get(key) is not None
+    }
 
 
 def _find_item(snapshot: AnalystWorkspaceSnapshot, item_id: str) -> WorkspaceItem | None:
