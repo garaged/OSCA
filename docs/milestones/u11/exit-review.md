@@ -21,49 +21,24 @@ No hand-authored JSON or internal `python -m osca.*` command is required by the 
 
 Focused U11 coverage proves safe initialization, strict configuration validation, corrective diagnostics, primary CLI discovery, compatibility delegation, retained-evidence consistency, loopback-only workspace access, and disabled recommendation/execution boundaries.
 
-Quality run #733 passed on final closeout head `c957d3d358e249b0c9b27f7cde0a7a76b9b66d9a`:
-
-- Ruff;
-- strict mypy;
-- all tests plus contract, migration, document-link, and architecture checks;
-- OpenSpec doctor and strict validation;
-- secret scanning.
+The final closeout documentation passed the complete hosted Quality suite: Ruff, strict mypy, all tests and repository checks, OpenSpec strict validation, and secret scanning.
 
 ## Clean-profile manual acceptance
 
 The August 2, 2026 clean-profile run passed the complete canonical U11 path.
 
-### Initialization and pre-workflow diagnostics
-
-- Profile initialized at `.osca/u11-acceptance/profile` with operator contract `osca.operator-init.result` v1.0.0.
-- Network access, recommendations, broker connections, and real-capital orders were disabled.
-- The initial doctor result had zero failed checks, seven passes, and two expected warnings: the default port was already occupied and no retained evidence existed yet.
-
-### Acquisition and research chain
-
-- Kraken XBTUSD 1d acquisition succeeded through admitted public spot OHLC.
+- Profile contract: `osca.operator-init.result` v1.0.0.
+- Initial doctor: zero failures, seven passes, two expected warnings.
+- Kraken XBTUSD 1d acquisition: succeeded, 720 bars.
 - Dataset revision: `3261fe47-812a-53d8-926e-7a0a801dd18a`.
-- Canonical row count: 720 bars, covering 2024-08-12 through 2026-08-01.
-- Provider pair key `XXBTZUSD` was verified.
-- Current uncommitted bar exclusion, internal-use-only handling, and redistribution-disabled policy were retained.
 - Research run: `73ca1f70-c609-4d1b-bf8a-38494bba82df`.
-- Experiment: `06df1ba4-5bbf-4b63-9de7-adae56a7b5c1`, status `review_required`.
-- Diagnostic status: `review_required`.
-- Pipeline status: `diagnostic_not_eligible`, represented in the workspace as `not_eligible`; validation correctly stopped fail-closed.
+- Experiment: `06df1ba4-5bbf-4b63-9de7-adae56a7b5c1`, `review_required`.
+- Diagnostic: `review_required`.
+- Pipeline: `diagnostic_not_eligible`; validation stopped fail-closed.
+- Final doctor: zero failures, eight passes, one informational occupied-port warning.
+- Workspace: five retained items, no warnings, read-only and all recommendation/execution boundaries disabled.
 
-### Populated diagnostics and workspace
-
-- Final doctor result had zero failures, eight passes, and one non-blocking warning because port 8765 was already in use.
-- Evidence consistency passed with five retained items and no workspace warnings.
-- Workspace snapshot contract `osca.analyst-workspace.snapshot` v1.1.0 reported one dataset, one acquisition, one experiment, one diagnostic, and one pipeline run.
-- No validation artifact was present, as expected for a diagnostic-ineligible run.
-- Workspace remained read-only, network-disabled, credential-materialization-disabled, production-ingestion-disabled, recommendation-disabled, broker-disabled, and real-capital-disabled.
-
-The occupied-port warning is informational rather than release-blocking because the snapshot path completed successfully and the doctor supplied explicit remediation to choose another port for server startup.
-
-## Compatibility policy
-
-Compatibility entry points remain supported through U13 release-candidate acceptance. Removal requires a later documented decision, release note, and compatibility evidence.
+The occupied-port warning is not release-blocking because the snapshot completed successfully and the doctor supplied explicit remediation for server startup.
 
 ## Acceptance checklist
 
@@ -71,11 +46,10 @@ Compatibility entry points remain supported through U13 release-candidate accept
 - [x] Canonical acquisition/import, analysis, backtest, research pipeline, and workspace commands.
 - [x] Compatibility aliases and cross-shell quickstarts.
 - [x] Root README and central manual-testing reconciliation.
-- [x] Final hosted Quality on the final closeout head.
-- [x] Clean-profile initialization and pre-workflow doctor evidence.
-- [x] One acquisition-to-research chain.
-- [x] Populated-profile doctor and workspace snapshot evidence.
-- [x] Confirmed disabled safety boundaries.
+- [x] Complete hosted Quality.
+- [x] Clean-profile acquisition-to-research evidence.
+- [x] Populated doctor and workspace evidence.
+- [x] Disabled safety boundaries.
 
 ## Residual limitations
 
