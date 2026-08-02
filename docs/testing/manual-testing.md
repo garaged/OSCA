@@ -2,7 +2,7 @@
 
 - **Status:** Active from M8
 - **First covered milestone:** M8 F3 paper evaluation and automation foundation
-- **Current coverage:** Through U10 research-evidence workspace
+- **Current coverage:** Through U11 first-run and unified operator experience
 - **Audience:** Maintainers and early operators
 - **Purpose:** Keep executable reality checks for user- and operator-visible behavior while preserving safety boundaries.
 - **Last reviewed:** 2026-08-02
@@ -197,38 +197,68 @@ uv run python -m osca.analyst_workspace \
   --output .osca/u10-evidence.zip
 ```
 
+Confirm dedicated sections, complete applicable lineage, explicit unhealthy-artifact states, CLI/API/export agreement, provider-policy exclusions, secret exclusion, read-only operation, and disabled recommendation/execution boundaries.
+
+## U11 first-run and unified operator experience
+
+Follow the [U11 clean-profile acceptance procedure](../milestones/u11/manual-acceptance.md). The canonical flow must use only the primary `osca` CLI:
+
+```bash
+rm -rf .osca/u11-acceptance
+
+uv run osca init \
+  --profile-root .osca/u11-acceptance/profile \
+  | tee .osca/u11-init.json
+
+uv run osca doctor \
+  --profile-root .osca/u11-acceptance/profile \
+  | tee .osca/u11-doctor-before.json
+```
+
+Then acquire admitted Kraken history with explicit network opt-in or use the offline fallback:
+
+```bash
+uv run osca import-data \
+  tests/fixtures/local_ohlcv/aapl_backtest_daily.csv \
+  AAPL \
+  1d \
+  --storage-root .osca/u11-acceptance/profile/data \
+  | tee .osca/u11-import.json
+```
+
+Use the resulting canonical payload and revision with `osca research-pipeline`, then verify the populated profile:
+
+```bash
+uv run osca doctor \
+  --profile-root .osca/u11-acceptance/profile \
+  | tee .osca/u11-doctor-after.json
+
+uv run osca workspace \
+  --profile-root .osca/u11-acceptance/profile \
+  --snapshot \
+  | tee .osca/u11-workspace-snapshot.json
+```
+
 Confirm:
 
-- acquisitions, experiments, diagnostics, validations, and pipeline runs have dedicated sections
-- the experiment detail links applicable acquisition, diagnostic, and pipeline evidence
-- diagnostic-ineligible runs do not falsely report missing validation
-- malformed, incomplete, incompatible, and orphaned evidence is never healthy
-- CLI, API, raw JSON, and ZIP manifest identifiers agree
-- non-redistributable acquisition evidence is excluded from portable export
-- credentials and secrets are excluded
-- workspace remains loopback-only and read-only
-- recommendations, automatic promotion, broker connections, autonomous execution, and real-capital orders remain disabled
+- configuration is versioned and strictly rejects unknown or unsafe fields
+- doctor covers Python, PyArrow, SQLite, writable storage, loopback port, provider capability, credentials, and evidence consistency
+- the canonical path does not require hand-authored JSON or internal module commands
+- `import-data`, `analyze`, and `backtest` remain equivalent to their compatibility entry points
+- compatibility names remain available through U13
+- workspace is loopback-only and read-only
+- network access is explicit, never implicit
+- recommendations, automatic promotion, brokers, autonomous execution, and real-capital orders remain disabled
 
 ## Analyst workspace server verification
 
-Start the read-only workspace against the same storage root. Select a free port first; passing port `0` directly to Uvicorn does not provide a stable URL for manual inspection.
+Start the read-only workspace through the U11 primary command:
 
 ```bash
-PORT="$(uv run python - <<'PY'
-import socket
-with socket.socket() as sock:
-    sock.bind(("127.0.0.1", 0))
-    print(sock.getsockname()[1])
-PY
-)"
-
-uv run python -m osca.analyst_workspace \
-  --storage-root .osca/u9-acceptance \
-  --host 127.0.0.1 \
-  --port "$PORT"
+uv run osca workspace --profile-root .osca/u11-acceptance/profile
 ```
 
-Verify `/health`, `/`, `/api/workspace`, `/api/evidence`, one detail endpoint, raw JSON download, and portable export. The API and CLI must return the same item identifiers and statuses for equivalent filters.
+Verify `/health`, `/`, `/api/workspace`, `/api/evidence`, one detail endpoint, raw JSON download, and portable export. API and CLI must return the same item identifiers and statuses for equivalent filters.
 
 ## Provider-state interpretation
 
@@ -236,7 +266,7 @@ Verify `/health`, `/`, `/api/workspace`, `/api/evidence`, one detail endpoint, r
 |---|---|
 | Governed local OHLCV | Selectable market-history source. |
 | Kraken public spot OHLC | Admitted U9 no-cost crypto acquisition for internal use; redistribution disabled. |
-| Twelve Data equity | Not admitted; `policy_blocked` with CSV fallback. |
+| Twelve Data equity | Not admitted; `policy_blocked` with CSV/Parquet fallback. |
 | SEC EDGAR | Fixture and explicit bounded live-preview enrichment source. |
 | FRED | Optional macro candidate; live use remains `policy_blocked`. |
 | Unconfigured source | `provider_unavailable` or `policy_blocked` according to admission state. |
