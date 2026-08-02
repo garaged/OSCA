@@ -148,7 +148,8 @@ def load_operator_config(profile_root: Path) -> OperatorConfig:
         document = json.loads(path.read_text(encoding="utf-8"))
         return OperatorConfig.model_validate(document)
     except OSError as exc:
-        raise ValueError(f"operator configuration is missing or unreadable at {path}: {exc}") from exc
+        message = f"operator configuration is missing or unreadable at {path}: {exc}"
+        raise ValueError(message) from exc
     except (UnicodeDecodeError, json.JSONDecodeError, ValidationError) as exc:
         raise ValueError(f"operator configuration is invalid at {path}: {exc}") from exc
 
