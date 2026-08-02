@@ -23,16 +23,18 @@
 - [x] Check Parquet/PyArrow readiness.
 - [x] Check workspace port availability.
 - [x] Report retained-evidence presence.
-- [ ] Add provider capability, credential-reference, and deeper evidence-consistency diagnostics.
+- [x] Add provider capability and credential-reference diagnostics.
+- [x] Add workspace-backed retained-evidence consistency diagnostics.
+- [x] Strictly reject unsafe or unknown configuration fields.
 
 ## Validation and evidence
 
 - [x] Add focused initialization, doctor, CLI discovery, and loopback tests.
-- [ ] Add canonical workflow and compatibility-equivalence tests.
+- [x] Add canonical/compatibility delegation tests.
 - [x] Add zsh, Bash, and PowerShell quickstarts.
-- [ ] Reconcile README and central manual testing.
-- [x] Add initial U11 traceability.
-- [ ] Add U11 exit review.
-- [x] Run hosted Quality on the foundation head.
-- [ ] Remove the temporary operator config parsing mypy exception.
+- [x] Reconcile the root README to the canonical U11 path.
+- [ ] Reconcile central manual testing through U11.
+- [x] Add U11 traceability, manual acceptance, and exit review.
+- [ ] Run final hosted Quality on the implementation-closeout head.
+- [x] Remove the temporary operator configuration mypy exception.
 - [ ] Retain clean-profile end-to-end acceptance evidence.
