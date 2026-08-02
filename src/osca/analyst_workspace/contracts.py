@@ -15,8 +15,13 @@ class WorkspaceSection(StrEnum):
     PROJECTS = "projects"
     WATCHLISTS = "watchlists"
     DATASETS = "datasets"
-    REPORTS = "reports"
+    ACQUISITIONS = "acquisitions"
     BACKTESTS = "backtests"
+    EXPERIMENTS = "experiments"
+    DIAGNOSTICS = "diagnostics"
+    VALIDATIONS = "validations"
+    PIPELINE_RUNS = "pipeline_runs"
+    REPORTS = "reports"
     ENRICHMENT = "enrichment"
     ROUTING = "routing"
 
@@ -25,6 +30,12 @@ class WorkspaceItemStatus(StrEnum):
     AVAILABLE = "available"
     EMPTY = "empty"
     WARNING = "warning"
+    REVIEW_REQUIRED = "review_required"
+    NOT_ELIGIBLE = "not_eligible"
+    INCOMPLETE = "incomplete"
+    CORRUPT = "corrupt"
+    INCOMPATIBLE = "incompatible"
+    ORPHANED = "orphaned"
     POLICY_BLOCKED = "policy_blocked"
     PROVIDER_UNAVAILABLE = "provider_unavailable"
 
@@ -56,7 +67,7 @@ class AnalystWorkspaceSnapshot(BaseModel):
     family: Literal["osca.analyst-workspace.snapshot"] = (
         "osca.analyst-workspace.snapshot"
     )
-    version: Literal["1.0.0"] = "1.0.0"
+    version: Literal["1.1.0"] = "1.1.0"
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     storage_root: LocalPath
     sections: tuple[WorkspaceSectionResult, ...]
