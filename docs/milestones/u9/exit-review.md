@@ -1,9 +1,9 @@
 # U9 Exit Review
 
 - **Milestone:** U9 governed no-cost historical data acquisition
-- **Status:** Completion candidate
+- **Status:** Complete and merge-ready
 - **Implementation PR:** #72
-- **Decision gate:** latest hosted Quality plus final clean-profile workspace snapshot
+- **Decision:** All implementation, hosted validation, governance, and clean-profile acceptance gates pass
 
 ## Delivered outcome
 
@@ -58,6 +58,33 @@ The exact acquired payload and revision were accepted by U8 run `d2cfcf58-ce0d-4
 
 The clean-profile Twelve Data request produced no provider payload or canonical revision and retained CSV fallback guidance with every recommendation and execution boundary disabled. The final v2 taxonomy represents this as `policy_blocked`; the earlier retained output used the predecessor `provider_unavailable` label.
 
+### Workspace discovery
+
+A clean-profile workspace snapshot was generated at `2026-08-02T14:57:28.095141Z` from `.osca/u9-acceptance`.
+
+The snapshot retained eight discoverable items:
+
+- dataset revision `dee68bf2-e8e1-5521-9e93-d2d6dc606bae`, with 720 XBTUSD 1d bars from `2024-08-12T00:00:00+00:00` through `2026-08-01T00:00:00+00:00`;
+- Kraken historical-acquisition evidence;
+- blocked Twelve Data equity evidence;
+- raw Kraken production-ingestion payload;
+- Kraken production-ingestion metadata;
+- U8 experiment artifact;
+- U8 diagnostic artifact;
+- U8 pipeline manifest.
+
+The snapshot reported no warnings. It also confirmed:
+
+- `read_only: true`;
+- `network_access_enabled: false`;
+- `credential_materialization_enabled: false`;
+- `production_ingestion_enabled: false`;
+- `recommendations_enabled: false`;
+- `broker_connections_enabled: false`;
+- `real_capital_orders_enabled: false`.
+
+Validation artifacts were correctly absent because the diagnostic was not eligible for U7 validation. Persisted v2 acquisition-job evidence is covered by the focused automated workspace-chain regression; the retained clean-profile evidence originated before the additive v2 contract and therefore does not contain that later artifact.
+
 ## Acceptance checklist
 
 ### Product and contract
@@ -83,13 +110,13 @@ The clean-profile Twelve Data request produced no provider payload or canonical 
 - [x] Automated regression proves discovery of the U8 manifest, experiment, and diagnostic.
 - [x] Validation evidence is required only when diagnostic eligibility permits U7.
 - [x] Workspace remains read-only with network and execution capabilities disabled.
-- [ ] Final clean-profile `--snapshot` output is retained after the v2 contract upgrade.
+- [x] Final clean-profile `--snapshot` output is retained and contains the complete applicable real evidence chain.
 
 ### Quality and governance
 
 - [x] Ruff passes on the strict configuration.
 - [x] Strict mypy passes across 240 source files.
-- [ ] Latest full pytest/contracts/migrations/links/architecture run is green after final documentation commits.
+- [x] Latest full pytest/contracts/migrations/links/architecture run is green.
 - [x] OpenSpec doctor and strict validation pass.
 - [x] Secret scan passes.
 - [x] Manual testing guide covers happy path, ranges, lifecycle, failures, U8 handoff, and workspace discovery.
@@ -98,4 +125,6 @@ The clean-profile Twelve Data request produced no provider payload or canonical 
 
 ## Exit decision
 
-U9 implementation and automated conformance are complete candidates. Final closure requires the latest hosted Quality run to be fully green and one clean-profile workspace snapshot to be retained, confirming the complete real evidence chain after the v2 contract upgrade. Dedicated acquisition/experiment/diagnostic/validation sections and detail pages remain U10 scope; recursive discovery of the complete chain is a U9 requirement and is already covered automatically.
+U9 is complete and ready to merge. The admitted Kraken path, blocked-equity fallback, canonical revisioning, durable lifecycle, degraded-state taxonomy, lineage, U8 handoff, complete applicable workspace discovery, governance documentation, and safety boundaries all pass. Hosted Quality run #668 passed on the pre-closeout implementation head; the final closeout commit changes documentation only and must retain the same green checks.
+
+Dedicated acquisition, experiment, diagnostic, and validation workspace sections and detail pages remain U10 scope. U10 must not weaken the provider, licensing, provenance, read-only, or execution boundaries established by U9.
