@@ -10,6 +10,7 @@ import typer
 
 from osca.bootstrap.cli import app
 from osca.historical_acquisition_cli import app as historical_data_app
+from osca.operator_aliases import analyze_command, backtest_command, import_data_command
 from osca.operator_experience import (
     doctor_command,
     init_command,
@@ -19,6 +20,9 @@ from osca.operator_experience import (
 app.add_typer(historical_data_app, name="historical-data")
 app.command("init")(init_command)
 app.command("doctor")(doctor_command)
+app.command("import-data")(import_data_command)
+app.command("analyze")(analyze_command)
+app.command("backtest")(backtest_command)
 
 
 @app.command("workspace")
