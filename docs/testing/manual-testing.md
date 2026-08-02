@@ -2,7 +2,7 @@
 
 - **Status:** Active from M8
 - **First covered milestone:** M8 F3 paper evaluation and automation foundation
-- **Current coverage:** Through U8 real-world research reconciliation
+- **Current coverage:** Through U9 governed historical acquisition
 - **Audience:** Maintainers and early operators
 - **Purpose:** Keep executable reality checks for user- and operator-visible behavior while preserving safety boundaries.
 - **Last reviewed:** 2026-08-02
@@ -24,11 +24,11 @@ uv run mypy src tests
 uv run pytest
 ```
 
-Use disposable storage such as `.osca/manual-test`. Do not configure broker/exchange credentials or real-capital accounts. Start provider workflows with deterministic fixtures.
+Use disposable storage such as `.osca/manual-test`. `.osca/` is ignored by Git. Do not configure broker/exchange credentials or real-capital accounts. Start provider workflows with deterministic fixtures.
 
 ## Historical coverage
 
-M8-M12, P1-P17, and U2-U7 detailed specifications, exit reviews, tests, and retained evidence remain authoritative. Their boundaries continue to prohibit live execution, ungoverned provider use, credential leakage, investment recommendations, and automatic promotion.
+M8-M12, P1-P17, and U2-U8 detailed specifications, exit reviews, tests, and retained evidence remain authoritative. Their boundaries continue to prohibit live execution, ungoverned provider use, credential leakage, investment recommendations, and automatic promotion.
 
 ## P6-P8 local evidence workflow
 
@@ -156,7 +156,145 @@ The explicit `--approve-local-validation` option records human authorization for
 
 See the [U8 real-world quickstart](../milestones/u8/real-world-research-quickstart.md).
 
-## Analyst workspace verification
+## U9 governed historical acquisition
+
+Use a clean storage root:
+
+```bash
+rm -rf .osca/u9-acceptance
+```
+
+### Successful Kraken acquisition
+
+```bash
+uv run osca historical-data fetch \
+  XBTUSD crypto kraken \
+  --timeframe 1d \
+  --expected-pair-key XXBTZUSD \
+  --minimum-rows 250 \
+  --network-access-enabled \
+  --storage-root .osca/u9-acceptance \
+  | tee .osca/u9-acceptance-acquisition.json
+```
+
+Confirm the result exposes and retains:
+
+- `request_id`, `correlation_id`, `job_id`, and `acquisition_id`
+- admitted provider, venue context, and verified provider pair key
+- raw payload URI and SHA-256
+- normalized SHA-256
+- parser and normalizer versions
+- job progress, attempts, duration, and completion state
+- immutable dataset revision, Parquet payload, SQLite metadata, and row count
+- predecessor/supersession fields when a parser or correction changes the revision
+- attribution, internal-use limitation, and disabled redistribution/execution flags
+
+### Bounded range and mapping checks
+
+Repeat with explicit UTC timestamps appropriate for the retained Kraken window:
+
+```bash
+uv run osca historical-data fetch \
+  XBTUSD crypto kraken \
+  --timeframe 1d \
+  --start-at 2024-08-01T00:00:00Z \
+  --end-at 2024-08-03T00:00:00Z \
+  --expected-pair-key XXBTZUSD \
+  --require-complete-range \
+  --network-access-enabled \
+  --storage-root .osca/u9-range
+```
+
+Confirm rows are restricted to the half-open interval `[start_at, end_at)`. An incorrect `--expected-pair-key` must produce `invalid` without a canonical revision.
+
+### Durable lifecycle, reuse, and cancellation
+
+Re-run the identical successful request. Confirm the canonical revision is reused and `reuse_state` is `reused` without a second accepted revision.
+
+Exercise pre-network cancellation:
+
+```bash
+uv run osca historical-data fetch \
+  XBTUSD crypto kraken \
+  --cancel-requested \
+  --storage-root .osca/u9-cancel
+```
+
+Expected: `cancelled`, a retained job record, no provider payload, and remediation to resubmit without cancellation. Automated coverage also rewrites an interrupted job to `running` and proves the next invocation enters recovery.
+
+### Quota, outage, malformed, partial, and stale checks
+
+The following failure cases are executed with deterministic injected transports in `tests/test_u9_historical_acquisition.py` because public provider failures cannot be triggered reliably or safely on demand:
+
+- Kraken rate-limit error → `quota_blocked`, `quota_state: exhausted`, retry metadata
+- Kraken service error → `provider_unavailable`
+- non-JSON body → `corrupt`
+- structurally invalid Kraken body → `invalid`
+- fewer than `minimum_rows` → `partial`
+- data older than `freshness_max_age_seconds` → `stale`
+
+Retain the hosted Quality run and focused test names as the acceptance evidence for these deterministic failure scenarios. Operator remediation must be present for every non-success status.
+
+### Blocked equity source
+
+```bash
+uv run osca historical-data fetch \
+  AAPL equity twelve_data \
+  --timeframe 1d \
+  --storage-root .osca/u9-acceptance
+```
+
+Expected: `policy_blocked`, no network-derived payload or canonical revision, explicit CSV fallback guidance, and all recommendation/execution flags false.
+
+### U8 handoff
+
+Use the exact acquired `canonical_payload_uri` and `dataset_revision_id`:
+
+```bash
+uv run osca research-pipeline \
+  "$CANONICAL_PAYLOAD_URI" \
+  "$DATASET_REVISION_ID" \
+  XBTUSD \
+  1d \
+  --storage-root .osca/u9-acceptance \
+  --reviewer "$USER" \
+  --rationale "Approved for local evidence-only U9 acceptance." \
+  --approve-local-validation
+```
+
+A `diagnostic_not_eligible` result is valid when experiment and diagnostic artifacts are retained and the pipeline fails closed before validation.
+
+### Workspace discovers the complete evidence chain
+
+This is an explicit U9 acceptance requirement.
+
+```bash
+uv run python -m osca.analyst_workspace \
+  --storage-root .osca/u9-acceptance \
+  --snapshot \
+  | tee .osca/u9-workspace-snapshot.json
+```
+
+Confirm the snapshot discovers all artifacts that exist for the run:
+
+- canonical dataset revision from SQLite
+- retained historical-acquisition evidence
+- persisted acquisition job evidence
+- U8 pipeline manifest
+- experiment
+- diagnostic
+- validation request/result only when diagnostic eligibility permitted U7
+
+Also confirm:
+
+- workspace is read-only
+- network access and credential materialization are disabled
+- recommendations, automatic promotion, broker execution, and real-capital execution remain disabled
+- no artifact is silently omitted because it is nested below `historical-acquisition/` or `research-evidence/`
+
+The focused regression `test_workspace_discovers_complete_u9_evidence_chain` is mandatory and complements this clean-profile snapshot.
+
+## Analyst workspace server verification
 
 Start the read-only workspace against the same storage root. Prefer a free dynamic port when running automated tests to avoid accidentally testing another local service.
 
@@ -170,7 +308,7 @@ PY
 )"
 
 uv run python -m osca.analyst_workspace \
-  --storage-root .osca/manual-test \
+  --storage-root .osca/u9-acceptance \
   --host 127.0.0.1 \
   --port "$PORT"
 ```
@@ -179,7 +317,7 @@ Verify:
 
 - `/health` returns `status: ok`, read-only mode, network disabled, and promotion/broker boundaries disabled
 - `/` renders the OSCA Analyst Workspace title and safety footer
-- `/api/workspace` lists the governed dataset and retained U8 research evidence
+- `/api/workspace` lists the governed dataset and retained U8/U9 evidence
 - `/api/model-validation/run` reproduces deterministic CLI evidence when given the same retained request; only the generated validation ID may differ
 
 ## Provider-state interpretation
@@ -187,10 +325,11 @@ Verify:
 | Provider/source | Current meaning |
 |---|---|
 | Governed local OHLCV | Selectable market-history source. |
+| Kraken public spot OHLC | Admitted U9 no-cost crypto acquisition for internal use; redistribution disabled. |
+| Twelve Data equity | Not admitted; `policy_blocked` with CSV fallback. |
 | SEC EDGAR | Fixture and explicit bounded live-preview enrichment source. |
 | FRED | Optional macro candidate; live use remains `policy_blocked`. |
-| Unconfigured macro source | `provider_unavailable`. |
-| Twelve Data / Kraken | Production-promotion candidates, not enabled runtime sources. |
+| Unconfigured source | `provider_unavailable` or `policy_blocked` according to admission state. |
 | Other catalog providers | Retain P1-P5 dispositions and evidence gates. |
 
 ## Universal deferred-boundary check
