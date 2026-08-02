@@ -37,4 +37,4 @@
 - [x] Add U11 traceability, manual acceptance, and exit review.
 - [x] Run final hosted Quality on the implementation-closeout head.
 - [x] Remove the temporary operator configuration mypy exception.
-- [ ] Retain clean-profile end-to-end acceptance evidence.
+- [x] Retain clean-profile end-to-end acceptance evidence.
