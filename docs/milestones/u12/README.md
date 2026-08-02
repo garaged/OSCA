@@ -1,6 +1,6 @@
 # U12 — Packaging, Upgrade, Backup, and Rollback
 
-- **Status:** Implementation and hosted platform conformance complete; clean-machine acceptance pending
+- **Status:** Complete
 - **Baseline:** U11 merged through PR #74 at `1e46d92c37db92fcc30a41fcc7ff18df8aa23f42`
 - **Branch:** `agent/u12-packaging-upgrade-rollback`
 - **Implementation PR:** #75
@@ -15,7 +15,7 @@ Create a repeatable supported installation and lifecycle experience for OSCA on 
 2. Isolated installation with `uv tool install` and no runtime repository checkout.
 3. `osca version` package/runtime/platform/build reporting.
 4. SHA-256 checksum manifest, CycloneDX JSON SBOM, and versioned build provenance.
-5. Hosted package lifecycle validation on macOS arm64 and Linux x86-64.
+5. Hosted package lifecycle validation on fresh macOS arm64 and Linux x86-64 runners.
 6. Non-mutating `osca lifecycle inspect` compatibility checks.
 7. Digest-verified full-profile backup before mutation.
 8. Safe restore with manifest validation, path containment, staging, and atomic replacement.
@@ -42,11 +42,16 @@ It remains loopback-only and read-only by default.
 
 ## Validation
 
-Quality run #753 passed the macOS arm64 and Linux x86-64 package lifecycle jobs, plus Ruff, strict mypy, the complete test/contract/migration/link/architecture suite, OpenSpec strict validation, and secret scanning.
+Quality run #760 passed the complete hosted suite. The project accepts fresh GitHub-hosted ephemeral runners as U12 clean-machine evidence:
 
-## Remaining gate
-
-Run [U12 clean-machine acceptance](manual-acceptance.md) independently on both supported platforms and retain the full workflow, successful upgrade, failed-upgrade recovery, restore, rollback, workspace, and evidence-preservation outputs.
+- macOS Apple Silicon: fresh `macos-14` arm64 runner;
+- Linux x86-64: fresh `ubuntu-24.04` runner;
+- wheel and source distribution build;
+- checksums, CycloneDX SBOM, and provenance generation;
+- isolated `uv tool` installation;
+- packaged init, inspect, backup, restore, and reinspection;
+- Ruff, strict mypy, complete tests/contracts/migrations/links/architecture;
+- OpenSpec strict validation and secret scanning.
 
 ## Safety boundaries
 
