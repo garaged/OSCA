@@ -112,12 +112,12 @@ def test_api_cli_and_export_use_equivalent_contracts(tmp_path: Path, capsys: obj
 def test_incomplete_incompatible_and_orphaned_are_derived(tmp_path: Path) -> None:
     run_root = tmp_path / "research-evidence"
     _write(run_root / "missing" / "experiment.json", {"family": "osca.ml-experiment.result", "version": "1.0.0"})
-    _write(run_root / "wrong" / "diagnostic.json", {"family": "other.diagnostic", "version": "9.0.0", "experiment_id": "missing-experiment"})
+    _write(tmp_path / "historical-acquisition" / "wrong.json", {"family": "other.acquisition", "version": "9.0.0"})
     _write(run_root / "orphan" / "manifest.json", {"family": "osca.research-pipeline.manifest", "version": "1.0.0", "experiment_id": "missing-experiment"})
     snapshot = WorkspaceEvidenceService().filtered_snapshot(tmp_path, WorkspaceFilter())
     statuses = {item.item_id: item.status for section in snapshot.sections for item in section.items}
     assert statuses["experiments:research-evidence/missing/experiment.json"] is WorkspaceItemStatus.INCOMPLETE
-    assert statuses["diagnostics:research-evidence/wrong/diagnostic.json"] is WorkspaceItemStatus.INCOMPATIBLE
+    assert statuses["acquisitions:historical-acquisition/wrong.json"] is WorkspaceItemStatus.INCOMPATIBLE
     assert statuses["pipeline_runs:research-evidence/orphan/manifest.json"] is WorkspaceItemStatus.ORPHANED
     assert snapshot.warnings
 
