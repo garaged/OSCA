@@ -33,6 +33,7 @@ dev = [
 
 [project.scripts]
 osca = "osca.bootstrap.cli:main"
+osca-research-pipeline = "osca.research_pipeline:main"
 
 [tool.uv]
 required-environments = [
