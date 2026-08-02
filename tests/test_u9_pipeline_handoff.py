@@ -62,7 +62,9 @@ def test_acquired_revision_runs_through_u8_pipeline(
         transport=lambda _request: _long_kraken_payload(),
     )
 
-    assert acquisition.status is HistoricalAcquisitionStatus.SUCCEEDED
+    assert acquisition.status is HistoricalAcquisitionStatus.SUCCEEDED, (
+        acquisition.rationale
+    )
     assert acquisition.canonical_payload_uri is not None
     assert acquisition.dataset_revision_id is not None
 
