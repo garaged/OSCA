@@ -1,7 +1,7 @@
 # U11 Exit Review
 
 - **Milestone:** U11 first-run and unified operator experience
-- **Status:** Implementation completion candidate
+- **Status:** Automated conformance complete; clean-profile acceptance pending
 - **Implementation PR:** #74
 - **Decision gate:** clean-profile end-to-end acceptance
 
@@ -31,6 +31,14 @@ Focused U11 coverage proves:
 - canonical aliases delegate to the documented compatibility commands;
 - non-loopback workspace startup is rejected;
 - recommendation, promotion, broker, autonomous, and real-capital boundaries stay disabled.
+
+Quality run #727 passed on commit `f72eae9fb9e7ddb1b4666576e1e6b88c99e55446`:
+
+- Ruff;
+- strict mypy across the complete source package;
+- all tests plus contract, migration, document-link, and architecture checks;
+- OpenSpec doctor and strict validation;
+- secret scanning.
 
 ## Compatibility policy
 
@@ -69,11 +77,11 @@ Removal requires a later documented decision, release note, and compatibility ev
 - [x] Canonical-to-compatibility delegation is covered automatically.
 - [x] zsh, Bash, and PowerShell quickstarts are documented.
 - [x] Root README uses the canonical U11 workflow.
-- [ ] Central manual-testing guide is reconciled through U11.
+- [x] Central manual-testing guide is reconciled through U11.
 
 ### Quality and manual evidence
 
-- [ ] Final hosted Quality is green on the implementation-closeout head.
+- [x] Final hosted Quality is green on the implementation-closeout head.
 - [ ] Clean-profile initialization and pre-workflow doctor evidence are retained.
 - [ ] One acquisition/import-to-research chain is retained.
 - [ ] Populated-profile doctor and workspace snapshot evidence are retained.
@@ -88,4 +96,4 @@ Removal requires a later documented decision, release note, and compatibility ev
 
 ## Exit decision
 
-U11 implementation is a completion candidate. Final closure requires the latest hosted Quality run, central manual-testing reconciliation, and the clean-profile evidence described in `manual-acceptance.md`.
+U11 implementation and automated conformance are complete. Final closure requires only the clean-profile evidence described in `manual-acceptance.md`.
