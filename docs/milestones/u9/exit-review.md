@@ -122,15 +122,48 @@ The expected status is `provider_unavailable`, with CSV fallback guidance and no
 - [ ] Canonical quality findings are acceptable.
 - [ ] U8 pipeline consumes the exact acquired payload and revision.
 - [ ] Workspace discovers the complete evidence chain.
-- [ ] Blocked equity behavior is explicit and non-networked.
-- [ ] Recommendation and execution boundaries are false.
-- [ ] Hosted Quality is fully green.
-- [ ] Final evidence identifiers and interpretation are added below.
+- [x] Blocked equity behavior is explicit and non-networked.
+- [x] Recommendation and execution boundaries are false for the retained blocked-equity result.
+- [x] Hosted Quality is fully green.
+- [ ] Final Kraken evidence identifiers and interpretation are added below.
 
 ## Final retained evidence
 
-Pending execution after PR #72 validation.
+### Hosted validation
+
+The latest PR #72 Quality run passed Ruff, strict mypy, all tests and architecture checks, OpenSpec validation, document-link validation, and secret scanning.
+
+### Blocked-equity acceptance
+
+Executed on August 2, 2026 against a clean U9 acceptance storage root:
+
+```bash
+uv run osca historical-data fetch AAPL equity twelve_data \
+  --timeframe 1d \
+  --storage-root .osca/u9-acceptance
+```
+
+Observed retained result:
+
+- completed at `2026-08-02T14:07:52.130107Z`;
+- provider `twelve_data`;
+- asset class `equity`;
+- symbol `AAPL`;
+- timeframe `1d`;
+- admission status `needs_evidence`;
+- acquisition status `provider_unavailable`;
+- no dataset revision, canonical payload, metadata, or raw provider payload was created;
+- findings `equity-provider-not-admitted` and `csv-import-remains-supported`;
+- retained evidence URI `file:///Users/maxvaldez/DEVEL/Playground/OSCA/.osca/u9-acceptance/historical-acquisition/twelve_data-equity-AAPL-1d-all-kraken-ohlc-v1.json`;
+- rationale directs the operator to governed CSV import;
+- redistribution, recommendations, broker execution, and real-capital execution remained disabled.
+
+Interpretation: the no-cost equity provider boundary failed closed exactly as designed. This evidence does not establish the successful Kraken acquisition, canonical revision, U8 pipeline handoff, or workspace-discovery legs.
+
+### Kraken acquisition and research handoff
+
+Pending the retained output identifiers from the real Kraken acquisition, U8 pipeline run, and workspace verification.
 
 ## Exit decision
 
-Pending. U9 may be marked complete only after the automated and manual acceptance evidence above is recorded. U10 must not weaken the provider, licensing, provenance, or execution boundaries established here.
+Pending. The blocked-equity and hosted-validation legs pass, but U9 may be marked complete only after the successful real Kraken acquisition, canonical lineage, U8 research handoff, and workspace-discovery evidence are recorded. U10 must not weaken the provider, licensing, provenance, or execution boundaries established here.
