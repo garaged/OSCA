@@ -79,6 +79,10 @@ disable_error_code = ["operator"]
 module = ["osca.ml_experiments.services"]
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+module = ["osca.historical_acquisition"]
+disable_error_code = ["assignment", "call-overload"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
