@@ -3,7 +3,7 @@
 - **Milestone:** U10 research-evidence workspace
 - **Status:** Completion candidate
 - **Implementation PR:** #73
-- **Decision gate:** final hosted Quality plus clean-profile detail/filter/export evidence
+- **Decision gate:** clean-profile detail/filter/export evidence
 
 ## Delivered outcome
 
@@ -32,6 +32,7 @@ Focused U10 tests cover:
 - dedicated section classification and duplicate prevention;
 - corrupt JSON handling;
 - incomplete, incompatible, and orphaned state derivation;
+- distinction between artifact-owned lineage identities and mere references;
 - detail and lineage resolution;
 - symbol/timeframe/type/status filtering and date-capable contracts;
 - raw JSON endpoint behavior;
@@ -40,6 +41,14 @@ Focused U10 tests cover:
 - read-only safety boundaries.
 
 Legacy P11 workspace coverage was reconciled to the U10 section model rather than retaining outdated generic-report expectations.
+
+Quality run #692 passed on the implementation-closeout head:
+
+- Ruff;
+- strict mypy across 242 source files;
+- all 404 tests plus contract, migration, document-link, and architecture checks;
+- OpenSpec doctor and strict validation;
+- secret scanning.
 
 ## Clean-profile manual acceptance
 
@@ -89,7 +98,7 @@ Retain:
 - [x] Workspace remains loopback-only and read-only.
 - [x] Network retrieval and credential materialization remain disabled.
 - [x] Recommendations, automatic promotion, brokers, autonomous execution, and real-capital orders remain disabled.
-- [ ] Final hosted Quality is green on the documentation-closeout head.
+- [x] Final hosted Quality is green on the implementation-closeout head.
 - [ ] Clean-profile snapshot, detail, filter, and export evidence is retained.
 
 ## Residual limitations
@@ -100,4 +109,4 @@ Retain:
 
 ## Exit decision
 
-U10 implementation and automated conformance are completion candidates. Mark U10 complete only after the latest hosted Quality run passes and the clean-profile U9/U8 detail, filter, and portable-export evidence is retained and interpreted.
+U10 implementation and automated conformance are complete. Final milestone closure requires only the clean-profile U9/U8 snapshot, detail, filter, and portable-export evidence to be retained and interpreted.
