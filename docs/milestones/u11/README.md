@@ -1,6 +1,6 @@
 # U11 — First-Run and Unified Operator Experience
 
-- **Status:** Implementation complete; clean-profile acceptance pending
+- **Status:** Complete
 - **Baseline:** U10 merged through PR #73 at `4711c6f2f4ba17a0904515c6ca935e653cbee6ed`
 - **Branch:** `agent/u11-first-run-operator-experience`
 - **Implementation PR:** #74
@@ -18,13 +18,13 @@ Let a technically capable new user complete OSCA's primary local research workfl
 5. `osca research-pipeline` remains the canonical combined experiment, diagnostic, and human-gated local-validation path.
 6. zsh, Bash, and PowerShell quickstarts describe one coherent installation-to-workspace workflow.
 7. The root README and central manual-testing guide use the canonical U11 path.
-8. OpenSpec, traceability, focused tests, manual acceptance, and exit-review authority are present.
+8. OpenSpec, traceability, focused tests, clean-profile acceptance, and exit-review authority are complete.
 
 The strict configuration contract rejects unknown fields and refuses attempts to enable network-by-default, recommendations, automatic promotion, brokers, autonomous execution, or real-capital orders.
 
 ## Validation
 
-Quality run #713 passed on the foundation head. The final implementation-closeout head must pass the same complete hosted suite before manual acceptance:
+Quality run #729 passed the complete hosted suite:
 
 - Ruff;
 - strict mypy;
@@ -32,11 +32,9 @@ Quality run #713 passed on the foundation head. The final implementation-closeou
 - OpenSpec doctor and strict validation;
 - secret scanning.
 
-## Remaining gate
+The clean-profile acceptance initialized and diagnosed a new profile, acquired 720 XBTUSD daily bars through admitted no-cost Kraken history, ran the retained research pipeline, and discovered five linked evidence items through the read-only workspace. The diagnostic-ineligible result stopped fail-closed without creating validation evidence.
 
-Run [U11 clean-profile manual acceptance](manual-acceptance.md) and record the retained outputs in the [U11 exit review](exit-review.md).
-
-The exit evidence must prove that a new profile can be initialized, diagnosed, populated through acquisition or import, processed through the retained research pipeline, and inspected through `osca workspace` without hand-authored JSON or internal module commands.
+See the [U11 exit review](exit-review.md) for the accepted run and retained identifiers.
 
 ## Next milestone
 
