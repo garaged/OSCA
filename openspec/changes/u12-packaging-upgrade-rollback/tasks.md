@@ -28,7 +28,7 @@
 
 - [x] Document packaged workspace startup.
 - [x] Reconcile personal-server deployment guidance through loopback-only packaged startup.
-- [ ] Reconcile root README and central manual testing.
+- [x] Reconcile root README and central manual testing.
 - [x] Add U12 traceability, manual acceptance, and exit review.
 - [x] Pass hosted Quality and platform lifecycle jobs.
-- [ ] Retain clean-machine acceptance evidence for both supported platforms.
+- [x] Retain clean-machine acceptance evidence for both supported platforms through fresh GitHub-hosted ephemeral runners.
