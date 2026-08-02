@@ -4,34 +4,39 @@ import json
 import socket
 import sqlite3
 import sys
-from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Annotated, Literal
 
 import pyarrow
 import typer
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+from osca.analyst_workspace.services import AnalystWorkspaceService
 
 _CONFIG_FILENAME = "config.json"
 _SUPPORTED_PYTHON = (3, 13)
+_LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
 
-@dataclass(frozen=True)
-class OperatorConfig:
-    family: str
-    version: str
-    storage_root: str
-    workspace_host: str
-    workspace_port: int
-    network_access_enabled: bool
-    recommendations_enabled: bool
-    automatic_promotion_enabled: bool
-    broker_connections_enabled: bool
-    autonomous_execution_enabled: bool
-    real_capital_orders_enabled: bool
+class OperatorConfig(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    family: Literal["osca.operator-config"] = "osca.operator-config"
+    version: Literal["1.0.0"] = "1.0.0"
+    storage_root: str = Field(min_length=1)
+    workspace_host: Literal["127.0.0.1", "localhost", "::1"] = "127.0.0.1"
+    workspace_port: int = Field(default=8765, ge=1, le=65535)
+    network_access_enabled: Literal[False] = False
+    recommendations_enabled: Literal[False] = False
+    automatic_promotion_enabled: Literal[False] = False
+    broker_connections_enabled: Literal[False] = False
+    autonomous_execution_enabled: Literal[False] = False
+    real_capital_orders_enabled: Literal[False] = False
 
 
-@dataclass(frozen=True)
-class DoctorCheck:
+class DoctorCheck(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     check_id: str
     status: Literal["pass", "warning", "fail"]
     message: str
@@ -39,19 +44,7 @@ class DoctorCheck:
 
 
 def default_config(storage_root: Path, workspace_port: int = 8765) -> OperatorConfig:
-    return OperatorConfig(
-        family="osca.operator-config",
-        version="1.0.0",
-        storage_root=str(storage_root),
-        workspace_host="127.0.0.1",
-        workspace_port=workspace_port,
-        network_access_enabled=False,
-        recommendations_enabled=False,
-        automatic_promotion_enabled=False,
-        broker_connections_enabled=False,
-        autonomous_execution_enabled=False,
-        real_capital_orders_enabled=False,
-    )
+    return OperatorConfig(storage_root=str(storage_root), workspace_port=workspace_port)
 
 
 def initialize_profile(
@@ -66,13 +59,14 @@ def initialize_profile(
     config_path = root / _CONFIG_FILENAME
     if config_path.exists() and not force:
         raise ValueError(f"profile already initialized: {config_path}")
-    if workspace_port < 1 or workspace_port > 65535:
-        raise ValueError("workspace port must be between 1 and 65535")
 
     root.mkdir(parents=True, exist_ok=True)
     configured_storage.mkdir(parents=True, exist_ok=True)
-    config = default_config(configured_storage, workspace_port)
-    config_path.write_text(json.dumps(asdict(config), indent=2, sort_keys=True) + "\n")
+    try:
+        config = default_config(configured_storage, workspace_port)
+    except ValidationError as exc:
+        raise ValueError(str(exc)) from exc
+    config_path.write_text(config.model_dump_json(indent=2) + "\n", encoding="utf-8")
     return {
         "family": "osca.operator-init.result",
         "version": "1.0.0",
@@ -93,148 +87,37 @@ def initialize_profile(
 
 def doctor_profile(profile_root: Path, *, port: int | None = None) -> dict[str, object]:
     root = profile_root.resolve()
-    config_path = root / _CONFIG_FILENAME
-    checks: list[DoctorCheck] = []
+    checks = [_runtime_check(), _pyarrow_check()]
 
-    checks.append(
-        DoctorCheck(
-            check_id="python-runtime",
-            status="pass" if sys.version_info[:2] == _SUPPORTED_PYTHON else "fail",
-            message=f"Python {sys.version_info.major}.{sys.version_info.minor} detected.",
-            remediation=(
-                None
-                if sys.version_info[:2] == _SUPPORTED_PYTHON
-                else "Install and run OSCA with Python 3.13."
-            ),
+    config: OperatorConfig | None = None
+    try:
+        config = load_operator_config(root)
+        checks.append(
+            DoctorCheck(
+                check_id="operator-config",
+                status="pass",
+                message="Versioned operator configuration is valid.",
+            )
         )
-    )
-    checks.append(
-        DoctorCheck(
-            check_id="pyarrow-runtime",
-            status="pass",
-            message=f"PyArrow {pyarrow.__version__} is importable.",
-        )
-    )
-
-    config: dict[str, object] | None = None
-    if not config_path.is_file():
+    except ValueError as exc:
         checks.append(
             DoctorCheck(
                 check_id="operator-config",
                 status="fail",
-                message=f"Operator configuration is missing at {config_path}.",
+                message=str(exc),
                 remediation=f"Run: osca init --profile-root {root}",
             )
         )
-    else:
-        try:
-            loaded = json.loads(config_path.read_text())
-            if not isinstance(loaded, dict):
-                raise ValueError("configuration must be a JSON object")
-            config = loaded
-            checks.append(
-                DoctorCheck(
-                    check_id="operator-config",
-                    status="pass",
-                    message="Versioned operator configuration is readable.",
-                )
-            )
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
-            checks.append(
-                DoctorCheck(
-                    check_id="operator-config",
-                    status="fail",
-                    message=f"Operator configuration is invalid: {exc}",
-                    remediation="Move the invalid file aside and rerun osca init.",
-                )
-            )
 
-    storage_root = Path(str(config.get("storage_root"))) if config else root / "data"
-    try:
-        storage_root.mkdir(parents=True, exist_ok=True)
-        probe = storage_root / ".doctor-write-probe"
-        probe.write_text("ok")
-        probe.unlink()
-        checks.append(
-            DoctorCheck(
-                check_id="writable-storage",
-                status="pass",
-                message=f"Storage root is writable: {storage_root}",
-            )
-        )
-    except OSError as exc:
-        checks.append(
-            DoctorCheck(
-                check_id="writable-storage",
-                status="fail",
-                message=f"Storage root is not writable: {exc}",
-                remediation="Choose a writable --storage-root and rerun osca init --force.",
-            )
-        )
-
-    try:
-        database = sqlite3.connect(":memory:")
-        database.execute("select 1")
-        database.close()
-        checks.append(
-            DoctorCheck(
-                check_id="sqlite-runtime",
-                status="pass",
-                message=f"SQLite {sqlite3.sqlite_version} is ready.",
-            )
-        )
-    except sqlite3.Error as exc:
-        checks.append(
-            DoctorCheck(
-                check_id="sqlite-runtime",
-                status="fail",
-                message=f"SQLite readiness failed: {exc}",
-                remediation="Install a supported Python distribution with SQLite enabled.",
-            )
-        )
-
-    selected_port = port or int(config.get("workspace_port", 8765) if config else 8765)
-    host = str(config.get("workspace_host", "127.0.0.1") if config else "127.0.0.1")
-    if _port_available(host, selected_port):
-        checks.append(
-            DoctorCheck(
-                check_id="workspace-port",
-                status="pass",
-                message=f"Workspace endpoint {host}:{selected_port} is available.",
-            )
-        )
-    else:
-        checks.append(
-            DoctorCheck(
-                check_id="workspace-port",
-                status="warning",
-                message=f"Workspace endpoint {host}:{selected_port} is already in use.",
-                remediation="Choose another port with osca workspace --port PORT.",
-            )
-        )
-
-    evidence_directories = (
-        storage_root / "historical-acquisition",
-        storage_root / "research-evidence",
-        storage_root / "payloads",
-    )
-    retained_count = sum(
-        1 for directory in evidence_directories if directory.exists() for _ in directory.rglob("*")
-    )
-    checks.append(
-        DoctorCheck(
-            check_id="retained-evidence",
-            status="pass" if retained_count else "warning",
-            message=(
-                f"Retained evidence entries discovered: {retained_count}."
-                if retained_count
-                else "No retained research evidence is present yet."
-            ),
-            remediation=(
-                None
-                if retained_count
-                else "Acquire or import data, then run osca research-pipeline."
-            ),
+    storage_root = Path(config.storage_root) if config else root / "data"
+    checks.extend(
+        (
+            _storage_check(storage_root),
+            _sqlite_check(),
+            _port_check(config, port),
+            _provider_capability_check(),
+            _credential_reference_check(),
+            _evidence_consistency_check(storage_root),
         )
     )
 
@@ -242,11 +125,11 @@ def doctor_profile(profile_root: Path, *, port: int | None = None) -> dict[str, 
     warnings = sum(check.status == "warning" for check in checks)
     return {
         "family": "osca.operator-doctor.result",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "status": "failed" if failed else ("warning" if warnings else "ready"),
         "profile_root": str(root),
         "storage_root": str(storage_root),
-        "checks": [asdict(check) for check in checks],
+        "checks": [check.model_dump(mode="json") for check in checks],
         "summary": {
             "passed": len(checks) - failed - warnings,
             "warnings": warnings,
@@ -262,18 +145,152 @@ def doctor_profile(profile_root: Path, *, port: int | None = None) -> dict[str, 
 def load_operator_config(profile_root: Path) -> OperatorConfig:
     path = profile_root.resolve() / _CONFIG_FILENAME
     try:
-        document = json.loads(path.read_text())
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ValueError(f"cannot load operator configuration: {exc}") from exc
-    if not isinstance(document, dict):
-        raise ValueError("operator configuration must be a JSON object")
-    return OperatorConfig(**document)
+        document = json.loads(path.read_text(encoding="utf-8"))
+        return OperatorConfig.model_validate(document)
+    except OSError as exc:
+        raise ValueError(f"operator configuration is missing or unreadable at {path}: {exc}") from exc
+    except (UnicodeDecodeError, json.JSONDecodeError, ValidationError) as exc:
+        raise ValueError(f"operator configuration is invalid at {path}: {exc}") from exc
+
+
+def _runtime_check() -> DoctorCheck:
+    supported = sys.version_info[:2] == _SUPPORTED_PYTHON
+    return DoctorCheck(
+        check_id="python-runtime",
+        status="pass" if supported else "fail",
+        message=f"Python {sys.version_info.major}.{sys.version_info.minor} detected.",
+        remediation=None if supported else "Install and run OSCA with Python 3.13.",
+    )
+
+
+def _pyarrow_check() -> DoctorCheck:
+    return DoctorCheck(
+        check_id="pyarrow-runtime",
+        status="pass",
+        message=f"PyArrow {pyarrow.__version__} is importable.",
+    )
+
+
+def _storage_check(storage_root: Path) -> DoctorCheck:
+    try:
+        storage_root.mkdir(parents=True, exist_ok=True)
+        probe = storage_root / ".doctor-write-probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
+    except OSError as exc:
+        return DoctorCheck(
+            check_id="writable-storage",
+            status="fail",
+            message=f"Storage root is not writable: {exc}",
+            remediation="Choose a writable --storage-root and rerun osca init --force.",
+        )
+    return DoctorCheck(
+        check_id="writable-storage",
+        status="pass",
+        message=f"Storage root is writable: {storage_root}",
+    )
+
+
+def _sqlite_check() -> DoctorCheck:
+    try:
+        with sqlite3.connect(":memory:") as database:
+            database.execute("select 1")
+    except sqlite3.Error as exc:
+        return DoctorCheck(
+            check_id="sqlite-runtime",
+            status="fail",
+            message=f"SQLite readiness failed: {exc}",
+            remediation="Install a supported Python distribution with SQLite enabled.",
+        )
+    return DoctorCheck(
+        check_id="sqlite-runtime",
+        status="pass",
+        message=f"SQLite {sqlite3.sqlite_version} is ready.",
+    )
+
+
+def _port_check(config: OperatorConfig | None, port: int | None) -> DoctorCheck:
+    selected_port = port or (config.workspace_port if config else 8765)
+    host = config.workspace_host if config else "127.0.0.1"
+    if host not in _LOOPBACK_HOSTS:
+        return DoctorCheck(
+            check_id="workspace-port",
+            status="fail",
+            message=f"Workspace host is not loopback-only: {host}",
+            remediation="Reinitialize the profile with a supported loopback configuration.",
+        )
+    if _port_available(host, selected_port):
+        return DoctorCheck(
+            check_id="workspace-port",
+            status="pass",
+            message=f"Workspace endpoint {host}:{selected_port} is available.",
+        )
+    return DoctorCheck(
+        check_id="workspace-port",
+        status="warning",
+        message=f"Workspace endpoint {host}:{selected_port} is already in use.",
+        remediation="Choose another port with osca workspace --port PORT.",
+    )
+
+
+def _provider_capability_check() -> DoctorCheck:
+    return DoctorCheck(
+        check_id="provider-capability",
+        status="pass",
+        message=(
+            "Kraken public spot OHLC is admitted for explicit internal-use acquisition; "
+            "equity acquisition remains policy-blocked with CSV/Parquet fallback."
+        ),
+    )
+
+
+def _credential_reference_check() -> DoctorCheck:
+    return DoctorCheck(
+        check_id="credential-reference",
+        status="pass",
+        message=(
+            "The canonical no-cost Kraken path requires no credential materialization. "
+            "Authenticated providers remain disabled until separately admitted."
+        ),
+    )
+
+
+def _evidence_consistency_check(storage_root: Path) -> DoctorCheck:
+    try:
+        snapshot = AnalystWorkspaceService().snapshot(storage_root)
+    except (OSError, sqlite3.Error, ValueError) as exc:
+        return DoctorCheck(
+            check_id="evidence-consistency",
+            status="fail",
+            message=f"Retained evidence could not be inspected: {exc}",
+            remediation="Inspect the configured storage root and restore a valid backup if needed.",
+        )
+    if snapshot.warnings:
+        return DoctorCheck(
+            check_id="evidence-consistency",
+            status="warning",
+            message=f"Workspace reported {len(snapshot.warnings)} evidence warning(s).",
+            remediation="Run osca workspace --snapshot and inspect the warning details.",
+        )
+    if snapshot.total_items == 0:
+        return DoctorCheck(
+            check_id="evidence-consistency",
+            status="warning",
+            message="No retained research evidence is present yet.",
+            remediation="Acquire or import data, then run osca research-pipeline.",
+        )
+    return DoctorCheck(
+        check_id="evidence-consistency",
+        status="pass",
+        message=f"Workspace discovered {snapshot.total_items} retained item(s) without warnings.",
+    )
 
 
 def _port_available(host: str, port: int) -> bool:
     if port < 1 or port > 65535:
         return False
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+    family = socket.AF_INET6 if host == "::1" else socket.AF_INET
+    with socket.socket(family, socket.SOCK_STREAM) as listener:
         listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             listener.bind((host, port))
