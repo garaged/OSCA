@@ -1,8 +1,9 @@
 # U9 Governed No-Cost Historical Data Acquisition
 
-- **Status:** Ready for implementation
+- **Status:** Implementation candidate, first slice
 - **Predecessor:** U8 real-world workflow reconciliation
 - **Roadmap:** [U9-U14 usable release roadmap](../usable-release-roadmap.md)
+- **Provider review:** [U9 provider evidence review](provider-evidence-review.md)
 
 ## Intent
 
@@ -31,32 +32,38 @@ Allow a new local OSCA user to acquire sufficient historical equity and cryptocu
 - REQ-0042 UTC interval windows
 - Universal evidence-based milestone exit gate
 
-## Product outcome
+## First implementation slice
 
-The primary CLI provides a discoverable acquisition command that can:
+This branch adds the primary `osca historical-data fetch` surface and a versioned historical-acquisition request/evidence contract.
 
-1. Resolve a canonical instrument and provider mapping.
-2. Validate provider capability, terms, authentication, quota, interval, and date range before retrieval.
-3. Retrieve one no-cost equity source and Kraken spot market data.
-4. Normalize data through the existing canonical OHLCV path.
-5. Produce an immutable dataset revision with complete provenance, policy, integrity, and quality evidence.
-6. Return actionable structured outcomes for unavailable, quota-blocked, policy-blocked, invalid, partial, or corrupt retrievals.
-7. Feed the retained dataset directly into the U8 guided research pipeline.
+Implemented behavior:
+
+- Kraken public spot OHLC uses the already admitted P13 endpoint and resource policy.
+- Network use remains explicit and disabled by default.
+- Successful or blocked outcomes retain source attribution, admission state, payload lineage, policy findings, and disabled safety boundaries under `<storage-root>/historical-acquisition/`.
+- Equity requests fail closed with `provider_unavailable` and direct the operator to governed CSV import.
+- Twelve Data, Alpha Vantage, and other equity providers remain unallowlisted pending exact display, retention, export, backup, redistribution, and termination evidence.
+
+This slice intentionally does not claim complete canonical OHLCV normalization or U8 pipeline handoff. Those remain required before U9 exit.
 
 ## Required command surface
 
-The implementation should expose the capability through the primary `osca` CLI. The provisional shape is:
-
 ```bash
-uv run osca historical-data fetch AAPL \
-  --asset-class equity \
+uv run osca historical-data fetch XBTUSD crypto kraken \
   --timeframe 1d \
-  --start 2021-08-01 \
-  --end 2026-07-31 \
+  --network-access-enabled \
   --storage-root .osca/manual-test
 ```
 
-The exact command hierarchy may change during design only if the same discoverability, compatibility, and acceptance outcomes are preserved.
+Blocked equity evidence can be inspected with:
+
+```bash
+uv run osca historical-data fetch AAPL equity twelve_data \
+  --timeframe 1d \
+  --storage-root .osca/manual-test
+```
+
+The existing governed CSV import remains the equity fallback.
 
 ## Provider admission gate
 
@@ -76,43 +83,17 @@ A provider path is not implementation-ready until the repository records:
 
 Licensing or terms uncertainty blocks admission. Convenience alone is not sufficient.
 
-## Equity source decision gate
+## Remaining U9 implementation
 
-Kraken is already the approved cryptocurrency source. The no-cost equity source must be selected only after exact current licensing, account, quota, historical-depth, adjustment, and retention evidence is captured. If no candidate satisfies the gate, U9 must still deliver the canonical command, provider-neutral workflow, and CSV fallback while marking live equity acquisition blocked rather than silently using an ungoverned source.
-
-## Functional scenarios
-
-### Successful no-cost acquisition
-
-Given an admitted provider capability and a valid canonical request, OSCA retrieves, validates, normalizes, stores, and returns a dataset revision with complete lineage and no unsafe side effects.
-
-### Offline CSV fallback
-
-Given no usable network provider, the existing local CSV import remains available and produces equivalent canonical revision and quality evidence.
-
-### Unsupported capability
-
-An unsupported asset, interval, range, or venue fails before network retrieval with a structured capability explanation.
-
-### Quota or provider outage
-
-Quota exhaustion, rate limiting, timeout, or provider outage returns an explicit retryable or blocked outcome and does not replace an accepted revision with partial data.
-
-### Policy uncertainty
-
-Missing or uncertain terms metadata fails closed before retrieval or retention.
-
-### Malformed or low-quality response
-
-Malformed observations, invalid OHLC relationships, duplicates, non-finite values, negative volume, identity/time inconsistencies, or range gaps produce visible findings and cannot silently enter accepted canonical history.
-
-### Repeated request
-
-Equivalent concurrent or repeated retrieval requests share or reuse durable work and do not create ambiguous duplicate revisions.
-
-### Correction or parser change
-
-Provider corrections or normalization changes create a new identifiable revision and preserve prior accepted evidence.
+1. Parse and validate Kraken OHLC response semantics.
+2. Normalize admitted responses through the canonical OHLCV import/storage path.
+3. Return a dataset revision ID directly from acquisition.
+4. Add durable idempotency and concurrent-request sharing.
+5. Add quota/rate-limit classification and retry guidance.
+6. Add correction/parser revision behavior.
+7. Prove CSV fallback equivalence.
+8. Prove U8 pipeline compatibility and workspace discovery.
+9. Complete the clean-profile manual acceptance exercise.
 
 ## Security and safety
 
@@ -120,61 +101,6 @@ Provider corrections or normalization changes create a new identifiable revision
 - Network access is limited to admitted provider endpoints.
 - No recommendation, model promotion, broker, exchange-order, autonomous-execution, or real-capital capability is introduced.
 - Acquisition output is research data, not investment advice.
-
-## Observability and evidence
-
-Retain, as policy permits:
-
-- canonical request identity;
-- provider capability snapshot;
-- provider mapping identity;
-- retrieval timestamps and attempt status;
-- HTTP/status class without secrets;
-- quota and retry evidence;
-- raw response digest or intentional non-retention record;
-- parser/build identity;
-- normalized payload digest and path;
-- dataset revision ID;
-- licensing/retention decision;
-- quality findings;
-- correlation and job identities;
-- final structured outcome.
-
-## Compatibility and migration
-
-- Existing CSV import and provider module entry points remain compatible unless an explicit deprecation is documented and tested.
-- Existing stored revisions require no destructive migration.
-- New metadata fields must be versioned and backward-readable or safely reported as unavailable.
-
-## Validation
-
-Automated validation must include:
-
-- provider capability and policy contract tests;
-- golden-response normalization tests;
-- secret-exclusion tests;
-- quota, timeout, malformed-response, and unsupported-capability tests;
-- idempotency and concurrent-request tests;
-- revision and correction tests;
-- CLI help and structured-output tests;
-- end-to-end Kraken acquisition through canonical storage;
-- end-to-end admitted equity acquisition when terms evidence permits it;
-- CSV fallback equivalence;
-- U8 pipeline compatibility;
-- workspace discovery of the resulting dataset.
-
-## Manual acceptance
-
-On a clean local profile:
-
-1. Run `osca doctor` or the current equivalent.
-2. Acquire or import AAPL daily history.
-3. Acquire one Kraken spot pair.
-4. Inspect dataset metadata, provenance, policy, integrity, and quality findings.
-5. Run the U8 research pipeline against one acquired revision.
-6. Open the workspace and confirm discovery.
-7. Exercise one provider outage or quota-blocked path.
-8. Confirm all recommendation and execution boundaries remain disabled.
 
 ## Exit criteria
 
