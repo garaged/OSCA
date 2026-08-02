@@ -37,6 +37,63 @@ jobs:
         env:
           AGE_TEST_EXECUTABLE: /tmp/age/age
 
+  package-lifecycle:
+    name: package-lifecycle (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x86_64
+            runner: ubuntu-24.04
+          - platform: macos-arm64
+            runner: macos-14
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.13"
+      - name: Build wheel and source distribution
+        run: uv build
+      - name: Generate checksums, SBOM, and provenance
+        run: |
+          uv run python scripts/build_release_artifacts.py \
+            --dist-dir dist \
+            --output-dir release-artifacts \
+            --source-commit "${GITHUB_SHA}" \
+            --source-repository "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+      - name: Verify release artifact checksums
+        shell: bash
+        run: |
+          cd dist
+          while read -r digest artifact; do
+            actual="$(shasum -a 256 "$artifact" | awk '{print $1}')"
+            test "$actual" = "$digest"
+          done < ../release-artifacts/SHA256SUMS
+      - name: Install wheel in isolated uv tool environment
+        shell: bash
+        run: |
+          wheel="$(find dist -name '*.whl' -print -quit)"
+          uv tool install --force "$wheel"
+          osca version | tee release-artifacts/version-${{ matrix.platform }}.json
+      - name: Exercise packaged lifecycle commands
+        shell: bash
+        run: |
+          profile="${RUNNER_TEMP}/osca-profile"
+          backup="${RUNNER_TEMP}/osca-profile.zip"
+          restored="${RUNNER_TEMP}/osca-restored"
+          osca init --profile-root "$profile"
+          osca lifecycle inspect --profile-root "$profile"
+          osca lifecycle backup --profile-root "$profile" --output "$backup"
+          osca lifecycle restore --backup "$backup" --destination "$restored"
+          osca lifecycle inspect --profile-root "$restored"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osca-release-artifacts-${{ matrix.platform }}
+          path: release-artifacts/
+          if-no-files-found: error
+
   openspec:
     runs-on: ubuntu-latest
     steps:
