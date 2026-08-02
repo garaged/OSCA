@@ -117,15 +117,15 @@ The expected status is `provider_unavailable`, with CSV fallback guidance and no
 
 ## Acceptance checklist
 
-- [ ] Real Kraken acquisition succeeds.
-- [ ] Raw digest and canonical revision are retained.
-- [ ] Canonical quality findings are acceptable.
+- [x] Real Kraken acquisition succeeds.
+- [x] Raw digest and canonical revision are retained.
+- [x] Canonical quality findings are acceptable.
 - [ ] U8 pipeline consumes the exact acquired payload and revision.
 - [ ] Workspace discovers the complete evidence chain.
 - [x] Blocked equity behavior is explicit and non-networked.
-- [x] Recommendation and execution boundaries are false for the retained blocked-equity result.
+- [x] Recommendation and execution boundaries are false for retained acquisition results.
 - [x] Hosted Quality is fully green.
-- [ ] Final Kraken evidence identifiers and interpretation are added below.
+- [x] Final Kraken acquisition identifiers and interpretation are recorded below.
 
 ## Final retained evidence
 
@@ -133,9 +133,32 @@ The expected status is `provider_unavailable`, with CSV fallback guidance and no
 
 The latest PR #72 Quality run passed Ruff, strict mypy, all tests and architecture checks, OpenSpec validation, document-link validation, and secret scanning.
 
+### Successful Kraken acquisition
+
+Executed on August 2, 2026 against the clean U9 acceptance storage root.
+
+Observed retained result:
+
+- completed at `2026-08-02T14:05:59.914991Z`;
+- provider `kraken` with admission status `approved`;
+- asset class `crypto`, symbol `XBTUSD`, timeframe `1d`;
+- acquisition status `succeeded`;
+- dataset revision `dee68bf2-e8e1-5521-9e93-d2d6dc606bae`;
+- canonical payload `.osca/u9-acceptance/payloads/dee68bf2-e8e1-5521-9e93-d2d6dc606bae.parquet`;
+- canonical metadata `.osca/u9-acceptance/osca-local-data.sqlite`;
+- canonical row count `720`;
+- parser version `kraken-ohlc-v1`;
+- raw payload `file:///Users/maxvaldez/DEVEL/Playground/OSCA/.osca/u9-acceptance/production-ingestion/kraken/spot_ohlc/04e11941-2d77-438f-97ef-380a4444c821.json`;
+- raw payload digest `sha256:13a8a05f68560ef535562d422414e3a04182d90b351dd781ae669e6dab44c71b`;
+- acquisition evidence `file:///Users/maxvaldez/DEVEL/Playground/OSCA/.osca/u9-acceptance/historical-acquisition/kraken-crypto-XBTUSD-1d-all-kraken-ohlc-v1.json`;
+- findings `internal-use-only`, `redistribution-disabled`, and `current-uncommitted-bar-excluded`;
+- redistribution, recommendations, broker execution, and real-capital execution remained disabled.
+
+Interpretation: the admitted Kraken path successfully retained immutable raw evidence, excluded the current uncommitted bar, produced a canonical 720-row OHLCV revision, and preserved every licensing and execution boundary required by U9.
+
 ### Blocked-equity acceptance
 
-Executed on August 2, 2026 against a clean U9 acceptance storage root:
+Executed on August 2, 2026 against the same U9 acceptance storage root:
 
 ```bash
 uv run osca historical-data fetch AAPL equity twelve_data \
@@ -158,12 +181,12 @@ Observed retained result:
 - rationale directs the operator to governed CSV import;
 - redistribution, recommendations, broker execution, and real-capital execution remained disabled.
 
-Interpretation: the no-cost equity provider boundary failed closed exactly as designed. This evidence does not establish the successful Kraken acquisition, canonical revision, U8 pipeline handoff, or workspace-discovery legs.
+Interpretation: the no-cost equity provider boundary failed closed exactly as designed.
 
-### Kraken acquisition and research handoff
+### Research handoff and workspace discovery
 
-Pending the retained output identifiers from the real Kraken acquisition, U8 pipeline run, and workspace verification.
+Pending the retained U8 pipeline run identifier/status and confirmation that the analyst workspace discovers the canonical dataset, historical-acquisition evidence, and U8 experiment, diagnostic, manifest, and validation artifacts.
 
 ## Exit decision
 
-Pending. The blocked-equity and hosted-validation legs pass, but U9 may be marked complete only after the successful real Kraken acquisition, canonical lineage, U8 research handoff, and workspace-discovery evidence are recorded. U10 must not weaken the provider, licensing, provenance, or execution boundaries established here.
+Pending. Hosted validation, successful real Kraken acquisition, canonical lineage, blocked-equity behavior, and safety-boundary evidence pass. U9 may be marked complete after the exact acquired payload and revision are consumed by the U8 research pipeline and the resulting evidence chain is confirmed in the analyst workspace. U10 must not weaken the provider, licensing, provenance, or execution boundaries established here.
