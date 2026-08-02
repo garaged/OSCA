@@ -4,14 +4,16 @@ import hashlib
 import json
 import os
 import platform
+import shutil
 import sys
 import zipfile
+from collections.abc import Callable
 from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from osca.operator_experience import load_operator_config
 
@@ -25,6 +27,28 @@ class CompatibilityCheck(BaseModel):
     status: Literal["pass", "warning", "fail"]
     message: str
     remediation: str | None = None
+
+
+class BackupFile(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    path: str
+    size: int = Field(ge=0)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class BackupManifest(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    family: Literal["osca.profile-backup.manifest"]
+    version: Literal["1.0.0"]
+    created_at: str
+    osca_version: str
+    profile_root: str
+    files: list[BackupFile]
+    recommendations_enabled: Literal[False]
+    broker_connections_enabled: Literal[False]
+    real_capital_orders_enabled: Literal[False]
 
 
 def package_version() -> str:
@@ -131,43 +155,38 @@ def create_verified_backup(profile_root: Path, output: Path) -> dict[str, object
 
     root = profile_root.resolve()
     destination = output.resolve()
+    if destination == root or root in destination.parents:
+        raise ValueError("backup output must be outside the profile root")
     destination.parent.mkdir(parents=True, exist_ok=True)
     files = sorted(path for path in root.rglob("*") if path.is_file())
-    manifest_files = [
-        {
-            "path": path.relative_to(root).as_posix(),
-            "size": path.stat().st_size,
-            "sha256": _sha256(path),
-        }
-        for path in files
-    ]
-    manifest = {
-        "family": "osca.profile-backup.manifest",
-        "version": "1.0.0",
-        "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
-        "osca_version": package_version(),
-        "profile_root": str(root),
-        "files": manifest_files,
-        "recommendations_enabled": False,
-        "broker_connections_enabled": False,
-        "real_capital_orders_enabled": False,
-    }
+    manifest = BackupManifest(
+        family="osca.profile-backup.manifest",
+        version="1.0.0",
+        created_at=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        osca_version=package_version(),
+        profile_root=str(root),
+        files=[
+            BackupFile(
+                path=path.relative_to(root).as_posix(),
+                size=path.stat().st_size,
+                sha256=_sha256(path),
+            )
+            for path in files
+        ],
+        recommendations_enabled=False,
+        broker_connections_enabled=False,
+        real_capital_orders_enabled=False,
+    )
     temporary = destination.with_suffix(destination.suffix + ".tmp")
     try:
         with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             for path in files:
                 archive.write(path, path.relative_to(root).as_posix())
-            archive.writestr("backup-manifest.json", json.dumps(manifest, indent=2, sort_keys=True))
-        with zipfile.ZipFile(temporary) as archive:
-            retained = json.loads(archive.read("backup-manifest.json"))
-            if retained != manifest:
-                raise ValueError("backup manifest verification failed")
-            for item in manifest_files:
-                item_path = str(item["path"])
-                expected_digest = str(item["sha256"])
-                digest = hashlib.sha256(archive.read(item_path)).hexdigest()
-                if digest != expected_digest:
-                    raise ValueError(f"backup digest verification failed: {item_path}")
+            archive.writestr(
+                "backup-manifest.json",
+                json.dumps(manifest.model_dump(mode="json"), indent=2, sort_keys=True),
+            )
+        validated = validate_backup(temporary)
         temporary.replace(destination)
     except Exception:
         temporary.unlink(missing_ok=True)
@@ -180,11 +199,154 @@ def create_verified_backup(profile_root: Path, output: Path) -> dict[str, object
         "profile_root": str(root),
         "backup_path": str(destination),
         "backup_sha256": _sha256(destination),
-        "file_count": len(manifest_files),
+        "file_count": len(validated.files),
         "mutation_performed": False,
         "recommendations_enabled": False,
         "broker_connections_enabled": False,
         "real_capital_orders_enabled": False,
+    }
+
+
+def validate_backup(backup: Path) -> BackupManifest:
+    archive_path = backup.resolve()
+    if not archive_path.is_file():
+        raise ValueError(f"backup does not exist: {archive_path}")
+    try:
+        with zipfile.ZipFile(archive_path) as archive:
+            names = set(archive.namelist())
+            if "backup-manifest.json" not in names:
+                raise ValueError("backup manifest is missing")
+            raw_manifest = json.loads(archive.read("backup-manifest.json"))
+            manifest = BackupManifest.model_validate(raw_manifest)
+            expected_names = {item.path for item in manifest.files} | {"backup-manifest.json"}
+            if names != expected_names:
+                raise ValueError("backup contents do not match the manifest")
+            for item in manifest.files:
+                _validate_archive_path(item.path)
+                payload = archive.read(item.path)
+                if len(payload) != item.size:
+                    raise ValueError(f"backup size verification failed: {item.path}")
+                if hashlib.sha256(payload).hexdigest() != item.sha256:
+                    raise ValueError(f"backup digest verification failed: {item.path}")
+    except (zipfile.BadZipFile, json.JSONDecodeError, ValidationError) as exc:
+        raise ValueError("backup is invalid or incompatible") from exc
+    return manifest
+
+
+def restore_verified_backup(backup: Path, destination: Path, *, replace: bool = False) -> dict[str, object]:
+    manifest = validate_backup(backup)
+    target = destination.resolve()
+    if target.exists() and any(target.iterdir()) and not replace:
+        raise ValueError("restore destination is not empty; use --replace explicitly")
+
+    staging = target.with_name(f".{target.name}.restore-staging")
+    displaced = target.with_name(f".{target.name}.restore-previous")
+    shutil.rmtree(staging, ignore_errors=True)
+    shutil.rmtree(displaced, ignore_errors=True)
+    staging.mkdir(parents=True)
+    try:
+        with zipfile.ZipFile(backup.resolve()) as archive:
+            for item in manifest.files:
+                output = staging / PurePosixPath(item.path)
+                output.parent.mkdir(parents=True, exist_ok=True)
+                output.write_bytes(archive.read(item.path))
+        for item in manifest.files:
+            restored = staging / PurePosixPath(item.path)
+            if _sha256(restored) != item.sha256:
+                raise ValueError(f"restored digest verification failed: {item.path}")
+        if target.exists():
+            target.replace(displaced)
+        staging.replace(target)
+        shutil.rmtree(displaced, ignore_errors=True)
+    except Exception:
+        shutil.rmtree(staging, ignore_errors=True)
+        if displaced.exists() and not target.exists():
+            displaced.replace(target)
+        raise
+
+    return {
+        "family": "osca.profile-restore.result",
+        "version": "1.0.0",
+        "status": "restored",
+        "backup_path": str(backup.resolve()),
+        "backup_sha256": _sha256(backup.resolve()),
+        "profile_root": str(target),
+        "file_count": len(manifest.files),
+        "recommendations_enabled": False,
+        "broker_connections_enabled": False,
+        "real_capital_orders_enabled": False,
+    }
+
+
+def upgrade_profile(
+    profile_root: Path,
+    backup: Path,
+    target_version: str,
+    *,
+    mutation: Callable[[Path], None] | None = None,
+) -> dict[str, object]:
+    root = profile_root.resolve()
+    backup_result = create_verified_backup(root, backup)
+    before = {path.relative_to(root).as_posix(): _sha256(path) for path in root.rglob("*") if path.is_file()}
+    try:
+        if mutation is not None:
+            mutation(root)
+        lifecycle_dir = root / "lifecycle"
+        lifecycle_dir.mkdir(parents=True, exist_ok=True)
+        state = {
+            "family": "osca.profile-lifecycle.state",
+            "version": "1.0.0",
+            "installed_osca_version": target_version,
+            "upgraded_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            "backup_path": str(backup.resolve()),
+            "backup_sha256": str(backup_result["backup_sha256"]),
+        }
+        (lifecycle_dir / "state.json").write_text(
+            json.dumps(state, indent=2, sort_keys=True), encoding="utf-8"
+        )
+        compatibility = inspect_profile(root)
+        if compatibility["status"] == "incompatible":
+            raise ValueError("post-upgrade compatibility inspection failed")
+    except Exception as exc:
+        restore_verified_backup(backup, root, replace=True)
+        return {
+            "family": "osca.profile-upgrade.result",
+            "version": "1.0.0",
+            "status": "recovered",
+            "target_version": target_version,
+            "backup_path": str(backup.resolve()),
+            "failure": str(exc),
+            "pre_upgrade_digests_preserved": _profile_digests(root) == before,
+            "recommendations_enabled": False,
+            "broker_connections_enabled": False,
+            "real_capital_orders_enabled": False,
+        }
+
+    return {
+        "family": "osca.profile-upgrade.result",
+        "version": "1.0.0",
+        "status": "upgraded",
+        "target_version": target_version,
+        "backup_path": str(backup.resolve()),
+        "backup_sha256": str(backup_result["backup_sha256"]),
+        "pre_upgrade_file_count": len(before),
+        "recommendations_enabled": False,
+        "broker_connections_enabled": False,
+        "real_capital_orders_enabled": False,
+    }
+
+
+def _validate_archive_path(value: str) -> None:
+    path = PurePosixPath(value)
+    if path.is_absolute() or ".." in path.parts or value in {"", "."}:
+        raise ValueError(f"unsafe backup member path: {value}")
+
+
+def _profile_digests(root: Path) -> dict[str, str]:
+    return {
+        path.relative_to(root).as_posix(): _sha256(path)
+        for path in root.rglob("*")
+        if path.is_file()
     }
 
 
