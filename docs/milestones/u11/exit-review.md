@@ -19,23 +19,12 @@ No hand-authored JSON or internal `python -m osca.*` command is required by the 
 
 ## Automated acceptance
 
-Focused U11 coverage proves:
+Focused U11 coverage proves safe initialization, strict configuration validation, corrective diagnostics, primary CLI discovery, compatibility delegation, retained-evidence consistency, loopback-only workspace access, and disabled recommendation/execution boundaries.
 
-- safe versioned initialization and overwrite refusal;
-- strict rejection of unknown or unsafe configuration fields;
-- actionable pre-init diagnostics;
-- writable storage, SQLite, PyArrow, and loopback-port checks;
-- explicit Kraken public capability and no-credential no-cost path diagnostics;
-- evidence-consistency warnings and healthy retained-evidence discovery;
-- primary CLI command discovery;
-- canonical aliases delegate to the documented compatibility commands;
-- non-loopback workspace startup is rejected;
-- recommendation, promotion, broker, autonomous, and real-capital boundaries stay disabled.
-
-Quality run #732 passed on final closeout commit `74609f8c5ac2b076d5f95083cfe96a29bcd52282`:
+Quality run #733 passed on final closeout head `c957d3d358e249b0c9b27f7cde0a7a76b9b66d9a`:
 
 - Ruff;
-- strict mypy across the complete source package;
+- strict mypy;
 - all tests plus contract, migration, document-link, and architecture checks;
 - OpenSpec doctor and strict validation;
 - secret scanning.
@@ -66,63 +55,27 @@ The August 2, 2026 clean-profile run passed the complete canonical U11 path.
 
 - Final doctor result had zero failures, eight passes, and one non-blocking warning because port 8765 was already in use.
 - Evidence consistency passed with five retained items and no workspace warnings.
-- Workspace snapshot contract `osca.analyst-workspace.snapshot` v1.1.0 reported:
-  - one dataset;
-  - one acquisition;
-  - one experiment;
-  - one diagnostic;
-  - one pipeline run;
-  - no validation artifact, as expected for a diagnostic-ineligible run.
+- Workspace snapshot contract `osca.analyst-workspace.snapshot` v1.1.0 reported one dataset, one acquisition, one experiment, one diagnostic, and one pipeline run.
+- No validation artifact was present, as expected for a diagnostic-ineligible run.
 - Workspace remained read-only, network-disabled, credential-materialization-disabled, production-ingestion-disabled, recommendation-disabled, broker-disabled, and real-capital-disabled.
 
 The occupied-port warning is informational rather than release-blocking because the snapshot path completed successfully and the doctor supplied explicit remediation to choose another port for server startup.
 
 ## Compatibility policy
 
-The following compatibility entry points remain supported through U13 release-candidate acceptance:
-
-- `local-ohlcv-import` → `import-data`;
-- `demo-research-report` → `analyze`;
-- `backtest-paper-run` → `backtest`;
-- `osca-research-pipeline` / module entry point → `osca research-pipeline`;
-- analyst-workspace module entry point → `osca workspace`.
-
-Removal requires a later documented decision, release note, and compatibility evidence.
+Compatibility entry points remain supported through U13 release-candidate acceptance. Removal requires a later documented decision, release note, and compatibility evidence.
 
 ## Acceptance checklist
 
-### Initialization and diagnostics
-
-- [x] `osca init` creates versioned configuration and storage without hand-authored JSON.
-- [x] Safe defaults keep network implicit access, recommendations, promotion, brokers, autonomous execution, and real-capital orders disabled.
-- [x] Unsafe or unknown configuration fields fail validation.
-- [x] `osca doctor` returns structured checks and remediation.
-- [x] Runtime, storage, SQLite, PyArrow, port, provider, credential, and evidence consistency are covered.
-
-### Unified primary workflow
-
-- [x] Acquisition is available through `osca historical-data fetch` with explicit network opt-in.
-- [x] Offline import is available through `osca import-data`.
-- [x] Deterministic analysis is available through `osca analyze`.
-- [x] Backtest-to-paper evidence is available through `osca backtest`.
-- [x] Experiment, diagnostic, and optional human-gated validation use `osca research-pipeline`.
-- [x] Workspace snapshot/server startup use `osca workspace`.
-
-### Compatibility and documentation
-
-- [x] Compatibility aliases are retained through U13.
-- [x] Canonical-to-compatibility delegation is covered automatically.
-- [x] zsh, Bash, and PowerShell quickstarts are documented.
-- [x] Root README uses the canonical U11 workflow.
-- [x] Central manual-testing guide is reconciled through U11.
-
-### Quality and manual evidence
-
-- [x] Final hosted Quality is green on the final closeout head.
-- [x] Clean-profile initialization and pre-workflow doctor evidence are retained.
-- [x] One acquisition-to-research chain is retained.
-- [x] Populated-profile doctor and workspace snapshot evidence are retained.
-- [x] Safety boundaries are confirmed in the retained outputs.
+- [x] Safe versioned initialization and structured diagnostics.
+- [x] Canonical acquisition/import, analysis, backtest, research pipeline, and workspace commands.
+- [x] Compatibility aliases and cross-shell quickstarts.
+- [x] Root README and central manual-testing reconciliation.
+- [x] Final hosted Quality on the final closeout head.
+- [x] Clean-profile initialization and pre-workflow doctor evidence.
+- [x] One acquisition-to-research chain.
+- [x] Populated-profile doctor and workspace snapshot evidence.
+- [x] Confirmed disabled safety boundaries.
 
 ## Residual limitations
 
