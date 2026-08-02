@@ -2,14 +2,14 @@
 
 - **Status:** Active from M8
 - **First covered milestone:** M8 F3 paper evaluation and automation foundation
-- **Current coverage:** Through P10 implementation candidate
+- **Current coverage:** Through U8 real-world research reconciliation
 - **Audience:** Maintainers and early operators
 - **Purpose:** Keep executable reality checks for user- and operator-visible behavior while preserving safety boundaries.
-- **Last reviewed:** 2026-07-31
+- **Last reviewed:** 2026-08-02
 
 ## Governance
 
-Every milestone from M8 onward must review this guide when it changes CLI, storage, providers, routing, research, backtesting, paper evidence, scheduling, recovery, notifications, or other operator-visible behavior.
+Every milestone from M8 onward must review this guide when it changes CLI, storage, providers, routing, research, backtesting, paper evidence, scheduling, recovery, notifications, ML diagnostics, model validation, or other operator-visible behavior.
 
 Manual checks supplement but never replace Ruff, strict mypy, automated tests, contract/migration/link/architecture checks, OpenSpec strict validation, secret scanning, and hosted Quality.
 
@@ -28,11 +28,11 @@ Use disposable storage such as `.osca/manual-test`. Do not configure broker/exch
 
 ## Historical coverage
 
-M8-M12 and P1-P5 detailed specifications, exit reviews, tests, and retained evidence remain authoritative. Their boundaries continue to prohibit live execution, ungoverned provider use, credential leakage, and automatic promotion.
+M8-M12, P1-P17, and U2-U7 detailed specifications, exit reviews, tests, and retained evidence remain authoritative. Their boundaries continue to prohibit live execution, ungoverned provider use, credential leakage, investment recommendations, and automatic promotion.
 
 ## P6-P8 local evidence workflow
 
-Use the ten-row AAPL fixture for any workflow that reaches the P8 strategy:
+Use the ten-row AAPL fixture for the deterministic smoke workflow:
 
 ```bash
 rm -rf .osca/manual-test
@@ -76,8 +76,6 @@ See the [P8 quickstart](../milestones/p8/user-testing-quickstart.md) and [retain
 
 Use the [P9 quickstart](../milestones/p9/user-testing-quickstart.md).
 
-Deterministic fixture replay:
-
 ```bash
 uv run python -m osca.provider_preview sec-company-facts \
   320193 \
@@ -87,108 +85,108 @@ uv run python -m osca.provider_preview sec-company-facts \
 
 Expected: `sec_edgar`, `fixture_replay`, `succeeded`, `record_count: 3`, and no network access.
 
-Optional SEC live preview requires explicit `--enable-network` plus a real organization/contact user agent and inherits approved-host/path, throttling, timeout, response-size, cache, and provenance controls.
-
-FRED remains intentionally blocked:
-
-```bash
-set +e
-uv run python -m osca.provider_preview fred-series GDP \
-  --enable-network \
-  --secret-reference secret:fred/default
-FRED_EXIT=$?
-set -e
-```
-
-Expected: exit `2`, `policy_blocked`/`blocked` evidence, no network request, no secret resolution, and no payload or cache.
+FRED remains intentionally blocked. An explicit live request must exit nonzero with `policy_blocked` evidence, no network request, no secret resolution, and no payload or cache.
 
 ## P10 capability-based routing
 
-Use the [P10 quickstart](../milestones/p10/user-testing-quickstart.md) as the executable source of truth.
-
-### Inspect policy
+Use the [P10 quickstart](../milestones/p10/user-testing-quickstart.md).
 
 ```bash
 uv run python -m osca.runtime_routing policy
-```
-
-Expected:
-
-- OHLCV source precedence: `local_ohlcv`
-- company facts/filings: SEC fixture before SEC live preview
-- macro series: no selectable source; missing-source status `policy_blocked`
-
-### Route local OHLCV
-
-```bash
 uv run python -m osca.runtime_routing local-ohlcv \
   AAPL "$PAYLOAD_URI" --timeframe 1d
 ```
 
-Expected: `selected`, `local_ohlcv`, no network use, and all production/trading boundaries false.
+Expected:
 
-### Route SEC fixture enrichment
+- local OHLCV is the selected market-history source
+- SEC fixture routing remains available for enrichment
+- macro requests fail closed as `policy_blocked` or `provider_unavailable`
+- no production provider, credential, broker, or real-capital boundary is enabled
+
+## U2-U7 analytical and ML modules
+
+The standalone module entry points remain supported for focused testing:
 
 ```bash
-uv run python -m osca.runtime_routing sec-company-facts \
-  320193 \
-  --fixture-file tests/fixtures/provider_preview/sec_companyfacts_aapl.json \
-  --storage-root .osca/manual-test
+uv run python -m osca.analytical_data --help
+uv run python -m osca.quantitative_analysis --help
+uv run python -m osca.ml_experiments --help
+uv run python -m osca.prediction_lab --help
+uv run python -m osca.model_validation --help
+uv run python -m osca.analyst_workspace --help
 ```
 
-Expected: `selected`, `sec_edgar_fixture`, no network use.
+For classification, the accepted governed values are:
 
-### Confirm macro independence
+- task: `classification`
+- model: `logistic_classification`
+
+A U5 experiment must retain point-in-time-safe predictions and keep network, credential, recommendation, automatic-promotion, broker, and real-capital boundaries disabled. U6 may classify the evidence as eligible for U7, but eligibility is not a claim of predictive or investment quality. U7 requires explicit human approval and must compare cost-aware model-derived evidence with buy-and-hold.
+
+## U8 guided real-world research workflow
+
+Use at least 250 governed daily bars for a meaningful workflow. The August 1, 2026 validation used 1,255 AAPL daily bars and demonstrated that an eligible model can still materially underperform buy-and-hold.
+
+After importing the CSV, obtain the payload URI and dataset revision from the import JSON, then run the primary CLI command:
 
 ```bash
-set +e
-uv run python -m osca.runtime_routing macro-series CPIAUCSL
-MACRO_EXIT=$?
-set -e
+uv run osca research-pipeline \
+  "$PAYLOAD_URI" \
+  "$DATASET_REVISION_ID" \
+  AAPL \
+  1d \
+  --storage-root .osca/manual-test \
+  --reviewer "$USER" \
+  --rationale "Approved for local evidence-only validation after reviewing the retained experiment and diagnostics." \
+  --approve-local-validation
 ```
 
-Expected: exit `2`, `status: policy_blocked`, `provider_id: fred`, no selected source, no payload, no network use, and no credential materialization.
+Expected:
 
-A request for an unconfigured macro provider must instead return `provider_unavailable`.
+- task `classification`
+- model `logistic_classification`
+- experiment and U6 diagnostic retained under `.osca/manual-test/research-evidence/<run-id>/`
+- U7 request/result retained only when the diagnostic is eligible
+- a traceable `manifest.json` records artifact paths, status, evidence digest, and safety boundaries
+- noneligible diagnostics fail closed before U7 while preserving experiment and diagnostic evidence
+- no live serving, automatic promotion, recommendation, broker, or real-capital path is enabled
 
-### Confirm partial batch continuation
+The explicit `--approve-local-validation` option records human authorization for local evidence comparison only. It is not an investment approval and does not authorize paper-challenger designation, broker connectivity, or orders.
+
+See the [U8 real-world quickstart](../milestones/u8/real-world-research-quickstart.md).
+
+## Analyst workspace verification
+
+Start the read-only workspace against the same storage root. Prefer a free dynamic port when running automated tests to avoid accidentally testing another local service.
 
 ```bash
-uv run python - <<'PY'
-import json
-import os
-from pathlib import Path
-from osca.runtime_routing import RuntimeRouter, RuntimeRoutingCapability, RuntimeRoutingRequest
-
-result = RuntimeRouter().route_many(
-    (
-        RuntimeRoutingRequest(
-            capability=RuntimeRoutingCapability.OHLCV,
-            resource_id="AAPL",
-            local_payload_uri=os.environ["PAYLOAD_URI"],
-        ),
-        RuntimeRoutingRequest(
-            capability=RuntimeRoutingCapability.MACRO_SERIES,
-            resource_id="CPIAUCSL",
-        ),
-    ),
-    storage_root=Path(".osca/manual-test"),
-)
-print(json.dumps(result.model_dump(mode="json"), indent=2, sort_keys=True))
+PORT="$(uv run python - <<'PY'
+import socket
+with socket.socket() as sock:
+    sock.bind(("127.0.0.1", 0))
+    print(sock.getsockname()[1])
 PY
+)"
+
+uv run python -m osca.analyst_workspace \
+  --storage-root .osca/manual-test \
+  --host 127.0.0.1 \
+  --port "$PORT"
 ```
 
-Expected: `outcome: partial`, one selected decision, one policy-blocked decision, and `non_macro_continued: true`.
+Verify:
 
-### Stale check
-
-Use `--max-age-seconds` to make old evidence fail closed as `provider_unavailable`. Add `--allow-stale` only deliberately; the selected decision must report `stale: true` and a stale-source finding.
+- `/health` returns `status: ok`, read-only mode, network disabled, and promotion/broker boundaries disabled
+- `/` renders the OSCA Analyst Workspace title and safety footer
+- `/api/workspace` lists the governed dataset and retained U8 research evidence
+- `/api/model-validation/run` reproduces deterministic CLI evidence when given the same retained request; only the generated validation ID may differ
 
 ## Provider-state interpretation
 
 | Provider/source | Current meaning |
 |---|---|
-| Governed local OHLCV | Selectable P10 market-history source. |
+| Governed local OHLCV | Selectable market-history source. |
 | SEC EDGAR | Fixture and explicit bounded live-preview enrichment source. |
 | FRED | Optional macro candidate; live use remains `policy_blocked`. |
 | Unconfigured macro source | `provider_unavailable`. |
@@ -203,6 +201,7 @@ After every workflow, confirm no output or documentation claims that OSCA curren
 - live broker or exchange connections
 - autonomous strategy execution
 - real-capital order placement
+- automatic model promotion or live serving
 - automatic provider discovery or silent source blending
 - scheduled production provider ingestion
 - credential values in logs, URLs, metadata, reports, or portable configuration
