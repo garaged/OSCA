@@ -82,6 +82,61 @@ def test_workspace_discovers_local_dataset_and_reports(tmp_path: Path) -> None:
     assert sections[WorkspaceSection.BACKTESTS].item_count == 1
 
 
+def test_workspace_discovers_u9_acquisition_and_research_chain(tmp_path: Path) -> None:
+    payload = _write_dataset_metadata(tmp_path)
+    acquisition = tmp_path / "historical-acquisition" / "kraken-XBTUSD.json"
+    run_root = tmp_path / "research-evidence" / "run-u9"
+    acquisition.parent.mkdir(parents=True)
+    run_root.mkdir(parents=True)
+    acquisition.write_text(
+        json.dumps(
+            {
+                "family": "osca.historical-acquisition.evidence",
+                "status": "succeeded",
+                "dataset_revision_id": "dataset-aapl",
+                "canonical_payload_uri": str(payload),
+                "recommendations_enabled": False,
+                "broker_execution_enabled": False,
+                "real_capital_execution_enabled": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    for name, family in (
+        ("manifest.json", "osca.research-pipeline.manifest"),
+        ("experiment.json", "osca.ml-experiment.result"),
+        ("diagnostic.json", "osca.prediction-diagnostic.result"),
+    ):
+        (run_root / name).write_text(
+            json.dumps(
+                {
+                    "family": family,
+                    "status": "diagnostic_not_eligible",
+                    "recommendations_enabled": False,
+                    "broker_execution_enabled": False,
+                    "real_capital_execution_enabled": False,
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    snapshot = AnalystWorkspaceService().snapshot(tmp_path)
+    sections = {section.section: section for section in snapshot.sections}
+    report_paths = {
+        str(item.metadata["relative_path"])
+        for item in sections[WorkspaceSection.REPORTS].items
+    }
+
+    assert sections[WorkspaceSection.DATASETS].item_count == 1
+    assert "historical-acquisition/kraken-XBTUSD.json" in report_paths
+    assert "research-evidence/run-u9/manifest.json" in report_paths
+    assert "research-evidence/run-u9/experiment.json" in report_paths
+    assert "research-evidence/run-u9/diagnostic.json" in report_paths
+    assert snapshot.read_only is True
+    assert snapshot.network_access_enabled is False
+    assert snapshot.real_capital_orders_enabled is False
+
+
 def test_workspace_discovers_sec_enrichment_and_filters_secret_fields(
     tmp_path: Path,
 ) -> None:

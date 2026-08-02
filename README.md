@@ -4,7 +4,7 @@ OSCA is a modular market-intelligence and quantitative-research platform for sto
 
 The M0-M12 architecture and lifecycle roadmap is complete. P1-P15 delivered provider governance, deterministic local research, model previews, narrow SEC/Kraken ingestion, personal-server operations, and governed trusted-local extensions. P16 completed the live-order readiness study and recorded ADR-0044: NO-GO. P17 remains blocked and is not authorized.
 
-U8 reconciled the real-world research workflow into the primary CLI and retained experiment, diagnostic, validation, and manifest evidence under governed storage. U9 is the next implementation milestone: governed no-cost historical-data acquisition. The approved U9-U14 path now focuses on data acquisition, workspace usability, first-run integration, packaging, release acceptance, and contributor readiness rather than additional analytical breadth.
+U8 reconciled the real-world research workflow into the primary CLI. U9 now provides governed no-cost Kraken historical acquisition, explicit blocked-equity behavior with CSV fallback, canonical revisions, persisted lifecycle evidence, full degraded outcomes, U8 handoff, and complete recursive workspace discovery. U10 is the next milestone: dedicated research-evidence workspace sections and detail views.
 
 Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, and a public extension marketplace remain disabled.
 
@@ -16,9 +16,10 @@ Recommendations, live model serving, automatic promotion, brokers, autonomous ex
 4. [Manual testing and usage](docs/testing/manual-testing.md)
 5. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
 6. [U9 governed historical acquisition](docs/milestones/u9/README.md)
-7. [U8 real-world workflow reconciliation](docs/milestones/u8/README.md)
-8. [P milestone disposition](docs/milestones/remaining-p-roadmap.md)
-9. [Requirements catalog](docs/governance/requirements-catalog.md)
+7. [U9 exit review](docs/milestones/u9/exit-review.md)
+8. [U9 traceability](docs/milestones/u9/traceability.md)
+9. [U8 real-world workflow reconciliation](docs/milestones/u8/README.md)
+10. [Requirements catalog](docs/governance/requirements-catalog.md)
 
 ## Current workflow
 
@@ -30,18 +31,38 @@ Recommendations, live model serving, automatic promotion, brokers, autonomous ex
 - P14: run explicitly enabled personal-server jobs, alerts, backup, and restore operations.
 - P15: validate, install, execute, inspect, and roll back independently trusted local extension packs.
 - U5-U8: run classification experiments, prediction diagnostics, explicit human-gated validation, and one guided retained research pipeline.
-- U9-U14: complete the path to a no-cost, clean-machine, evidence-complete release candidate.
+- U9: acquire governed Kraken history or fail equity acquisition closed to CSV fallback; retain canonical, lifecycle, lineage, degraded-state, and workspace evidence.
+- U10-U14: complete workspace usability, first-run integration, packaging, release acceptance, and contributor readiness.
+
+## U9 historical acquisition
+
+```bash
+uv run osca historical-data fetch \
+  XBTUSD crypto kraken \
+  --timeframe 1d \
+  --expected-pair-key XXBTZUSD \
+  --minimum-rows 250 \
+  --network-access-enabled \
+  --storage-root .osca/research
+```
+
+The command accepts timezone-aware ISO-8601 `--start-at` and `--end-at` values, retains request/job/correlation evidence, validates provider mapping, excludes Kraken's current uncommitted bar, creates a canonical Parquet/SQLite revision, and records raw/normalized digests and safety boundaries.
+
+No no-cost equity provider currently passes the complete admission gate. Equity requests fail closed and direct users to governed CSV import rather than silently calling an unapproved source.
 
 ## Next milestone
 
-U9 adds a provider-neutral historical-acquisition capability through the primary `osca` CLI. It must preserve provider capability, licensing, attribution, quota, provenance, canonical revision, quality, security, and evidence controls. Kraken is the approved cryptocurrency path. A no-cost equity source may be admitted only after exact current terms, account, quota, historical-depth, adjustment, retention, export, backup, redistribution, and attribution evidence passes the provider admission gate. Local CSV import remains the provider-independent offline fallback.
+U10 adds dedicated read-only workspace sections and detail views for:
 
-See:
+- historical acquisitions and persisted jobs;
+- datasets and lineage;
+- ML experiments;
+- prediction diagnostics;
+- model validations;
+- pipeline manifests and backtests;
+- evidence digests, warnings, safety states, filtering, and portable export.
 
-- [U9 milestone intent](docs/milestones/u9/README.md)
-- [U9 OpenSpec proposal](openspec/changes/u9-governed-historical-acquisition/proposal.md)
-- [U9 OpenSpec design](openspec/changes/u9-governed-historical-acquisition/design.md)
-- [U9 implementation tasks](openspec/changes/u9-governed-historical-acquisition/tasks.md)
+U10 must preserve U9 provider licensing, provenance, read-only, and no-execution boundaries.
 
 ## Extension boundary
 
@@ -59,7 +80,6 @@ See:
 - [Product requirements](docs/product-requirements.md)
 - [Decision log](docs/decision-log.md)
 - [Requirements catalog](docs/governance/requirements-catalog.md)
-- [P14-P15 reconciliation](docs/governance/p14-p15-reconciliation.md)
 - [P milestone disposition](docs/milestones/remaining-p-roadmap.md)
 - [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
 - [Architecture registry](engineering/architecture-registry.yaml)
