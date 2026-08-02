@@ -37,6 +37,12 @@ The workspace SHALL provide read-only upstream and downstream lineage from datas
 
 The workspace SHALL support read-only detail views and filtering by date, symbol, timeframe, artifact type, and status without altering retained evidence.
 
+#### Scenario: Operator filters retained evidence
+
+- **WHEN** an operator applies supported evidence filters or opens an artifact detail
+- **THEN** CLI and API representations return the same retained identifiers and statuses
+- **AND** no retained artifact is modified.
+
 ### Requirement: Governed evidence export
 
 The workspace SHALL support bounded raw JSON download and portable evidence-bundle export only when provider policy permits the included artifacts.
@@ -51,3 +57,9 @@ The workspace SHALL support bounded raw JSON download and portable evidence-bund
 ### Requirement: Safety boundaries remain disabled
 
 The workspace SHALL remain loopback-only and read-only, with network retrieval, credential materialization, recommendations, automatic model promotion, broker connections, autonomous execution, and real-capital orders disabled.
+
+#### Scenario: Workspace evidence is inspected or exported
+
+- **WHEN** an operator browses, filters, downloads, or exports retained evidence
+- **THEN** the workspace performs only local read operations
+- **AND** no recommendation, promotion, broker, autonomous, or real-capital capability is enabled.
