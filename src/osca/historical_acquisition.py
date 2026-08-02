@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from osca.local_data_import import (
     LocalOHLCVImportFormat,
     LocalOHLCVImportRequest,
+    LocalOHLCVImportResult,
     LocalOHLCVTimeframe,
     import_local_ohlcv,
 )
@@ -172,7 +173,9 @@ def _run_historical_acquisition(
     status = {
         IngestionStatus.SUCCEEDED: HistoricalAcquisitionStatus.SUCCEEDED,
         IngestionStatus.POLICY_BLOCKED: HistoricalAcquisitionStatus.POLICY_BLOCKED,
-        IngestionStatus.PROVIDER_UNAVAILABLE: HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE,
+        IngestionStatus.PROVIDER_UNAVAILABLE: (
+            HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE
+        ),
         IngestionStatus.FAILED: HistoricalAcquisitionStatus.FAILED,
     }[ingestion.status]
     evidence = _base_evidence(
@@ -229,7 +232,7 @@ class KrakenUnavailableError(ValueError):
 def _normalize_kraken_payload(
     request: HistoricalAcquisitionRequest,
     payload_uri: str | None,
-):
+) -> LocalOHLCVImportResult:
     if payload_uri is None:
         raise ValueError("successful ingestion did not retain a raw payload")
     payload_path = _path_from_uri(payload_uri)
