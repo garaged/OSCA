@@ -4,7 +4,7 @@ OSCA is a modular market-intelligence and quantitative-research platform for sto
 
 The M0-M12 architecture and lifecycle roadmap is complete. P1-P15 delivered provider governance, deterministic local research, model previews, narrow SEC/Kraken ingestion, personal-server operations, and governed trusted-local extensions. P16 completed the live-order readiness study and recorded ADR-0044: NO-GO. P17 remains blocked and is not authorized.
 
-U8 reconciled the real-world research workflow into the primary CLI. U9 now provides governed no-cost Kraken historical acquisition, explicit blocked-equity behavior with CSV fallback, canonical revisions, persisted lifecycle evidence, full degraded outcomes, U8 handoff, and complete recursive workspace discovery. U10 is the next milestone: dedicated research-evidence workspace sections and detail views.
+U8 reconciled the real-world research workflow into the primary CLI. U9 provides governed no-cost Kraken historical acquisition, explicit blocked-equity behavior with CSV fallback, canonical revisions, persisted lifecycle evidence, full degraded outcomes, and U8 handoff. U10 now provides dedicated research-evidence sections, read-only details and lineage, filters, explicit artifact-health states, raw JSON download, and policy-governed portable export. U11 is the next milestone: first-run and unified operator experience.
 
 Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, and a public extension marketplace remain disabled.
 
@@ -15,26 +15,26 @@ Recommendations, live model serving, automatic promotion, brokers, autonomous ex
 3. [Architecture decisions](docs/decisions/README.md)
 4. [Manual testing and usage](docs/testing/manual-testing.md)
 5. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
-6. [U9 governed historical acquisition](docs/milestones/u9/README.md)
-7. [U9 exit review](docs/milestones/u9/exit-review.md)
-8. [U9 traceability](docs/milestones/u9/traceability.md)
-9. [U8 real-world workflow reconciliation](docs/milestones/u8/README.md)
+6. [U10 research-evidence workspace](docs/milestones/u10/README.md)
+7. [U10 manual acceptance](docs/milestones/u10/manual-acceptance.md)
+8. [U10 traceability](docs/milestones/u10/traceability.md)
+9. [U9 governed historical acquisition](docs/milestones/u9/README.md)
 10. [Requirements catalog](docs/governance/requirements-catalog.md)
 
 ## Current workflow
 
 - P6-P8: import local OHLCV, generate deterministic research, and run backtest-to-paper evidence.
 - P9-P10: use bounded SEC enrichment and explicit capability routing; FRED remains blocked.
-- P11: inspect retained evidence through a loopback-only read-only workspace.
-- P12: optionally run deterministic local inference or fixture-backed review-required LLM previews.
+- P11-P12: inspect retained evidence and optional deterministic/model-preview results through a loopback-only read-only workspace.
 - P13: explicitly opt into bounded SEC or Kraken public-data ingestion with retained lineage.
 - P14: run explicitly enabled personal-server jobs, alerts, backup, and restore operations.
 - P15: validate, install, execute, inspect, and roll back independently trusted local extension packs.
 - U5-U8: run classification experiments, prediction diagnostics, explicit human-gated validation, and one guided retained research pipeline.
-- U9: acquire governed Kraken history or fail equity acquisition closed to CSV fallback; retain canonical, lifecycle, lineage, degraded-state, and workspace evidence.
-- U10-U14: complete workspace usability, first-run integration, packaging, release acceptance, and contributor readiness.
+- U9: acquire governed Kraken history or fail equity acquisition closed to CSV fallback; retain canonical, lifecycle, lineage, and degraded-state evidence.
+- U10: browse dedicated acquisition, experiment, diagnostic, validation, and pipeline sections; inspect lineage; filter evidence; and create governed local evidence exports.
+- U11-U14: complete first-run integration, packaging, release acceptance, and contributor readiness.
 
-## U9 historical acquisition
+## Governed historical acquisition
 
 ```bash
 uv run osca historical-data fetch \
@@ -46,23 +46,27 @@ uv run osca historical-data fetch \
   --storage-root .osca/research
 ```
 
-The command accepts timezone-aware ISO-8601 `--start-at` and `--end-at` values, retains request/job/correlation evidence, validates provider mapping, excludes Kraken's current uncommitted bar, creates a canonical Parquet/SQLite revision, and records raw/normalized digests and safety boundaries.
+The command accepts timezone-aware ISO-8601 ranges, retains request/job/correlation evidence, validates provider mapping, excludes Kraken's current uncommitted bar, creates a canonical Parquet/SQLite revision, and records raw/normalized digests and safety boundaries.
 
 No no-cost equity provider currently passes the complete admission gate. Equity requests fail closed and direct users to governed CSV import rather than silently calling an unapproved source.
 
+## Research-evidence workspace
+
+```bash
+uv run python -m osca.analyst_workspace \
+  --storage-root .osca/research \
+  --snapshot
+```
+
+The workspace provides dedicated datasets, acquisitions, backtests, experiments, diagnostics, validations, and pipeline-run sections. Operators can filter by date, symbol, timeframe, type, and status; inspect retained detail and upstream/downstream lineage; download bounded local JSON; and export a portable ZIP whose manifest records included and policy-excluded evidence.
+
+Provider evidence with redistribution disabled is not placed in portable bundles. Secrets and credential fields remain excluded. The workspace stays loopback-only, read-only, and network-disabled.
+
 ## Next milestone
 
-U10 adds dedicated read-only workspace sections and detail views for:
+U11 creates one canonical first-run and operator path through the primary `osca` CLI. It will cover initialization, diagnostics, acquisition/import, research execution, workspace startup, compatibility aliases, safe local defaults, and shell-safe quickstarts without requiring internal-module commands or hand-authored JSON.
 
-- historical acquisitions and persisted jobs;
-- datasets and lineage;
-- ML experiments;
-- prediction diagnostics;
-- model validations;
-- pipeline manifests and backtests;
-- evidence digests, warnings, safety states, filtering, and portable export.
-
-U10 must preserve U9 provider licensing, provenance, read-only, and no-execution boundaries.
+U11 must preserve all U9/U10 provider licensing, provenance, read-only, recommendation-disabled, and execution-disabled boundaries.
 
 ## Extension boundary
 
