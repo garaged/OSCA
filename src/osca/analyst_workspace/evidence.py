@@ -13,6 +13,7 @@ from osca.analyst_workspace.contracts import (
     WorkspaceExportManifest,
     WorkspaceFilter,
     WorkspaceItem,
+    WorkspaceItemStatus,
     WorkspaceLineageLink,
     WorkspaceSection,
 )
@@ -36,6 +37,19 @@ _TIME_KEYS = (
     "started_at",
     "requested_at",
 )
+_EXPECTED_FAMILIES = {
+    WorkspaceSection.ACQUISITIONS: "osca.historical-acquisition.",
+    WorkspaceSection.EXPERIMENTS: "osca.ml-experiment.",
+    WorkspaceSection.DIAGNOSTICS: "osca.prediction-diagnostic.",
+    WorkspaceSection.VALIDATIONS: "osca.model-research-validation.",
+    WorkspaceSection.PIPELINE_RUNS: "osca.research-pipeline.",
+}
+_REQUIRED_PARENT = {
+    WorkspaceSection.EXPERIMENTS: "dataset_revision_id",
+    WorkspaceSection.DIAGNOSTICS: "experiment_id",
+    WorkspaceSection.VALIDATIONS: "diagnostic_id",
+    WorkspaceSection.PIPELINE_RUNS: "experiment_id",
+}
 
 
 class WorkspaceEvidenceService:
@@ -47,7 +61,7 @@ class WorkspaceEvidenceService:
         storage_root: Path,
         filters: WorkspaceFilter,
     ) -> AnalystWorkspaceSnapshot:
-        snapshot = self._workspace.snapshot(storage_root)
+        snapshot = _reconcile(self._workspace.snapshot(storage_root))
         sections = []
         for section in snapshot.sections:
             if filters.section is not None and section.section is not filters.section:
@@ -63,7 +77,7 @@ class WorkspaceEvidenceService:
 
     def detail(self, storage_root: Path, item_id: str) -> WorkspaceArtifactDetail:
         root = storage_root.resolve()
-        snapshot = self._workspace.snapshot(root)
+        snapshot = _reconcile(self._workspace.snapshot(root))
         item = _find_item(snapshot, item_id)
         if item is None:
             raise KeyError(item_id)
@@ -90,7 +104,7 @@ class WorkspaceEvidenceService:
 
     def portable_export(self, storage_root: Path, item_id: str) -> bytes:
         root = storage_root.resolve()
-        snapshot = self._workspace.snapshot(root)
+        snapshot = _reconcile(self._workspace.snapshot(root))
         detail = self.detail(root, item_id)
         candidates = [detail.item]
         for link in detail.lineage:
@@ -128,10 +142,48 @@ class WorkspaceEvidenceService:
             archive.writestr("manifest.json", manifest.model_dump_json(indent=2))
             for index, item in enumerate(included, start=1):
                 path = _item_path(root, item)
-                if path is None:
-                    continue
-                archive.writestr(f"evidence/{index:02d}-{path.name}", path.read_bytes())
+                if path is not None:
+                    archive.writestr(f"evidence/{index:02d}-{path.name}", path.read_bytes())
         return output.getvalue()
+
+
+def _reconcile(snapshot: AnalystWorkspaceSnapshot) -> AnalystWorkspaceSnapshot:
+    all_items = [item for section in snapshot.sections for item in section.items]
+    known_ids = set().union(*(_identifiers(item.metadata) for item in all_items))
+    sections = []
+    warnings = list(snapshot.warnings)
+    for section in snapshot.sections:
+        reconciled = []
+        for item in section.items:
+            status = item.status
+            if item.section in _EXPECTED_FAMILIES:
+                family = item.metadata.get("family")
+                version = item.metadata.get("version")
+                expected = _EXPECTED_FAMILIES[item.section]
+                if not isinstance(family, str):
+                    status = WorkspaceItemStatus.INCOMPLETE
+                    warnings.append(f"Evidence is missing family: {item.item_id}")
+                elif not family.startswith(expected):
+                    status = WorkspaceItemStatus.INCOMPATIBLE
+                    warnings.append(f"Evidence family is incompatible: {item.item_id}")
+                elif version is not None and (
+                    not isinstance(version, str) or version.split(".", 1)[0] not in {"1", "2"}
+                ):
+                    status = WorkspaceItemStatus.INCOMPATIBLE
+                    warnings.append(f"Evidence version is incompatible: {item.item_id}")
+                parent_key = _REQUIRED_PARENT.get(item.section)
+                parent = item.metadata.get(parent_key) if parent_key else None
+                if parent_key and parent is None:
+                    status = WorkspaceItemStatus.INCOMPLETE
+                    warnings.append(f"Evidence is missing {parent_key}: {item.item_id}")
+                elif parent_key and str(parent) not in known_ids:
+                    status = WorkspaceItemStatus.ORPHANED
+                    warnings.append(f"Evidence parent is not retained: {item.item_id}")
+            reconciled.append(item.model_copy(update={"status": status}))
+        sections.append(
+            section.model_copy(update={"items": tuple(reconciled), "item_count": len(reconciled)})
+        )
+    return snapshot.model_copy(update={"sections": tuple(sections), "warnings": tuple(warnings)})
 
 
 def _find_item(snapshot: AnalystWorkspaceSnapshot, item_id: str) -> WorkspaceItem | None:
@@ -217,13 +269,11 @@ def _lineage(
     for candidate in (entry for section in snapshot.sections for entry in section.items):
         if candidate.item_id == item.item_id:
             continue
-        candidate_ids = _identifiers(candidate.metadata)
-        if not identity.intersection(candidate_ids):
+        if not identity.intersection(_identifiers(candidate.metadata)):
             continue
-        relation = _relation(item.section, candidate.section)
         links.append(
             WorkspaceLineageLink(
-                relation=relation,
+                relation=_relation(item.section, candidate.section),
                 item_id=candidate.item_id,
                 section=candidate.section,
                 title=candidate.title,
