@@ -33,8 +33,8 @@
 - [x] Add canonical/compatibility delegation tests.
 - [x] Add zsh, Bash, and PowerShell quickstarts.
 - [x] Reconcile the root README to the canonical U11 path.
-- [ ] Reconcile central manual testing through U11.
+- [x] Reconcile central manual testing through U11.
 - [x] Add U11 traceability, manual acceptance, and exit review.
-- [ ] Run final hosted Quality on the implementation-closeout head.
+- [x] Run final hosted Quality on the implementation-closeout head.
 - [x] Remove the temporary operator configuration mypy exception.
 - [ ] Retain clean-profile end-to-end acceptance evidence.
