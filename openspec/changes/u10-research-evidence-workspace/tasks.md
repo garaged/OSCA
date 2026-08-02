@@ -28,6 +28,6 @@
 - [x] Add dedicated-section and corrupt-artifact regression coverage.
 - [x] Add incomplete, incompatible, and orphaned lineage fixtures.
 - [x] Add API/detail/filter/export tests.
-- [ ] Run full hosted Quality on the final head.
+- [x] Run full hosted Quality on the implementation-closeout head.
 - [ ] Retain clean-profile U9/U8 workspace detail, filter, and export evidence.
 - [x] Reconcile central manual testing, traceability, and U10 exit review.
