@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
+import threading
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 from urllib.parse import unquote, urlencode, urlparse
-from uuid import UUID
 
 import typer
 from pydantic import BaseModel, ConfigDict, Field
 
 from osca.local_data_import import (
+    LocalOHLCVImportFormat,
     LocalOHLCVImportRequest,
     LocalOHLCVTimeframe,
     import_local_ohlcv,
@@ -53,6 +55,7 @@ class HistoricalAcquisitionRequest(BaseModel):
     storage_root: str = Field(min_length=1, max_length=2048)
     network_access_enabled: bool = False
     since: int | None = Field(default=None, ge=0)
+    parser_version: str = Field(default="kraken-ohlc-v1", min_length=1, max_length=80)
     requested_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -68,14 +71,15 @@ class HistoricalAcquisitionEvidence(BaseModel):
     asset_class: HistoricalAssetClass
     symbol: str
     timeframe: str
+    parser_version: str
     admission_status: AdmissionStatus
     ingestion_evidence_uri: str | None = None
     raw_payload_uri: str | None = None
     raw_payload_sha256: str | None = None
-    dataset_revision_id: UUID | None = None
+    dataset_revision_id: str | None = None
     canonical_payload_uri: str | None = None
     canonical_metadata_uri: str | None = None
-    canonical_row_count: int | None = Field(default=None, ge=1)
+    canonical_row_count: int | None = None
     source_attribution: str
     internal_use_only: bool = True
     redistribution_enabled: bool = False
@@ -96,7 +100,8 @@ _KRAKEN_INTERVALS = {
     "4h": 240,
     "1d": 1440,
 }
-_TIMEFRAMES = {value.value: value for value in LocalOHLCVTimeframe}
+_LOCKS_GUARD = threading.Lock()
+_REQUEST_LOCKS: dict[str, threading.Lock] = {}
 
 
 def run_historical_acquisition(
@@ -104,16 +109,26 @@ def run_historical_acquisition(
     *,
     transport: Transport | None = None,
 ) -> HistoricalAcquisitionEvidence:
+    key = _request_key(request)
+    with _lock_for(key):
+        retained = _load_reusable_evidence(request)
+        if retained is not None:
+            return retained
+        return _run_historical_acquisition(request, transport=transport)
+
+
+def _run_historical_acquisition(
+    request: HistoricalAcquisitionRequest,
+    *,
+    transport: Transport | None,
+) -> HistoricalAcquisitionEvidence:
     admission = admission_for(request.provider_id)
     if request.asset_class is HistoricalAssetClass.EQUITY:
         return _retain_acquisition_evidence(
             request,
-            HistoricalAcquisitionEvidence(
+            _base_evidence(
+                request,
                 status=HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE,
-                provider_id=request.provider_id,
-                asset_class=request.asset_class,
-                symbol=request.symbol,
-                timeframe=request.timeframe,
                 admission_status=admission.status,
                 source_attribution=request.provider_id.value,
                 rationale=(
@@ -130,12 +145,9 @@ def run_historical_acquisition(
     if request.provider_id is not ProductionProvider.KRAKEN:
         return _retain_acquisition_evidence(
             request,
-            HistoricalAcquisitionEvidence(
+            _base_evidence(
+                request,
                 status=HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE,
-                provider_id=request.provider_id,
-                asset_class=request.asset_class,
-                symbol=request.symbol,
-                timeframe=request.timeframe,
                 admission_status=admission.status,
                 source_attribution=request.provider_id.value,
                 rationale="Requested provider is not admitted for no-cost crypto OHLC.",
@@ -157,146 +169,221 @@ def run_historical_acquisition(
         ),
         transport=transport,
     )
-    if ingestion.status is IngestionStatus.SUCCEEDED and ingestion.payload_uri:
-        try:
-            return _canonicalize_kraken(request, ingestion.payload_uri, ingestion.payload_sha256)
-        except (KeyError, TypeError, ValueError, OSError, json.JSONDecodeError) as exc:
-            return _retain_acquisition_evidence(
-                request,
-                HistoricalAcquisitionEvidence(
-                    status=HistoricalAcquisitionStatus.FAILED,
-                    provider_id=request.provider_id,
-                    asset_class=request.asset_class,
-                    symbol=request.symbol,
-                    timeframe=request.timeframe,
-                    admission_status=ingestion.admission_status,
-                    raw_payload_uri=ingestion.payload_uri,
-                    raw_payload_sha256=ingestion.payload_sha256,
-                    source_attribution="Kraken public spot OHLC",
-                    rationale="Kraken payload could not be normalized into canonical OHLCV.",
-                    findings=("canonical-normalization-failed", str(exc)[:160]),
-                ),
-            )
-
     status = {
+        IngestionStatus.SUCCEEDED: HistoricalAcquisitionStatus.SUCCEEDED,
         IngestionStatus.POLICY_BLOCKED: HistoricalAcquisitionStatus.POLICY_BLOCKED,
         IngestionStatus.PROVIDER_UNAVAILABLE: HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE,
         IngestionStatus.FAILED: HistoricalAcquisitionStatus.FAILED,
     }[ingestion.status]
-    return _retain_acquisition_evidence(
+    evidence = _base_evidence(
         request,
-        HistoricalAcquisitionEvidence(
-            status=status,
-            provider_id=request.provider_id,
-            asset_class=request.asset_class,
-            symbol=request.symbol,
-            timeframe=request.timeframe,
-            admission_status=ingestion.admission_status,
-            raw_payload_uri=ingestion.payload_uri,
-            raw_payload_sha256=ingestion.payload_sha256,
-            source_attribution="Kraken public spot OHLC",
-            rationale=ingestion.rationale,
-            findings=ingestion.findings,
-        ),
+        status=status,
+        admission_status=ingestion.admission_status,
+        source_attribution="Kraken public spot OHLC",
+        rationale=ingestion.rationale,
+        findings=ingestion.findings,
+        raw_payload_uri=ingestion.payload_uri,
+        raw_payload_sha256=ingestion.payload_sha256,
     )
+    if ingestion.status is not IngestionStatus.SUCCEEDED:
+        return _retain_acquisition_evidence(request, evidence)
+
+    try:
+        canonical = _normalize_kraken_payload(request, ingestion.payload_uri)
+    except KrakenUnavailableError as exc:
+        evidence = evidence.model_copy(
+            update={
+                "status": HistoricalAcquisitionStatus.PROVIDER_UNAVAILABLE,
+                "rationale": str(exc),
+                "findings": (*evidence.findings, exc.finding, "retry-later"),
+            }
+        )
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        evidence = evidence.model_copy(
+            update={
+                "status": HistoricalAcquisitionStatus.FAILED,
+                "rationale": f"Canonical normalization failed: {exc}",
+                "findings": (*evidence.findings, "canonical-normalization-failed"),
+            }
+        )
+    else:
+        evidence = evidence.model_copy(
+            update={
+                "dataset_revision_id": str(canonical.dataset_revision_id),
+                "canonical_payload_uri": canonical.payload_uri,
+                "canonical_metadata_uri": canonical.metadata_uri,
+                "canonical_row_count": canonical.row_count,
+                "rationale": "Provider payload normalized into a canonical OHLCV revision.",
+                "findings": (*evidence.findings, "current-uncommitted-bar-excluded"),
+            }
+        )
+    return _retain_acquisition_evidence(request, evidence)
 
 
-def _canonicalize_kraken(
+class KrakenUnavailableError(ValueError):
+    def __init__(self, message: str, finding: str) -> None:
+        super().__init__(message)
+        self.finding = finding
+
+
+def _normalize_kraken_payload(
     request: HistoricalAcquisitionRequest,
-    payload_uri: str,
-    payload_sha256: str | None,
-) -> HistoricalAcquisitionEvidence:
-    raw_payload = json.loads(_file_uri_path(payload_uri).read_text(encoding="utf-8"))
-    errors = raw_payload.get("error")
+    payload_uri: str | None,
+):
+    if payload_uri is None:
+        raise ValueError("successful ingestion did not retain a raw payload")
+    payload_path = _path_from_uri(payload_uri)
+    document = json.loads(payload_path.read_text(encoding="utf-8"))
+    errors = document.get("error")
+    if not isinstance(errors, list):
+        raise ValueError("Kraken response error field must be a list")
     if errors:
-        raise ValueError(f"Kraken returned errors: {errors}")
-    result = raw_payload["result"]
+        text = "; ".join(str(item) for item in errors)
+        if any("rate limit" in str(item).lower() for item in errors):
+            raise KrakenUnavailableError(
+                f"Kraken rate limit blocked acquisition: {text}",
+                "rate-limit-exceeded",
+            )
+        if any("service" in str(item).lower() for item in errors):
+            raise KrakenUnavailableError(
+                f"Kraken service is unavailable: {text}",
+                "provider-service-unavailable",
+            )
+        raise ValueError(f"Kraken response contained provider errors: {text}")
+    result = document.get("result")
+    if not isinstance(result, dict):
+        raise ValueError("Kraken response result must be an object")
     pair_keys = [key for key in result if key != "last"]
     if len(pair_keys) != 1:
-        raise ValueError("Kraken response must contain exactly one OHLC pair")
-    provider_rows = result[pair_keys[0]]
-    if not isinstance(provider_rows, list) or len(provider_rows) < 2:
-        raise ValueError("Kraken response requires one completed bar plus the live bar")
-
-    completed_rows = provider_rows[:-1]
-    source_path = _write_normalized_csv(request, completed_rows)
-    imported = import_local_ohlcv(
+        raise ValueError("Kraken response must contain exactly one pair series")
+    rows = result[pair_keys[0]]
+    if not isinstance(rows, list) or len(rows) < 2:
+        raise ValueError("Kraken response requires one completed bar and one current bar")
+    completed_rows = rows[:-1]
+    csv_path = _canonical_source_path(request)
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(
+            [
+                "timestamp",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "parser_version",
+            ]
+        )
+        for row in completed_rows:
+            if not isinstance(row, list) or len(row) < 7:
+                raise ValueError("Kraken OHLC row must contain at least seven fields")
+            timestamp = datetime.fromtimestamp(int(row[0]), tz=UTC).isoformat()
+            writer.writerow(
+                [timestamp, row[1], row[2], row[3], row[4], row[6], request.parser_version]
+            )
+    return import_local_ohlcv(
         LocalOHLCVImportRequest(
-            input_path=str(source_path),
+            input_path=str(csv_path),
             storage_root=request.storage_root,
             symbol=request.symbol,
-            timeframe=_TIMEFRAMES[request.timeframe],
-            source_uri="https://api.kraken.com/0/public/OHLC",
-            calendar_assumption="kraken-continuous-market-completed-bars",
+            timeframe=LocalOHLCVTimeframe(request.timeframe),
+            input_format=LocalOHLCVImportFormat.CSV,
+            source_uri=f"provider://kraken/spot_ohlc/{request.parser_version}",
+            calendar_assumption="continuous-crypto-market",
         )
     )
-    return _retain_acquisition_evidence(
-        request,
-        HistoricalAcquisitionEvidence(
-            status=HistoricalAcquisitionStatus.SUCCEEDED,
-            provider_id=request.provider_id,
-            asset_class=request.asset_class,
-            symbol=request.symbol,
-            timeframe=request.timeframe,
-            admission_status=AdmissionStatus.APPROVED,
-            raw_payload_uri=payload_uri,
-            raw_payload_sha256=payload_sha256,
-            dataset_revision_id=imported.dataset_revision_id,
-            canonical_payload_uri=imported.payload_uri,
-            canonical_metadata_uri=imported.metadata_uri,
-            canonical_row_count=imported.row_count,
-            source_attribution="Kraken public spot OHLC",
-            rationale=(
-                "Kraken completed bars were normalized through the canonical local "
-                "OHLCV import path and retained as a dataset revision."
-            ),
-            findings=(
-                "internal-use-only",
-                "redistribution-disabled",
-                "current-uncommitted-bar-excluded",
-            ),
-        ),
+
+
+def _request_key(request: HistoricalAcquisitionRequest) -> str:
+    identity = (
+        f"{request.provider_id.value}|{request.asset_class.value}|{request.symbol}|"
+        f"{request.timeframe}|{request.since}|{request.parser_version}"
     )
+    return hashlib.sha256(identity.encode()).hexdigest()
 
 
-def _write_normalized_csv(
-    request: HistoricalAcquisitionRequest,
-    rows: list[Any],
-) -> Path:
-    root = Path(request.storage_root).resolve() / "historical-acquisition" / "normalized"
-    root.mkdir(parents=True, exist_ok=True)
+def _lock_for(key: str) -> threading.Lock:
+    with _LOCKS_GUARD:
+        return _REQUEST_LOCKS.setdefault(key, threading.Lock())
+
+
+def _evidence_path(request: HistoricalAcquisitionRequest) -> Path:
+    root = Path(request.storage_root).resolve() / "historical-acquisition"
     symbol = request.symbol.replace("/", "_")
-    path = root / f"kraken-{symbol}-{request.timeframe}.csv"
-    with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
-        writer.writerow(["timestamp", "open", "high", "low", "close", "volume"])
-        for row in rows:
-            if not isinstance(row, list) or len(row) < 7:
-                raise ValueError("Kraken OHLC row has an unsupported shape")
-            timestamp = datetime.fromtimestamp(int(row[0]), tz=UTC).isoformat()
-            writer.writerow([timestamp, row[1], row[2], row[3], row[4], row[6]])
-    return path
+    since = "all" if request.since is None else str(request.since)
+    parser = request.parser_version.replace("/", "_")
+    stem = (
+        f"{request.provider_id.value}-{request.asset_class.value}-"
+        f"{symbol}-{request.timeframe}-{since}-{parser}"
+    )
+    return root / f"{stem}.json"
 
 
-def _file_uri_path(uri: str) -> Path:
+def _load_reusable_evidence(
+    request: HistoricalAcquisitionRequest,
+) -> HistoricalAcquisitionEvidence | None:
+    path = _evidence_path(request)
+    if not path.is_file():
+        return None
+    evidence = HistoricalAcquisitionEvidence.model_validate_json(
+        path.read_text(encoding="utf-8")
+    )
+    if evidence.status is not HistoricalAcquisitionStatus.SUCCEEDED:
+        return None
+    required = (evidence.canonical_payload_uri, evidence.canonical_metadata_uri)
+    if not all(required):
+        return None
+    if not all(Path(value).is_file() for value in required if value is not None):
+        return None
+    return evidence
+
+
+def _canonical_source_path(request: HistoricalAcquisitionRequest) -> Path:
+    root = Path(request.storage_root).resolve() / "historical-acquisition" / "normalized"
+    return root / f"{_request_key(request)}.csv"
+
+
+def _path_from_uri(uri: str) -> Path:
     parsed = urlparse(uri)
-    if parsed.scheme != "file":
-        raise ValueError("retained provider payload must use a file URI")
-    return Path(unquote(parsed.path))
+    if parsed.scheme == "file":
+        return Path(unquote(parsed.path))
+    return Path(uri)
+
+
+def _base_evidence(
+    request: HistoricalAcquisitionRequest,
+    *,
+    status: HistoricalAcquisitionStatus,
+    admission_status: AdmissionStatus,
+    source_attribution: str,
+    rationale: str,
+    findings: tuple[str, ...],
+    raw_payload_uri: str | None = None,
+    raw_payload_sha256: str | None = None,
+) -> HistoricalAcquisitionEvidence:
+    return HistoricalAcquisitionEvidence(
+        status=status,
+        provider_id=request.provider_id,
+        asset_class=request.asset_class,
+        symbol=request.symbol,
+        timeframe=request.timeframe,
+        parser_version=request.parser_version,
+        admission_status=admission_status,
+        raw_payload_uri=raw_payload_uri,
+        raw_payload_sha256=raw_payload_sha256,
+        source_attribution=source_attribution,
+        rationale=rationale,
+        findings=findings,
+    )
 
 
 def _retain_acquisition_evidence(
     request: HistoricalAcquisitionRequest,
     evidence: HistoricalAcquisitionEvidence,
 ) -> HistoricalAcquisitionEvidence:
-    root = Path(request.storage_root).resolve() / "historical-acquisition"
-    root.mkdir(parents=True, exist_ok=True)
-    symbol = request.symbol.replace("/", "_")
-    stem = (
-        f"{request.provider_id.value}-{request.asset_class.value}-"
-        f"{symbol}-{request.timeframe}"
-    )
-    path = root / f"{stem}.json"
+    path = _evidence_path(request)
+    path.parent.mkdir(parents=True, exist_ok=True)
     payload = evidence.model_copy(update={"ingestion_evidence_uri": path.as_uri()})
     path.write_text(payload.model_dump_json(indent=2) + "\n", encoding="utf-8")
     return payload
@@ -316,6 +403,9 @@ def fetch_historical(
         bool, typer.Option("--network-access-enabled")
     ] = False,
     since: Annotated[int | None, typer.Option("--since")] = None,
+    parser_version: Annotated[
+        str, typer.Option("--parser-version")
+    ] = "kraken-ohlc-v1",
 ) -> None:
     """Fetch Kraken crypto OHLC or retain an explicit blocked equity decision."""
 
@@ -328,6 +418,7 @@ def fetch_historical(
             storage_root=str(storage_root),
             network_access_enabled=network_access_enabled,
             since=since,
+            parser_version=parser_version,
         )
     )
     typer.echo(json.dumps(evidence.model_dump(mode="json"), indent=2, sort_keys=True))
