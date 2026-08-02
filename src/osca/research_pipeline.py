@@ -22,10 +22,7 @@ from osca.prediction_lab import DiagnosticStatus, diagnose_experiment
 
 
 def _write_json(path: Path, value: object) -> None:
-    if hasattr(value, "model_dump"):
-        payload = value.model_dump(mode="json")
-    else:
-        payload = value
+    payload = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
