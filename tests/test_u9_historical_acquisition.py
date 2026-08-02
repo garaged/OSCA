@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import inspect
 import json
 import threading
 import time
@@ -19,6 +20,7 @@ from osca.historical_acquisition import (
     HistoricalAcquisitionRequest,
     HistoricalAcquisitionStatus,
     HistoricalAssetClass,
+    fetch_historical,
     run_historical_acquisition,
 )
 from osca.local_data_import import (
@@ -377,23 +379,20 @@ def test_network_and_equity_policy_fail_closed(tmp_path: Path) -> None:
     assert equity.dataset_revision_id is None
 
 
-def test_primary_cli_help_and_blocked_equity_output(tmp_path: Path) -> None:
-    help_result = runner.invoke(
-        app,
-        ["historical-data", "fetch", "--help"],
-        color=False,
-        terminal_width=200,
-    )
+def test_primary_cli_options_and_blocked_equity_output(tmp_path: Path) -> None:
+    parameters = inspect.signature(fetch_historical).parameters
+    required_options = {
+        "start_at",
+        "end_at",
+        "expected_pair_key",
+        "minimum_rows",
+        "freshness_max_age_seconds",
+        "cancel_requested",
+    }
+    assert required_options <= set(parameters)
+
+    help_result = runner.invoke(app, ["historical-data", "fetch", "--help"])
     assert help_result.exit_code == 0
-    for option in (
-        "--start-at",
-        "--end-at",
-        "--expected-pair-key",
-        "--minimum-rows",
-        "--freshness-max-age-seconds",
-        "--cancel-requested",
-    ):
-        assert option in help_result.stdout
 
     result = runner.invoke(
         app,
@@ -403,6 +402,12 @@ def test_primary_cli_help_and_blocked_equity_output(tmp_path: Path) -> None:
             "AAPL",
             "equity",
             "twelve_data",
+            "--start-at",
+            "2024-08-01T00:00:00Z",
+            "--end-at",
+            "2024-08-02T00:00:00Z",
+            "--minimum-rows",
+            "2",
             "--storage-root",
             str(tmp_path),
         ],
@@ -410,5 +415,7 @@ def test_primary_cli_help_and_blocked_equity_output(tmp_path: Path) -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     assert payload["status"] == "policy_blocked"
+    assert payload["start_at"] == "2024-08-01T00:00:00Z"
+    assert payload["end_at"] == "2024-08-02T00:00:00Z"
     assert payload["dataset_revision_id"] is None
     assert payload["redistribution_enabled"] is False
