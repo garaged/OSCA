@@ -33,9 +33,36 @@ def _kraken_payload() -> bytes:
             "error": [],
             "result": {
                 "XXBTZUSD": [
-                    [1722384000, "66000", "67000", "65000", "66500", "66300", "10", 50],
-                    [1722470400, "66500", "68000", "66000", "67500", "67100", "12", 55],
-                    [1722556800, "67500", "68200", "67000", "67800", "67700", "4", 20],
+                    [
+                        1722384000,
+                        "66000",
+                        "67000",
+                        "65000",
+                        "66500",
+                        "66300",
+                        "10",
+                        50,
+                    ],
+                    [
+                        1722470400,
+                        "66500",
+                        "68000",
+                        "66000",
+                        "67500",
+                        "67100",
+                        "12",
+                        55,
+                    ],
+                    [
+                        1722556800,
+                        "67500",
+                        "68200",
+                        "67000",
+                        "67800",
+                        "67700",
+                        "4",
+                        20,
+                    ],
                 ],
                 "last": 1722556800,
             },
@@ -43,7 +70,11 @@ def _kraken_payload() -> bytes:
     ).encode()
 
 
-def _request(tmp_path: Path, *, parser_version: str = "kraken-ohlc-v1"):
+def _request(
+    tmp_path: Path,
+    *,
+    parser_version: str = "kraken-ohlc-v1",
+) -> HistoricalAcquisitionRequest:
     return HistoricalAcquisitionRequest(
         provider_id=ProductionProvider.KRAKEN,
         asset_class=HistoricalAssetClass.CRYPTO,
@@ -78,7 +109,14 @@ def test_kraken_crypto_acquisition_creates_canonical_revision(tmp_path: Path) ->
 
     table = pq.read_table(evidence.canonical_payload_uri)
     assert table.num_rows == 2
-    assert table.column_names == ["timestamp", "open", "high", "low", "close", "volume"]
+    assert table.column_names == [
+        "timestamp",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+    ]
     assert Path(evidence.canonical_metadata_uri).exists()
     assert Path(evidence.ingestion_evidence_uri.removeprefix("file://")).exists()
 
@@ -86,7 +124,7 @@ def test_kraken_crypto_acquisition_creates_canonical_revision(tmp_path: Path) ->
 def test_durable_result_reuse_avoids_second_provider_call(tmp_path: Path) -> None:
     calls = 0
 
-    def transport(_):
+    def transport(_request_value: object) -> bytes:
         nonlocal calls
         calls += 1
         return _kraken_payload()
@@ -104,7 +142,7 @@ def test_concurrent_equivalent_requests_share_provider_call(tmp_path: Path) -> N
     calls = 0
     calls_lock = threading.Lock()
 
-    def transport(_):
+    def transport(_request_value: object) -> bytes:
         nonlocal calls
         with calls_lock:
             calls += 1
@@ -166,10 +204,24 @@ def test_csv_fallback_is_canonically_equivalent(tmp_path: Path) -> None:
         writer = csv.writer(handle)
         writer.writerow(["timestamp", "open", "high", "low", "close", "volume"])
         writer.writerow(
-            ["2024-07-31T00:00:00+00:00", "66000", "67000", "65000", "66500", "10"]
+            [
+                "2024-07-31T00:00:00+00:00",
+                "66000",
+                "67000",
+                "65000",
+                "66500",
+                "10",
+            ]
         )
         writer.writerow(
-            ["2024-08-01T00:00:00+00:00", "66500", "68000", "66000", "67500", "12"]
+            [
+                "2024-08-01T00:00:00+00:00",
+                "66500",
+                "68000",
+                "66000",
+                "67500",
+                "12",
+            ]
         )
     fallback = import_local_ohlcv(
         LocalOHLCVImportRequest(
@@ -222,9 +274,10 @@ def test_equity_provider_fails_closed_with_csv_fallback(tmp_path: Path) -> None:
 
 
 def test_malformed_kraken_payload_fails_without_canonical_revision(tmp_path: Path) -> None:
+    malformed = json.dumps({"error": [], "result": {"last": 1}}).encode()
     evidence = run_historical_acquisition(
         _request(tmp_path),
-        transport=lambda _: json.dumps({"error": [], "result": {"last": 1}}).encode(),
+        transport=lambda _: malformed,
     )
 
     assert evidence.status is HistoricalAcquisitionStatus.FAILED
