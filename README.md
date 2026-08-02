@@ -4,22 +4,90 @@ OSCA is a modular market-intelligence and quantitative-research platform for sto
 
 The M0-M12 architecture and lifecycle roadmap is complete. P1-P15 delivered provider governance, deterministic local research, model previews, narrow SEC/Kraken ingestion, personal-server operations, and governed trusted-local extensions. P16 completed the live-order readiness study and recorded ADR-0044: NO-GO. P17 remains blocked and is not authorized.
 
-U8 reconciled the real-world research workflow into the primary CLI. U9 provides governed no-cost Kraken historical acquisition, explicit blocked-equity behavior with CSV fallback, canonical revisions, persisted lifecycle evidence, full degraded outcomes, and U8 handoff. U10 now provides dedicated research-evidence sections, read-only details and lineage, filters, explicit artifact-health states, raw JSON download, and policy-governed portable export. U11 is the next milestone: first-run and unified operator experience.
+U8 reconciled the retained research workflow into the primary CLI. U9 added governed no-cost Kraken acquisition and fail-closed equity fallback. U10 added complete read-only research-evidence navigation and governed export. U11 now provides one canonical first-run and operator path through the primary `osca` CLI.
 
 Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, and a public extension marketplace remain disabled.
 
 ## Start here
 
-1. [Architecture status](ARCHITECTURE_STATUS.md)
-2. [Product requirements](docs/product-requirements.md)
-3. [Architecture decisions](docs/decisions/README.md)
-4. [Manual testing and usage](docs/testing/manual-testing.md)
-5. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
-6. [U10 research-evidence workspace](docs/milestones/u10/README.md)
-7. [U10 manual acceptance](docs/milestones/u10/manual-acceptance.md)
-8. [U10 traceability](docs/milestones/u10/traceability.md)
+1. [U11 canonical first-run quickstart](docs/milestones/u11/quickstart.md)
+2. [U11 milestone status](docs/milestones/u11/README.md)
+3. [Manual testing and usage](docs/testing/manual-testing.md)
+4. [Architecture status](ARCHITECTURE_STATUS.md)
+5. [Product requirements](docs/product-requirements.md)
+6. [Architecture decisions](docs/decisions/README.md)
+7. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
+8. [U10 research-evidence workspace](docs/milestones/u10/README.md)
 9. [U9 governed historical acquisition](docs/milestones/u9/README.md)
 10. [Requirements catalog](docs/governance/requirements-catalog.md)
+
+## Canonical first run
+
+```bash
+PROFILE_ROOT=".osca/profile"
+
+uv run osca init --profile-root "$PROFILE_ROOT"
+uv run osca doctor --profile-root "$PROFILE_ROOT"
+```
+
+Acquire governed no-cost Kraken history with explicit network opt-in:
+
+```bash
+uv run osca historical-data fetch \
+  XBTUSD crypto kraken \
+  --timeframe 1d \
+  --expected-pair-key XXBTZUSD \
+  --minimum-rows 250 \
+  --network-access-enabled \
+  --storage-root "$PROFILE_ROOT/data"
+```
+
+Or import an offline CSV/Parquet dataset:
+
+```bash
+uv run osca import-data \
+  ./history.csv \
+  AAPL \
+  1d \
+  --storage-root "$PROFILE_ROOT/data"
+```
+
+Run the retained experiment, diagnostic, and optional human-gated local-validation path:
+
+```bash
+uv run osca research-pipeline \
+  "$PROFILE_ROOT/data/payloads/<REVISION>.parquet" \
+  "<REVISION>" \
+  XBTUSD \
+  1d \
+  --storage-root "$PROFILE_ROOT/data" \
+  --reviewer "$USER" \
+  --rationale "Approved for local evidence-only research." \
+  --approve-local-validation
+```
+
+Inspect the complete read-only evidence workspace through the primary CLI:
+
+```bash
+uv run osca workspace \
+  --profile-root "$PROFILE_ROOT" \
+  --snapshot
+```
+
+The generated profile is versioned and local. Network access is never implicit. The workspace remains loopback-only and read-only. Provider-restricted evidence is excluded from portable exports, and secrets or credentials are never placed in evidence bundles.
+
+## Canonical operator commands
+
+- `osca init`: initialize safe versioned local configuration.
+- `osca doctor`: diagnose runtime, storage, SQLite/Parquet, port, provider, credential, and evidence consistency.
+- `osca historical-data fetch`: explicitly acquire admitted historical provider data.
+- `osca import-data`: import governed local CSV or Parquet data.
+- `osca analyze`: run deterministic local analysis.
+- `osca backtest`: run built-in backtest-to-paper evidence.
+- `osca research-pipeline`: run experiment, diagnostic, and optional human-gated local validation.
+- `osca workspace`: snapshot or start the loopback-only read-only workspace.
+
+The older command names remain compatibility entry points through U13 release-candidate acceptance. New documentation uses the U11 canonical names.
 
 ## Current workflow
 
@@ -30,43 +98,14 @@ Recommendations, live model serving, automatic promotion, brokers, autonomous ex
 - P14: run explicitly enabled personal-server jobs, alerts, backup, and restore operations.
 - P15: validate, install, execute, inspect, and roll back independently trusted local extension packs.
 - U5-U8: run classification experiments, prediction diagnostics, explicit human-gated validation, and one guided retained research pipeline.
-- U9: acquire governed Kraken history or fail equity acquisition closed to CSV fallback; retain canonical, lifecycle, lineage, and degraded-state evidence.
-- U10: browse dedicated acquisition, experiment, diagnostic, validation, and pipeline sections; inspect lineage; filter evidence; and create governed local evidence exports.
-- U11-U14: complete first-run integration, packaging, release acceptance, and contributor readiness.
+- U9: acquire governed Kraken history or fail equity acquisition closed to CSV/Parquet fallback.
+- U10: browse dedicated research evidence, inspect lineage, filter evidence, and create governed local exports.
+- U11: initialize, diagnose, acquire/import, research, and inspect through one primary CLI.
+- U12-U14: complete packaging, lifecycle validation, release acceptance, and contributor readiness.
 
-## Governed historical acquisition
+## Provider boundary
 
-```bash
-uv run osca historical-data fetch \
-  XBTUSD crypto kraken \
-  --timeframe 1d \
-  --expected-pair-key XXBTZUSD \
-  --minimum-rows 250 \
-  --network-access-enabled \
-  --storage-root .osca/research
-```
-
-The command accepts timezone-aware ISO-8601 ranges, retains request/job/correlation evidence, validates provider mapping, excludes Kraken's current uncommitted bar, creates a canonical Parquet/SQLite revision, and records raw/normalized digests and safety boundaries.
-
-No no-cost equity provider currently passes the complete admission gate. Equity requests fail closed and direct users to governed CSV import rather than silently calling an unapproved source.
-
-## Research-evidence workspace
-
-```bash
-uv run python -m osca.analyst_workspace \
-  --storage-root .osca/research \
-  --snapshot
-```
-
-The workspace provides dedicated datasets, acquisitions, backtests, experiments, diagnostics, validations, and pipeline-run sections. Operators can filter by date, symbol, timeframe, type, and status; inspect retained detail and upstream/downstream lineage; download bounded local JSON; and export a portable ZIP whose manifest records included and policy-excluded evidence.
-
-Provider evidence with redistribution disabled is not placed in portable bundles. Secrets and credential fields remain excluded. The workspace stays loopback-only, read-only, and network-disabled.
-
-## Next milestone
-
-U11 creates one canonical first-run and operator path through the primary `osca` CLI. It will cover initialization, diagnostics, acquisition/import, research execution, workspace startup, compatibility aliases, safe local defaults, and shell-safe quickstarts without requiring internal-module commands or hand-authored JSON.
-
-U11 must preserve all U9/U10 provider licensing, provenance, read-only, recommendation-disabled, and execution-disabled boundaries.
+Kraken public spot OHLC is admitted for explicit internal-use acquisition. No no-cost equity provider currently passes the complete admission gate; equity requests fail closed and direct operators to governed CSV/Parquet import rather than silently calling an unapproved source.
 
 ## Extension boundary
 
