@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Identifier = Annotated[str, Field(min_length=1, max_length=160)]
+ResourceLocation = Annotated[str, Field(min_length=1, max_length=4096)]
 Description = Annotated[str, Field(min_length=1, max_length=2048)]
 
 
@@ -45,7 +46,7 @@ class ProviderAdmissionDecision(BaseModel):
     approved_resources: tuple[Identifier, ...] = ()
     internal_use_only: bool = True
     credential_mode: Identifier
-    terms_reference_uri: Identifier
+    terms_reference_uri: ResourceLocation
     evidence_reviewed_at: datetime
     rationale: Description
     findings: tuple[Identifier, ...] = ()
@@ -67,8 +68,8 @@ class ProductionIngestionRequest(BaseModel):
     request_id: UUID = Field(default_factory=uuid4)
     provider_id: ProductionProvider
     resource_id: Identifier
-    endpoint_url: Identifier
-    storage_root: Identifier
+    endpoint_url: ResourceLocation
+    storage_root: ResourceLocation
     network_access_enabled: bool = False
     user_agent: Identifier | None = None
     timeout_seconds: float = Field(default=15.0, gt=0, le=60)
@@ -100,9 +101,9 @@ class ProductionIngestionEvidence(BaseModel):
     resource_id: Identifier
     status: IngestionStatus
     admission_status: AdmissionStatus
-    endpoint_url: Identifier
-    payload_uri: Identifier | None = None
-    metadata_uri: Identifier | None = None
+    endpoint_url: ResourceLocation
+    payload_uri: ResourceLocation | None = None
+    metadata_uri: ResourceLocation | None = None
     payload_sha256: Identifier | None = None
     response_bytes: int = Field(default=0, ge=0)
     attempt_count: int = Field(default=0, ge=0)
