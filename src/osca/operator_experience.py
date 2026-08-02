@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import socket
 import sqlite3
 import sys
@@ -248,7 +247,11 @@ def doctor_profile(profile_root: Path, *, port: int | None = None) -> dict[str, 
         "profile_root": str(root),
         "storage_root": str(storage_root),
         "checks": [asdict(check) for check in checks],
-        "summary": {"passed": len(checks) - failed - warnings, "warnings": warnings, "failed": failed},
+        "summary": {
+            "passed": len(checks) - failed - warnings,
+            "warnings": warnings,
+            "failed": failed,
+        },
         "network_access_enabled": False,
         "recommendations_enabled": False,
         "broker_connections_enabled": False,
