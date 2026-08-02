@@ -233,7 +233,9 @@ def validate_backup(backup: Path) -> BackupManifest:
     return manifest
 
 
-def restore_verified_backup(backup: Path, destination: Path, *, replace: bool = False) -> dict[str, object]:
+def restore_verified_backup(
+    backup: Path, destination: Path, *, replace: bool = False
+) -> dict[str, object]:
     manifest = validate_backup(backup)
     target = destination.resolve()
     if target.exists() and any(target.iterdir()) and not replace:
@@ -287,7 +289,7 @@ def upgrade_profile(
 ) -> dict[str, object]:
     root = profile_root.resolve()
     backup_result = create_verified_backup(root, backup)
-    before = {path.relative_to(root).as_posix(): _sha256(path) for path in root.rglob("*") if path.is_file()}
+    before = _profile_digests(root)
     try:
         if mutation is not None:
             mutation(root)
