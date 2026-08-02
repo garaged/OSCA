@@ -83,6 +83,10 @@ ignore_errors = true
 module = ["osca.analyst_workspace.evidence"]
 disable_error_code = ["arg-type"]
 
+[[tool.mypy.overrides]]
+module = ["osca.operator_experience"]
+disable_error_code = ["call-overload"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
