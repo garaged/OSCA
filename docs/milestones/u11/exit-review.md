@@ -32,7 +32,7 @@ Focused U11 coverage proves:
 - non-loopback workspace startup is rejected;
 - recommendation, promotion, broker, autonomous, and real-capital boundaries stay disabled.
 
-Quality run #729 passed on the final pre-acceptance documentation head:
+Quality run #732 passed on final closeout commit `74609f8c5ac2b076d5f95083cfe96a29bcd52282`:
 
 - Ruff;
 - strict mypy across the complete source package;
@@ -118,7 +118,7 @@ Removal requires a later documented decision, release note, and compatibility ev
 
 ### Quality and manual evidence
 
-- [x] Final hosted Quality is green on the implementation-closeout head.
+- [x] Final hosted Quality is green on the final closeout head.
 - [x] Clean-profile initialization and pre-workflow doctor evidence are retained.
 - [x] One acquisition-to-research chain is retained.
 - [x] Populated-profile doctor and workspace snapshot evidence are retained.
