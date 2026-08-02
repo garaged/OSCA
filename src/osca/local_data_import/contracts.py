@@ -71,7 +71,7 @@ class LocalOHLCVImportRequest(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     family: Literal["osca.local-ohlcv-import.request"] = "osca.local-ohlcv-import.request"
-    version: Literal["1.0.0"] = "1.0.0"
+    version: Literal["1.1.0"] = "1.1.0"
     request_id: UUID = Field(default_factory=uuid4)
     input_path: LocalPath
     storage_root: LocalPath
@@ -79,6 +79,7 @@ class LocalOHLCVImportRequest(BaseModel):
     timeframe: LocalOHLCVTimeframe
     input_format: LocalOHLCVImportFormat | None = None
     source_uri: Identifier = "local-file://user-supplied"
+    revision_salt: Identifier | None = None
     calendar_assumption: Identifier = "source-provided"
     network_access_enabled: Literal[False] = False
 
@@ -87,7 +88,7 @@ class LocalOHLCVImportResult(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     family: Literal["osca.local-ohlcv-import.result"] = "osca.local-ohlcv-import.result"
-    version: Literal["1.0.0"] = "1.0.0"
+    version: Literal["1.1.0"] = "1.1.0"
     dataset_revision_id: UUID
     symbol: Identifier
     timeframe: LocalOHLCVTimeframe
