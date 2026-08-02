@@ -19,13 +19,15 @@ Let a technically capable new user complete OSCA's primary local research workfl
 6. zsh, Bash, and PowerShell quickstarts and a compatibility window through U13 are documented.
 7. OpenSpec contracts, focused tests, and initial traceability are present.
 
-Quality run #713 passed on the foundation head:
+Quality run #713 passed on the foundation implementation head:
 
 - Ruff;
 - strict mypy across 244 source files;
 - tests, contracts, migrations, links, and architecture checks;
 - OpenSpec doctor and strict validation;
 - secret scanning.
+
+Documentation-only progress commits follow that green head and remain subject to the next hosted run.
 
 ## Remaining implementation
 
