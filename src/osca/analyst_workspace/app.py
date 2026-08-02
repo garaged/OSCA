@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import HTMLResponse, Response
 
 from osca.analyst_workspace.contracts import (
     AnalystWorkspaceSnapshot,
+    WorkspaceArtifactDetail,
+    WorkspaceFilter,
+    WorkspaceItemStatus,
     WorkspaceSection,
     WorkspaceSectionResult,
 )
+from osca.analyst_workspace.evidence import WorkspaceEvidenceService
 from osca.analyst_workspace.model_validation import model_validation_router
 from osca.analyst_workspace.prediction_lab import prediction_lab_router
 from osca.analyst_workspace.quantitative import quantitative_router
@@ -23,10 +28,11 @@ def create_app(
     service: AnalystWorkspaceService | None = None,
 ) -> FastAPI:
     workspace_service = service or AnalystWorkspaceService()
+    evidence_service = WorkspaceEvidenceService(workspace_service)
     root = storage_root.resolve()
     app = FastAPI(
         title="OSCA Analyst Workspace",
-        version="1.4.0",
+        version="1.5.0",
         description=(
             "Read-only local workspace for evidence, charts, analysis, ML diagnostics, "
             "and research validation."
@@ -52,6 +58,7 @@ def create_app(
             "quantitative_analysis_enabled": True,
             "prediction_lab_enabled": True,
             "model_research_validation_enabled": True,
+            "evidence_export_enabled": True,
             "automatic_model_promotion_enabled": False,
             "broker_execution_enabled": False,
         }
@@ -71,6 +78,65 @@ def create_app(
             raise HTTPException(status_code=404, detail="unknown workspace section") from exc
         return workspace_service.section(root, section)
 
+    @app.get("/api/evidence", response_model=AnalystWorkspaceSnapshot)
+    def filtered_evidence(
+        section: WorkspaceSection | None = None,
+        status: WorkspaceItemStatus | None = None,
+        symbol: str | None = Query(default=None, min_length=1, max_length=80),
+        timeframe: str | None = Query(default=None, min_length=1, max_length=20),
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
+    ) -> AnalystWorkspaceSnapshot:
+        return evidence_service.filtered_snapshot(
+            root,
+            WorkspaceFilter(
+                section=section,
+                status=status,
+                symbol=symbol,
+                timeframe=timeframe,
+                date_from=date_from,
+                date_to=date_to,
+            ),
+        )
+
+    @app.get("/api/evidence/{item_id:path}/raw")
+    def raw_evidence(item_id: str) -> Response:
+        try:
+            filename, payload = evidence_service.raw_json(root, item_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="unknown evidence item") from exc
+        except (OSError, ValueError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        return Response(
+            payload,
+            media_type="application/json",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+
+    @app.get("/api/evidence/{item_id:path}/export")
+    def export_evidence(item_id: str) -> Response:
+        try:
+            payload = evidence_service.portable_export(root, item_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="unknown evidence item") from exc
+        except (OSError, ValueError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        return Response(
+            payload,
+            media_type="application/zip",
+            headers={"Content-Disposition": 'attachment; filename="osca-evidence.zip"'},
+        )
+
+    @app.get(
+        "/api/evidence/{item_id:path}",
+        response_model=WorkspaceArtifactDetail,
+    )
+    def evidence_detail(item_id: str) -> WorkspaceArtifactDetail:
+        try:
+            return evidence_service.detail(root, item_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="unknown evidence item") from exc
+
     return app
 
 
@@ -87,11 +153,11 @@ body { margin: 0; background: #111827; color: #e5e7eb; }
 header { padding: 2rem max(1.25rem, 5vw); border-bottom: 1px solid #374151; }
 h1 { margin: 0 0 .5rem; font-size: clamp(1.8rem, 4vw, 3rem); }
 header p { margin: 0; color: #9ca3af; }
-nav { margin-top: 1rem; }
-nav a { color: #93c5fd; }
+nav { margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+a { color: #93c5fd; }
 main { padding: 1.5rem max(1.25rem, 5vw) 3rem; }
 #status { margin-bottom: 1rem; color: #93c5fd; }
-.grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 section { background: #1f2937; border: 1px solid #374151; border-radius: 14px; padding: 1rem; }
 section h2 { display: flex; justify-content: space-between; margin: 0 0 .8rem; font-size: 1.05rem; }
 .count { color: #93c5fd; }
@@ -99,7 +165,7 @@ section h2 { display: flex; justify-content: space-between; margin: 0 0 .8rem; f
 .item:first-of-type { border-top: 0; }
 .item h3 { margin: 0 0 .3rem; font-size: .98rem; }
 .item p, .empty { margin: 0; color: #9ca3af; line-height: 1.45; }
-.badge { display: inline-block; margin-top: .45rem; padding: .15rem .45rem; border-radius: 999px; background: #374151; font-size: .75rem; }
+.badge { display: inline-block; margin: .45rem .5rem 0 0; padding: .15rem .45rem; border-radius: 999px; background: #374151; font-size: .75rem; }
 .warning { color: #fde68a; }
 .error { color: #fca5a5; }
 footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
@@ -108,8 +174,11 @@ footer { padding: 0 max(1.25rem, 5vw) 2rem; color: #9ca3af; font-size: .85rem; }
 <body>
 <header>
   <h1>OSCA Analyst Workspace</h1>
-  <p>Read-only inspection of local datasets, charts, quantitative analysis, ML evidence, and research validation.</p>
-  <nav><a href="/charts">Open interactive market-data visualization</a></nav>
+  <p>Read-only dataset-to-validation evidence, lineage, diagnostics, and governed export.</p>
+  <nav>
+    <a href="/charts">Market-data visualization</a>
+    <a href="/api/evidence">Filtered evidence API</a>
+  </nav>
 </header>
 <main>
   <div id="status">Loading retained evidence…</div>
@@ -131,8 +200,7 @@ fetch('/api/workspace')
     return response.json();
   })
   .then(data => {
-    const mode = data.read_only ? 'read-only' : 'writable';
-    status.textContent = `${data.total_items} retained items · ${mode}`;
+    status.textContent = `${data.total_items} retained items · read-only`;
     data.sections.forEach(group => {
       const section = node('section');
       const heading = node('h2');
@@ -142,7 +210,11 @@ fetch('/api/workspace')
       if (group.items.length === 0) section.append(node('p', group.empty_message, 'empty'));
       group.items.forEach(item => {
         const article = node('article', undefined, 'item');
-        article.append(node('h3', item.title));
+        const link = node('a', item.title);
+        link.href = `/api/evidence/${encodeURIComponent(item.item_id)}`;
+        const title = node('h3');
+        title.append(link);
+        article.append(title);
         article.append(node('p', item.summary));
         article.append(node('span', item.status.replaceAll('_', ' '), 'badge'));
         section.append(article);

@@ -53,11 +53,13 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
 "src/osca/analyst_workspace/app.py" = ["E501"]
+"src/osca/analyst_workspace/evidence.py" = ["SIM102", "SIM103"]
 "src/osca/analyst_workspace/visualization.py" = ["E501", "B008", "F401"]
 "src/osca/quantitative_analysis/services.py" = ["E501", "F401"]
 "src/osca/ml_experiments/contracts.py" = ["E501"]
 "src/osca/ml_experiments/services.py" = ["E501", "F401", "B009", "RUF007", "SIM102"]
 "src/osca/ml_experiments/engine.py" = ["E501", "I001", "B009"]
+"tests/test_u10_research_evidence_workspace.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.13"
@@ -76,6 +78,10 @@ disable_error_code = ["operator"]
 [[tool.mypy.overrides]]
 module = ["osca.ml_experiments.services"]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["osca.analyst_workspace.evidence"]
+disable_error_code = ["arg-type"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

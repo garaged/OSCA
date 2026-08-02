@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -91,6 +92,8 @@ class ExperimentMetrics(BaseModel):
 class MLExperimentResult(BaseModel):
     model_config = ConfigDict(frozen=True)
 
+    family: Literal["osca.ml-experiment.result"] = "osca.ml-experiment.result"
+    version: Literal["1.0.0"] = "1.0.0"
     experiment_id: UUID
     status: ExperimentStatus
     dataset_revision_id: UUID

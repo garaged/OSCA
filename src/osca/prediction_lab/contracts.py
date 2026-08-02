@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -44,6 +45,8 @@ class RegimeBreakdown(BaseModel):
 class ExperimentDiagnostic(BaseModel):
     model_config = ConfigDict(frozen=True)
 
+    family: Literal["osca.prediction-diagnostic.result"] = "osca.prediction-diagnostic.result"
+    version: Literal["1.0.0"] = "1.0.0"
     experiment_id: UUID
     task: ExperimentTask
     status: DiagnosticStatus

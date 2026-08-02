@@ -17,10 +17,22 @@ _EMPTY_MESSAGES: dict[WorkspaceSection, str] = {
     WorkspaceSection.PROJECTS: "No retained research-project summaries were found.",
     WorkspaceSection.WATCHLISTS: "No local watchlists were found.",
     WorkspaceSection.DATASETS: "No governed local OHLCV datasets were found.",
-    WorkspaceSection.REPORTS: "No retained research reports were found.",
+    WorkspaceSection.ACQUISITIONS: "No retained historical-acquisition evidence was found.",
     WorkspaceSection.BACKTESTS: "No retained backtest or paper-evaluation reports were found.",
+    WorkspaceSection.EXPERIMENTS: "No retained ML experiment evidence was found.",
+    WorkspaceSection.DIAGNOSTICS: "No retained prediction-diagnostic evidence was found.",
+    WorkspaceSection.VALIDATIONS: "No retained model-validation evidence was found.",
+    WorkspaceSection.PIPELINE_RUNS: "No retained research-pipeline manifests were found.",
+    WorkspaceSection.REPORTS: "No other retained research reports were found.",
     WorkspaceSection.ENRICHMENT: "No retained SEC enrichment evidence was found.",
     WorkspaceSection.ROUTING: "No retained runtime-routing decisions were found.",
+}
+
+_RESEARCH_FILENAMES: dict[WorkspaceSection, str] = {
+    WorkspaceSection.EXPERIMENTS: "experiment.json",
+    WorkspaceSection.DIAGNOSTICS: "diagnostic.json",
+    WorkspaceSection.VALIDATIONS: "validation.json",
+    WorkspaceSection.PIPELINE_RUNS: "manifest.json",
 }
 
 
@@ -29,8 +41,7 @@ class AnalystWorkspaceService:
         root = storage_root.resolve()
         warnings: list[str] = []
         sections = tuple(
-            self.section(root, section, warnings=warnings)
-            for section in WorkspaceSection
+            self.section(root, section, warnings=warnings) for section in WorkspaceSection
         )
         return AnalystWorkspaceSnapshot(
             storage_root=str(root),
@@ -52,8 +63,13 @@ class AnalystWorkspaceService:
             WorkspaceSection.PROJECTS: self._projects,
             WorkspaceSection.WATCHLISTS: self._watchlists,
             WorkspaceSection.DATASETS: self._datasets,
-            WorkspaceSection.REPORTS: self._reports,
+            WorkspaceSection.ACQUISITIONS: self._acquisitions,
             WorkspaceSection.BACKTESTS: self._backtests,
+            WorkspaceSection.EXPERIMENTS: self._experiments,
+            WorkspaceSection.DIAGNOSTICS: self._diagnostics,
+            WorkspaceSection.VALIDATIONS: self._validations,
+            WorkspaceSection.PIPELINE_RUNS: self._pipeline_runs,
+            WorkspaceSection.REPORTS: self._reports,
             WorkspaceSection.ENRICHMENT: self._enrichment,
             WorkspaceSection.ROUTING: self._routing,
         }
@@ -102,7 +118,36 @@ class AnalystWorkspaceService:
             return ()
         return tuple(_dataset_item(row) for row in rows)
 
+    def _acquisitions(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
+        directory = root / "historical-acquisition"
+        if not directory.is_dir():
+            return ()
+        return tuple(
+            item
+            for path in sorted(directory.glob("*.json"))
+            if (item := _structured_json_item(
+                path,
+                root=root,
+                section=WorkspaceSection.ACQUISITIONS,
+                warnings=warnings,
+            ))
+            is not None
+        )
+
+    def _experiments(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
+        return _research_items(root, WorkspaceSection.EXPERIMENTS, warnings)
+
+    def _diagnostics(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
+        return _research_items(root, WorkspaceSection.DIAGNOSTICS, warnings)
+
+    def _validations(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
+        return _research_items(root, WorkspaceSection.VALIDATIONS, warnings)
+
+    def _pipeline_runs(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
+        return _research_items(root, WorkspaceSection.PIPELINE_RUNS, warnings)
+
     def _reports(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
+        del warnings
         paths = _artifact_paths(root, suffixes=(".md", ".json"))
         return tuple(
             _file_item(path, WorkspaceSection.REPORTS, root)
@@ -110,6 +155,9 @@ class AnalystWorkspaceService:
             if "backtest" not in path.name.lower()
             and "paper" not in path.name.lower()
             and not _is_provider_or_routing_metadata(path)
+            and "/research-evidence/" not in path.as_posix()
+            and "/historical-acquisition/" not in path.as_posix()
+            and "/production-ingestion/" not in path.as_posix()
         )
 
     def _backtests(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
@@ -122,9 +170,8 @@ class AnalystWorkspaceService:
         )
 
     def _enrichment(self, root: Path, warnings: list[str]) -> tuple[WorkspaceItem, ...]:
-        metadata_root = root / "provider-preview" / "sec-edgar"
         return _evidence_items(
-            metadata_root,
+            root / "provider-preview" / "sec-edgar",
             section=WorkspaceSection.ENRICHMENT,
             warnings=warnings,
         )
@@ -139,11 +186,7 @@ class AnalystWorkspaceService:
 
 def _dataset_item(row: sqlite3.Row) -> WorkspaceItem:
     quality_findings = _json_list(str(row["quality_findings_json"]))
-    status = (
-        WorkspaceItemStatus.WARNING
-        if quality_findings
-        else WorkspaceItemStatus.AVAILABLE
-    )
+    status = WorkspaceItemStatus.WARNING if quality_findings else WorkspaceItemStatus.AVAILABLE
     symbol = str(row["symbol"])
     timeframe = str(row["timeframe"])
     revision = str(row["dataset_revision_id"])
@@ -165,6 +208,77 @@ def _dataset_item(row: sqlite3.Row) -> WorkspaceItem:
             "quality_findings": quality_findings,
         },
     )
+
+
+def _research_items(
+    root: Path,
+    section: WorkspaceSection,
+    warnings: list[str],
+) -> tuple[WorkspaceItem, ...]:
+    directory = root / "research-evidence"
+    filename = _RESEARCH_FILENAMES[section]
+    if not directory.is_dir():
+        return ()
+    return tuple(
+        item
+        for path in sorted(directory.rglob(filename))
+        if (item := _structured_json_item(path, root=root, section=section, warnings=warnings))
+        is not None
+    )
+
+
+def _structured_json_item(
+    path: Path,
+    *,
+    root: Path,
+    section: WorkspaceSection,
+    warnings: list[str],
+) -> WorkspaceItem | None:
+    document = _read_json_object(path, warnings)
+    if document is None:
+        return WorkspaceItem(
+            item_id=f"{section.value}:{path.relative_to(root)}",
+            section=section,
+            title=path.stem.replace("_", " ").title(),
+            status=WorkspaceItemStatus.CORRUPT,
+            summary="Artifact could not be decoded as a JSON object.",
+            artifact_uri=path.resolve().as_uri(),
+            metadata={"relative_path": str(path.relative_to(root))},
+        )
+    raw_status = str(document.get("status", document.get("outcome", "available")))
+    title = _structured_title(document, path, section)
+    summary = str(
+        document.get(
+            "rationale",
+            document.get("interpretation", f"Retained {section.value[:-1]} evidence."),
+        )
+    )
+    return WorkspaceItem(
+        item_id=f"{section.value}:{path.relative_to(root)}",
+        section=section,
+        title=title,
+        status=_workspace_status(raw_status),
+        summary=summary,
+        artifact_uri=path.resolve().as_uri(),
+        metadata=_safe_metadata(document),
+    )
+
+
+def _structured_title(
+    document: dict[str, object], path: Path, section: WorkspaceSection
+) -> str:
+    candidates = (
+        "symbol",
+        "experiment_id",
+        "diagnostic_id",
+        "validation_id",
+        "run_id",
+        "acquisition_id",
+    )
+    value = next((document[key] for key in candidates if document.get(key)), None)
+    if value is None:
+        value = path.parent.name if section is not WorkspaceSection.ACQUISITIONS else path.stem
+    return f"{section.value[:-1].replace('_', ' ').title()}: {value}"
 
 
 def _json_directory_items(
@@ -219,7 +333,6 @@ def _evidence_items(
         if document is None:
             continue
         raw_status = str(document.get("status", document.get("outcome", "available")))
-        status = _workspace_status(raw_status)
         provider = str(document.get("provider_id", "local"))
         resource = str(document.get("resource_id", path.stem))
         items.append(
@@ -227,7 +340,7 @@ def _evidence_items(
                 item_id=f"{section.value}:{path.relative_to(directory)}",
                 section=section,
                 title=f"{provider}: {resource}",
-                status=status,
+                status=_workspace_status(raw_status),
                 summary=str(document.get("rationale", "Retained evidence record.")),
                 artifact_uri=path.resolve().as_uri(),
                 metadata=_safe_metadata(document),
@@ -306,6 +419,18 @@ def _workspace_status(value: str) -> WorkspaceItemStatus:
         return WorkspaceItemStatus.POLICY_BLOCKED
     if normalized in {"provider_unavailable", "unavailable"}:
         return WorkspaceItemStatus.PROVIDER_UNAVAILABLE
-    if normalized in {"warning", "stale", "partial"}:
+    if normalized in {"review_required"}:
+        return WorkspaceItemStatus.REVIEW_REQUIRED
+    if normalized in {"diagnostic_not_eligible", "not_eligible", "ineligible"}:
+        return WorkspaceItemStatus.NOT_ELIGIBLE
+    if normalized in {"incomplete", "partial"}:
+        return WorkspaceItemStatus.INCOMPLETE
+    if normalized in {"corrupt", "malformed"}:
+        return WorkspaceItemStatus.CORRUPT
+    if normalized in {"incompatible"}:
+        return WorkspaceItemStatus.INCOMPATIBLE
+    if normalized in {"orphaned"}:
+        return WorkspaceItemStatus.ORPHANED
+    if normalized in {"warning", "stale", "failed", "cancelled"}:
         return WorkspaceItemStatus.WARNING
     return WorkspaceItemStatus.AVAILABLE

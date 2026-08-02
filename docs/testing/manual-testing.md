@@ -2,7 +2,7 @@
 
 - **Status:** Active from M8
 - **First covered milestone:** M8 F3 paper evaluation and automation foundation
-- **Current coverage:** Through U9 governed historical acquisition
+- **Current coverage:** Through U10 research-evidence workspace
 - **Audience:** Maintainers and early operators
 - **Purpose:** Keep executable reality checks for user- and operator-visible behavior while preserving safety boundaries.
 - **Last reviewed:** 2026-08-02
@@ -158,145 +158,60 @@ See the [U8 real-world quickstart](../milestones/u8/real-world-research-quicksta
 
 ## U9 governed historical acquisition
 
-Use a clean storage root:
+Use a clean storage root and follow the complete [U9 acceptance procedure](../milestones/u9/exit-review.md). The accepted path acquires Kraken XBTUSD daily history, retains raw and canonical lineage, runs the U8 research pipeline, verifies the blocked-equity fallback, and confirms workspace discovery.
 
-```bash
-rm -rf .osca/u9-acceptance
-```
+The U9 output must retain request/job/acquisition identities, verified pair mapping, raw and normalized digests, parser and normalizer versions, canonical revision metadata, explicit degraded statuses, remediation, and disabled recommendation/execution boundaries.
 
-### Successful Kraken acquisition
+## U10 research-evidence workspace
 
-```bash
-uv run osca historical-data fetch \
-  XBTUSD crypto kraken \
-  --timeframe 1d \
-  --expected-pair-key XXBTZUSD \
-  --minimum-rows 250 \
-  --network-access-enabled \
-  --storage-root .osca/u9-acceptance \
-  | tee .osca/u9-acceptance-acquisition.json
-```
+Use the retained U9 acceptance root and follow the [U10 clean-profile acceptance procedure](../milestones/u10/manual-acceptance.md).
 
-Confirm the result exposes and retains:
-
-- `request_id`, `correlation_id`, `job_id`, and `acquisition_id`
-- admitted provider, venue context, and verified provider pair key
-- raw payload URI and SHA-256
-- normalized SHA-256
-- parser and normalizer versions
-- job progress, attempts, duration, and completion state
-- immutable dataset revision, Parquet payload, SQLite metadata, and row count
-- predecessor/supersession fields when a parser or correction changes the revision
-- attribution, internal-use limitation, and disabled redistribution/execution flags
-
-### Bounded range and mapping checks
-
-Repeat with explicit UTC timestamps appropriate for the retained Kraken window:
-
-```bash
-uv run osca historical-data fetch \
-  XBTUSD crypto kraken \
-  --timeframe 1d \
-  --start-at 2024-08-01T00:00:00Z \
-  --end-at 2024-08-03T00:00:00Z \
-  --expected-pair-key XXBTZUSD \
-  --require-complete-range \
-  --network-access-enabled \
-  --storage-root .osca/u9-range
-```
-
-Confirm rows are restricted to the half-open interval `[start_at, end_at)`. An incorrect `--expected-pair-key` must produce `invalid` without a canonical revision.
-
-### Durable lifecycle, reuse, and cancellation
-
-Re-run the identical successful request. Confirm the canonical revision is reused and `reuse_state` is `reused` without a second accepted revision.
-
-Exercise pre-network cancellation:
-
-```bash
-uv run osca historical-data fetch \
-  XBTUSD crypto kraken \
-  --cancel-requested \
-  --storage-root .osca/u9-cancel
-```
-
-Expected: `cancelled`, a retained job record, no provider payload, and remediation to resubmit without cancellation. Automated coverage also rewrites an interrupted job to `running` and proves the next invocation enters recovery.
-
-### Quota, outage, malformed, partial, and stale checks
-
-The following failure cases are executed with deterministic injected transports in `tests/test_u9_historical_acquisition.py` because public provider failures cannot be triggered reliably or safely on demand:
-
-- Kraken rate-limit error → `quota_blocked`, `quota_state: exhausted`, retry metadata
-- Kraken service error → `provider_unavailable`
-- non-JSON body → `corrupt`
-- structurally invalid Kraken body → `invalid`
-- fewer than `minimum_rows` → `partial`
-- data older than `freshness_max_age_seconds` → `stale`
-
-Retain the hosted Quality run and focused test names as the acceptance evidence for these deterministic failure scenarios. Operator remediation must be present for every non-success status.
-
-### Blocked equity source
-
-```bash
-uv run osca historical-data fetch \
-  AAPL equity twelve_data \
-  --timeframe 1d \
-  --storage-root .osca/u9-acceptance
-```
-
-Expected: `policy_blocked`, no network-derived payload or canonical revision, explicit CSV fallback guidance, and all recommendation/execution flags false.
-
-### U8 handoff
-
-Use the exact acquired `canonical_payload_uri` and `dataset_revision_id`:
-
-```bash
-uv run osca research-pipeline \
-  "$CANONICAL_PAYLOAD_URI" \
-  "$DATASET_REVISION_ID" \
-  XBTUSD \
-  1d \
-  --storage-root .osca/u9-acceptance \
-  --reviewer "$USER" \
-  --rationale "Approved for local evidence-only U9 acceptance." \
-  --approve-local-validation
-```
-
-A `diagnostic_not_eligible` result is valid when experiment and diagnostic artifacts are retained and the pipeline fails closed before validation.
-
-### Workspace discovers the complete evidence chain
-
-This is an explicit U9 acceptance requirement.
+The essential checks are:
 
 ```bash
 uv run python -m osca.analyst_workspace \
   --storage-root .osca/u9-acceptance \
   --snapshot \
-  | tee .osca/u9-workspace-snapshot.json
+  | tee .osca/u10-workspace-snapshot.json
+
+uv run python -m osca.analyst_workspace \
+  --storage-root .osca/u9-acceptance \
+  --snapshot \
+  --section experiments \
+  --symbol XBTUSD \
+  --timeframe 1d \
+  | tee .osca/u10-experiments-filter.json
 ```
 
-Confirm the snapshot discovers all artifacts that exist for the run:
+Copy the experiment `item_id` from the filtered output:
 
-- canonical dataset revision from SQLite
-- retained historical-acquisition evidence
-- persisted acquisition job evidence
-- U8 pipeline manifest
-- experiment
-- diagnostic
-- validation request/result only when diagnostic eligibility permitted U7
+```bash
+uv run python -m osca.analyst_workspace \
+  --storage-root .osca/u9-acceptance \
+  --detail-item '<EXPERIMENT_ITEM_ID>' \
+  | tee .osca/u10-experiment-detail.json
 
-Also confirm:
+uv run python -m osca.analyst_workspace \
+  --storage-root .osca/u9-acceptance \
+  --export-item '<EXPERIMENT_ITEM_ID>' \
+  --output .osca/u10-evidence.zip
+```
 
-- workspace is read-only
-- network access and credential materialization are disabled
-- recommendations, automatic promotion, broker execution, and real-capital execution remain disabled
-- no artifact is silently omitted because it is nested below `historical-acquisition/` or `research-evidence/`
+Confirm:
 
-The focused regression `test_workspace_discovers_complete_u9_evidence_chain` is mandatory and complements this clean-profile snapshot.
+- acquisitions, experiments, diagnostics, validations, and pipeline runs have dedicated sections
+- the experiment detail links applicable acquisition, diagnostic, and pipeline evidence
+- diagnostic-ineligible runs do not falsely report missing validation
+- malformed, incomplete, incompatible, and orphaned evidence is never healthy
+- CLI, API, raw JSON, and ZIP manifest identifiers agree
+- non-redistributable acquisition evidence is excluded from portable export
+- credentials and secrets are excluded
+- workspace remains loopback-only and read-only
+- recommendations, automatic promotion, broker connections, autonomous execution, and real-capital orders remain disabled
 
 ## Analyst workspace server verification
 
-Start the read-only workspace against the same storage root. Prefer a free dynamic port when running automated tests to avoid accidentally testing another local service.
+Start the read-only workspace against the same storage root. Select a free port first; passing port `0` directly to Uvicorn does not provide a stable URL for manual inspection.
 
 ```bash
 PORT="$(uv run python - <<'PY'
@@ -313,12 +228,7 @@ uv run python -m osca.analyst_workspace \
   --port "$PORT"
 ```
 
-Verify:
-
-- `/health` returns `status: ok`, read-only mode, network disabled, and promotion/broker boundaries disabled
-- `/` renders the OSCA Analyst Workspace title and safety footer
-- `/api/workspace` lists the governed dataset and retained U8/U9 evidence
-- `/api/model-validation/run` reproduces deterministic CLI evidence when given the same retained request; only the generated validation ID may differ
+Verify `/health`, `/`, `/api/workspace`, `/api/evidence`, one detail endpoint, raw JSON download, and portable export. The API and CLI must return the same item identifiers and statuses for equivalent filters.
 
 ## Provider-state interpretation
 
