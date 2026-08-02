@@ -11,8 +11,9 @@
 - [x] Add `osca init` with safe local defaults.
 - [x] Add `osca doctor` with corrective machine-readable checks.
 - [x] Add `osca workspace` as the primary read-only workspace entry point.
-- [ ] Promote or alias local import, deterministic analysis, backtesting, experiments, diagnostics, and validation commands.
-- [ ] Document compatibility aliases and deprecation policy.
+- [x] Promote or alias local import, deterministic analysis, and backtesting commands.
+- [x] Keep experiment, diagnostic, and validation execution under the canonical `osca research-pipeline` command.
+- [x] Document compatibility aliases and the U13 deprecation window.
 
 ## Diagnostics
 
@@ -22,14 +23,16 @@
 - [x] Check Parquet/PyArrow readiness.
 - [x] Check workspace port availability.
 - [x] Report retained-evidence presence.
-- [ ] Add provider capability, credential-reference, and evidence-consistency diagnostics.
+- [ ] Add provider capability, credential-reference, and deeper evidence-consistency diagnostics.
 
 ## Validation and evidence
 
 - [x] Add focused initialization, doctor, CLI discovery, and loopback tests.
 - [ ] Add canonical workflow and compatibility-equivalence tests.
-- [ ] Add zsh, Bash, and PowerShell quickstarts.
+- [x] Add zsh, Bash, and PowerShell quickstarts.
 - [ ] Reconcile README and central manual testing.
-- [ ] Add U11 traceability and exit review.
-- [ ] Run full hosted Quality.
+- [x] Add initial U11 traceability.
+- [ ] Add U11 exit review.
+- [x] Run hosted Quality on the foundation head.
+- [ ] Remove the temporary operator config parsing mypy exception.
 - [ ] Retain clean-profile end-to-end acceptance evidence.
