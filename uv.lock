@@ -218,7 +218,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/62/87/308efef08bc60d1e673d035e8ca8e9663f4b6b3ba519c3cdebf6583c2b76/hypothesis-6.156.6-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:2d47054d0230f0dd9b6868fc030126c7a6c25527144272ff376cc4e9c39f7540", size = 1244168, upload-time = "2026-07-10T20:55:40.288Z" },
     { url = "https://files.pythonhosted.org/packages/3b/66/de8fff5bd9a40a4056dafbe7f904887ef12632282bbbac90f1977c30dd3b/hypothesis-6.156.6-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:050c8c0815f88d47dd0875a92698d20d61639b7b721ee043a6d687c7f14ff7d8", size = 1288127, upload-time = "2026-07-10T20:56:00.541Z" },
     { url = "https://files.pythonhosted.org/packages/cf/8d/794fb26e1fd3ff004978f8f18b7aa7e1c2270ba72e1f977b987a812064f8/hypothesis-6.156.6-cp313-cp313-win_amd64.whl", hash = "sha256:f0d73edab7b8a0051b3634f2d04d62b7e7282f8f274963b11188ee4957d672ef", size = 637954, upload-time = "2026-07-10T20:56:33.35Z" },
-
 ]
 
 [[package]]
@@ -439,7 +438,6 @@ wheels = [
 name = "opentelemetry-api"
 version = "1.44.0"
 source = { registry = "https://pypi.org/simple" }
-
 dependencies = [
     { name = "typing-extensions" },
 ]
@@ -477,7 +475,7 @@ wheels = [
 
 [[package]]
 name = "osca"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
@@ -660,7 +658,6 @@ dependencies = [
     { name = "markdown-it-py" },
     { name = "pygments" },
 ]
-
 sdist = { url = "https://files.pythonhosted.org/packages/c0/8f/0722ca900cc807c13a6a0c696dacf35430f72e0ec571c4275d2371fca3e9/rich-15.0.0.tar.gz", hash = "sha256:edd07a4824c6b40189fb7ac9bc4c52536e9780fbbfbddf6f1e2502c31b068c36", size = 230680, upload-time = "2026-04-12T08:24:00.75Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl", hash = "sha256:33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb", size = 310654, upload-time = "2026-04-12T08:24:02.83Z" },
@@ -811,4 +808,3 @@ sdist = { url = "https://files.pythonhosted.org/packages/a2/65/b7c6c443ccc58678c
 wheels = [
     { url = "https://files.pythonhosted.org/packages/45/ec/dbb7e5a6b91f86bfb9eb7d2988a2730907b6a729875b949c7f022e8b88fa/uvicorn-0.51.0-py3-none-any.whl", hash = "sha256:5d38af6cd620f2ae3849fb44fd4879e0890aa1febe8d47eb355fb45d93fe6a5b", size = 73219, upload-time = "2026-07-08T10:59:04.44Z" },
 ]
-
