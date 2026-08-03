@@ -10,6 +10,12 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 
 SUPPORTED_MANIFEST_VERSION = "1.0.0"
 SUPPORTED_API_MAJOR = 1
+DEPRECATED_API_VERSIONS = {
+    "0.9": (
+        "Migrate to extension API 1.0.",
+        "0.1.x",
+    )
+}
 SAFE_CAPABILITIES = frozenset(
     {
         "analysis.read",
@@ -91,9 +97,14 @@ class ExtensionManifest(BaseModel):
     @classmethod
     def validate_api_version(cls, value: str) -> str:
         match = re.fullmatch(r"(\d+)\.(\d+)", value)
-        if match is None or int(match.group(1)) != SUPPORTED_API_MAJOR:
-            raise ValueError(f"api_version must use supported major {SUPPORTED_API_MAJOR}")
-        return value
+        if match is None:
+            raise ValueError("api_version must use major.minor syntax")
+        if int(match.group(1)) == SUPPORTED_API_MAJOR or value in DEPRECATED_API_VERSIONS:
+            return value
+        raise ValueError(
+            f"api_version must use supported major {SUPPORTED_API_MAJOR} "
+            f"or deprecated versions {sorted(DEPRECATED_API_VERSIONS)}"
+        )
 
     @field_validator("entry_point")
     @classmethod
@@ -146,6 +157,9 @@ class ExtensionValidationResult(BaseModel):
     extension_id: str | None
     extension_version: str | None
     api_version: str | None
+    compatibility_status: Literal["supported", "deprecated", "invalid"]
+    deprecation_message: str | None
+    last_supported_release_family: str | None
     capabilities: tuple[str, ...]
     verified_artifacts: tuple[str, ...]
     errors: tuple[str, ...]
@@ -195,6 +209,15 @@ def validate_extension_package(manifest_path: Path) -> ExtensionValidationResult
                 continue
             verified.append(artifact.path)
 
+    deprecation = DEPRECATED_API_VERSIONS.get(manifest.api_version) if manifest else None
+    compatibility_status: Literal["supported", "deprecated", "invalid"]
+    if manifest is None or errors:
+        compatibility_status = "invalid"
+    elif deprecation is not None:
+        compatibility_status = "deprecated"
+    else:
+        compatibility_status = "supported"
+
     return ExtensionValidationResult(
         status="invalid" if errors else "valid",
         manifest_path=str(manifest_path),
@@ -202,6 +225,9 @@ def validate_extension_package(manifest_path: Path) -> ExtensionValidationResult
         extension_id=manifest.extension_id if manifest else None,
         extension_version=manifest.extension_version if manifest else None,
         api_version=manifest.api_version if manifest else None,
+        compatibility_status=compatibility_status,
+        deprecation_message=deprecation[0] if deprecation else None,
+        last_supported_release_family=deprecation[1] if deprecation else None,
         capabilities=manifest.capabilities if manifest else (),
         verified_artifacts=tuple(sorted(verified)),
         errors=tuple(errors),
