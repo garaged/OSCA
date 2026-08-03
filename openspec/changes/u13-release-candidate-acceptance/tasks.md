@@ -20,7 +20,7 @@
 
 - [x] Select and apply RC package version `0.1.0rc1`.
 - [x] Produce release notes and known-limitations authority.
-- [ ] Generate final selected-version RC artifacts and retained acceptance evidence.
-- [x] Run the official supported-platform acceptance matrix with the CI placeholder candidate.
-- [ ] Reconcile README, manual testing, traceability, and exit review after final selected-version validation.
-- [ ] Recommend tag `v0.1.0rc1` only after all blocking gates pass.
+- [x] Generate final selected-version RC artifacts and retained acceptance evidence.
+- [x] Run the official supported-platform acceptance matrix for `0.1.0rc1`.
+- [x] Reconcile release notes, traceability, lockfile, and exit review after final validation.
+- [x] Recommend tag `v0.1.0rc1` after all blocking gates pass.
