@@ -4,36 +4,47 @@ OSCA is a modular market-intelligence and quantitative-research platform for sto
 
 The M0-M12 architecture and lifecycle roadmap is complete. P1-P15 delivered provider governance, deterministic local research, model previews, narrow SEC/Kraken ingestion, personal-server operations, and governed trusted-local extensions. P16 completed the live-order readiness study and recorded ADR-0044: NO-GO. P17 remains blocked and is not authorized.
 
-U8 reconciled the retained research workflow into the primary CLI. U9 added governed no-cost Kraken acquisition and fail-closed equity fallback. U10 added complete read-only research-evidence navigation and governed export. U11 now provides one canonical first-run and operator path through the primary `osca` CLI.
+U8 reconciled the retained research workflow into the primary CLI. U9 added governed no-cost Kraken acquisition and fail-closed equity fallback. U10 added complete read-only research-evidence navigation and governed export. U11 provides one canonical first-run operator path. U12 now provides isolated wheel installation, release checksums/SBOM/provenance, compatibility inspection, verified backup and restore, and failed-upgrade recovery on macOS Apple Silicon and Linux x86-64.
 
 Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, and a public extension marketplace remain disabled.
 
 ## Start here
 
 1. [U11 canonical first-run quickstart](docs/milestones/u11/quickstart.md)
-2. [U11 milestone status](docs/milestones/u11/README.md)
-3. [Manual testing and usage](docs/testing/manual-testing.md)
-4. [Architecture status](ARCHITECTURE_STATUS.md)
-5. [Product requirements](docs/product-requirements.md)
-6. [Architecture decisions](docs/decisions/README.md)
-7. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
-8. [U10 research-evidence workspace](docs/milestones/u10/README.md)
-9. [U9 governed historical acquisition](docs/milestones/u9/README.md)
+2. [U12 packaging and lifecycle status](docs/milestones/u12/README.md)
+3. [U12 clean-machine acceptance](docs/milestones/u12/manual-acceptance.md)
+4. [Manual testing and usage](docs/testing/manual-testing.md)
+5. [Architecture status](ARCHITECTURE_STATUS.md)
+6. [Product requirements](docs/product-requirements.md)
+7. [Architecture decisions](docs/decisions/README.md)
+8. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
+9. [U10 research-evidence workspace](docs/milestones/u10/README.md)
 10. [Requirements catalog](docs/governance/requirements-catalog.md)
+
+## Packaged installation
+
+OSCA supports isolated installation from a verified wheel on macOS Apple Silicon and Linux x86-64:
+
+```bash
+uv tool install --force ./osca-<VERSION>-py3-none-any.whl
+osca version
+```
+
+Before installation, verify the wheel against the distributed `SHA256SUMS`. Release artifacts also include a CycloneDX JSON SBOM and versioned provenance identifying the source commit, repository, package version, and artifact digests.
 
 ## Canonical first run
 
 ```bash
 PROFILE_ROOT=".osca/profile"
 
-uv run osca init --profile-root "$PROFILE_ROOT"
-uv run osca doctor --profile-root "$PROFILE_ROOT"
+osca init --profile-root "$PROFILE_ROOT"
+osca doctor --profile-root "$PROFILE_ROOT"
 ```
 
 Acquire governed no-cost Kraken history with explicit network opt-in:
 
 ```bash
-uv run osca historical-data fetch \
+osca historical-data fetch \
   XBTUSD crypto kraken \
   --timeframe 1d \
   --expected-pair-key XXBTZUSD \
@@ -45,7 +56,7 @@ uv run osca historical-data fetch \
 Or import an offline CSV/Parquet dataset:
 
 ```bash
-uv run osca import-data \
+osca import-data \
   ./history.csv \
   AAPL \
   1d \
@@ -55,7 +66,7 @@ uv run osca import-data \
 Run the retained experiment, diagnostic, and optional human-gated local-validation path:
 
 ```bash
-uv run osca research-pipeline \
+osca research-pipeline \
   "$PROFILE_ROOT/data/payloads/<REVISION>.parquet" \
   "<REVISION>" \
   XBTUSD \
@@ -66,15 +77,31 @@ uv run osca research-pipeline \
   --approve-local-validation
 ```
 
-Inspect the complete read-only evidence workspace through the primary CLI:
+Inspect the complete read-only evidence workspace:
 
 ```bash
-uv run osca workspace \
-  --profile-root "$PROFILE_ROOT" \
-  --snapshot
+osca workspace --profile-root "$PROFILE_ROOT" --snapshot
 ```
 
 The generated profile is versioned and local. Network access is never implicit. The workspace remains loopback-only and read-only. Provider-restricted evidence is excluded from portable exports, and secrets or credentials are never placed in evidence bundles.
+
+## Package lifecycle
+
+```bash
+osca lifecycle inspect --profile-root "$PROFILE_ROOT"
+osca lifecycle backup \
+  --profile-root "$PROFILE_ROOT" \
+  --output ./osca-profile-backup.zip
+osca lifecycle upgrade \
+  --profile-root "$PROFILE_ROOT" \
+  --backup ./osca-profile-backup.zip \
+  --target-version <VERSION>
+osca lifecycle restore \
+  --backup ./osca-profile-backup.zip \
+  --profile-root .osca/restored-profile
+```
+
+Lifecycle operations validate compatibility before mutation, require a verified backup before upgrade, reject unsafe archive paths, restore through staging and atomic replacement, and automatically recover from failed migration or post-upgrade validation.
 
 ## Canonical operator commands
 
@@ -86,8 +113,10 @@ The generated profile is versioned and local. Network access is never implicit. 
 - `osca backtest`: run built-in backtest-to-paper evidence.
 - `osca research-pipeline`: run experiment, diagnostic, and optional human-gated local validation.
 - `osca workspace`: snapshot or start the loopback-only read-only workspace.
+- `osca version`: report installed package, runtime, platform, and build identity.
+- `osca lifecycle inspect|backup|restore|upgrade`: manage the protected package/profile lifecycle.
 
-The older command names remain compatibility entry points through U13 release-candidate acceptance. New documentation uses the U11 canonical names.
+The older command names remain compatibility entry points through U13 release-candidate acceptance.
 
 ## Current workflow
 
@@ -101,7 +130,8 @@ The older command names remain compatibility entry points through U13 release-ca
 - U9: acquire governed Kraken history or fail equity acquisition closed to CSV/Parquet fallback.
 - U10: browse dedicated research evidence, inspect lineage, filter evidence, and create governed local exports.
 - U11: initialize, diagnose, acquire/import, research, and inspect through one primary CLI.
-- U12-U14: complete packaging, lifecycle validation, release acceptance, and contributor readiness.
+- U12: install from a verified wheel and protect profiles through backup, upgrade, recovery, and restore.
+- U13-U14: complete release-candidate acceptance and contributor readiness.
 
 ## Provider boundary
 

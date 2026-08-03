@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -16,6 +17,13 @@ from osca.operator_experience import (
     init_command,
     load_operator_config,
 )
+from osca.package_lifecycle import (
+    create_verified_backup,
+    inspect_profile,
+    restore_verified_backup,
+    upgrade_profile,
+    version_report,
+)
 
 app.add_typer(historical_data_app, name="historical-data")
 app.command("init")(init_command)
@@ -23,6 +31,69 @@ app.command("doctor")(doctor_command)
 app.command("import-data")(import_data_command)
 app.command("analyze")(analyze_command)
 app.command("backtest")(backtest_command)
+
+lifecycle_app = typer.Typer(help="Inspect and protect the local OSCA package lifecycle.")
+app.add_typer(lifecycle_app, name="lifecycle")
+
+
+@app.command("version")
+def version_command() -> None:
+    """Report package, runtime, platform, and build provenance."""
+    typer.echo(json.dumps(version_report(), indent=2, sort_keys=True))
+
+
+@lifecycle_app.command("inspect")
+def lifecycle_inspect(
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+) -> None:
+    """Inspect lifecycle compatibility without mutating profile state."""
+    result = inspect_profile(profile_root)
+    typer.echo(json.dumps(result, indent=2, sort_keys=True))
+    if result["status"] == "incompatible":
+        raise typer.Exit(1)
+
+
+@lifecycle_app.command("backup")
+def lifecycle_backup(
+    output: Annotated[Path, typer.Option("--output")],
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+) -> None:
+    """Create and verify a profile backup before lifecycle mutation."""
+    try:
+        result = create_verified_backup(profile_root, output)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result, indent=2, sort_keys=True))
+
+
+@lifecycle_app.command("restore")
+def lifecycle_restore(
+    backup: Annotated[Path, typer.Option("--backup")],
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+    replace: Annotated[bool, typer.Option("--replace")] = False,
+) -> None:
+    """Validate and atomically restore a verified profile backup."""
+    try:
+        result = restore_verified_backup(backup, profile_root, replace=replace)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result, indent=2, sort_keys=True))
+
+
+@lifecycle_app.command("upgrade")
+def lifecycle_upgrade(
+    target_version: Annotated[str, typer.Option("--target-version")],
+    backup: Annotated[Path, typer.Option("--backup")],
+    profile_root: Annotated[Path, typer.Option("--profile-root")] = Path(".osca"),
+) -> None:
+    """Create a verified backup before recording a compatible profile upgrade."""
+    try:
+        result = upgrade_profile(profile_root, backup, target_version)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result, indent=2, sort_keys=True))
+    if result["status"] == "recovered":
+        raise typer.Exit(1)
 
 
 @app.command("workspace")
