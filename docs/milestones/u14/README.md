@@ -1,6 +1,6 @@
 # U14 — Contributor and Extension Readiness
 
-- **Status:** Implementation in progress
+- **Status:** Complete
 - **Baseline:** U13 merged and tagged `v0.1.0rc1` at `f3706085eddd9825e4e1fa23c3b3b96f1c920c70`
 - **Implementation PR:** #77
 
