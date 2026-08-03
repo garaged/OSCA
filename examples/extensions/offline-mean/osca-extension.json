@@ -1,0 +1,25 @@
+{
+  "api_version": "1.0",
+  "artifacts": [
+    {
+      "path": "extension.py",
+      "sha256": "73d8cc77341341b413b231e6aa80b01f021f830162d4f690e3916429d1f10493"
+    }
+  ],
+  "automatic_updates": false,
+  "capabilities": [
+    "dataset.read",
+    "metrics.compute"
+  ],
+  "entry_point": "extension:compute",
+  "extension_id": "example.offline-mean",
+  "extension_version": "0.1.0",
+  "family": "osca.extension-manifest",
+  "license_spdx": "Apache-2.0",
+  "manifest_version": "1.0.0",
+  "network_access": false,
+  "remote_installation": false,
+  "source_commit": "f3706085eddd9825e4e1fa23c3b3b96f1c920c70",
+  "source_repository": "https://github.com/garaged/OSCA",
+  "trust": "trusted-local"
+}
