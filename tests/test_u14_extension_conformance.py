@@ -44,9 +44,32 @@ def test_validates_trusted_local_package_without_importing_code(tmp_path: Path) 
 
     assert result.status == "valid"
     assert result.extension_id == "example.offline-metric"
+    assert result.compatibility_status == "supported"
+    assert result.deprecation_message is None
     assert result.verified_artifacts == ("extension.py",)
     assert result.code_imported is False
     assert result.execution_enabled is False
+
+
+def test_reports_temporarily_supported_deprecated_api(tmp_path: Path) -> None:
+    manifest = _write_manifest(tmp_path, api_version="0.9")
+
+    result = validate_extension_package(manifest)
+
+    assert result.status == "valid"
+    assert result.compatibility_status == "deprecated"
+    assert result.deprecation_message == "Migrate to extension API 1.0."
+    assert result.last_supported_release_family == "0.1.x"
+
+
+def test_rejects_unsupported_api_version(tmp_path: Path) -> None:
+    manifest = _write_manifest(tmp_path, api_version="2.0")
+
+    result = validate_extension_package(manifest)
+
+    assert result.status == "invalid"
+    assert result.compatibility_status == "invalid"
+    assert "supported major 1" in " ".join(result.errors)
 
 
 def test_rejects_forbidden_capability(tmp_path: Path) -> None:
