@@ -25,11 +25,8 @@ EVIDENCE_BY_AREA: dict[str, tuple[str, ...]] = {
     ),
     "deterministic-analysis": COMMON_MANUAL,
     "backtesting-paper-evidence": COMMON_MANUAL,
-    "ml-experiment-diagnostics": (
-        *COMMON_MANUAL,
-        "docs/milestones/u8/exit-review.md",
-    ),
-    "human-gated-validation": ("docs/milestones/u8/exit-review.md",),
+    "ml-experiment-diagnostics": COMMON_MANUAL,
+    "human-gated-validation": COMMON_MANUAL,
     "workspace-browsing-export": ("docs/milestones/u10/exit-review.md",),
     "backup-restore": (
         *COMMON_HOSTED,
