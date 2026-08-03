@@ -94,6 +94,40 @@ jobs:
           path: release-artifacts/
           if-no-files-found: error
 
+  release-candidate-acceptance:
+    runs-on: ubuntu-24.04
+    needs: [python-and-architecture, package-lifecycle]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.13"
+      - name: Install locked environment
+        run: uv sync --locked
+      - name: Build candidate artifacts
+        run: uv build
+      - name: Generate official acceptance input
+        run: |
+          wheel="$(find dist -name '*.whl' -print -quit)"
+          sdist="$(find dist -name '*.tar.gz' -print -quit)"
+          uv run python scripts/generate_rc_acceptance_input.py \
+            --candidate-version "0.1.0rc0-ci" \
+            --source-commit "${GITHUB_SHA}" \
+            --artifact "$wheel" \
+            --artifact "$sdist" \
+            --output release-acceptance/input.json
+      - name: Enforce official acceptance and defect threshold
+        run: |
+          uv run osca-rc-acceptance evaluate \
+            --input release-acceptance/input.json \
+            --output release-acceptance/result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osca-release-candidate-acceptance
+          path: release-acceptance/
+          if-no-files-found: error
+
   openspec:
     runs-on: ubuntu-latest
     steps:
