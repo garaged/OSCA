@@ -1,17 +1,32 @@
 # U14 — Contributor and Extension Readiness
 
-- **Status:** In progress
+- **Status:** Implementation in progress
 - **Baseline:** U13 merged and tagged `v0.1.0rc1` at `f3706085eddd9825e4e1fa23c3b3b96f1c920c70`
-- **Branch:** `agent/u14-contributor-extension-readiness`
+- **Implementation PR:** #77
 
-## Intent
+## Outcome
 
-Make OSCA practical to contribute to and safe to extend through documented, reproducible workflows and strict trusted-local extension contracts.
+U14 establishes a reproducible contributor workflow and a strict trusted-local extension conformance boundary without creating a public marketplace, remote installer, automatic updater, or hostile-code sandbox.
 
-## Exit outcome
+## Contributor path
 
-A contributor can bootstrap, validate, and prepare a compliant change from a fresh checkout. An extension author can build an offline example, validate a versioned manifest and package without executing it, understand compatibility and deprecation outcomes, and retain provenance and licensing evidence.
+```bash
+uv sync --locked
+npm ci --ignore-scripts
+uv run python scripts/contributor_check.py
+```
 
-## Safety boundary
+The canonical command runs Ruff, strict mypy, tests and architecture checks, OpenSpec validation, and the offline example-extension conformance check.
 
-U14 does not create a marketplace or hostile-code sandbox. Only built-in, verified, or independently accepted trusted-local extensions remain eligible for execution. Remote installation, automatic updates, recommendations, live serving, broker connectivity, autonomous execution, real-capital orders, remote writes, and public evidence publication remain disabled.
+## Extension path
+
+```bash
+uv run osca extension validate \
+  --manifest examples/extensions/offline-mean/osca-extension.json
+```
+
+Validation is machine-readable, fail-closed, and non-importing. It verifies identity, API compatibility, capabilities, provenance, licensing, trust classification, contained artifact paths, and SHA-256 digests.
+
+## Safety
+
+Only independently reviewed trusted-local extensions may proceed to any existing execution mechanism. Validation does not authorize execution. Public untrusted distribution, remote installation, automatic updates, recommendations, live serving, broker connectivity, autonomous execution, real-capital orders, remote writes, and public evidence publication remain disabled.
