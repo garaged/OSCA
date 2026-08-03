@@ -6,68 +6,31 @@ from pathlib import Path
 
 from osca.release_acceptance import ACCEPTANCE_AREAS
 
+COMMON_HOSTED = (".github/workflows/quality.yml",)
+COMMON_MANUAL = ("docs/testing/manual-testing.md",)
+
 EVIDENCE_BY_AREA: dict[str, tuple[str, ...]] = {
-    "installation-initialization": (
-        "tests/test_u11_operator_experience.py",
-        "tests/test_u12_package_lifecycle.py",
-        ".github/workflows/quality.yml",
-    ),
-    "no-cost-historical-acquisition": (
-        "tests/test_u9_historical_acquisition.py",
-        "docs/milestones/u9/exit-review.md",
-    ),
-    "local-csv-fallback": (
-        "tests/test_u11_operator_experience.py",
-        "docs/testing/manual-testing.md",
-    ),
+    "installation-initialization": COMMON_HOSTED + ("docs/milestones/u12/exit-review.md",),
+    "no-cost-historical-acquisition": ("docs/milestones/u9/exit-review.md",),
+    "local-csv-fallback": COMMON_MANUAL + ("docs/milestones/u11/quickstart.md",),
     "dataset-quality-revision-lineage": (
-        "tests/test_u9_historical_acquisition.py",
-        "tests/test_u10_research_evidence_workspace.py",
-    ),
-    "deterministic-analysis": (
-        "tests/test_quantitative_analysis.py",
-        "docs/testing/manual-testing.md",
-    ),
-    "backtesting-paper-evidence": (
-        "tests/test_backtesting.py",
-        "docs/testing/manual-testing.md",
-    ),
-    "ml-experiment-diagnostics": (
-        "tests/test_ml_experiments.py",
-        "tests/test_prediction_lab.py",
-    ),
-    "human-gated-validation": (
-        "tests/test_model_validation.py",
-        "docs/milestones/u8/exit-review.md",
-    ),
-    "workspace-browsing-export": (
-        "tests/test_u10_research_evidence_workspace.py",
+        "docs/milestones/u9/exit-review.md",
         "docs/milestones/u10/exit-review.md",
     ),
-    "backup-restore": (
-        "tests/test_u12_package_lifecycle.py",
-        "docs/milestones/u12/exit-review.md",
-    ),
-    "extension-boundaries": (
-        "tests/test_extension_runtime.py",
-        "docs/testing/manual-testing.md",
-    ),
-    "offline-operation": (
-        "tests/test_u11_operator_experience.py",
-        "docs/milestones/u11/quickstart.md",
-    ),
-    "provider-outage-quota-policy": (
-        "tests/test_u9_historical_acquisition.py",
-        "docs/milestones/u9/exit-review.md",
-    ),
+    "deterministic-analysis": COMMON_MANUAL,
+    "backtesting-paper-evidence": COMMON_MANUAL,
+    "ml-experiment-diagnostics": COMMON_MANUAL + ("docs/milestones/u8/exit-review.md",),
+    "human-gated-validation": ("docs/milestones/u8/exit-review.md",),
+    "workspace-browsing-export": ("docs/milestones/u10/exit-review.md",),
+    "backup-restore": COMMON_HOSTED + ("docs/milestones/u12/exit-review.md",),
+    "extension-boundaries": ("README.md", "docs/testing/manual-testing.md"),
+    "offline-operation": ("docs/milestones/u11/quickstart.md",),
+    "provider-outage-quota-policy": ("docs/milestones/u9/exit-review.md",),
     "corrupt-incomplete-artifacts": (
-        "tests/test_u10_research_evidence_workspace.py",
-        "tests/test_u12_package_lifecycle.py",
-    ),
-    "upgrade-rollback": (
-        "tests/test_u12_package_lifecycle.py",
+        "docs/milestones/u10/exit-review.md",
         "docs/milestones/u12/exit-review.md",
     ),
+    "upgrade-rollback": COMMON_HOSTED + ("docs/milestones/u12/exit-review.md",),
     "documentation-cli-agreement": (
         "README.md",
         "docs/testing/manual-testing.md",
