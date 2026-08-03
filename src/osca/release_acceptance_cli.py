@@ -11,6 +11,11 @@ from osca.release_acceptance import evaluate_files
 app = typer.Typer(help="Evaluate the official OSCA release-candidate acceptance matrix.")
 
 
+@app.callback()
+def release_candidate_acceptance() -> None:
+    """Evaluate official release-candidate evidence without creating a tag."""
+
+
 @app.command("evaluate")
 def evaluate(
     input_path: Annotated[Path, typer.Option("--input")],
