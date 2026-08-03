@@ -1,4 +1,4 @@
-# Proposal: U13 Release-Candidate Acceptance
+# Change: U13 Release-Candidate Acceptance
 
 ## Why
 
@@ -20,3 +20,7 @@ OSCA now has a supported package lifecycle and unified operator path. The next m
 - enabling paid-provider dependence;
 - enabling recommendations, live serving, brokers, autonomous execution, or real-capital orders;
 - expanding analytical or model breadth except to fix an acceptance defect.
+
+## Exit gate
+
+All sixteen acceptance areas pass, no critical or high-severity defects remain open, medium defects are explicitly disposed, release artifacts are traceable, and the selected release-candidate tag is recommended without being created implicitly.
