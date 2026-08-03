@@ -36,6 +36,36 @@ jobs:
         run: uv run pytest
         env:
           AGE_TEST_EXECUTABLE: /tmp/age/age
+      - name: Trusted-local extension conformance
+        run: |
+          uv run osca extension validate \
+            --manifest examples/extensions/offline-mean/osca-extension.json
+
+  contributor-rehearsal:
+    name: contributor-rehearsal (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x86_64
+            runner: ubuntu-24.04
+          - platform: macos-arm64
+            runner: macos-14
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Run canonical contributor validation
+        run: uv run python scripts/contributor_check.py
+        env:
+          DO_NOT_TRACK: "1"
 
   package-lifecycle:
     name: package-lifecycle (${{ matrix.platform }})
@@ -96,7 +126,7 @@ jobs:
 
   release-candidate-acceptance:
     runs-on: ubuntu-24.04
-    needs: [python-and-architecture, package-lifecycle]
+    needs: [python-and-architecture, contributor-rehearsal, package-lifecycle]
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
