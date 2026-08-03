@@ -10,13 +10,10 @@ from uuid import UUID
 import typer
 
 from osca.bootstrap.cli import app
+from osca.extension_cli import app as extension_app
 from osca.historical_acquisition_cli import app as historical_data_app
 from osca.operator_aliases import analyze_command, backtest_command, import_data_command
-from osca.operator_experience import (
-    doctor_command,
-    init_command,
-    load_operator_config,
-)
+from osca.operator_experience import doctor_command, init_command, load_operator_config
 from osca.package_lifecycle import (
     create_verified_backup,
     inspect_profile,
@@ -26,6 +23,7 @@ from osca.package_lifecycle import (
 )
 
 app.add_typer(historical_data_app, name="historical-data")
+app.add_typer(extension_app, name="extension")
 app.command("init")(init_command)
 app.command("doctor")(doctor_command)
 app.command("import-data")(import_data_command)
@@ -161,9 +159,7 @@ def research_pipeline(
     iterations: Annotated[int, typer.Option("--iterations")] = 1000,
     calibration_bins: Annotated[int, typer.Option("--calibration-bins")] = 10,
     threshold: Annotated[float, typer.Option("--threshold")] = 0.5,
-    transaction_cost_bps: Annotated[
-        float, typer.Option("--transaction-cost-bps")
-    ] = 5.0,
+    transaction_cost_bps: Annotated[float, typer.Option("--transaction-cost-bps")] = 5.0,
     slippage_bps: Annotated[float, typer.Option("--slippage-bps")] = 5.0,
     latency_bars: Annotated[int, typer.Option("--latency-bars")] = 1,
     initial_cash: Annotated[float, typer.Option("--initial-cash")] = 10_000.0,
@@ -173,7 +169,6 @@ def research_pipeline(
     The governed model is ``logistic_classification`` and the task is
     ``classification``. Evidence is retained under STORAGE_ROOT/research-evidence.
     """
-
     command = [
         sys.executable,
         "-m",
