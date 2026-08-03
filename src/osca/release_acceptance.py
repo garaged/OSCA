@@ -60,11 +60,14 @@ class DefectDisposition(BaseModel):
 
     @model_validator(mode="after")
     def validate_open_medium(self) -> DefectDisposition:
-        if self.status == "open" and self.severity == "medium":
-            if not all((self.workaround, self.owner, self.target_milestone)):
-                raise ValueError(
-                    "open medium defects require workaround, owner, and target milestone"
-                )
+        if (
+            self.status == "open"
+            and self.severity == "medium"
+            and not all((self.workaround, self.owner, self.target_milestone))
+        ):
+            raise ValueError(
+                "open medium defects require workaround, owner, and target milestone"
+            )
         return self
 
 
@@ -107,7 +110,14 @@ def evaluate_release_candidate(document: AcceptanceInput) -> dict[str, object]:
         and defect.severity == "medium"
         and not all((defect.workaround, defect.owner, defect.target_milestone))
     ]
-    eligible = not failed_areas and not blocked_areas and not blocking_defects and not undisposed_medium
+    eligible = all(
+        (
+            not failed_areas,
+            not blocked_areas,
+            not blocking_defects,
+            not undisposed_medium,
+        )
+    )
     payload = {
         "family": "osca.release-candidate-acceptance",
         "version": "1.0.0",
@@ -150,5 +160,8 @@ def evaluate_files(input_path: Path, output_path: Path | None = None) -> dict[st
     result = evaluate_release_candidate(document)
     if output_path is not None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output_path.write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
     return result
