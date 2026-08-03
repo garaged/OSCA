@@ -118,7 +118,7 @@ def evaluate_release_candidate(document: AcceptanceInput) -> dict[str, object]:
             not undisposed_medium,
         )
     )
-    payload = {
+    payload: dict[str, object] = {
         "family": "osca.release-candidate-acceptance",
         "version": "1.0.0",
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
