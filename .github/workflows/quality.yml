@@ -112,7 +112,7 @@ jobs:
           wheel="$(find dist -name '*.whl' -print -quit)"
           sdist="$(find dist -name '*.tar.gz' -print -quit)"
           uv run python scripts/generate_rc_acceptance_input.py \
-            --candidate-version "0.1.0rc0-ci" \
+            --candidate-version "0.1.0rc1" \
             --source-commit "${GITHUB_SHA}" \
             --artifact "$wheel" \
             --artifact "$sdist" \
