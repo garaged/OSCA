@@ -1,7 +1,8 @@
-# OSCA First Release-Candidate Notes
+# OSCA 0.1.0rc1 Release-Candidate Notes
 
-- **Candidate version:** Pending explicit U13 version decision
-- **Candidate tag:** Pending successful final acceptance and explicit tag action
+- **Candidate version:** `0.1.0rc1`
+- **Recommended candidate tag:** `v0.1.0rc1`
+- **Tag status:** Not created; explicit authorization remains required after final acceptance
 - **Supported platforms:** macOS Apple Silicon and Linux x86-64
 
 ## Delivered capabilities
