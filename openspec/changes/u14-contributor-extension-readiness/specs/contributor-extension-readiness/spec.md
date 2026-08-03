@@ -64,3 +64,9 @@ OSCA SHALL document contribution scope, testing, security review, licensing, pro
 ### Requirement: Safety preservation
 
 U14 SHALL NOT enable public untrusted extension distribution, remote installation, automatic updates, authoritative recommendations, live serving, broker connectivity, autonomous execution, real-capital orders, remote writes, or public evidence publication.
+
+#### Scenario: Contributor requests a prohibited extension capability
+
+- **WHEN** a manifest or contribution requests a prohibited capability or distribution path
+- **THEN** validation and review SHALL reject the change
+- **AND** SHALL NOT import, execute, install, update, or publish the extension.
