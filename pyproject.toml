@@ -34,6 +34,7 @@ dev = [
 [project.scripts]
 osca = "osca.cli:main"
 osca-research-pipeline = "osca.research_pipeline:main"
+osca-rc-acceptance = "osca.release_acceptance_cli:main"
 
 [tool.uv]
 required-environments = [
