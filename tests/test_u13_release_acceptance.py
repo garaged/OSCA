@@ -17,7 +17,11 @@ from osca.release_acceptance_cli import app
 runner = CliRunner()
 
 
-def _document(*, status: str = "pass", defects: list[dict[str, object]] | None = None) -> dict[str, object]:
+def _document(
+    *,
+    status: str = "pass",
+    defects: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
     return {
         "version": "1.0.0",
         "candidate_version": "0.1.0rc1",
@@ -29,7 +33,11 @@ def _document(*, status: str = "pass", defects: list[dict[str, object]] | None =
                 "status": status,
                 "summary": f"{area} evidence passed",
                 "evidence": [f"evidence/{area}.json"],
-                **({"remediation": "Correct the acceptance defect."} if status != "pass" else {}),
+                **(
+                    {"remediation": "Correct the acceptance defect."}
+                    if status != "pass"
+                    else {}
+                ),
             }
             for area in ACCEPTANCE_AREAS
         ],
