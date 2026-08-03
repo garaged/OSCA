@@ -52,6 +52,7 @@ The command returns machine-readable JSON and exits nonzero when the package is 
 
 - verified manifest digest;
 - extension identity and API version;
+- compatibility status and deprecation guidance;
 - declared capabilities;
 - verified artifact paths;
 - `code_imported: false`;
@@ -63,7 +64,9 @@ Conformance proves structural validity, declared capability compatibility, prove
 
 ## Compatibility
 
-API major `1` is the current supported extension contract. A future breaking API change requires a new major version, migration guidance, an accepted decision, and a documented deprecation window. Unknown API majors fail closed.
+API `1.x` is the current supported extension contract. API `0.9` is temporarily accepted as deprecated, reports `Migrate to extension API 1.0.`, and identifies `0.1.x` as its last supported OSCA release family. Unknown API versions fail closed.
+
+A future breaking API change requires a new major version, migration guidance, an accepted decision, and a documented deprecation window. Deprecation support is evidence for migration only and does not relax trusted-local review.
 
 ## Example
 
