@@ -10,19 +10,31 @@ COMMON_HOSTED = (".github/workflows/quality.yml",)
 COMMON_MANUAL = ("docs/testing/manual-testing.md",)
 
 EVIDENCE_BY_AREA: dict[str, tuple[str, ...]] = {
-    "installation-initialization": COMMON_HOSTED + ("docs/milestones/u12/exit-review.md",),
+    "installation-initialization": (
+        *COMMON_HOSTED,
+        "docs/milestones/u12/exit-review.md",
+    ),
     "no-cost-historical-acquisition": ("docs/milestones/u9/exit-review.md",),
-    "local-csv-fallback": COMMON_MANUAL + ("docs/milestones/u11/quickstart.md",),
+    "local-csv-fallback": (
+        *COMMON_MANUAL,
+        "docs/milestones/u11/quickstart.md",
+    ),
     "dataset-quality-revision-lineage": (
         "docs/milestones/u9/exit-review.md",
         "docs/milestones/u10/exit-review.md",
     ),
     "deterministic-analysis": COMMON_MANUAL,
     "backtesting-paper-evidence": COMMON_MANUAL,
-    "ml-experiment-diagnostics": COMMON_MANUAL + ("docs/milestones/u8/exit-review.md",),
+    "ml-experiment-diagnostics": (
+        *COMMON_MANUAL,
+        "docs/milestones/u8/exit-review.md",
+    ),
     "human-gated-validation": ("docs/milestones/u8/exit-review.md",),
     "workspace-browsing-export": ("docs/milestones/u10/exit-review.md",),
-    "backup-restore": COMMON_HOSTED + ("docs/milestones/u12/exit-review.md",),
+    "backup-restore": (
+        *COMMON_HOSTED,
+        "docs/milestones/u12/exit-review.md",
+    ),
     "extension-boundaries": ("README.md", "docs/testing/manual-testing.md"),
     "offline-operation": ("docs/milestones/u11/quickstart.md",),
     "provider-outage-quota-policy": ("docs/milestones/u9/exit-review.md",),
@@ -30,7 +42,10 @@ EVIDENCE_BY_AREA: dict[str, tuple[str, ...]] = {
         "docs/milestones/u10/exit-review.md",
         "docs/milestones/u12/exit-review.md",
     ),
-    "upgrade-rollback": COMMON_HOSTED + ("docs/milestones/u12/exit-review.md",),
+    "upgrade-rollback": (
+        *COMMON_HOSTED,
+        "docs/milestones/u12/exit-review.md",
+    ),
     "documentation-cli-agreement": (
         "README.md",
         "docs/testing/manual-testing.md",
