@@ -4,22 +4,24 @@ OSCA is a modular market-intelligence and quantitative-research platform for sto
 
 The M0-M12 architecture and lifecycle roadmap is complete. P1-P15 delivered provider governance, deterministic local research, model previews, narrow SEC/Kraken ingestion, personal-server operations, and governed trusted-local extensions. P16 completed the live-order readiness study and recorded ADR-0044: NO-GO. P17 remains blocked and is not authorized.
 
-U8 reconciled the retained research workflow into the primary CLI. U9 added governed no-cost Kraken acquisition and fail-closed equity fallback. U10 added complete read-only research-evidence navigation and governed export. U11 provides one canonical first-run operator path. U12 now provides isolated wheel installation, release checksums/SBOM/provenance, compatibility inspection, verified backup and restore, and failed-upgrade recovery on macOS Apple Silicon and Linux x86-64.
+U8 reconciled the retained research workflow into the primary CLI. U9 added governed no-cost Kraken acquisition and fail-closed equity fallback. U10 added complete read-only research-evidence navigation and governed export. U11 provides one canonical first-run operator path. U12 provides isolated wheel installation, release checksums/SBOM/provenance, compatibility inspection, verified backup and restore, and failed-upgrade recovery. U13 accepted and tagged `v0.1.0rc1`. U14 adds reproducible contributor validation and strict non-importing trusted-local extension conformance.
 
-Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, and a public extension marketplace remain disabled.
+Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, remote extension installation, automatic extension updates, and a public extension marketplace remain disabled.
 
 ## Start here
 
 1. [U11 canonical first-run quickstart](docs/milestones/u11/quickstart.md)
 2. [U12 packaging and lifecycle status](docs/milestones/u12/README.md)
-3. [U12 clean-machine acceptance](docs/milestones/u12/manual-acceptance.md)
-4. [Manual testing and usage](docs/testing/manual-testing.md)
-5. [Architecture status](ARCHITECTURE_STATUS.md)
-6. [Product requirements](docs/product-requirements.md)
-7. [Architecture decisions](docs/decisions/README.md)
-8. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
-9. [U10 research-evidence workspace](docs/milestones/u10/README.md)
-10. [Requirements catalog](docs/governance/requirements-catalog.md)
+3. [U13 release-candidate notes](docs/milestones/u13/release-notes.md)
+4. [U14 contributor and extension readiness](docs/milestones/u14/README.md)
+5. [Contributor guide](CONTRIBUTING.md)
+6. [Trusted-local extension development](docs/contributing/extension-development.md)
+7. [Manual testing and usage](docs/testing/manual-testing.md)
+8. [Architecture status](ARCHITECTURE_STATUS.md)
+9. [Product requirements](docs/product-requirements.md)
+10. [Architecture decisions](docs/decisions/README.md)
+11. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
+12. [Requirements catalog](docs/governance/requirements-catalog.md)
 
 ## Packaged installation
 
@@ -103,6 +105,27 @@ osca lifecycle restore \
 
 Lifecycle operations validate compatibility before mutation, require a verified backup before upgrade, reject unsafe archive paths, restore through staging and atomic replacement, and automatically recover from failed migration or post-upgrade validation.
 
+## Contributor workflow
+
+Supported contributor environments are macOS Apple Silicon and Linux x86-64 with Python 3.13, `uv`, Node.js 22, and npm.
+
+```bash
+uv sync --locked
+npm ci --ignore-scripts
+uv run python scripts/contributor_check.py
+```
+
+The canonical command runs formatting/lint checks, strict typing, tests and architecture checks, OpenSpec validation, and trusted-local extension conformance.
+
+## Trusted-local extension conformance
+
+```bash
+uv run osca extension validate \
+  --manifest examples/extensions/offline-mean/osca-extension.json
+```
+
+Validation is JSON-only and does not import or execute extension code. It verifies the versioned manifest, API compatibility, deprecation status, capabilities, provenance, SPDX license, contained artifact paths, and SHA-256 digests. A passing result does not authorize execution; independent trusted-local review remains required.
+
 ## Canonical operator commands
 
 - `osca init`: initialize safe versioned local configuration.
@@ -115,8 +138,9 @@ Lifecycle operations validate compatibility before mutation, require a verified 
 - `osca workspace`: snapshot or start the loopback-only read-only workspace.
 - `osca version`: report installed package, runtime, platform, and build identity.
 - `osca lifecycle inspect|backup|restore|upgrade`: manage the protected package/profile lifecycle.
+- `osca extension validate`: validate trusted-local extension structure and artifact integrity without code import.
 
-The older command names remain compatibility entry points through U13 release-candidate acceptance.
+The older command names remain compatibility entry points through the `0.1.x` release family unless a later accepted deprecation decision changes that support window.
 
 ## Current workflow
 
@@ -131,7 +155,8 @@ The older command names remain compatibility entry points through U13 release-ca
 - U10: browse dedicated research evidence, inspect lineage, filter evidence, and create governed local exports.
 - U11: initialize, diagnose, acquire/import, research, and inspect through one primary CLI.
 - U12: install from a verified wheel and protect profiles through backup, upgrade, recovery, and restore.
-- U13-U14: complete release-candidate acceptance and contributor readiness.
+- U13: retain the official 16-area RC acceptance result for `0.1.0rc1`.
+- U14: bootstrap contributors and validate trusted-local extension packages without importing code.
 
 ## Provider boundary
 
@@ -140,12 +165,14 @@ Kraken public spot OHLC is admitted for explicit internal-use acquisition. No no
 ## Extension boundary
 
 - **Trust:** only `built_in`, `verified`, or independently accepted `local_trusted` packs may execute.
+- **Conformance:** U14 manifests must declare identity, API, capabilities, provenance, license, trust, and artifact digests.
 - **Integrity:** the direct executable must match the manifest SHA-256 digest.
-- **Compatibility:** the declared minimum OSCA version must be satisfied.
+- **Compatibility:** API `1.x` is supported; API `0.9` is temporarily deprecated through `0.1.x`; unknown versions fail closed.
 - **Permissions:** the approved set must exactly match the manifest set; changes require renewed approval.
 - **Execution:** explicit enablement, direct subprocess, no shell, bounded timeout/output, minimized environment, JSON-object output.
 - **Evidence:** package/version, permissions, logs, output digest, exit code, rationale, and findings are retained.
 - **Rollback:** only to an already installed and revalidated version.
+- **Distribution:** public marketplaces, remote installation, and automatic updates remain unavailable.
 - **Sandbox:** subprocess isolation is not a complete hostile-code sandbox; untrusted execution remains unavailable.
 
 ## Governing baseline
