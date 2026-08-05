@@ -1,0 +1,27 @@
+{
+  "productName": "OSCA Desktop",
+  "version": "0.2.0-alpha.1",
+  "identifier": "io.github.garaged.osca",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [{
+      "title": "OSCA Desktop",
+      "width": 1180,
+      "height": 760,
+      "minWidth": 720,
+      "minHeight": 520
+    }],
+    "security": {
+      "capabilities": ["desktop"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
+  }
+}
