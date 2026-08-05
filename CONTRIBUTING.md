@@ -50,6 +50,19 @@ Do not introduce recommendations, automatic model promotion, live model serving,
 - [ ] No secrets, credentials, private datasets, or generated evidence are committed.
 - [ ] Security-sensitive changes include an explicit threat and trust review.
 
+## Hosted CI usage
+
+OSCA uses tiered validation to preserve merge and release confidence without spending hosted minutes on obsolete work.
+
+- Draft pull requests run Linux-first, affected-component validation.
+- Marking a pull request ready for review triggers the full Linux and macOS merge-confidence suite.
+- New commits cancel obsolete runs for the same pull request.
+- Pushes to `main` run the full supported-platform suite.
+- Release-candidate acceptance runs only through an explicit manual dispatch or a version tag.
+- Related repository changes should be batched into coherent commits instead of one remote commit per generated file.
+
+The detailed policy is retained in `docs/engineering/ci-cost-policy.md`. Cost conservation must never weaken required pre-merge validation, supported-platform acceptance, security checks, or release evidence.
+
 ## Extension contributions
 
 Extension packages are trusted-local only. Validation reads JSON and artifact bytes but does not import or execute extension code. A contribution must include:
