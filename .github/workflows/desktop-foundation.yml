@@ -6,7 +6,6 @@ on:
       - "apps/desktop/**"
       - "src/osca/desktop_api/**"
       - "tests/test_d1_desktop_api.py"
-      - "pyproject.toml"
       - ".github/workflows/desktop-foundation.yml"
 
 permissions:
@@ -36,10 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: apps/desktop/package-lock.json
-      - run: npm install --package-lock-only
-      - run: npm ci
+      - run: npm install
       - run: npm run build
 
   rust-broker:
