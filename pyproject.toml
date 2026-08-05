@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "osca"
-version = "0.2.0a1"
+version = "0.1.0rc1"
 description = "Local-first market intelligence and quantitative research platform"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
@@ -33,7 +33,6 @@ dev = [
 
 [project.scripts]
 osca = "osca.cli:main"
-osca-desktop-api = "osca.desktop_api.stdio:main"
 osca-research-pipeline = "osca.research_pipeline:main"
 osca-rc-acceptance = "osca.release_acceptance_cli:main"
 
