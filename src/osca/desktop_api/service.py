@@ -1,8 +1,9 @@
 """Authoritative application-service boundary used by desktop adapters."""
 
+from collections.abc import Callable
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from osca.desktop_api.contracts import DesktopError, DesktopRequest, DesktopResponse
 
