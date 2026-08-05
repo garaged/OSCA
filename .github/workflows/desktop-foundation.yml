@@ -2,11 +2,17 @@ name: Desktop Foundation
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     paths:
       - "apps/desktop/**"
       - "src/osca/desktop_api/**"
       - "tests/test_d1_desktop_api.py"
       - ".github/workflows/desktop-foundation.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
