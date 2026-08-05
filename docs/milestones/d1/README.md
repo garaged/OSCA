@@ -3,7 +3,9 @@
 - **Status:** In progress
 - **Baseline:** U14 main at `85c332c8d3c1019ac0564c6e0ddb814feac5463a`
 - **Branch:** `agent/d1-desktop-foundation`
-- **Authority:** ADR-0046 and the approved D1-D19 desktop-product roadmap
+- **Authority:** ADR-0046, `docs/product/desktop-product-intent.md`, `docs/roadmaps/desktop-product-roadmap.md`, `docs/product/cross-cutting-requirements.md`, `docs/product/desktop-capability-map.md`, and `docs/product/desktop-traceability.md`
+
+D1 is the only milestone in PR #78 specified at implementation level. D2-D19 are represented by accepted, intentionally solution-light intent documents and receive executable specifications when their implementation begins.
 
 ## User-visible outcome
 
@@ -25,18 +27,7 @@ D1 will:
 
 ## Non-goals
 
-D1 does not implement:
-
-- complete onboarding;
-- provider credential setup;
-- production charting;
-- recommendations;
-- virtual portfolios or simulated orders;
-- expanded ML execution;
-- AI-provider execution;
-- Windows product support;
-- broker or exchange connectivity;
-- real-money data, balances, orders, or execution.
+D1 does not implement complete onboarding, provider credential setup, production charting, recommendations, virtual portfolios or simulated orders, expanded ML execution, AI-provider execution, Windows product support, broker or exchange connectivity, or real-money data, balances, orders, or execution.
 
 ## Architecture boundaries
 
@@ -44,8 +35,8 @@ D1 does not implement:
 - The frontend performs presentation and interaction only.
 - The frontend cannot access SQLite, Parquet storage, secrets, arbitrary files, the shell, or extension executables directly.
 - Rust exposes only allowlisted desktop capabilities and sidecar lifecycle operations.
-- Desktop IPC must be local, authenticated for the spawned process relationship, versioned, schema-validated, bounded, cancellable, and incapable of invoking arbitrary CLI commands.
-- The initial transport should avoid opening a network listener; framed standard input/output is preferred unless D1 evidence proves a better local-only mechanism.
+- Desktop IPC must be local, versioned, schema-validated, bounded, cancellable, and incapable of invoking arbitrary CLI commands.
+- The initial transport avoids opening a network listener; framed standard input/output is preferred unless D1 evidence proves a better local-only mechanism.
 - Existing profile data must remain readable without destructive migration.
 
 ## Offline behavior
@@ -101,16 +92,7 @@ On a clean supported machine:
 
 ## Documentation
 
-D1 must update:
-
-- architecture status;
-- decision index;
-- desktop developer bootstrap;
-- desktop application contract reference;
-- manual testing;
-- contributor workflow;
-- risk and limitation records;
-- OpenSpec and traceability.
+D1 must update architecture status, decision index, desktop developer bootstrap, desktop application contract reference, manual testing, contributor workflow, risk and limitation records, OpenSpec, traceability, and the D2-D19 intent baseline.
 
 ## Exit criteria
 
@@ -130,13 +112,7 @@ D1 depends only on the completed U14 baseline and accepted ADR-0046.
 
 ## Principal risks
 
-- Python runtime and sidecar packaging complexity;
-- system-WebView differences;
-- excessive Rust-domain growth;
-- accidental CLI coupling;
-- IPC version drift;
-- desktop packaging destabilizing existing Python distribution;
-- premature UI work before application-service boundaries are stable.
+Python runtime and sidecar packaging complexity, system-WebView differences, excessive Rust-domain growth, accidental CLI coupling, IPC version drift, desktop packaging destabilizing the Python distribution, and premature UI work before application-service boundaries are stable.
 
 ## Product decision status
 
