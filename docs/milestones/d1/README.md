@@ -1,6 +1,6 @@
 # D1: Desktop architecture and application API foundation
 
-- **Status:** In progress
+- **Status:** Complete with accepted hosted-validation exception
 - **Baseline:** U14 main at `85c332c8d3c1019ac0564c6e0ddb814feac5463a`
 - **Branch:** `agent/d1-desktop-foundation`
 - **Authority:** ADR-0046, `docs/product/desktop-product-intent.md`, `docs/roadmaps/desktop-product-roadmap.md`, `docs/product/cross-cutting-requirements.md`, `docs/product/desktop-capability-map.md`, and `docs/product/desktop-traceability.md`
@@ -105,6 +105,32 @@ D1 is complete only when:
 - the capability map and consolidation plan are retained;
 - manual acceptance passes on both supported platforms;
 - no untreated critical security, migration, packaging, accessibility, or safety risk remains.
+
+## Accepted validation evidence
+
+The project owner accepted the following local D1 evidence on 2026-08-05:
+
+- Ruff passed.
+- Strict mypy passed across the Python source tree.
+- Pytest passed with 442 tests and one non-blocking warning.
+- OpenSpec doctor and strict validation passed.
+- Trusted-local extension conformance passed.
+- Desktop React and TypeScript checks and production build passed.
+- Rust formatting, Clippy with warnings denied, tests, and checks passed.
+- Tauri development launch and macOS ARM64 production build passed.
+- Python wheel and source distribution build, lifecycle exercise, checksums, SBOM, and provenance generation passed locally.
+- Manual macOS ARM64 validation confirmed sidecar health, disabled live execution, clean shutdown, restart behavior, and no orphan sidecar.
+- Missing protocol typing, lint compatibility, desktop dependency lockfile, and Tauri icon assets found during validation were corrected and committed.
+
+## Hosted-validation exception
+
+GitHub-hosted Actions could not execute the final D1 checks because the account's monthly Actions allowance was exhausted. This is accepted as a temporary infrastructure exception, not as passing hosted evidence.
+
+- The full macOS ARM64 local gate is accepted for D1 closeout.
+- Linux x86-64 hosted package and smoke evidence remains deferred.
+- The complete hosted matrix must be rerun when Actions capacity becomes available.
+- Any failure in that deferred rerun must be treated as a D1 follow-up defect and corrected before relying on D1 for a release candidate.
+- This exception does not relax permanent quality, security, migration, or financial-safety requirements.
 
 ## Dependencies
 
