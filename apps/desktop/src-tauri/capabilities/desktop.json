@@ -1,0 +1,6 @@
+{
+  "identifier": "desktop",
+  "description": "Minimum capability set for the OSCA desktop main window",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}
