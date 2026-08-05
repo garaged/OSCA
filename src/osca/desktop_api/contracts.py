@@ -1,10 +1,10 @@
 """Schema-validated protocol contracts for desktop host communication."""
 
-from typing import Any, Literal
+from typing import Any, Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-PROTOCOL_VERSION = "1.0"
+PROTOCOL_VERSION: Final[Literal["1.0"]] = "1.0"
 
 
 class DesktopRequest(BaseModel):
