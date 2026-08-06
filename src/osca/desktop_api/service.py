@@ -185,16 +185,21 @@ class DesktopApplicationService:
                     workspace_port=workspace_port,
                 )
         except Exception:
-            if not profile_existed:
-                shutil.rmtree(profile_root, ignore_errors=True)
+            _restore_pre_creation_target(profile_root, existed=profile_existed)
             raise
 
+        profile = self._inspect_profile(profile_root)
+        if not profile["can_open"]:
+            raise DesktopServiceError(
+                "profile_unavailable",
+                "profile was initialized but failed final compatibility or storage validation",
+            )
         state = self._state_store.remember(profile_root, opened=True)
         return {
             "family": "osca.desktop-profile-create.result",
             "version": "1.0.0",
             "status": "created",
-            "profile": self._inspect_profile(profile_root),
+            "profile": profile,
             "initialization": initialized,
             "selected_profile": state.selected_profile,
         }
@@ -207,13 +212,14 @@ class DesktopApplicationService:
                 "profile_not_found",
                 f"profile directory does not exist: {profile_root}",
             )
+        profile = self._inspect_profile(profile_root)
         state = self._state_store.remember(profile_root, opened=False)
         return {
             "family": "osca.desktop-profile-select.result",
             "version": "1.0.0",
             "status": "selected",
             "selected_profile": state.selected_profile,
-            "profile": self._inspect_profile(profile_root),
+            "profile": profile,
         }
 
     def _profile_open(self, params: dict[str, Any]) -> dict[str, Any]:
@@ -448,6 +454,19 @@ def _require_safe_new_profile_target(profile_root: Path) -> None:
             "unsafe_profile_target",
             "profile target must be new or empty; existing content was left unchanged",
         )
+
+
+def _restore_pre_creation_target(profile_root: Path, *, existed: bool) -> None:
+    if not profile_root.exists():
+        return
+    if not existed:
+        shutil.rmtree(profile_root, ignore_errors=True)
+        return
+    for child in tuple(profile_root.iterdir()):
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child, ignore_errors=True)
+        else:
+            child.unlink(missing_ok=True)
 
 
 def _disclosures() -> dict[str, str]:
