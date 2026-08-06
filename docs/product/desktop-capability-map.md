@@ -1,17 +1,24 @@
 # Desktop Capability Map
 
-Status: Accepted planning authority
+Status: Active implementation authority through D2
 
-Legend: **current** exists in the U14 baseline; **foundation** is introduced by D1; **planned** belongs to a future milestone; **gated** requires separate evidence or user enablement; **prohibited** must not be implemented.
+Legend: **current** exists in the retained Python/U14 product; **foundation** is implemented as reusable desktop infrastructure; **planned** belongs to a future milestone; **gated** requires separate evidence or user enablement; **prohibited** must not be implemented.
 
 | Capability | State | Milestone or gate |
 |---|---|---|
 | Local file import, sample data, cached research | current | Preserve throughout |
+| Deterministic bundled synthetic desktop sample | foundation | D2; offline, provider-free, credential-free |
 | Kraken public historical crypto OHLC | current/gated | Existing provider governance |
 | Additional market, fundamentals, news, estimates, options, and alternative-data providers | gated | D3 plus provider-promotion evidence |
 | Browser evidence workspace and CLI | current | Preserve while desktop matures |
 | Versioned desktop application API and sidecar broker | foundation | D1 |
-| Desktop onboarding and system health | planned | D2 |
+| Responsive desktop shell and primary navigation | foundation | D2 |
+| Desktop onboarding and permanent safety disclosures | foundation | D2 |
+| Desktop profile list, inspect, create, select, and open | foundation | D2; Python-authoritative |
+| Desktop system diagnostics and explicit failure states | foundation | D2 |
+| Desktop accessibility and semantic design-system foundation | foundation | D2; completed release-wide in D18 |
+| Native profile-directory chooser | planned | Narrow host capability after D2 evidence; no generic frontend filesystem access |
+| Provider and credential setup UX | planned/gated | D3; provider and credential policy evidence |
 | Asset discovery and watchlists | planned | D4 |
 | Interactive charts and quantitative workbench | planned | D5 |
 | Research projects and saved workspaces | planned | D6 |
@@ -33,6 +40,7 @@ Legend: **current** exists in the U14 baseline; **foundation** is introduced by 
 | Real-capital or unattended real trading | prohibited | Permanent no-go |
 | Automatic model promotion | prohibited | Human approval required |
 | AI as numerical or accounting authority | prohibited | Deterministic authority required |
+| Generic frontend filesystem, shell, or database authority | prohibited | Python application and narrow Rust host boundaries |
 | Unreviewed hostile-code extension sandbox claims | prohibited | No false containment guarantees |
 
 Capabilities not listed here are unavailable until added through an accepted decision, requirement, and milestone update.
