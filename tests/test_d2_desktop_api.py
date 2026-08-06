@@ -117,6 +117,29 @@ def test_profile_create_rejects_non_empty_target_without_mutation(tmp_path: Path
     assert not (profile_root / "config.json").exists()
 
 
+def test_profile_create_rejects_hidden_storage_and_port_overrides(tmp_path: Path) -> None:
+    profile_root = tmp_path / "profiles" / "narrow"
+    profile_root.parent.mkdir(parents=True)
+    external_storage = tmp_path / "external-storage"
+    service = DesktopApplicationService(state_root=tmp_path / "desktop-state")
+
+    response = _request(
+        service,
+        "profile.create",
+        {
+            "profile_root": str(profile_root),
+            "storage_root": str(external_storage),
+            "workspace_port": 9999,
+        },
+    )
+
+    assert response.status == "error"
+    assert response.error is not None
+    assert response.error.code == "invalid_parameters"
+    assert not profile_root.exists()
+    assert not external_storage.exists()
+
+
 def test_profile_create_restores_initially_empty_target_after_partial_failure(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
