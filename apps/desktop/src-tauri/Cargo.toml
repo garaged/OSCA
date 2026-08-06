@@ -3,6 +3,7 @@ name = "osca-desktop"
 version = "0.2.0-alpha.1"
 description = "OSCA desktop host broker"
 authors = ["OSCA contributors"]
+license = "Apache-2.0"
 edition = "2021"
 
 [lib]
