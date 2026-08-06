@@ -1,8 +1,18 @@
 # D3 Manual Acceptance — Data Sources, Credentials, Import, and Acquisition UX
 
-- **Status:** Procedure ready; execution evidence pending
+- **Status:** Passed on supported platforms
 - **Platforms:** macOS Apple Silicon and Linux x86-64
-- **Source:** PR #83 head under acceptance
+- **Accepted source:** PR #83 D3 branch after acceptance fixes
+- **Execution date:** 2026-08-06 (America/Mexico_City)
+
+## Accepted result
+
+The repository owner reported the complete procedure passed on:
+
+- macOS ARM64, including packaged-application smoke, accessibility, responsive layout, network observation, persistence, recovery, and failure handling;
+- Linux x86-64, including the equivalent desktop, accessibility, package, network, persistence, recovery, and failure checks.
+
+Machine-local screenshots, environment captures, network observations, paths, and profile data remain outside the repository to avoid publishing host-specific or private information.
 
 ## Preferred Makefile workflow
 
@@ -46,133 +56,56 @@ Override the root without editing the Makefile:
 make run-clean ACCEPTANCE_ROOT=/absolute/path/to/d3-acceptance
 ```
 
-## Manual acceptance sequence
+## Accepted coverage
 
 ### 1. Clean start and navigation
 
-1. Start with `make run-clean`.
-2. Confirm the application opens without an existing selected profile.
-3. Confirm Workspace and Data Sources are keyboard reachable.
-4. Confirm focus moves predictably when changing areas.
-5. Confirm permanent research-only and no-live-execution boundaries remain visible.
+- Application opened without an existing selected profile.
+- Workspace and Data Sources were keyboard reachable.
+- Focus moved predictably when changing areas.
+- Permanent research-only and no-live-execution boundaries remained visible.
 
 ### 2. Responsive and accessible behavior
 
-Validate the Data Sources surface at approximately:
-
-- 320 CSS pixels
-- 680 CSS pixels
-- normal desktop width
-
-Confirm:
-
-- no horizontal content loss;
-- labels remain associated with controls;
-- keyboard navigation reaches every action;
-- visible focus is retained;
-- status and error messages receive focus or are announced;
-- reduced-motion mode removes nonessential transitions;
-- light, dark, and forced-colors/high-contrast modes remain usable;
-- VoiceOver on macOS or Orca on Linux announces headings, regions, fields, status, and destructive credential actions meaningfully.
+The Data Sources surface passed at approximately 320 CSS pixels, 680 CSS pixels, and normal desktop width. Labels, keyboard access, visible focus, status/error handling, reduced motion, light/dark appearance, high contrast, VoiceOver on macOS, and Orca on Linux were accepted.
 
 ### 3. Provider catalog and policy separation
 
-1. Open Data Sources without a profile.
-2. Confirm provider policy and credential state remain inspectable.
-3. Confirm import, acquisition, and retained evidence explain that a validated profile is required.
-4. Confirm Kraken is approved only for the supported public spot-OHLC resource.
-5. Confirm providers needing rights evidence remain blocked even after a credential is stored.
-6. Confirm offline sample and local CSV import remain available without a paid provider account.
+Provider policy and credential state remained inspectable without an open profile. Kraken was limited to the approved public spot-OHLC resource. Providers needing rights evidence remained blocked despite credential presence. Offline sample and local CSV import remained available without a paid account.
 
 ### 4. Profile and offline import
 
-1. Return to Workspace and create the isolated profile shown by `make acceptance-info`.
-2. Reopen Data Sources.
-3. Import a valid local OHLCV CSV.
-4. Confirm symbol, timeframe, source, lineage, revision, and result state are shown.
-5. Repeat the same import and confirm idempotent behavior.
-6. Attempt malformed and unsafe-path inputs and confirm typed, actionable failures without partial persistence.
-7. Observe that no external provider connection occurs during local import.
+The isolated profile was created, opened, restarted, and reused safely. Valid local OHLCV CSV import succeeded without networking or credentials. Repeated import behaved deterministically. Malformed, missing, and unsafe inputs failed without partial persistence.
 
 ### 5. Credential lifecycle
 
-Use a disposable non-production credential value only.
-
-1. Store a named credential for a provider whose policy supports named-secret references.
-2. Confirm the secret field clears after submission.
-3. Confirm only presence/probe metadata returns; the value must never appear in the UI, logs, profile files, ordinary state, databases, URLs, or evidence.
-4. Probe the credential.
-5. Replace it and probe again.
-6. Delete it and confirm the final missing state.
-7. Confirm admission status and approved resources do not change throughout the lifecycle.
-8. Confirm denied or unavailable OS-vault behavior produces a safe typed error and remediation.
+Disposable fake credentials were stored, probed, replaced, and deleted through the OS vault. Secret values cleared from the UI and did not appear in logs, URLs, profile state, analytical storage, or evidence. Credential presence did not promote provider admission.
 
 ### 6. Kraken request-scoped acquisition
 
-1. Attempt acquisition without selecting the explicit network-consent checkbox.
-2. Confirm the request is rejected before provider networking.
-3. Select consent for one request and acquire a small public Kraken OHLC dataset.
-4. Confirm no API key is requested.
-5. Confirm the interface describes the operation as synchronous and does not claim live background progress or active cross-request cancellation.
-6. Confirm result status, rationale, provider, symbol, timeframe, internal-use-only status, redistribution-disabled status, and evidence references are shown.
-7. Confirm the consent checkbox resets after the request.
-8. Repeat the same request and confirm canonical reuse/idempotency behavior.
-9. Confirm quota, provider, invalid, corrupt, partial, stale, cancelled, and failed outcomes remain distinguishable when exercised through deterministic tests or controlled failure fixtures.
+Acquisition without explicit consent failed before networking. A consented Kraken public OHLC request succeeded without an API key. The operation remained synchronous and request-scoped, consent reset after use, repeated requests exhibited canonical reuse/idempotency, and retained evidence showed the expected provider, symbol, timeframe, status, revision, and row-count information.
 
 ### 7. Retained evidence and restart
 
-1. Confirm completed acquisition evidence appears in the retained evidence list.
-2. Quit the application.
-3. Relaunch with `make acceptance-run` without resetting the acceptance root.
-4. Return to Data Sources.
-5. Confirm the selected profile context reloads from Python-owned state.
-6. Confirm retained acquisition evidence remains inspectable.
-7. Confirm only evidence beneath the selected profile’s canonical storage root is listed.
+Completed acquisition evidence remained available after application restart and profile reopening. Only evidence under the selected profile's canonical storage root was listed.
 
 ### 8. Network observation
 
-During offline import, credential operations, and provider-catalog inspection, observe established connections for OSCA/Tauri/Node/Python processes. Loopback development connections are permitted; unexpected external provider traffic is not.
+Offline import, credential operations, and provider-catalog inspection produced no unexpected external provider traffic. External traffic occurred only during the explicitly consented Kraken request. Loopback development connections were accepted.
 
-On macOS:
+### 9. Failure and recovery behavior
 
-```bash
-/usr/sbin/lsof -nP -iTCP -sTCP:ESTABLISHED \
-  | grep -Ei 'osca|tauri|node|python' \
-  | tee .osca/d3-manual-acceptance/evidence/network-observation.txt
-```
+Missing and malformed CSVs, provider/network failures, profile lock contention, restart recovery, and concurrent profile mutation protection failed safely without corrupting valid profile data or evidence. Recommendations, broker/exchange connectivity, autonomous execution, live orders, and real-capital execution remained unavailable.
 
-Use the equivalent process/network inspection tool on Linux.
+## Defects discovered and resolved during acceptance
 
-### 9. Failure behavior
+- Vite test servers collided on the default HMR WebSocket port; frontend tests now run deterministically and avoid unnecessary dependency discovery.
+- The top-right mode switch overlapped safety status pills at intermediate widths; responsive layout now reserves or reflows the control.
+- Generic input styling made the Kraken consent checkbox effectively invisible on macOS; it now has native sizing, explicit association, focus styling, and a distinct consent row.
+- The frontend used `acquisition.submit` while the Python allow-list exposed `acquisition.run`; the frontend now uses the canonical method.
+- The frontend parsed the acquisition result without accounting for the Python `evidence` envelope; parsing now matches the contract.
+- The retained-evidence parser expected `evidence` while Python returns `acquisitions`; the parser and regression checks now match the authoritative response.
 
-Validate:
+## Exit rule disposition
 
-- missing sidecar produces an actionable application-service error;
-- profile lock contention fails safely;
-- missing or locked OS credential store fails safely;
-- malformed import does not partially persist;
-- denied network consent performs no provider request;
-- provider failures retain typed evidence without exposing credentials;
-- recommendations, broker/exchange connectivity, autonomous execution, live orders, and real-capital execution remain unavailable.
-
-## Evidence record
-
-Retain, without secrets or private home-directory information:
-
-- date;
-- operating system and version;
-- architecture;
-- source commit;
-- Python, uv, Node, npm, Rust, and Cargo versions;
-- `make acceptance-check` result;
-- screenshots at narrow and desktop widths;
-- keyboard and screen-reader notes;
-- profile root and imported/acquired revision identifiers;
-- credential lifecycle result using only redacted presence metadata;
-- network observation;
-- defects and fixes;
-- final PASS or FAIL disposition.
-
-## Exit rule
-
-D3 manual acceptance passes only after both macOS ARM64 and Linux x86-64 complete this procedure, every security, accessibility, data-integrity, and network-consent defect is resolved, and explicit owner acceptance is recorded.
+The supported-platform manual gate is satisfied. D3 final exit remains conditional on refreshed hosted validation passing and explicit repository-owner direction before merge.
