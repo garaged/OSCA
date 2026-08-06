@@ -9,6 +9,7 @@ on:
       - "src/osca/desktop_api/**"
       - "tests/test_d1_desktop_api.py"
       - "tests/test_d2_desktop_api.py"
+      - "tests/test_d3_desktop_*.py"
       - "tests/test_desktop_launcher.py"
       - ".github/workflows/desktop-foundation.yml"
   workflow_dispatch:
@@ -34,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          output="$(uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py 2>&1)"
+          output="$(uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py 2>&1)"
           status=$?
           set -e
           printf '%s\n' "$output"
@@ -59,7 +60,7 @@ jobs:
             exit "$status"
           fi
       - name: Desktop API and launcher tests
-        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
+        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py
       - name: Verify bundled sample in wheel
         shell: bash
         run: |
@@ -196,7 +197,7 @@ jobs:
           dpkg-deb --contents "$package"
       - uses: actions/upload-artifact@v4
         with:
-          name: osca-d1-d2-linux-desktop-package
+          name: osca-d1-d3-linux-desktop-package
           path: |
             apps/desktop/src-tauri/target/release/bundle/deb/*.deb
             linux-desktop-smoke.log
