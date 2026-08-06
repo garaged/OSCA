@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +44,27 @@ def test_makefile_wraps_canonical_locked_commands() -> None:
     assert "npm run tauri build" in source or "$(NPM) run tauri build" in source
     assert "scripts/contributor_check.py" in source
     assert "cargo clippy" in source or "$(CARGO) clippy" in source
+
+
+def test_makefile_help_and_build_dry_run_parse() -> None:
+    help_result = subprocess.run(
+        ["make", "help"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "make build" in help_result.stdout
+    assert "make acceptance-run" in help_result.stdout
+
+    dry_run = subprocess.run(
+        ["make", "-n", "build"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "npm run tauri build" in dry_run.stdout
 
 
 def test_manual_acceptance_is_isolated_and_safe_by_default() -> None:
