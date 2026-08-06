@@ -8,7 +8,7 @@
 - [x] Add D2 traceability and implementation disposition.
 - [x] Add clean-profile manual acceptance procedure.
 - [x] Retain automated draft validation evidence.
-- [ ] Retain final non-draft supported-platform validation and exit review.
+- [x] Retain final non-draft supported-platform validation and exit review.
 
 ## Python application service
 
@@ -47,9 +47,9 @@
 - [x] Run draft hosted Quality successfully on the accepted implementation head.
 - [x] Complete the reconciled draft Desktop Foundation run.
 - [x] Fulfill the deferred D1 Linux x86-64 desktop package and launch-smoke obligation.
-- [ ] Run the final ready-for-review Linux package smoke.
-- [ ] Run the full supported Linux/macOS contributor and package-lifecycle matrix.
-- [ ] Execute macOS ARM64 manual acceptance.
-- [ ] Execute Linux x86-64 manual acceptance.
-- [ ] Resolve manual/accessibility defects.
-- [ ] Complete D2 exit review.
+- [x] Run the final ready-for-review Linux package smoke.
+- [x] Run the full supported Linux/macOS contributor and package-lifecycle matrix.
+- [x] Execute macOS ARM64 manual acceptance.
+- [x] Execute Linux x86-64 manual acceptance.
+- [x] Resolve manual/accessibility defects; no defects were reported.
+- [x] Complete D2 exit review.
