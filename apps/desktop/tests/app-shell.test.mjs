@@ -47,3 +47,15 @@ test("frontend source uses only the narrow Tauri desktop request capability", as
   assert.doesNotMatch(combined, /parquet/i);
   assert.doesNotMatch(combined, /orders\.submit/);
 });
+
+test("native window permits the specified 320 CSS-pixel responsive foundation", async () => {
+  const configSource = await readFile(
+    new URL("../src-tauri/tauri.conf.json", import.meta.url),
+    "utf8"
+  );
+  const config = JSON.parse(configSource);
+  const primaryWindow = config.app.windows[0];
+
+  assert.equal(primaryWindow.minWidth, 320);
+  assert.ok(primaryWindow.minHeight <= 480);
+});
