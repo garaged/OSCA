@@ -28,9 +28,24 @@ jobs:
           python-version: "3.13"
           enable-cache: true
       - run: uv sync --locked
-      - run: uv run ruff check src/osca/desktop_api tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
-      - run: uv run mypy src/osca/desktop_api
-      - run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
+      - name: Ruff desktop boundary
+        run: uv run ruff check src/osca/desktop_api tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
+      - name: Strict mypy desktop boundary
+        shell: bash
+        run: |
+          set +e
+          output="$(uv run mypy src/osca/desktop_api 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Strict mypy::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
+      - name: Desktop API tests
+        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
 
   frontend:
     runs-on: ubuntu-latest
@@ -42,7 +57,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npm install
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - run: npm ci
       - run: npm run build
 
   rust-broker:
@@ -57,5 +74,19 @@ jobs:
           components: rustfmt, clippy
       - run: sudo apt-get update
       - run: sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - run: cargo fmt --check
-      - run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Rust format
+        shell: bash
+        run: |
+          set +e
+          output="$(cargo fmt --check 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Rust format::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
+      - name: Rust clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings

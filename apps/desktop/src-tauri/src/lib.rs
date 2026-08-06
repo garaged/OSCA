@@ -21,7 +21,10 @@ fn desktop_request(request_json: String) -> Result<String, String> {
         .spawn()
         .map_err(|error| format!("unable to start OSCA sidecar: {error}"))?;
 
-    let mut stdin = child.stdin.take().ok_or_else(|| "sidecar stdin unavailable".to_string())?;
+    let mut stdin = child
+        .stdin
+        .take()
+        .ok_or_else(|| "sidecar stdin unavailable".to_string())?;
     stdin
         .write_all(format!("{request_json}\n").as_bytes())
         .map_err(|error| format!("unable to write sidecar request: {error}"))?;
