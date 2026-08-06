@@ -95,6 +95,14 @@ fn decode_response(stdout: &[u8]) -> Result<String, String> {
     Ok(first.to_owned())
 }
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![desktop_request])
+        .run(tauri::generate_context!())
+        .expect("error while running OSCA desktop");
+}
+
 #[cfg(test)]
 mod tests {
     use super::{decode_response, sidecar_invocation, validate_request_size, MAX_MESSAGE_BYTES};
@@ -153,12 +161,4 @@ mod tests {
             "desktop response exceeds 1 MiB"
         );
     }
-}
-
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![desktop_request])
-        .run(tauri::generate_context!())
-        .expect("error while running OSCA desktop");
 }
