@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from pydantic import ValidationError
 
@@ -44,7 +44,7 @@ class D3AcquisitionApplicationService(D3DesktopApplicationService):
         self._handlers["acquisition.run"] = self._acquisition_run
 
     def _acquisition_run(self, params: dict[str, Any]) -> dict[str, Any]:
-        _require_allowed_keys(
+        _allowed(
             params,
             {
                 "profile_root",
@@ -64,21 +64,18 @@ class D3AcquisitionApplicationService(D3DesktopApplicationService):
                 "since",
             },
         )
-        profile_root = _absolute_path(params, "profile_root")
-        profile = self._inspect_profile(profile_root)
-        if not profile["can_open"]:
+        profile_root = _path(params, "profile_root")
+        if not self._inspect_profile(profile_root)["can_open"]:
             raise DesktopServiceError(
                 "profile_unavailable",
                 "a compatible writable profile is required before provider acquisition",
             )
-        provider = _required_string(params, "provider_id", 64)
-        if provider != ProductionProvider.KRAKEN.value:
+        if _text(params, "provider_id", 64) != ProductionProvider.KRAKEN.value:
             raise DesktopServiceError(
                 "provider_not_supported",
                 "D3 acquisition supports Kraken public spot OHLC only.",
             )
-        asset_class = _optional_string(params, "asset_class", "crypto", 16)
-        if asset_class != HistoricalAssetClass.CRYPTO.value:
+        if _optional_text(params, "asset_class", "crypto", 16) != "crypto":
             raise DesktopServiceError(
                 "provider_not_supported",
                 "Kraken D3 acquisition supports crypto assets only.",
@@ -87,25 +84,25 @@ class D3AcquisitionApplicationService(D3DesktopApplicationService):
         values: dict[str, Any] = {
             "provider_id": ProductionProvider.KRAKEN,
             "asset_class": HistoricalAssetClass.CRYPTO,
-            "symbol": _required_string(params, "symbol", 80),
-            "timeframe": _required_string(params, "timeframe", 8),
+            "symbol": _text(params, "symbol", 80),
+            "timeframe": _text(params, "timeframe", 8),
             "storage_root": config.storage_root,
-            "venue_context": _optional_string(params, "venue_context", "kraken-spot", 160),
-            "expected_pair_key": _optional_text(params, "expected_pair_key", 160),
-            "start_at": _optional_datetime(params, "start_at"),
-            "end_at": _optional_datetime(params, "end_at"),
-            "freshness_max_age_seconds": _optional_int(
+            "venue_context": _optional_text(params, "venue_context", "kraken-spot", 160),
+            "expected_pair_key": _nullable_text(params, "expected_pair_key", 160),
+            "start_at": _date_value(params, "start_at"),
+            "end_at": _date_value(params, "end_at"),
+            "freshness_max_age_seconds": _integer(
                 params, "freshness_max_age_seconds", None, 0
             ),
-            "minimum_rows": _optional_int(params, "minimum_rows", 1, 1),
-            "require_complete_range": _optional_bool(
+            "minimum_rows": _integer(params, "minimum_rows", 1, 1),
+            "require_complete_range": _boolean(
                 params, "require_complete_range", False
             ),
-            "network_access_enabled": _optional_bool(
+            "network_access_enabled": _boolean(
                 params, "network_access_enabled", False
             ),
-            "cancel_requested": _optional_bool(params, "cancel_requested", False),
-            "since": _optional_int(params, "since", None, 0),
+            "cancel_requested": _boolean(params, "cancel_requested", False),
+            "since": _integer(params, "since", None, 0),
         }
         try:
             request = HistoricalAcquisitionRequest.model_validate(values)
@@ -140,7 +137,7 @@ class D3AcquisitionApplicationService(D3DesktopApplicationService):
         }
 
 
-def _require_allowed_keys(params: dict[str, Any], allowed: set[str]) -> None:
+def _allowed(params: dict[str, Any], allowed: set[str]) -> None:
     unexpected = sorted(set(params) - allowed)
     if unexpected:
         raise DesktopServiceError(
@@ -149,7 +146,7 @@ def _require_allowed_keys(params: dict[str, Any], allowed: set[str]) -> None:
         )
 
 
-def _absolute_path(params: dict[str, Any], name: str) -> Path:
+def _path(params: dict[str, Any], name: str) -> Path:
     value = params.get(name)
     if not isinstance(value, str) or not value.strip() or len(value) > 4096:
         raise DesktopServiceError("invalid_parameters", f"{name} must be a valid path")
@@ -159,31 +156,27 @@ def _absolute_path(params: dict[str, Any], name: str) -> Path:
     return path.resolve()
 
 
-def _required_string(params: dict[str, Any], name: str, limit: int) -> str:
+def _text(params: dict[str, Any], name: str, limit: int) -> str:
     value = params.get(name)
     if not isinstance(value, str) or not value.strip():
         raise DesktopServiceError("invalid_parameters", f"{name} must be a non-empty string")
-    value = value.strip()
-    if len(value) > limit:
+    normalized = value.strip()
+    if len(normalized) > limit:
         raise DesktopServiceError("invalid_parameters", f"{name} exceeds {limit} characters")
-    return value
+    return normalized
 
 
-def _optional_string(
+def _optional_text(
     params: dict[str, Any], name: str, default: str, limit: int
 ) -> str:
-    if name not in params or params[name] is None:
-        return default
-    return _required_string(params, name, limit)
+    return default if name not in params or params[name] is None else _text(params, name, limit)
 
 
-def _optional_text(params: dict[str, Any], name: str, limit: int) -> str | None:
-    if name not in params or params[name] is None:
-        return None
-    return _required_string(params, name, limit)
+def _nullable_text(params: dict[str, Any], name: str, limit: int) -> str | None:
+    return None if name not in params or params[name] is None else _text(params, name, limit)
 
 
-def _optional_bool(params: dict[str, Any], name: str, default: bool) -> bool:
+def _boolean(params: dict[str, Any], name: str, default: bool) -> bool:
     if name not in params or params[name] is None:
         return default
     value = params[name]
@@ -192,7 +185,7 @@ def _optional_bool(params: dict[str, Any], name: str, default: bool) -> bool:
     return value
 
 
-def _optional_int(
+def _integer(
     params: dict[str, Any], name: str, default: int | None, minimum: int
 ) -> int | None:
     if name not in params or params[name] is None:
@@ -203,10 +196,10 @@ def _optional_int(
             "invalid_parameters",
             f"{name} must be an integer greater than or equal to {minimum}",
         )
-    return value
+    return cast(int, value)
 
 
-def _optional_datetime(params: dict[str, Any], name: str) -> str | datetime | None:
+def _date_value(params: dict[str, Any], name: str) -> str | datetime | None:
     if name not in params or params[name] is None:
         return None
     value = params[name]
