@@ -16,9 +16,11 @@ def test_makefile_exposes_required_desktop_workflows() -> None:
         "tools:",
         "setup:",
         "run:",
+        "run-clean:",
         "acceptance-prepare:",
         "acceptance-reset:",
         "acceptance-run:",
+        "acceptance-check:",
         "acceptance-info:",
         "build:",
         "package:",
@@ -55,7 +57,8 @@ def test_makefile_help_and_build_dry_run_parse() -> None:
         text=True,
     )
     assert "make build" in help_result.stdout
-    assert "make acceptance-run" in help_result.stdout
+    assert "make run-clean" in help_result.stdout
+    assert "make acceptance-check" in help_result.stdout
 
     dry_run = subprocess.run(
         ["make", "-n", "build"],
