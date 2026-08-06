@@ -1,0 +1,88 @@
+.d3-root {
+  min-height: 100vh;
+}
+
+.d3-mode-navigation {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-end: 1rem;
+  z-index: 20;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid var(--border, #516173);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface, #101820) 92%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.d3-mode-button {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.d3-mode-button[data-active="true"] {
+  border-color: currentColor;
+  background: var(--surface-elevated, #263444);
+}
+
+.d3-mode-button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.d3-data-sources-main {
+  min-height: 100vh;
+  padding-block-start: 4.75rem;
+}
+
+.d3-context-state {
+  max-width: 72rem;
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 1px solid var(--border, #516173);
+  border-radius: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 520px) {
+  .d3-mode-navigation {
+    inset-inline: 0.5rem;
+    justify-content: stretch;
+  }
+
+  .d3-mode-button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d3-mode-button {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .d3-mode-navigation,
+  .d3-mode-button[data-active="true"],
+  .d3-context-state {
+    border-color: CanvasText;
+  }
+}
