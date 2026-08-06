@@ -4,6 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     paths:
+      - "Makefile"
       - "apps/desktop/**"
       - "scripts/run_desktop.py"
       - "src/osca/desktop_api/**"
@@ -11,6 +12,7 @@ on:
       - "tests/test_d2_desktop_api.py"
       - "tests/test_d3_desktop_*.py"
       - "tests/test_desktop_launcher.py"
+      - "tests/test_makefile.py"
       - ".github/workflows/desktop-foundation.yml"
   workflow_dispatch:
 
@@ -31,11 +33,15 @@ jobs:
           python-version: "3.13"
           enable-cache: true
       - run: uv sync --locked
+      - name: Verify Makefile interface
+        run: |
+          make help
+          make -n build
       - name: Ruff desktop boundary
         shell: bash
         run: |
           set +e
-          output="$(uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py 2>&1)"
+          output="$(uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py tests/test_makefile.py 2>&1)"
           status=$?
           set -e
           printf '%s\n' "$output"
@@ -60,7 +66,7 @@ jobs:
             exit "$status"
           fi
       - name: Desktop API and launcher tests
-        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py
+        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py tests/test_makefile.py
       - name: Verify bundled sample in wheel
         shell: bash
         run: |
