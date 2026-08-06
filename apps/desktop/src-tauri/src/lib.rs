@@ -62,10 +62,7 @@ fn desktop_request(request_json: String) -> Result<String, String> {
     decode_response(&output.stdout)
 }
 
-fn sidecar_invocation(
-    sidecar: Option<String>,
-    python: Option<String>,
-) -> (String, Vec<String>) {
+fn sidecar_invocation(sidecar: Option<String>, python: Option<String>) -> (String, Vec<String>) {
     match sidecar {
         Some(executable) => (executable, Vec::new()),
         None => (
