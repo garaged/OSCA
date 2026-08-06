@@ -416,7 +416,7 @@ def _optional_port(params: dict[str, Any]) -> int:
             "invalid_parameters",
             "workspace_port must be an integer between 1 and 65535",
         )
-    return value
+    return int(value)
 
 
 def _require_safe_profile_root(profile_root: Path) -> None:
