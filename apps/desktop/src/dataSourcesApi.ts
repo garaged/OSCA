@@ -149,7 +149,9 @@ export function submitKrakenAcquisition(value: AcquisitionRequest): Promise<Acqu
 
 export function listAcquisitionEvidence(profileRoot: string): Promise<AcquisitionEvidence[]> {
   return request("acquisition.list", { profile_root: profileRoot }, (record) =>
-    array(record.evidence, "evidence").map((item) => parseEvidence(object(item, "evidence item")))
+    array(record.acquisitions, "acquisitions").map((item) =>
+      parseEvidence(object(item, "acquisition item"))
+    )
   );
 }
 
