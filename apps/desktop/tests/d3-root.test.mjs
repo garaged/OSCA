@@ -23,6 +23,15 @@ test("D3 composition preserves the narrow desktop authority boundary", async () 
   assert.doesNotMatch(source, /fetch\s*\(/);
 });
 
+test("D3 mode navigation avoids workspace header overlap", async () => {
+  const css = await readFile(new URL("../src/d3Root.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.d3-root \.app-header\s*\{[^}]*padding-inline-end: 18rem/s);
+  assert.match(css, /@media \(max-width: 1100px\)/);
+  assert.match(css, /position: sticky/);
+  assert.match(css, /padding-inline-end: var\(--space-8, 2rem\)/);
+});
+
 test("D3 mode navigation retains narrow and accessibility safeguards", async () => {
   const css = await readFile(new URL("../src/d3Root.css", import.meta.url), "utf8");
   assert.match(css, /@media \(max-width: 520px\)/);
