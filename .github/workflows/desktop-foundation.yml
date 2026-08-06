@@ -105,3 +105,66 @@ jobs:
           fi
       - name: Rust clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
+
+  linux-desktop-package-smoke:
+    name: linux-x86_64 desktop package smoke
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux desktop build and smoke dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xvfb
+      - name: Install locked Python environment
+        run: uv sync --locked
+      - name: Install locked frontend dependencies
+        working-directory: apps/desktop
+        run: npm ci
+      - name: Build Debian desktop package
+        working-directory: apps/desktop
+        run: npm run tauri build -- --bundles deb
+      - name: Smoke packaged desktop binary
+        shell: bash
+        run: |
+          binary="apps/desktop/src-tauri/target/release/osca-desktop"
+          test -x "$binary"
+          set +e
+          PYTHONPATH="${GITHUB_WORKSPACE}/src" \
+            timeout 15s xvfb-run -a "$binary" \
+            > linux-desktop-smoke.log 2>&1
+          status=$?
+          set -e
+          cat linux-desktop-smoke.log
+          if (( status != 124 )); then
+            echo "Packaged desktop exited before the bounded smoke window (status ${status})."
+            exit "$status"
+          fi
+      - name: Verify Debian package
+        shell: bash
+        run: |
+          package="$(find apps/desktop/src-tauri/target/release/bundle/deb -name '*.deb' -print -quit)"
+          test -n "$package"
+          dpkg-deb --info "$package"
+          dpkg-deb --contents "$package"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osca-d1-d2-linux-desktop-package
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/deb/*.deb
+            linux-desktop-smoke.log
+          if-no-files-found: error
