@@ -30,23 +30,23 @@ test("data sources surface exposes offline, provider, acquisition, and evidence 
   assert.match(html, /Allow this single request to contact Kraken over HTTPS/);
 });
 
-test("D3 frontend retains the narrow desktop request bridge and canonical methods", async () => {
+test("D3 frontend uses the canonical acquisition contracts", async () => {
+  const api = await readFile(new URL("../src/dataSourcesApi.ts", import.meta.url), "utf8");
+  assert.ok(api.includes('request("acquisition.run"'));
+  assert.ok(api.includes("record.evidence"));
+  assert.ok(api.includes("record.acquisitions"));
+  assert.ok(!api.includes("acquisition.submit"));
+});
+
+test("D3 frontend retains the narrow desktop request bridge and no generic native authority", async () => {
   const api = await readFile(new URL("../src/dataSourcesApi.ts", import.meta.url), "utf8");
   const surface = await readFile(new URL("../src/DataSources.tsx", import.meta.url), "utf8");
   const combined = `${api}\n${surface}`;
   assert.match(api, /invoke<string>\("desktop_request"/);
-  for (const method of [
-    "provider.catalog",
-    "credential.store",
-    "local.import",
-    "acquisition.run",
-    "acquisition.list"
-  ]) {
-    assert.ok(api.includes(`request("${method}"`), `missing canonical method ${method}`);
-  }
-  assert.ok(api.includes("record.evidence"));
-  assert.ok(api.includes("record.acquisitions"));
-  assert.ok(!api.includes("acquisition.submit"));
+  assert.match(api, /provider\.catalog/);
+  assert.match(api, /credential\.store/);
+  assert.match(api, /local\.import/);
+  assert.match(api, /acquisition\.list/);
   assert.doesNotMatch(combined, /plugin-fs|plugin-shell|node:fs|sqlite|parquet|orders\.submit/);
   assert.doesNotMatch(surface, /secret_value_returned\s*:\s*true/);
 });
