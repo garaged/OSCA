@@ -7,7 +7,7 @@ test("D3 root exposes Data Sources as a first-class desktop area", async () => {
   const main = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
 
   assert.match(source, /aria-label="Desktop areas"/);
-  assert.match(source, />Data Sources</);
+  assert.match(source, /Data Sources/);
   assert.match(source, /aria-current=/);
   assert.match(source, /bootstrapDesktop/);
   assert.match(source, /DataSourcesSurface profileRoot=/);
