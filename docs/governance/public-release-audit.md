@@ -1,6 +1,6 @@
 # Public Release Audit
 
-Status: Public baseline accepted; private vulnerability reporting remains a repository-settings follow-up.
+Status: Public baseline accepted; repository security reporting and secret protections enabled.
 
 Original audit date: 2026-08-05  
 Reconciled: 2026-08-05
@@ -21,7 +21,7 @@ This document records a bounded repository-host audit. It does not replace a ful
 
 ## Public baseline disposition
 
-The repository owner completed the public-release actions and explicitly accepted the remaining personal Git identity exposure:
+The repository owner completed the public-release and repository-security actions and explicitly accepted the remaining personal Git identity exposure:
 
 - the repository is public;
 - history was rewritten to remove the Oracle work address from reachable commit metadata;
@@ -30,7 +30,9 @@ The repository owner completed the public-release actions and explicitly accepte
 - `garaged@gmail.com` exposure is explicitly accepted by the repository owner;
 - Apache License 2.0, NOTICE, package licensing, synthetic fixture provenance, and the security policy are merged;
 - GitHub Actions are enabled;
-- hosted Quality secret scanning passes on the rewritten baseline and D2 branch history available to the workflow.
+- private vulnerability reporting is enabled;
+- repository secret-protection settings were enabled by the repository owner;
+- hosted Quality full-history secret scanning passes on the rewritten baseline and D2 branch history available to the workflow.
 
 The connected GitHub metadata for the rewritten D1 commit contains no Oracle `Co-authored-by` trailer. Historical search indexes or unreachable objects may take time to disappear from external caches and are not treated as reachable repository history.
 
@@ -48,10 +50,12 @@ Disposition: accepted.
 ### Current-tree secrets and local state
 
 - `.gitignore` excludes `.env`, `.env.*`, `.osca/`, databases, virtual environments, dependency directories, and build outputs.
-- Hosted Quality uses a full-history checkout for its gitleaks action and passes on the rewritten baseline and active D2 work.
+- Repository secret-protection settings are enabled by the owner.
+- Hosted Quality uses a full-history checkout for its `gitleaks` action and passes on the rewritten baseline and active D2 work.
+- The connected GitHub integration does not have permission to enumerate secret-scanning alerts or the exact enabled subfeatures, so push protection, validity checks, and non-provider pattern settings must not be inferred beyond the owner-confirmed configuration.
 - No local profile, generated evidence, provider credential, or restricted provider payload is intentionally tracked.
 
-Disposition: accepted for the current hosted baseline. Maintainers must continue running full-history scans after any future history rewrite or imported repository history.
+Disposition: accepted for the current hosted baseline. GitHub-native protection and independent full-history scanning are complementary controls. Maintainers must continue running full-history scans after any future history rewrite or imported repository history.
 
 ### Personal information
 
@@ -80,9 +84,10 @@ Disposition: accepted, subject to clean-tree and artifact provenance checks for 
 ### Security reporting
 
 - `.github/SECURITY.md` directs reporters to GitHub private vulnerability reporting.
-- The GitHub repository setting currently reports private vulnerability reporting as disabled.
+- The GitHub repository API reports private vulnerability reporting as enabled.
+- The fallback through the repository owner's GitHub profile remains documented for service availability or access problems.
 
-Disposition: repository-settings follow-up. Enable private vulnerability reporting before representing that channel as available. Until enabled, maintainers must not direct a reporter into a non-functional private-reporting flow.
+Disposition: accepted and operational.
 
 ## Maintainer verification gates
 
@@ -118,9 +123,10 @@ Any real credential found in any historical commit must be revoked or rotated fi
 ## Ongoing public-release invariants
 
 - Apache-2.0 licensing and NOTICE remain present and accurate.
+- GitHub-native secret protection remains enabled.
 - Hosted full-history secret scanning remains passing.
+- Private vulnerability reporting remains enabled and accurately documented.
 - Public author and committer identities are intentional.
 - Local profiles, generated evidence, credentials, and restricted provider data remain untracked.
 - Synthetic fixtures remain clearly identified as synthetic.
-- Private vulnerability reporting is enabled before it is advertised as an available reporting channel.
 - Release artifacts remain traceable to an accepted source commit.
