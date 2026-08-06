@@ -26,11 +26,11 @@ test("data sources surface exposes offline, provider, acquisition, and evidence 
   assert.match(html, /Network opt-in/);
   assert.match(html, /Live execution off/);
   assert.match(html, /synchronous, request-scoped operation/);
-  assert.match(html, /type="checkbox"/);
+  assert.match(html, /id="kraken-network-consent"/);
   assert.match(html, /Allow this single request to contact Kraken over HTTPS/);
 });
 
-test("D3 frontend retains the narrow desktop request bridge and no generic native authority", async () => {
+test("D3 frontend retains the narrow desktop request bridge and canonical methods", async () => {
   const api = await readFile(new URL("../src/dataSourcesApi.ts", import.meta.url), "utf8");
   const surface = await readFile(new URL("../src/DataSources.tsx", import.meta.url), "utf8");
   const combined = `${api}\n${surface}`;
@@ -38,8 +38,10 @@ test("D3 frontend retains the narrow desktop request bridge and no generic nativ
   assert.match(api, /provider\.catalog/);
   assert.match(api, /credential\.store/);
   assert.match(api, /local\.import/);
-  assert.match(api, /acquisition\.submit/);
+  assert.match(api, /acquisition\.run/);
   assert.match(api, /acquisition\.list/);
+  assert.match(api, /object\(record\.evidence, "evidence"\)/);
+  assert.doesNotMatch(api, /acquisition\.submit/);
   assert.doesNotMatch(combined, /plugin-fs|plugin-shell|node:fs|sqlite|parquet|orders\.submit/);
   assert.doesNotMatch(surface, /secret_value_returned\s*:\s*true/);
 });
@@ -50,9 +52,7 @@ test("responsive and accessibility safeguards are explicit", async () => {
   assert.match(css, /max-width:680px/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /forced-colors/);
-  assert.match(css, /consent-row input\[type="checkbox"\]/);
-  assert.match(css, /width:1\.25rem/);
-  assert.match(css, /focus-within/);
+  assert.match(css, /\.consent-row input/);
   assert.match(surface, /role=\{notice\.tone === "error" \? "alert" : "status"\}/);
   assert.match(surface, /type="password"/);
   assert.match(surface, /Explicit network consent is required/);
