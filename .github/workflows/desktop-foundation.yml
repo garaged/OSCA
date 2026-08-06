@@ -123,14 +123,15 @@ jobs:
         shell: bash
         run: |
           set +e
-          output="$(cargo clippy --all-targets --all-features -- -D warnings 2>&1)"
+          output="$(NO_COLOR=1 cargo clippy --all-targets --all-features --message-format=short -- -D warnings 2>&1)"
           status=$?
           set -e
           printf '%s\n' "$output"
           if (( status != 0 )); then
+            diagnostics="$(printf '%s\n' "$output" | tail -n 40)"
             while IFS= read -r line; do
               echo "::error title=Rust clippy::$line"
-            done <<< "$output"
+            done <<< "$diagnostics"
             exit "$status"
           fi
 
