@@ -18,9 +18,9 @@ Run automated gates first:
 
 ```bash
 uv sync --locked
-uv run ruff check src/osca/desktop_api tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
-uv run mypy src/osca/desktop_api
-uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
+uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
+uv run mypy src/osca/desktop_api scripts/run_desktop.py
+uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
 
 cd apps/desktop
 npm ci
@@ -28,18 +28,19 @@ npm run build
 npm test
 cd src-tauri
 cargo fmt --check
+cargo test --all-targets --all-features
 cargo clippy --all-targets --all-features -- -D warnings
 ```
 
 ## Start the desktop application
 
-From `apps/desktop`:
+From the repository root:
 
 ```bash
-npm run tauri dev
+uv run python scripts/run_desktop.py
 ```
 
-Do not configure `OSCA_DESKTOP_SIDECAR` unless validating a packaged sidecar candidate. The development host uses `python3 -m osca.desktop_api.stdio`.
+This launcher sets `OSCA_DESKTOP_PYTHON` to the locked `uv` interpreter before starting Tauri. Do not use arbitrary system `python3` for acceptance. Configure `OSCA_DESKTOP_SIDECAR` only when validating a packaged sidecar candidate.
 
 ## Acceptance checklist
 
@@ -170,7 +171,7 @@ Confirm:
 - the shell/safety boundaries remain visible;
 - the application reports unavailable rather than ready;
 - retry appears only for the retryable sidecar error;
-- no raw secret, environment dump, or ordinary-user stack trace is displayed.
+- no raw secret, environment dump, sidecar stderr, or ordinary-user stack trace is displayed.
 
 ### 9. Motion, color, and screen reader
 

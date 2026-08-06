@@ -12,11 +12,12 @@ const SIDECAR_POLL_INTERVAL: Duration = Duration::from_millis(25);
 fn desktop_request(request_json: String) -> Result<String, String> {
     validate_request_size(&request_json)?;
 
-    let sidecar = env::var("OSCA_DESKTOP_SIDECAR").unwrap_or_else(|_| "python3".to_string());
-    let mut command = Command::new(sidecar);
-    if env::var("OSCA_DESKTOP_SIDECAR").is_err() {
-        command.args(["-m", "osca.desktop_api.stdio"]);
-    }
+    let (program, args) = sidecar_invocation(
+        env::var("OSCA_DESKTOP_SIDECAR").ok(),
+        env::var("OSCA_DESKTOP_PYTHON").ok(),
+    );
+    let mut command = Command::new(program);
+    command.args(args);
 
     let mut child = command
         .stdin(Stdio::piped())
@@ -61,6 +62,19 @@ fn desktop_request(request_json: String) -> Result<String, String> {
     decode_response(&output.stdout)
 }
 
+fn sidecar_invocation(
+    sidecar: Option<String>,
+    python: Option<String>,
+) -> (String, Vec<String>) {
+    match sidecar {
+        Some(executable) => (executable, Vec::new()),
+        None => (
+            python.unwrap_or_else(|| "python3".to_string()),
+            vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()],
+        ),
+    }
+}
+
 fn validate_request_size(request_json: &str) -> Result<(), String> {
     if request_json.len() > MAX_MESSAGE_BYTES {
         return Err("desktop request exceeds 1 MiB".to_string());
@@ -86,7 +100,37 @@ fn decode_response(stdout: &[u8]) -> Result<String, String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{decode_response, validate_request_size, MAX_MESSAGE_BYTES};
+    use super::{decode_response, sidecar_invocation, validate_request_size, MAX_MESSAGE_BYTES};
+
+    #[test]
+    fn executable_sidecar_override_receives_no_python_module_arguments() {
+        let invocation = sidecar_invocation(Some("osca-sidecar".to_string()), None);
+        assert_eq!(invocation, ("osca-sidecar".to_string(), Vec::new()));
+    }
+
+    #[test]
+    fn python_override_runs_the_versioned_desktop_module() {
+        let invocation = sidecar_invocation(None, Some("/tmp/osca-python".to_string()));
+        assert_eq!(
+            invocation,
+            (
+                "/tmp/osca-python".to_string(),
+                vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()]
+            )
+        );
+    }
+
+    #[test]
+    fn default_sidecar_uses_python3_module_execution() {
+        let invocation = sidecar_invocation(None, None);
+        assert_eq!(
+            invocation,
+            (
+                "python3".to_string(),
+                vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()]
+            )
+        );
+    }
 
     #[test]
     fn accepts_one_bounded_response_line() {

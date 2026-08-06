@@ -5,9 +5,11 @@ on:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     paths:
       - "apps/desktop/**"
+      - "scripts/run_desktop.py"
       - "src/osca/desktop_api/**"
       - "tests/test_d1_desktop_api.py"
       - "tests/test_d2_desktop_api.py"
+      - "tests/test_desktop_launcher.py"
       - ".github/workflows/desktop-foundation.yml"
   workflow_dispatch:
 
@@ -29,12 +31,12 @@ jobs:
           enable-cache: true
       - run: uv sync --locked
       - name: Ruff desktop boundary
-        run: uv run ruff check src/osca/desktop_api tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
+        run: uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
       - name: Strict mypy desktop boundary
         shell: bash
         run: |
           set +e
-          output="$(uv run mypy src/osca/desktop_api 2>&1)"
+          output="$(uv run mypy src/osca/desktop_api scripts/run_desktop.py 2>&1)"
           status=$?
           set -e
           printf '%s\n' "$output"
@@ -44,8 +46,8 @@ jobs:
             done <<< "$output"
             exit "$status"
           fi
-      - name: Desktop API tests
-        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
+      - name: Desktop API and launcher tests
+        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
       - name: Verify bundled sample in wheel
         shell: bash
         run: |
@@ -146,7 +148,7 @@ jobs:
           binary="apps/desktop/src-tauri/target/release/osca-desktop"
           test -x "$binary"
           set +e
-          PYTHONPATH="${GITHUB_WORKSPACE}/src" \
+          OSCA_DESKTOP_PYTHON="${GITHUB_WORKSPACE}/.venv/bin/python" \
             timeout 15s xvfb-run -a "$binary" \
             > linux-desktop-smoke.log 2>&1
           status=$?
