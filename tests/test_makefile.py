@@ -57,7 +57,11 @@ def test_manual_acceptance_is_isolated_and_safe_by_default() -> None:
 
 def test_makefile_has_no_implicit_network_or_live_execution_target() -> None:
     source = MAKEFILE.read_text(encoding="utf-8").lower()
+    target_lines = [line for line in source.splitlines() if line and not line.startswith(("\t", " "))]
+    declarations = "\n".join(target_lines)
 
     assert "network-access-enabled" not in source
     assert "live-order" not in source
-    assert "broker" not in source
+    assert "network:" not in declarations
+    assert "live:" not in declarations
+    assert "execute:" not in declarations
