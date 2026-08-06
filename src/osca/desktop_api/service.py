@@ -165,25 +165,15 @@ class DesktopApplicationService:
         return self._inspect_profile(_required_path(params, "profile_root"))
 
     def _profile_create(self, params: dict[str, Any]) -> dict[str, Any]:
-        _require_allowed_keys(
-            params,
-            {"profile_root", "storage_root", "workspace_port"},
-            "profile.create",
-        )
+        _require_allowed_keys(params, {"profile_root"}, "profile.create")
         profile_root = _required_path(params, "profile_root")
-        storage_root = _optional_path(params, "storage_root")
-        workspace_port = _optional_port(params)
         _require_safe_profile_root(profile_root)
         _require_safe_new_profile_target(profile_root)
 
         profile_existed = profile_root.exists()
         try:
             with ProfileMutationLock(profile_root):
-                initialized = initialize_profile(
-                    profile_root,
-                    storage_root=storage_root,
-                    workspace_port=workspace_port,
-                )
+                initialized = initialize_profile(profile_root)
         except Exception:
             _restore_pre_creation_target(profile_root, existed=profile_existed)
             raise
@@ -413,16 +403,6 @@ def _optional_path(params: dict[str, Any], name: str) -> Path | None:
     if name not in params or params[name] is None:
         return None
     return _required_path(params, name)
-
-
-def _optional_port(params: dict[str, Any]) -> int:
-    value = params.get("workspace_port", 8765)
-    if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65535:
-        raise DesktopServiceError(
-            "invalid_parameters",
-            "workspace_port must be an integer between 1 and 65535",
-        )
-    return int(value)
 
 
 def _require_safe_profile_root(profile_root: Path) -> None:
