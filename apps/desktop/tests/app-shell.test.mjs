@@ -59,3 +59,20 @@ test("native window permits the specified 320 CSS-pixel responsive foundation", 
   assert.equal(primaryWindow.minWidth, 320);
   assert.ok(primaryWindow.minHeight <= 480);
 });
+
+test("native desktop CSP is enabled and local-only", async () => {
+  const configSource = await readFile(
+    new URL("../src-tauri/tauri.conf.json", import.meta.url),
+    "utf8"
+  );
+  const config = JSON.parse(configSource);
+  const csp = config.app.security.csp;
+
+  assert.equal(csp["default-src"], "'self'");
+  assert.equal(csp["connect-src"], "ipc: http://ipc.localhost");
+  assert.equal(csp["object-src"], "'none'");
+  assert.equal(csp["base-uri"], "'none'");
+  assert.equal(csp["frame-src"], "'none'");
+  assert.doesNotMatch(JSON.stringify(csp), /https:\/\//);
+  assert.doesNotMatch(JSON.stringify(csp), /'unsafe-eval'/);
+});
