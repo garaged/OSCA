@@ -1,13 +1,16 @@
 # D3 Data Sources, Credentials, Import, and Acquisition UX
 
-- **Status:** In progress; executable specification accepted for implementation
+- **Status:** Validation reconciliation; macOS ARM64 and Linux x86-64 manual acceptance passed
 - **Baseline:** D2 merge `7522da7bc50fa1fdffa4088c0f39f5d2ebe7d9b6`
 - **Branch:** `agent/d3-provider-onboarding`
+- **Pull request:** #83
 - **Intent:** `intent.md`
 - **Specification:** `specification.md`
 - **Requirements:** `../../governance/requirements-catalog-d3.md`
 - **Traceability:** `traceability.md`
 - **Manual acceptance:** `manual-acceptance.md`
+- **Validation evidence:** `validation-evidence.md`
+- **Exit review:** `exit-review.md`
 - **OpenSpec:** `../../../openspec/changes/d3-data-sources-acquisition/`
 
 ## Outcome
@@ -37,6 +40,10 @@ D3 turns the D2 offline shell into an honest data-source workspace. Users can in
 6. Responsive accessible Data Sources UI.
 7. Automated, hosted, and supported-platform manual validation.
 8. Exit review and explicit owner-directed merge.
+
+## Validation disposition
+
+The repository owner reported the full D3 manual-acceptance procedure passed on macOS ARM64 and Linux x86-64. Defects found during acceptance were fixed on the D3 branch and covered by regression checks. Final D3 exit remains gated on refreshed hosted validation and explicit owner direction before merge.
 
 ## Known non-goals
 
