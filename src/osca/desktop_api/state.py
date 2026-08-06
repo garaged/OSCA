@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import platform
 import tempfile
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal
+from typing import Iterator, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -40,6 +42,7 @@ class DesktopStateStore:
     def __init__(self, root: Path | None = None) -> None:
         self._root = (root or default_desktop_state_root()).expanduser().resolve()
         self._path = self._root / "desktop-state.json"
+        self._lock_path = self._root / ".desktop-state.lock"
 
     @property
     def path(self) -> Path:
@@ -57,36 +60,37 @@ class DesktopStateStore:
             raise ValueError(f"desktop state is invalid at {self._path}: {exc}") from exc
 
     def remember(self, profile_root: Path, *, opened: bool) -> DesktopState:
-        state = self.load()
-        canonical_path = str(profile_root.expanduser().resolve())
-        current = next(
-            (profile for profile in state.profiles if profile.path == canonical_path),
-            None,
-        )
-        opened_at = (
-            datetime.now(UTC).isoformat().replace("+00:00", "Z")
-            if opened
-            else current.last_opened_at
-            if current is not None
-            else None
-        )
-        replacement = DesktopProfileReference(
-            path=canonical_path,
-            label=_profile_label(profile_root),
-            last_opened_at=opened_at,
-        )
-        profiles = tuple(
-            replacement if profile.path == canonical_path else profile
-            for profile in state.profiles
-        )
-        if current is None:
-            profiles = (*profiles, replacement)
-        updated = DesktopState(
-            profiles=profiles,
-            selected_profile=canonical_path,
-        )
-        self._write(updated)
-        return updated
+        with self._exclusive_write_lock():
+            state = self.load()
+            canonical_path = str(profile_root.expanduser().resolve())
+            current = next(
+                (profile for profile in state.profiles if profile.path == canonical_path),
+                None,
+            )
+            opened_at = (
+                datetime.now(UTC).isoformat().replace("+00:00", "Z")
+                if opened
+                else current.last_opened_at
+                if current is not None
+                else None
+            )
+            replacement = DesktopProfileReference(
+                path=canonical_path,
+                label=_profile_label(profile_root),
+                last_opened_at=opened_at,
+            )
+            profiles = tuple(
+                replacement if profile.path == canonical_path else profile
+                for profile in state.profiles
+            )
+            if current is None:
+                profiles = (*profiles, replacement)
+            updated = DesktopState(
+                profiles=profiles,
+                selected_profile=canonical_path,
+            )
+            self._write(updated)
+            return updated
 
     def _write(self, state: DesktopState) -> None:
         self._root.mkdir(parents=True, exist_ok=True)
@@ -108,6 +112,16 @@ class DesktopStateStore:
         finally:
             if temporary_path is not None:
                 temporary_path.unlink(missing_ok=True)
+
+    @contextmanager
+    def _exclusive_write_lock(self) -> Iterator[None]:
+        self._root.mkdir(parents=True, exist_ok=True)
+        with self._lock_path.open("a+", encoding="utf-8") as stream:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
 def default_desktop_state_root() -> Path:
