@@ -5,8 +5,11 @@ on:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     paths:
       - "apps/desktop/**"
+      - "scripts/run_desktop.py"
       - "src/osca/desktop_api/**"
       - "tests/test_d1_desktop_api.py"
+      - "tests/test_d2_desktop_api.py"
+      - "tests/test_desktop_launcher.py"
       - ".github/workflows/desktop-foundation.yml"
   workflow_dispatch:
 
@@ -27,9 +30,50 @@ jobs:
           python-version: "3.13"
           enable-cache: true
       - run: uv sync --locked
-      - run: uv run ruff check src/osca/desktop_api tests/test_d1_desktop_api.py
-      - run: uv run mypy src/osca/desktop_api
-      - run: uv run pytest tests/test_d1_desktop_api.py
+      - name: Ruff desktop boundary
+        shell: bash
+        run: |
+          set +e
+          output="$(uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Ruff::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
+      - name: Strict mypy desktop boundary
+        shell: bash
+        run: |
+          set +e
+          output="$(uv run mypy src/osca/desktop_api scripts/run_desktop.py 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Strict mypy::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
+      - name: Desktop API and launcher tests
+        run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
+      - name: Verify bundled sample in wheel
+        shell: bash
+        run: |
+          uv build --wheel
+          uv run python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          wheel = next(Path("dist").glob("*.whl"))
+          required = "osca/desktop_api/sample_data/synthetic_aapl_daily.csv"
+          with ZipFile(wheel) as archive:
+              if required not in archive.namelist():
+                  raise SystemExit(f"bundled desktop sample missing from wheel: {required}")
+          PY
 
   frontend:
     runs-on: ubuntu-latest
@@ -41,8 +85,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npm install
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - run: npm ci
       - run: npm run build
+      - run: npm test
 
   rust-broker:
     runs-on: ubuntu-latest
@@ -56,5 +103,101 @@ jobs:
           components: rustfmt, clippy
       - run: sudo apt-get update
       - run: sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - run: cargo fmt --check
-      - run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Rust format
+        shell: bash
+        run: |
+          set +e
+          output="$(cargo fmt --check 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Rust format::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
+      - name: Rust unit tests
+        run: cargo test --all-targets --all-features
+      - name: Rust clippy
+        shell: bash
+        run: |
+          set +e
+          output="$(CARGO_TERM_COLOR=never cargo clippy --all-targets --all-features --message-format=short -- -D warnings 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            diagnostics="$(printf '%s\n' "$output" | grep -Ei '(error|warning|-->|could not compile|aborting|sigkill|no space|denied)' | tail -n 10 || true)"
+            if [[ -z "$diagnostics" ]]; then
+              diagnostics="$(printf '%s\n' "$output" | tail -n 10)"
+            fi
+            while IFS= read -r line; do
+              echo "::error title=Rust clippy::$line"
+            done <<< "$diagnostics"
+            exit "$status"
+          fi
+
+  linux-desktop-package-smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    name: linux-x86_64 desktop package smoke
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux desktop build and smoke dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xvfb
+      - name: Install locked Python environment
+        run: uv sync --locked
+      - name: Install locked frontend dependencies
+        working-directory: apps/desktop
+        run: npm ci
+      - name: Build Debian desktop package
+        working-directory: apps/desktop
+        run: npm run tauri build -- --bundles deb
+      - name: Smoke packaged desktop binary
+        shell: bash
+        run: |
+          binary="apps/desktop/src-tauri/target/release/osca-desktop"
+          test -x "$binary"
+          set +e
+          OSCA_DESKTOP_PYTHON="${GITHUB_WORKSPACE}/.venv/bin/python" \
+            timeout 15s xvfb-run -a "$binary" \
+            > linux-desktop-smoke.log 2>&1
+          status=$?
+          set -e
+          cat linux-desktop-smoke.log
+          if (( status != 124 )); then
+            echo "Packaged desktop exited before the bounded smoke window (status ${status})."
+            exit "$status"
+          fi
+      - name: Verify Debian package
+        shell: bash
+        run: |
+          package="$(find apps/desktop/src-tauri/target/release/bundle/deb -name '*.deb' -print -quit)"
+          test -n "$package"
+          dpkg-deb --info "$package"
+          dpkg-deb --contents "$package"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osca-d1-d2-linux-desktop-package
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/deb/*.deb
+            linux-desktop-smoke.log
+          if-no-files-found: error
