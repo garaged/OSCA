@@ -123,12 +123,15 @@ jobs:
         shell: bash
         run: |
           set +e
-          output="$(NO_COLOR=1 cargo clippy --all-targets --all-features --message-format=short -- -D warnings 2>&1)"
+          output="$(CARGO_TERM_COLOR=never cargo clippy --all-targets --all-features --message-format=short -- -D warnings 2>&1)"
           status=$?
           set -e
           printf '%s\n' "$output"
           if (( status != 0 )); then
-            diagnostics="$(printf '%s\n' "$output" | tail -n 40)"
+            diagnostics="$(printf '%s\n' "$output" | grep -Ei '(error|warning|-->|could not compile|aborting|sigkill|no space|denied)' | tail -n 10 || true)"
+            if [[ -z "$diagnostics" ]]; then
+              diagnostics="$(printf '%s\n' "$output" | tail -n 10)"
+            fi
             while IFS= read -r line; do
               echo "::error title=Rust clippy::$line"
             done <<< "$diagnostics"
@@ -136,6 +139,7 @@ jobs:
           fi
 
   linux-desktop-package-smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     name: linux-x86_64 desktop package smoke
     runs-on: ubuntu-22.04
     steps:
