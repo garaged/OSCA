@@ -12,7 +12,7 @@ ACCEPTANCE_STATE_ROOT ?= $(ACCEPTANCE_ROOT)/state
 ACCEPTANCE_PROFILE ?= $(ACCEPTANCE_ROOT)/profile
 ACCEPTANCE_EVIDENCE ?= $(ACCEPTANCE_ROOT)/evidence
 
-.PHONY: help tools setup sync frontend-install run run-clean acceptance-prepare acceptance-reset acceptance-run acceptance-info build package frontend-build test test-python test-desktop test-frontend test-rust lint typecheck format-check check clean clean-desktop clean-python clean-all status
+.PHONY: help tools setup sync frontend-install run run-clean acceptance-prepare acceptance-reset acceptance-run acceptance-check acceptance-info build package frontend-build test test-python test-desktop test-frontend test-rust lint typecheck format-check check clean clean-desktop clean-python clean-all status
 
 help: ## Show available targets.
 	@printf '%s\n' 'OSCA developer and desktop commands'
@@ -22,15 +22,24 @@ help: ## Show available targets.
 	@printf '%s\n' 'Common flows:'
 	@printf '%s\n' '  make setup              Install locked Python and desktop dependencies'
 	@printf '%s\n' '  make run                Launch the desktop app in development mode'
-	@printf '%s\n' '  make acceptance-run     Launch with isolated manual-test state'
+	@printf '%s\n' '  make run-clean          Reset isolated state and launch manual testing'
+	@printf '%s\n' '  make acceptance-check   Run focused tests and print evidence metadata'
 	@printf '%s\n' '  make build              Build the native desktop package'
 	@printf '%s\n' '  make check              Run the canonical contributor validation'
 
-tools: ## Verify required contributor tools are available.
+tools: ## Verify required contributor tools and Linux native libraries.
 	@command -v $(UV) >/dev/null 2>&1 || { echo 'Missing uv'; exit 1; }
+	@command -v node >/dev/null 2>&1 || { echo 'Missing Node.js 22'; exit 1; }
 	@command -v $(NPM) >/dev/null 2>&1 || { echo 'Missing npm'; exit 1; }
 	@command -v $(CARGO) >/dev/null 2>&1 || { echo 'Missing cargo'; exit 1; }
 	@command -v rustc >/dev/null 2>&1 || { echo 'Missing rustc'; exit 1; }
+	@if [ "$$(uname -s)" = "Linux" ]; then \
+		command -v pkg-config >/dev/null 2>&1 || { echo 'Missing pkg-config'; exit 1; }; \
+		pkg-config --exists webkit2gtk-4.1 || { \
+			echo 'Missing Linux Tauri libraries. Install libwebkit2gtk-4.1-dev, libappindicator3-dev, librsvg2-dev, and patchelf.'; \
+			exit 1; \
+		}; \
+	fi
 	@printf 'uv: '; $(UV) --version
 	@printf 'node: '; node --version
 	@printf 'npm: '; $(NPM) --version
@@ -48,7 +57,9 @@ frontend-install: ## Install locked desktop frontend dependencies.
 run: setup ## Launch the Tauri desktop app in development mode.
 	$(PYTHON) scripts/run_desktop.py
 
-run-clean: acceptance-reset acceptance-run ## Reset isolated acceptance state and launch the app.
+run-clean: ## Reset isolated acceptance state and launch the app in a deterministic order.
+	$(MAKE) acceptance-reset
+	$(MAKE) acceptance-run
 
 acceptance-prepare: setup ## Create isolated state and evidence directories for manual acceptance.
 	@mkdir -p "$(ACCEPTANCE_STATE_ROOT)" "$(ACCEPTANCE_EVIDENCE)"
@@ -63,6 +74,8 @@ acceptance-reset: ## Remove and recreate isolated manual-acceptance state; does 
 
 acceptance-run: acceptance-prepare ## Launch the app with isolated state for D3 manual acceptance.
 	OSCA_DESKTOP_STATE_ROOT="$(ACCEPTANCE_STATE_ROOT)" $(PYTHON) scripts/run_desktop.py
+
+acceptance-check: test-desktop acceptance-info ## Run focused desktop tests and print evidence metadata.
 
 acceptance-info: ## Print paths and source identity to record in manual-test evidence.
 	@printf 'source commit: '; git rev-parse HEAD
@@ -93,8 +106,8 @@ test: test-python test-frontend test-rust ## Run Python, frontend, and Rust desk
 test-python: sync ## Run the complete Python test suite.
 	$(UV) run pytest
 
-test-desktop: sync frontend-install ## Run focused D1-D3 desktop API, launcher, and frontend tests.
-	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py
+test-desktop: sync frontend-install ## Run focused D1-D3 desktop API, launcher, Makefile, and frontend tests.
+	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py tests/test_makefile.py
 	cd $(DESKTOP_DIR) && $(NPM) test
 
 test-frontend: frontend-install ## Run desktop frontend tests.
@@ -125,13 +138,13 @@ clean-desktop: ## Remove generated frontend and Rust/Tauri build outputs.
 	rm -rf "$(DESKTOP_DIR)/dist" "$(TAURI_DIR)/target" "$(TAURI_DIR)/gen"
 
 clean-python: ## Remove Python caches, test caches, coverage, and package outputs.
-	find . -type d -name __pycache__ -prune -exec rm -rf {} +
+	find src tests scripts -type d -name __pycache__ -prune -exec rm -rf {} +
 	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage build dist *.egg-info
 
 clean-all: clean ## Also remove installed local dependencies and isolated acceptance state.
 	rm -rf .venv "$(DESKTOP_DIR)/node_modules" "$(ACCEPTANCE_ROOT)"
 
-status: ## Show branch, commit, worktree state, and pull-request-oriented build paths.
+status: ## Show branch, commit, worktree state, and build paths.
 	@git status --short --branch
 	@printf 'commit: '; git rev-parse HEAD
 	@printf 'desktop bundle root: %s\n' "$(TAURI_DIR)/target/release/bundle"
