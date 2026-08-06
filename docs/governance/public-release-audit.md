@@ -1,8 +1,9 @@
 # Public Release Audit
 
-Status: Conditional no-go until the required local history checks are completed and the repository owner accepts the public Git identity exposure.
+Status: Public baseline accepted; private vulnerability reporting remains a repository-settings follow-up.
 
-Audit date: 2026-08-05
+Original audit date: 2026-08-05  
+Reconciled: 2026-08-05
 
 ## Scope
 
@@ -16,7 +17,22 @@ This audit covers the repository tree and available GitHub metadata for:
 - project and third-party licensing boundaries;
 - public vulnerability reporting.
 
-This document records a bounded repository-host audit. It does not replace a full local scan of every reachable Git object.
+This document records a bounded repository-host audit. It does not replace a full local scan of every clone or unreachable Git object retained outside the repository host.
+
+## Public baseline disposition
+
+The repository owner completed the public-release actions and explicitly accepted the remaining personal Git identity exposure:
+
+- the repository is public;
+- history was rewritten to remove the Oracle work address from reachable commit metadata;
+- obsolete local and remote branches were removed;
+- `main` is the retained baseline branch;
+- `garaged@gmail.com` exposure is explicitly accepted by the repository owner;
+- Apache License 2.0, NOTICE, package licensing, synthetic fixture provenance, and the security policy are merged;
+- GitHub Actions are enabled;
+- hosted Quality secret scanning passes on the rewritten baseline and D2 branch history available to the workflow.
+
+The connected GitHub metadata for the rewritten D1 commit contains no Oracle `Co-authored-by` trailer. Historical search indexes or unreachable objects may take time to disappear from external caches and are not treated as reachable repository history.
 
 ## Findings
 
@@ -27,48 +43,50 @@ This document records a bounded repository-host audit. It does not replace a ful
 - Python, Rust, and desktop package metadata declare `Apache-2.0`.
 - Release SBOMs remain the build-specific dependency inventory.
 
-Disposition: ready after the licensing pull request is merged.
+Disposition: accepted.
 
 ### Current-tree secrets and local state
 
 - `.gitignore` excludes `.env`, `.env.*`, `.osca/`, databases, virtual environments, dependency directories, and build outputs.
-- Bounded GitHub code searches found no AWS access-key prefix or private-key marker, but GitHub marked those searches incomplete.
-- The repository secret-scanning alerts endpoint was unavailable to this audit, so absence of alerts was not established.
+- Hosted Quality uses a full-history checkout for its gitleaks action and passes on the rewritten baseline and active D2 work.
+- No local profile, generated evidence, provider credential, or restricted provider payload is intentionally tracked.
 
-Disposition: full-history local secret scanning is required before changing repository visibility.
+Disposition: accepted for the current hosted baseline. Maintainers must continue running full-history scans after any future history rewrite or imported repository history.
 
 ### Personal information
 
-- Git commits expose the author and committer email `garaged@gmail.com`.
-- This address will become public with repository history unless the owner accepts that exposure or rewrites the history before publication.
+- Reachable commits expose the accepted personal address `garaged@gmail.com`.
+- The repository owner explicitly accepts that exposure.
+- The Oracle work address was removed from reachable commit metadata during the history rewrite.
 
-Disposition: explicit owner decision required. Future commits should use a GitHub noreply address when privacy is preferred.
+Disposition: accepted by repository owner. Future identity changes remain an owner preference and are not a release blocker unless a work or private address is introduced unintentionally.
 
 ### Fixtures and datasets
 
-- `tests/fixtures/local_ohlcv/aapl_backtest_daily.csv` is deterministic synthetic OHLCV data. Its round-number sequence, constant volume, and constructed timestamps are not copied market history.
-- The fixture uses `AAPL` only as a scenario label and must not be described as actual Apple market data.
-- No provider response, credential-bearing export, user profile, or generated evidence should be committed.
+- `tests/fixtures/local_ohlcv/aapl_backtest_daily.csv` and the D2 bundled sample are deterministic synthetic OHLCV data.
+- Their round-number sequences, constant volume, and constructed timestamps are not copied market history.
+- `AAPL` is a scenario label only. D2 uses `AAPL-SYNTHETIC` in the retained imported dataset identity.
+- No provider response, credential-bearing export, user profile, or generated evidence may be committed.
 
-Disposition: ready with the fixture provenance notice added in this pull request.
+Disposition: accepted with retained provenance and synthetic labelling.
 
 ### Generated artifacts
 
 - The current tree does not intentionally include local profiles, databases, dependency directories, Python build output, or desktop target output.
-- Release binaries, checksums, provenance, and SBOMs must be produced from an accepted source commit and published separately from source unless deliberately retained.
+- Release binaries, desktop packages, checksums, provenance, and SBOMs are produced from identified source commits and retained as workflow/release artifacts rather than source files unless explicitly governed otherwise.
 
-Disposition: ready, subject to a clean-tree check immediately before publication.
+Disposition: accepted, subject to clean-tree and artifact provenance checks for each release.
 
 ### Security reporting
 
-- No repository security policy existed at the time of audit.
-- A `.github/SECURITY.md` policy is added by this pull request and directs vulnerability reports to GitHub private vulnerability reporting rather than public issues.
+- `.github/SECURITY.md` directs reporters to GitHub private vulnerability reporting.
+- The GitHub repository setting currently reports private vulnerability reporting as disabled.
 
-Disposition: confirm private vulnerability reporting is enabled in repository settings before publication.
+Disposition: repository-settings follow-up. Enable private vulnerability reporting before representing that channel as available. Until enabled, maintainers must not direct a reporter into a non-functional private-reporting flow.
 
-## Required local gates
+## Maintainer verification gates
 
-Run from a fresh local clone with all remote refs fetched:
+Run from a fresh local clone with all reachable refs fetched when preparing a release or after any history rewrite:
 
 ```bash
 git fetch --all --tags --prune
@@ -95,16 +113,14 @@ git status --short
 git diff --check
 ```
 
-Any real credential found in any historical commit must be revoked or rotated first. Removing it from the current tree is insufficient. Decide separately whether history rewriting is necessary, then invalidate old clones and tags as appropriate.
+Any real credential found in any historical commit must be revoked or rotated first. Removing it from the current tree is insufficient. A future history rewrite must invalidate obsolete clones, branches, and tags as appropriate.
 
-## Public visibility decision
+## Ongoing public-release invariants
 
-The repository is ready to become public only when all of the following are true:
-
-- the Apache-2.0 licensing pull request is merged;
-- the full-history `gitleaks` scan passes or every finding is resolved;
-- the public exposure of historical Git identities is explicitly accepted or remediated;
-- private vulnerability reporting is enabled;
-- the final tree is clean and contains no local profiles, generated evidence, credentials, or restricted provider data.
-
-Changing visibility is a separate repository-owner action and is not authorized by this audit.
+- Apache-2.0 licensing and NOTICE remain present and accurate.
+- Hosted full-history secret scanning remains passing.
+- Public author and committer identities are intentional.
+- Local profiles, generated evidence, credentials, and restricted provider data remain untracked.
+- Synthetic fixtures remain clearly identified as synthetic.
+- Private vulnerability reporting is enabled before it is advertised as an available reporting channel.
+- Release artifacts remain traceable to an accepted source commit.
