@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from importlib import import_module
 from pathlib import Path
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -24,7 +25,7 @@ def main() -> int:
         return 2
 
     try:
-        import osca.desktop_api  # noqa: F401
+        import_module("osca.desktop_api")
     except ImportError as exc:
         print(
             "The OSCA package is unavailable in this Python environment. "
