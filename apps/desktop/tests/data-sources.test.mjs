@@ -41,6 +41,8 @@ test("D3 frontend retains the narrow desktop request bridge and canonical method
   assert.match(api, /acquisition\.run/);
   assert.match(api, /acquisition\.list/);
   assert.match(api, /object\(record\.evidence, "evidence"\)/);
+  assert.match(api, /array\(record\.acquisitions, "acquisitions"\)/);
+  assert.doesNotMatch(api, /array\(record\.evidence, "evidence"\)/);
   assert.doesNotMatch(api, /acquisition\.submit/);
   assert.doesNotMatch(combined, /plugin-fs|plugin-shell|node:fs|sqlite|parquet|orders\.submit/);
   assert.doesNotMatch(surface, /secret_value_returned\s*:\s*true/);
