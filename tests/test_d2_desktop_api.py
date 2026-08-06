@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from osca.desktop_api.contracts import DesktopRequest, DesktopResponse
 from osca.desktop_api.profile_lock import ProfileMutationLock
 from osca.desktop_api.service import DesktopApplicationService
@@ -113,6 +115,76 @@ def test_profile_create_rejects_non_empty_target_without_mutation(tmp_path: Path
     assert response.error.code == "unsafe_profile_target"
     assert sentinel.read_text(encoding="utf-8") == "do not replace"
     assert not (profile_root / "config.json").exists()
+
+
+def test_profile_create_restores_initially_empty_target_after_partial_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile_root = tmp_path / "profiles" / "empty-target"
+    profile_root.mkdir(parents=True)
+    service = DesktopApplicationService(state_root=tmp_path / "desktop-state")
+
+    def fail_after_partial_write(
+        root: Path,
+        *,
+        storage_root: Path | None = None,
+        workspace_port: int = 8765,
+    ) -> dict[str, object]:
+        assert storage_root is None
+        assert workspace_port == 8765
+        (root / "data").mkdir(parents=True)
+        (root / "config.json").write_text("partial", encoding="utf-8")
+        raise OSError("simulated initialization failure")
+
+    monkeypatch.setattr(
+        "osca.desktop_api.service.initialize_profile",
+        fail_after_partial_write,
+    )
+
+    response = _request(
+        service,
+        "profile.create",
+        {"profile_root": str(profile_root)},
+    )
+
+    assert response.status == "error"
+    assert response.error is not None
+    assert response.error.code == "application_error"
+    assert profile_root.is_dir()
+    assert tuple(profile_root.iterdir()) == ()
+    bootstrap = _request(service, "desktop.bootstrap")
+    assert bootstrap.result is not None
+    assert bootstrap.result["first_run_required"] is True
+
+
+def test_profile_create_does_not_record_open_state_before_final_inspection(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile_root = tmp_path / "profiles" / "inspection-failure"
+    profile_root.parent.mkdir(parents=True)
+    service = DesktopApplicationService(state_root=tmp_path / "desktop-state")
+
+    def fail_inspection(_: Path) -> dict[str, Any]:
+        raise OSError("simulated final inspection failure")
+
+    monkeypatch.setattr(service, "_inspect_profile", fail_inspection)
+
+    response = _request(
+        service,
+        "profile.create",
+        {"profile_root": str(profile_root)},
+    )
+
+    assert response.status == "error"
+    assert response.error is not None
+    assert response.error.code == "application_error"
+    assert (profile_root / "config.json").is_file()
+    bootstrap = _request(service, "desktop.bootstrap")
+    assert bootstrap.result is not None
+    assert bootstrap.result["first_run_required"] is True
+    assert bootstrap.result["selected_profile"] is None
 
 
 def test_profile_inspection_does_not_create_missing_profile(tmp_path: Path) -> None:
