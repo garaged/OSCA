@@ -142,7 +142,9 @@ export function importLocalOhlcv(value: LocalImportRequest): Promise<LocalImport
 }
 
 export function submitKrakenAcquisition(value: AcquisitionRequest): Promise<AcquisitionEvidence> {
-  return request("acquisition.submit", value, parseEvidence);
+  return request("acquisition.run", value, (record) =>
+    parseEvidence(object(record.evidence, "evidence"))
+  );
 }
 
 export function listAcquisitionEvidence(profileRoot: string): Promise<AcquisitionEvidence[]> {
