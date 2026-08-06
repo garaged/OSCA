@@ -1,12 +1,16 @@
 use std::env;
 use std::io::Write;
 use std::process::{Command, Stdio};
+use std::thread;
+use std::time::{Duration, Instant};
+
+const MAX_MESSAGE_BYTES: usize = 1_048_576;
+const SIDECAR_TIMEOUT: Duration = Duration::from_secs(15);
+const SIDECAR_POLL_INTERVAL: Duration = Duration::from_millis(25);
 
 #[tauri::command]
 fn desktop_request(request_json: String) -> Result<String, String> {
-    if request_json.len() > 1_048_576 {
-        return Err("desktop request exceeds 1 MiB".to_string());
-    }
+    validate_request_size(&request_json)?;
 
     let sidecar = env::var("OSCA_DESKTOP_SIDECAR").unwrap_or_else(|_| "python3".to_string());
     let mut command = Command::new(sidecar);
@@ -30,23 +34,84 @@ fn desktop_request(request_json: String) -> Result<String, String> {
         .map_err(|error| format!("unable to write sidecar request: {error}"))?;
     drop(stdin);
 
+    let deadline = Instant::now() + SIDECAR_TIMEOUT;
+    loop {
+        match child.try_wait() {
+            Ok(Some(_)) => break,
+            Ok(None) if Instant::now() < deadline => thread::sleep(SIDECAR_POLL_INTERVAL),
+            Ok(None) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err("OSCA sidecar request timed out".to_string());
+            }
+            Err(error) => return Err(format!("unable to inspect OSCA sidecar status: {error}")),
+        }
+    }
+
     let output = child
         .wait_with_output()
         .map_err(|error| format!("unable to read sidecar response: {error}"))?;
     if !output.status.success() {
-        return Err(format!(
-            "OSCA sidecar exited unsuccessfully: {}",
-            String::from_utf8_lossy(&output.stderr).trim()
-        ));
+        return Err(match output.status.code() {
+            Some(code) => format!("OSCA sidecar exited unsuccessfully with status {code}"),
+            None => "OSCA sidecar exited unsuccessfully".to_string(),
+        });
     }
 
-    let response = String::from_utf8(output.stdout)
+    decode_response(&output.stdout)
+}
+
+fn validate_request_size(request_json: &str) -> Result<(), String> {
+    if request_json.len() > MAX_MESSAGE_BYTES {
+        return Err("desktop request exceeds 1 MiB".to_string());
+    }
+    Ok(())
+}
+
+fn decode_response(stdout: &[u8]) -> Result<String, String> {
+    if stdout.len() > MAX_MESSAGE_BYTES {
+        return Err("desktop response exceeds 1 MiB".to_string());
+    }
+    let response = std::str::from_utf8(stdout)
         .map_err(|error| format!("sidecar returned non-UTF-8 output: {error}"))?;
-    response
-        .lines()
+    let mut lines = response.lines().filter(|line| !line.trim().is_empty());
+    let first = lines
         .next()
-        .map(str::to_owned)
-        .ok_or_else(|| "sidecar returned no response".to_string())
+        .ok_or_else(|| "sidecar returned no response".to_string())?;
+    if lines.next().is_some() {
+        return Err("sidecar returned multiple responses for one request".to_string());
+    }
+    Ok(first.to_owned())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{decode_response, validate_request_size, MAX_MESSAGE_BYTES};
+
+    #[test]
+    fn accepts_one_bounded_response_line() {
+        let response = decode_response(b"{\"status\":\"ok\"}\n").expect("valid response");
+        assert_eq!(response, "{\"status\":\"ok\"}");
+    }
+
+    #[test]
+    fn rejects_multiple_response_lines() {
+        let error = decode_response(b"{}\n{}\n").expect_err("multiple responses must fail");
+        assert_eq!(error, "sidecar returned multiple responses for one request");
+    }
+
+    #[test]
+    fn rejects_oversized_request_and_response() {
+        let oversized = "x".repeat(MAX_MESSAGE_BYTES + 1);
+        assert_eq!(
+            validate_request_size(&oversized).expect_err("oversized request must fail"),
+            "desktop request exceeds 1 MiB"
+        );
+        assert_eq!(
+            decode_response(oversized.as_bytes()).expect_err("oversized response must fail"),
+            "desktop response exceeds 1 MiB"
+        );
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
