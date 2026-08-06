@@ -1,7 +1,5 @@
-from __future__ import annotations
-
+import subprocess
 from pathlib import Path
-from subprocess import run
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +47,7 @@ def test_makefile_wraps_canonical_locked_commands() -> None:
 
 
 def test_makefile_help_and_build_dry_run_parse() -> None:
-    help_result = run(
+    help_result = subprocess.run(
         ["make", "help"],
         cwd=ROOT,
         check=True,
@@ -60,7 +58,7 @@ def test_makefile_help_and_build_dry_run_parse() -> None:
     assert "make run-clean" in help_result.stdout
     assert "make acceptance-check" in help_result.stdout
 
-    dry_run = run(
+    dry_run = subprocess.run(
         ["make", "-n", "build"],
         cwd=ROOT,
         check=True,
