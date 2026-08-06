@@ -7,10 +7,11 @@ import json
 import os
 import platform
 import tempfile
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterator, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 

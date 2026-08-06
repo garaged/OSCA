@@ -120,7 +120,19 @@ jobs:
       - name: Rust unit tests
         run: cargo test --all-targets --all-features
       - name: Rust clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        shell: bash
+        run: |
+          set +e
+          output="$(cargo clippy --all-targets --all-features -- -D warnings 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Rust clippy::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
 
   linux-desktop-package-smoke:
     name: linux-x86_64 desktop package smoke
