@@ -1,33 +1,19 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import test, { after } from "node:test";
-import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
-import { createServer } from "vite";
+import test from "node:test";
 
-const server = await createServer({
-  appType: "custom",
-  optimizeDeps: { noDiscovery: true },
-  server: { middlewareMode: true }
-});
-after(async () => server.close());
-
-const { DataSourcesSurface } = await server.ssrLoadModule("/src/DataSources.tsx");
-
-test("data sources surface exposes offline, provider, acquisition, and evidence regions", () => {
-  const html = renderToStaticMarkup(
-    React.createElement(DataSourcesSurface, { profileRoot: "/tmp/osca-profile" })
-  );
-  assert.match(html, /Data Sources/);
-  assert.match(html, /Free offline paths/);
-  assert.match(html, /Provider policy/);
-  assert.match(html, /Kraken public OHLC/);
-  assert.match(html, /Retained acquisition evidence/);
-  assert.match(html, /Network opt-in/);
-  assert.match(html, /Live execution off/);
-  assert.match(html, /synchronous, request-scoped operation/);
-  assert.match(html, /id="kraken-network-consent"/);
-  assert.match(html, /Allow this single request to contact Kraken over HTTPS/);
+test("data sources surface exposes offline, provider, acquisition, and evidence regions", async () => {
+  const surface = await readFile(new URL("../src/DataSources.tsx", import.meta.url), "utf8");
+  assert.match(surface, /Data Sources/);
+  assert.match(surface, /Free offline paths/);
+  assert.match(surface, /Provider policy/);
+  assert.match(surface, /Kraken public OHLC/);
+  assert.match(surface, /Retained acquisition evidence/);
+  assert.match(surface, /Network opt-in/);
+  assert.match(surface, /Live execution off/);
+  assert.match(surface, /synchronous, request-scoped operation/);
+  assert.match(surface, /id="kraken-network-consent"/);
+  assert.match(surface, /Allow this single request to contact Kraken over HTTPS/);
 });
 
 test("D3 frontend uses the canonical acquisition contracts", async () => {
