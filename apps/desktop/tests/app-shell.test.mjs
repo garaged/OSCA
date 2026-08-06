@@ -67,6 +67,7 @@ test("native desktop CSP is enabled and local-only", async () => {
   );
   const config = JSON.parse(configSource);
   const csp = config.app.security.csp;
+  const devCsp = config.app.security.devCsp;
 
   assert.equal(csp["default-src"], "'self'");
   assert.equal(csp["connect-src"], "ipc: http://ipc.localhost");
@@ -75,4 +76,10 @@ test("native desktop CSP is enabled and local-only", async () => {
   assert.equal(csp["frame-src"], "'none'");
   assert.doesNotMatch(JSON.stringify(csp), /https:\/\//);
   assert.doesNotMatch(JSON.stringify(csp), /'unsafe-eval'/);
+
+  assert.match(devCsp["connect-src"], /ipc:/);
+  assert.match(devCsp["connect-src"], /http:\/\/localhost:1420/);
+  assert.match(devCsp["connect-src"], /ws:\/\/localhost:1420/);
+  assert.doesNotMatch(JSON.stringify(devCsp), /https:\/\//);
+  assert.doesNotMatch(JSON.stringify(devCsp), /0\.0\.0\.0/);
 });
