@@ -46,6 +46,20 @@ jobs:
           fi
       - name: Desktop API tests
         run: uv run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py
+      - name: Verify bundled sample in wheel
+        shell: bash
+        run: |
+          uv build --wheel
+          uv run python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          wheel = next(Path("dist").glob("*.whl"))
+          required = "osca/desktop_api/sample_data/synthetic_aapl_daily.csv"
+          with ZipFile(wheel) as archive:
+              if required not in archive.namelist():
+                  raise SystemExit(f"bundled desktop sample missing from wheel: {required}")
+          PY
 
   frontend:
     runs-on: ubuntu-latest
