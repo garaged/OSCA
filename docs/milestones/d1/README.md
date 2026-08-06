@@ -1,6 +1,6 @@
 # D1: Desktop architecture and application API foundation
 
-- **Status:** Complete with accepted hosted-validation exception
+- **Status:** Complete; deferred Linux hosted validation fulfilled during D2
 - **Baseline:** U14 main at `85c332c8d3c1019ac0564c6e0ddb814feac5463a`
 - **Branch:** `agent/d1-desktop-foundation`
 - **Authority:** ADR-0046, `docs/product/desktop-product-intent.md`, `docs/roadmaps/desktop-product-roadmap.md`, `docs/product/cross-cutting-requirements.md`, `docs/product/desktop-capability-map.md`, and `docs/product/desktop-traceability.md`
@@ -122,15 +122,18 @@ The project owner accepted the following local D1 evidence on 2026-08-05:
 - Manual macOS ARM64 validation confirmed sidecar health, disabled live execution, clean shutdown, restart behavior, and no orphan sidecar.
 - Missing protocol typing, lint compatibility, desktop dependency lockfile, and Tauri icon assets found during validation were corrected and committed.
 
-## Hosted-validation exception
+## Hosted-validation follow-up
 
-GitHub-hosted Actions could not execute the final D1 checks because the account's monthly Actions allowance was exhausted. This is accepted as a temporary infrastructure exception, not as passing hosted evidence.
+GitHub-hosted Actions could not execute the final D1 checks at D1 closeout because the account's monthly Actions allowance was exhausted. The owner accepted that as a temporary infrastructure exception, with Linux x86-64 package and launch evidence explicitly deferred to D2.
 
-- The full macOS ARM64 local gate is accepted for D1 closeout.
-- Linux x86-64 hosted package and smoke evidence remains deferred.
-- The complete hosted matrix must be rerun when Actions capacity becomes available.
-- Any failure in that deferred rerun must be treated as a D1 follow-up defect and corrected before relying on D1 for a release candidate.
-- This exception does not relax permanent quality, security, migration, or financial-safety requirements.
+That deferred obligation is now fulfilled:
+
+- Desktop Foundation run `31065065075` built the Debian desktop package, launched the packaged binary in a bounded Xvfb smoke, inspected the package, and uploaded the retained artifact from commit `112726750c6a1bd060ddc29dc840af83dbd68480`.
+- Desktop Foundation run `31065891295` repeated the Linux package build, launch smoke, package inspection, and artifact upload after D2 hardening on commit `3e5837fe30a56573bf45cc1fdcee4ac3c7f97f98`.
+- Retained artifact `8953859616`, `osca-d1-d2-linux-desktop-package`, has digest `sha256:c7f4e5377e522fb1cdcea93aad11ecef7f0f0a6d801ff8179fcdddd8bbb1d43f` and an expiry date of 2026-11-04.
+- The full macOS ARM64 local gate remains the accepted D1 macOS evidence.
+
+Disposition: the D1 hosted-validation exception is closed. Future ready-for-review and release-candidate workflows still rerun current Linux package smoke and the normal Linux/macOS contributor and package-lifecycle matrices; those are ongoing release gates rather than unresolved D1 debt.
 
 ## Dependencies
 
