@@ -5,13 +5,19 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 
-const server = await createServer({ appType: "custom", server: { middlewareMode: true } });
+const server = await createServer({
+  appType: "custom",
+  optimizeDeps: { noDiscovery: true },
+  server: { middlewareMode: true }
+});
 after(async () => server.close());
 
 const { DataSourcesSurface } = await server.ssrLoadModule("/src/DataSources.tsx");
 
 test("data sources surface exposes offline, provider, acquisition, and evidence regions", () => {
-  const html = renderToStaticMarkup(React.createElement(DataSourcesSurface, { profileRoot: "/tmp/osca-profile" }));
+  const html = renderToStaticMarkup(
+    React.createElement(DataSourcesSurface, { profileRoot: "/tmp/osca-profile" })
+  );
   assert.match(html, /Data Sources/);
   assert.match(html, /Free offline paths/);
   assert.match(html, /Provider policy/);
