@@ -61,6 +61,7 @@ jobs:
           cache-dependency-path: apps/desktop/package-lock.json
       - run: npm ci
       - run: npm run build
+      - run: npm test
 
   rust-broker:
     runs-on: ubuntu-latest
