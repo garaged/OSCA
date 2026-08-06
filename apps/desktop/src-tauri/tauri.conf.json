@@ -13,8 +13,8 @@
       "title": "OSCA Desktop",
       "width": 1180,
       "height": 760,
-      "minWidth": 720,
-      "minHeight": 520
+      "minWidth": 320,
+      "minHeight": 480
     }],
     "security": {
       "capabilities": ["desktop"]
