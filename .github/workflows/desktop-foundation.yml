@@ -31,7 +31,19 @@ jobs:
           enable-cache: true
       - run: uv sync --locked
       - name: Ruff desktop boundary
-        run: uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py
+        shell: bash
+        run: |
+          set +e
+          output="$(uv run ruff check src/osca/desktop_api scripts/run_desktop.py tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_desktop_launcher.py 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if (( status != 0 )); then
+            while IFS= read -r line; do
+              echo "::error title=Ruff::$line"
+            done <<< "$output"
+            exit "$status"
+          fi
       - name: Strict mypy desktop boundary
         shell: bash
         run: |
