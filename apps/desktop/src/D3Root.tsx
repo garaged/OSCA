@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { App } from "./App";
 import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
+import { MarketsSurface } from "./Markets";
 import "./d3Root.css";
 
-type RootView = "workspace" | "data-sources";
+type RootView = "workspace" | "markets" | "data-sources";
 type ProfileState =
   | { kind: "loading" }
   | { kind: "ready"; profileRoot?: string }
   | { kind: "error"; error: DesktopClientError };
+
+const views: RootView[] = ["workspace", "markets", "data-sources"];
 
 export function D3Root() {
   const [view, setView] = useState<RootView>("workspace");
@@ -21,7 +24,9 @@ export function D3Root() {
       const bootstrap = await bootstrapDesktop();
       setProfile({
         kind: "ready",
-        ...(bootstrap.selected_profile ? { profileRoot: bootstrap.selected_profile } : {})
+        ...(bootstrap.selected_profile
+          ? { profileRoot: bootstrap.selected_profile }
+          : {})
       });
     } catch (error) {
       setProfile({
@@ -31,7 +36,10 @@ export function D3Root() {
             ? error
             : new DesktopClientError({
                 code: "desktop_unavailable",
-                message: error instanceof Error ? error.message : "Desktop service unavailable.",
+                message:
+                  error instanceof Error
+                    ? error.message
+                    : "Desktop service unavailable.",
                 retryable: true
               })
       });
@@ -44,7 +52,7 @@ export function D3Root() {
 
   useEffect(() => {
     headingRef.current?.focus();
-    if (view === "data-sources") {
+    if (view !== "workspace") {
       void loadProfileContext();
     }
   }, [view]);
@@ -52,32 +60,28 @@ export function D3Root() {
   return (
     <div className="d3-root">
       <nav className="d3-mode-navigation" aria-label="Desktop areas">
-        <button
-          aria-current={view === "workspace" ? "page" : undefined}
-          className="d3-mode-button"
-          data-active={view === "workspace"}
-          onClick={() => setView("workspace")}
-          type="button"
-        >
-          Workspace
-        </button>
-        <button
-          aria-current={view === "data-sources" ? "page" : undefined}
-          className="d3-mode-button"
-          data-active={view === "data-sources"}
-          onClick={() => setView("data-sources")}
-          type="button"
-        >
-          Data Sources
-        </button>
+        {views.map((item) => (
+          <button
+            key={item}
+            aria-current={view === item ? "page" : undefined}
+            className="d3-mode-button"
+            data-active={view === item}
+            onClick={() => setView(item)}
+            type="button"
+          >
+            {item === "data-sources"
+              ? "Data Sources"
+              : item[0].toUpperCase() + item.slice(1)}
+          </button>
+        ))}
       </nav>
 
       {view === "workspace" ? (
         <App />
       ) : (
-        <main className="d3-data-sources-main" id="d3-data-sources-main">
+        <main className="d3-data-sources-main">
           <h1 className="visually-hidden" ref={headingRef} tabIndex={-1}>
-            Data Sources
+            {view === "markets" ? "Markets" : "Data Sources"}
           </h1>
           {profile.kind === "loading" ? (
             <p className="d3-context-state" role="status">
@@ -87,22 +91,25 @@ export function D3Root() {
             <section className="d3-context-state" role="alert">
               <h2>Profile context unavailable</h2>
               <p>{profile.error.message}</p>
-              {profile.error.retryable ? (
-                <button onClick={() => void loadProfileContext()} type="button">
-                  Retry
-                </button>
-              ) : null}
+              <button onClick={() => void loadProfileContext()} type="button">
+                Retry
+              </button>
             </section>
           ) : (
             <>
               {!profile.profileRoot ? (
                 <aside className="d3-context-state" role="note">
-                  <strong>No profile selected.</strong> Provider policy and credential state remain
-                  inspectable, but import, acquisition, and retained evidence require a validated
-                  profile selected from Workspace.
+                  <strong>No profile selected.</strong>{" "}
+                  {view === "markets"
+                    ? "Asset search remains available, but persistent watchlists and recent assets require a validated profile selected from Workspace."
+                    : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
                 </aside>
               ) : null}
-              <DataSourcesSurface profileRoot={profile.profileRoot} />
+              {view === "markets" ? (
+                <MarketsSurface profileRoot={profile.profileRoot} />
+              ) : (
+                <DataSourcesSurface profileRoot={profile.profileRoot} />
+              )}
             </>
           )}
         </main>
