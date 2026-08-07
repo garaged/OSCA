@@ -1,6 +1,6 @@
 # D3 Validation Evidence — Data Sources, Credentials, Import, and Acquisition UX
 
-- **Status:** Manual validation passed; refreshed hosted validation pending
+- **Status:** Accepted
 - **Validation date:** 2026-08-06 (America/Mexico_City)
 - **Pull request:** #83
 - **Branch:** `agent/d3-provider-onboarding`
@@ -8,17 +8,16 @@
 
 ## Automated validation
 
-The earlier D3 ready-state candidate passed:
+The final reconciled D3 candidate passed:
 
-- Quality run `31100587952`;
-- Desktop Foundation run `31100587598`;
+- Quality run `31136335873`;
+- Desktop Foundation run `31136335867`;
 - Linux x86-64 and macOS ARM64 contributor rehearsals;
 - Linux x86-64 and macOS ARM64 package-lifecycle matrices;
 - frontend build/tests, Python desktop boundary, Rust format/unit/Clippy, OpenSpec, architecture checks, and secret scanning;
-- Linux Debian package build and packaged-binary smoke;
-- Linux artifact `8967388408`, digest `sha256:1c12623fe106067128611e017f1c6d5e732f8d31f7fbca741c7867525558dd75`.
+- Linux Debian package build and packaged-binary smoke.
 
-Manual acceptance subsequently found integration and presentation defects. Those defects were fixed and regression checks were added. Refreshed hosted validation for the final reconciled head must pass before this document is promoted to final accepted evidence.
+Earlier D3 ready-state evidence also included Linux artifact `8967388408`, digest `sha256:1c12623fe106067128611e017f1c6d5e732f8d31f7fbca741c7867525558dd75`.
 
 ## Manual validation
 
@@ -50,9 +49,10 @@ Acceptance discovered and resolved:
 5. acquisition-result `evidence` envelope parsing drift;
 6. retained-list `evidence` versus `acquisitions` field drift;
 7. hosted lint failure caused by Makefile-test import ordering;
-8. brittle frontend source assertions around multiline parser formatting.
+8. brittle frontend source assertions around multiline parser formatting;
+9. stale consent-control id assertion in the final frontend contract test.
 
-The final two items were found by refreshed hosted validation after manual acceptance and fixed before final reconciliation.
+All were fixed before final reconciliation. The final hosted runs passed on head `814c33090eac57323eeccf66e9bd75be35c62d98`.
 
 ## Evidence handling
 
@@ -63,5 +63,6 @@ Machine-local evidence is intentionally not committed because it contains host-s
 - macOS ARM64 manual acceptance: pass.
 - Linux x86-64 manual acceptance: pass.
 - Security, accessibility, data-integrity, network-consent, recovery, and packaged-smoke manual gates: pass.
-- Refreshed hosted validation on the reconciled final head: pending.
+- Refreshed hosted validation on the reconciled final candidate: pass.
+- Release-blocking product defects: none known.
 - Merge authorization: pending explicit repository-owner direction.
