@@ -1,6 +1,6 @@
 # D3 Data Sources, Credentials, Import, and Acquisition UX
 
-- **Status:** Validation reconciliation; macOS ARM64 and Linux x86-64 manual acceptance passed
+- **Status:** Passed; ready for explicit owner-directed merge
 - **Baseline:** D2 merge `7522da7bc50fa1fdffa4088c0f39f5d2ebe7d9b6`
 - **Branch:** `agent/d3-provider-onboarding`
 - **Pull request:** #83
@@ -43,7 +43,12 @@ D3 turns the D2 offline shell into an honest data-source workspace. Users can in
 
 ## Validation disposition
 
-The repository owner reported the full D3 manual-acceptance procedure passed on macOS ARM64 and Linux x86-64. Defects found during acceptance were fixed on the D3 branch and covered by regression checks. Final D3 exit remains gated on refreshed hosted validation and explicit owner direction before merge.
+The full D3 manual-acceptance procedure passed on macOS ARM64 and Linux x86-64. Defects found during acceptance were fixed and covered by regression checks. Refreshed hosted validation passed on head `814c33090eac57323eeccf66e9bd75be35c62d98`:
+
+- Quality run `31136335873`;
+- Desktop Foundation run `31136335867`.
+
+D3 has no known release-blocking product defect. Merge remains gated only on explicit repository-owner direction.
 
 ## Known non-goals
 
