@@ -12,7 +12,9 @@ test("data sources surface exposes offline, provider, acquisition, and evidence 
   assert.match(surface, /Network opt-in/);
   assert.match(surface, /Live execution off/);
   assert.match(surface, /synchronous, request-scoped operation/);
-  assert.match(surface, /id="kraken-network-consent"/);
+  assert.match(surface, /className="consent-row"/);
+  assert.match(surface, /type="checkbox"/);
+  assert.match(surface, /checked=\{networkConsent\}/);
   assert.match(surface, /Allow this single request to contact Kraken over HTTPS/);
 });
 
