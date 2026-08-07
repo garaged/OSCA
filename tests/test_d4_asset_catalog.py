@@ -4,11 +4,11 @@ from osca.desktop_api.asset_catalog import (
     add_watchlist_asset,
     create_watchlist,
     list_watchlists,
-    reorder_watchlist,
     search_assets,
 )
 from osca.desktop_api.contracts import DesktopRequest
 from osca.desktop_api.d4_service import D4DesktopApplicationService
+from osca.desktop_api.watchlist_order import reorder_watchlist
 
 
 def test_search_is_deterministic_and_reports_symbol_ambiguity() -> None:
@@ -16,7 +16,10 @@ def test_search_is_deterministic_and_reports_symbol_ambiguity() -> None:
     second = search_assets("ABC")
     assert first == second
     assert first["ambiguous"] is True
-    assert [row["asset_id"] for row in first["assets"]] == ["equity:XNAS:ABC", "equity:XNYS:ABC"]
+    assert [row["asset_id"] for row in first["assets"]] == [
+        "equity:XNAS:ABC",
+        "equity:XNYS:ABC",
+    ]
 
 
 def test_alias_resolves_to_canonical_asset() -> None:
@@ -46,7 +49,11 @@ def test_watchlists_persist_ordered_canonical_ids(tmp_path: Path) -> None:
 def test_desktop_methods_remain_typed_and_offline(tmp_path: Path) -> None:
     service = D4DesktopApplicationService(state_root=tmp_path / "state")
     response = service.handle(
-        DesktopRequest(request_id="d4-search", method="asset.search", params={"query": "AAPL"})
+        DesktopRequest(
+            request_id="d4-search",
+            method="asset.search",
+            params={"query": "AAPL"},
+        )
     )
     assert response.status == "ok"
     assert response.result is not None
