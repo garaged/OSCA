@@ -15,12 +15,12 @@ from osca.desktop_api.asset_catalog import (
     record_recent,
     remove_watchlist_asset,
     rename_watchlist,
-    reorder_watchlist,
     search_assets,
 )
 from osca.desktop_api.d3_evidence_service import D3EvidenceApplicationService
 from osca.desktop_api.profile_lock import ProfileMutationLock
 from osca.desktop_api.service import DesktopServiceError
+from osca.desktop_api.watchlist_order import reorder_watchlist
 
 
 class D4DesktopApplicationService(D3EvidenceApplicationService):
