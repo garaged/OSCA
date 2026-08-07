@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { App } from "./App";
+import { D3Root } from "./D3Root";
 import { AppErrorBoundary } from "./ErrorBoundary";
 import "./styles.css";
 
@@ -12,7 +12,7 @@ if (root === null) {
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <AppErrorBoundary>
-      <App />
+      <D3Root />
     </AppErrorBoundary>
   </React.StrictMode>
 );

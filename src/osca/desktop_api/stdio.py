@@ -9,7 +9,7 @@ from typing import TextIO
 from pydantic import ValidationError
 
 from osca.desktop_api.contracts import DesktopError, DesktopRequest, DesktopResponse
-from osca.desktop_api.service import DesktopApplicationService
+from osca.desktop_api.d3_evidence_service import D3EvidenceApplicationService
 
 MAX_MESSAGE_BYTES = 1_048_576
 
@@ -24,7 +24,7 @@ def _error_response(request_id: str, code: str, message: str) -> DesktopResponse
 
 def serve(stdin: TextIO, stdout: TextIO) -> int:
     storage_value = os.environ.get("OSCA_STORAGE_ROOT")
-    service = DesktopApplicationService(
+    service = D3EvidenceApplicationService(
         storage_root=Path(storage_value).expanduser() if storage_value else None
     )
     for raw_line in stdin:

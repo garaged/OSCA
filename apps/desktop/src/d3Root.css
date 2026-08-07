@@ -1,0 +1,112 @@
+.d3-root {
+  min-height: 100vh;
+}
+
+.d3-mode-navigation {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-end: 1rem;
+  z-index: 20;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid var(--border, #516173);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface, #101820) 92%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.d3-root .app-header {
+  padding-inline-end: 18rem;
+}
+
+.d3-mode-button {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.d3-mode-button[data-active="true"] {
+  border-color: currentColor;
+  background: var(--surface-elevated, #263444);
+}
+
+.d3-mode-button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.d3-data-sources-main {
+  min-height: 100vh;
+  padding-block-start: 4.75rem;
+}
+
+.d3-context-state {
+  max-width: 72rem;
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 1px solid var(--border, #516173);
+  border-radius: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1100px) {
+  .d3-mode-navigation {
+    position: sticky;
+    inset-block-start: 0;
+    inset-inline-end: auto;
+    justify-content: flex-end;
+    margin: 0;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+
+  .d3-root .app-header {
+    padding-inline-end: var(--space-8, 2rem);
+  }
+
+  .d3-data-sources-main {
+    padding-block-start: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .d3-mode-navigation {
+    justify-content: stretch;
+    padding-inline: 0.5rem;
+  }
+
+  .d3-mode-button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d3-mode-button {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .d3-mode-navigation,
+  .d3-mode-button[data-active="true"],
+  .d3-context-state {
+    border-color: CanvasText;
+  }
+}
