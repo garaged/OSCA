@@ -44,9 +44,15 @@ Supported operations:
 
 All mutations are transactional and idempotent where practical. Deleting a watchlist does not delete assets or market data.
 
-## 6. Persistence and recovery
+## 6. Persistence, profile ownership, and recovery
 
 SQLite is authoritative for asset metadata, aliases, watchlists, and ordering. Schema changes use Alembic. Reads tolerate an empty profile. Writes fail closed on incompatible profile versions, lock contention, invalid identifiers, duplicate names, or ambiguous asset references.
+
+An opened profile is owned by the desktop window/session that successfully opened it. Profile ownership must live at the persistent desktop broker boundary rather than in a per-request Python sidecar because the sidecar process is short-lived. A second OSCA window or process must not acquire the same profile while the first window holds ownership. It may not mutate watchlists, recent assets, or any other profile-scoped state through that profile.
+
+Selecting a profile is only a preference operation and does not grant mutation authority. Profile-scoped mutations require the requesting desktop window to own that profile. Closing the owning window or explicitly leaving its opened profile releases ownership. A failed concurrent open or mutation must not change the first window's active profile, persisted watchlists, member ordering, recents, or profile metadata.
+
+Global remembered-profile preferences may be updated for future launches, but they must not silently replace the active profile context of another already-open desktop window.
 
 ## 7. Desktop application API
 
@@ -62,7 +68,7 @@ Python exposes typed request/response methods for:
 - `watchlist.membership.set`;
 - `watchlist.reorder`.
 
-React accesses these methods only through the existing `desktop_request` bridge. Rust gains no generic database, filesystem, network, or secret authority.
+React accesses these methods only through the existing `desktop_request` bridge. Rust gains no generic database, filesystem, network, or secret authority. The Rust broker may enforce window/session ownership and lifetime locking needed to preserve the Python-authoritative profile safety contract across short-lived sidecar requests.
 
 ## 8. Desktop UX
 
@@ -71,8 +77,10 @@ D4 adds a first-class Markets area with:
 - search and filter controls;
 - result list with canonical identity and local availability;
 - asset detail panel;
+- recent assets for the opened profile;
 - watchlist sidebar and membership controls;
-- empty, loading, error, ambiguity, and locked-profile states;
+- rename and ordered member controls;
+- empty, loading, error, ambiguity, locked-profile, and ownership-conflict states;
 - keyboard navigation, visible focus, reduced-motion, forced-colors, and narrow-layout support.
 
 ## 9. Performance budgets
@@ -91,8 +99,9 @@ D4 does not add streaming quotes, charting, quantitative analysis, recommendatio
 ## 11. Exit criteria
 
 - Requirements and OpenSpec validation pass.
-- Unit, integration, migration, desktop API, frontend, architecture, and persistence tests pass.
+- Unit, integration, migration, desktop API, frontend, broker, architecture, and persistence tests pass.
+- Regression tests prove one window cannot take over or mutate another window's opened profile and that ownership is released when the owning window closes/leaves the profile.
 - Clean-profile manual acceptance passes on macOS ARM64 and Linux x86-64.
 - Large-catalog performance evidence is retained.
-- Accessibility, recovery, ambiguity, and profile-lock behavior pass.
+- Accessibility, recovery, ambiguity, profile-lock, and per-window ownership behavior pass.
 - Traceability and exit review are reconciled before owner-directed merge.
