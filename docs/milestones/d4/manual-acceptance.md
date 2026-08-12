@@ -9,12 +9,16 @@ Run on macOS ARM64 and Linux x86-64 using an isolated clean profile.
 5. Add assets, reject duplicate membership, remove assets, reorder members, restart, and verify persistence.
 6. With window A holding profile A open, open a second OSCA window/process and attempt to open profile A. Confirm the second open fails closed as `profile_locked` (or equivalent visible profile-in-use wording), not `sidecar_unavailable`; window A remains on profile A and no watchlist/recent/profile state changes.
 7. In the second window, merely selecting profile A must not grant mutation authority. Attempt a watchlist/recent-asset mutation and confirm it fails closed as a profile ownership/lock error, not as sidecar unavailability, while window A continues to mutate normally.
-8. Close window A (or explicitly leave its opened profile), then open profile A from the second window and confirm ownership can now be acquired and normal mutations succeed.
-9. Repeat with window A on profile A and window B on a different profile B. Confirm changing or opening B never silently changes A's active profile context.
-10. Verify no network traffic during catalog, detail, recent-asset, or watchlist operations.
-11. Validate light/dark/high contrast, reduced motion, VoiceOver/Orca, 320px/680px/desktop widths.
-12. Build native packages and smoke the packaged app with persisted watchlists and the same profile-ownership checks.
+8. While window A still owns profile A, submit a supported direct Python/CLI desktop-API mutation for profile A, for example `watchlist.create`. Confirm it fails closed with `profile_locked`/profile-in-use wording, does not create or change profile state, and window A remains healthy. Do not edit SQLite, Parquet, configuration, or lock files directly.
+9. Close window A (or explicitly leave its opened profile), then repeat the supported direct Python/CLI mutation. Confirm it can now acquire the profile and succeeds; remove any temporary test watchlist afterward.
+10. Open profile A from the second desktop window after the first owner releases it and confirm desktop ownership can now be acquired and normal mutations succeed.
+11. Repeat with window A on profile A and window B on a different profile B. Confirm changing or opening B never silently changes A's active profile context.
+12. Verify no network traffic during catalog, detail, recent-asset, or watchlist operations.
+13. Validate light/dark/high contrast, reduced motion, VoiceOver/Orca, 320px/680px/desktop widths.
+14. Build native packages and smoke the packaged app with persisted watchlists and the same profile-ownership checks.
 
 For the concurrency checks, record which window owns each profile, the exact rejected action/error, and confirm the first owner's watchlists, ordering, recent assets, and selected profile remain unchanged.
+
+For the supported non-UI check, use the versioned desktop API (`uv run python -m osca.desktop_api.stdio`) rather than direct file/database edits. The required invariant is: desktop-owned profile + external supported mutation => rejected; no desktop owner + supported mutation => allowed.
 
 Record environment, screenshots, network observation, profile identifiers, and exact failures without committing private host paths.
