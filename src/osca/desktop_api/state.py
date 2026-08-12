@@ -15,8 +15,6 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from osca.desktop_api.profile_lock import ProfileMutationLock
-
 
 class DesktopProfileReference(BaseModel):
     """One user-selected OSCA profile reference retained by the desktop app."""
@@ -40,15 +38,12 @@ class DesktopState(BaseModel):
 
 
 class DesktopStateStore:
-    """Read preferences while retaining process-local opened-profile context."""
+    """Read and atomically replace versioned desktop preference state."""
 
     def __init__(self, root: Path | None = None) -> None:
         self._root = (root or default_desktop_state_root()).expanduser().resolve()
         self._path = self._root / "desktop-state.json"
         self._lock_path = self._root / ".desktop-state.lock"
-        self._session_selected_profile: str | None = None
-        self._opened_profile: str | None = None
-        self._profile_lease: ProfileMutationLock | None = None
 
     @property
     def path(self) -> Path:
@@ -56,22 +51,14 @@ class DesktopStateStore:
 
     def load(self) -> DesktopState:
         if not self._path.exists():
-            state = DesktopState()
-        else:
-            try:
-                document = json.loads(self._path.read_text(encoding="utf-8"))
-                state = DesktopState.model_validate(document)
-            except OSError as exc:
-                raise ValueError(f"desktop state is unreadable at {self._path}: {exc}") from exc
-            except (UnicodeDecodeError, json.JSONDecodeError, ValidationError) as exc:
-                raise ValueError(f"desktop state is invalid at {self._path}: {exc}") from exc
-
-        if self._session_selected_profile is None:
-            return state
-        return DesktopState(
-            profiles=state.profiles,
-            selected_profile=self._session_selected_profile,
-        )
+            return DesktopState()
+        try:
+            document = json.loads(self._path.read_text(encoding="utf-8"))
+            return DesktopState.model_validate(document)
+        except OSError as exc:
+            raise ValueError(f"desktop state is unreadable at {self._path}: {exc}") from exc
+        except (UnicodeDecodeError, json.JSONDecodeError, ValidationError) as exc:
+            raise ValueError(f"desktop state is invalid at {self._path}: {exc}") from exc
 
     def remember(self, profile_root: Path, *, opened: bool) -> DesktopState:
         with self._exclusive_write_lock():
@@ -103,36 +90,8 @@ class DesktopStateStore:
                 profiles=profiles,
                 selected_profile=canonical_path,
             )
-
-            pending_lease: ProfileMutationLock | None = None
-            if opened and canonical_path != self._opened_profile:
-                pending_lease = ProfileMutationLock(profile_root)
-                pending_lease.__enter__()
-            try:
-                self._write(updated)
-            except Exception:
-                if pending_lease is not None:
-                    pending_lease.__exit__(None, None, None)
-                raise
-
-            self._session_selected_profile = canonical_path
-            if opened:
-                if pending_lease is not None:
-                    previous = self._profile_lease
-                    self._profile_lease = pending_lease
-                    self._opened_profile = canonical_path
-                    if previous is not None:
-                        previous.__exit__(None, None, None)
-            else:
-                self._release_profile_lease()
+            self._write(updated)
             return updated
-
-    def _release_profile_lease(self) -> None:
-        lease = self._profile_lease
-        self._profile_lease = None
-        self._opened_profile = None
-        if lease is not None:
-            lease.__exit__(None, None, None)
 
     def _write(self, state: DesktopState) -> None:
         self._root.mkdir(parents=True, exist_ok=True)
