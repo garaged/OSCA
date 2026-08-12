@@ -43,11 +43,24 @@ A successfully opened profile SHALL be owned by the desktop window/session that 
 - **THEN** the mutation is rejected before profile state is changed
 - **AND** window A can continue valid mutations
 
+#### Scenario: Supported non-UI mutation cannot bypass desktop ownership
+- **GIVEN** a desktop window holds the lifetime session lease for profile A
+- **WHEN** a supported Python/CLI desktop-API mutation targets profile A outside that broker-owned window
+- **THEN** the mutation fails with a typed `profile_locked` error
+- **AND** no profile-scoped state is changed
+- **AND** the owning desktop window remains usable
+
+#### Scenario: Broker-owned sidecar can mutate its own leased profile
+- **GIVEN** a desktop window owns profile A
+- **WHEN** the broker invokes the short-lived Python sidecar for an authorized mutation of profile A
+- **THEN** the sidecar reuses the broker ownership context rather than deadlocking on the session lease
+- **AND** the normal bounded Python mutation lock still serializes the write
+
 #### Scenario: Ownership is released with the owning window
 - **GIVEN** window A owns profile A
 - **WHEN** window A closes or explicitly leaves profile A
 - **THEN** another window can subsequently open profile A
-- **AND** the new owner can perform valid profile-scoped mutations
+- **AND** a supported non-UI mutation can subsequently acquire the profile when no desktop owner exists
 
 #### Scenario: One window does not silently adopt another window's profile
 - **GIVEN** window A owns profile A
