@@ -26,13 +26,47 @@ The desktop application SHALL persist watchlists and ordered canonical membershi
 - **THEN** reopening the same profile returns the same watchlist and order
 - **AND** opening another profile does not expose those memberships
 
+### Requirement: Window-scoped opened-profile ownership
+A successfully opened profile SHALL be owned by the desktop window/session that opened it until that window closes or leaves the opened profile. Remembering or selecting a profile SHALL NOT grant mutation authority.
+
+#### Scenario: Second window cannot take over an opened profile
+- **GIVEN** window A has successfully opened profile A
+- **WHEN** window B attempts to open profile A
+- **THEN** window B fails closed with a profile-in-use or ownership-conflict error
+- **AND** window A remains bound to profile A
+- **AND** no watchlist, recent-asset, ordering, or profile metadata is changed
+
+#### Scenario: Selection alone cannot mutate an owned profile
+- **GIVEN** window A owns profile A
+- **AND** window B only selects profile A
+- **WHEN** window B attempts a profile-scoped mutation
+- **THEN** the mutation is rejected before profile state is changed
+- **AND** window A can continue valid mutations
+
+#### Scenario: Ownership is released with the owning window
+- **GIVEN** window A owns profile A
+- **WHEN** window A closes or explicitly leaves profile A
+- **THEN** another window can subsequently open profile A
+- **AND** the new owner can perform valid profile-scoped mutations
+
+#### Scenario: One window does not silently adopt another window's profile
+- **GIVEN** window A owns profile A
+- **WHEN** window B opens or selects profile B
+- **THEN** window A continues to report profile A as its active opened profile
+
 ### Requirement: Narrow typed desktop authority
-React SHALL use only the existing `desktop_request` bridge and Python SHALL remain authoritative for asset search, details, recent assets, watchlist validation, persistence, and mutation locking.
+React SHALL use only the existing `desktop_request` bridge and Python SHALL remain authoritative for asset search, details, recent assets, watchlist validation, persistence, and bounded mutation validation. The persistent Rust desktop broker MAY enforce only the window/session ownership and lifetime lock needed to preserve that Python-authoritative contract across short-lived sidecar requests.
 
 #### Scenario: Watchlist mutation is locked
-- **WHEN** another process holds the profile mutation lock
+- **WHEN** another process holds the bounded profile mutation lock
 - **THEN** a watchlist mutation fails with a typed lock error
 - **AND** no partial watchlist state is committed
+
+#### Scenario: Broker rejects non-owner mutation
+- **GIVEN** a desktop window has not opened the target profile
+- **WHEN** it submits a watchlist or recent-asset mutation for that profile
+- **THEN** the persistent desktop broker rejects the request
+- **AND** the Python sidecar is not used to bypass window ownership
 
 ### Requirement: Accessible responsive Markets surface
 The desktop application SHALL provide keyboard, focus, reduced-motion, forced-colors, screen-reader, and narrow-layout safeguards for the Markets surface.
