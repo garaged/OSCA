@@ -7,8 +7,8 @@ Run on macOS ARM64 and Linux x86-64 using an isolated clean profile.
 3. Filter and inspect canonical ID, venue, class, currency, aliases, provenance, local-data status, and recent-assets behavior.
 4. Create, rename, delete, and recreate watchlists. Confirm duplicate names fail clearly.
 5. Add assets, reject duplicate membership, remove assets, reorder members, restart, and verify persistence.
-6. With window A holding profile A open, open a second OSCA window/process and attempt to open profile A. Confirm the second open fails closed with a profile-in-use/ownership error, window A remains on profile A, and no watchlist/recent/profile state changes.
-7. In the second window, merely selecting profile A must not grant mutation authority. Attempt a watchlist/recent-asset mutation and confirm it fails closed while window A continues to mutate normally.
+6. With window A holding profile A open, open a second OSCA window/process and attempt to open profile A. Confirm the second open fails closed as `profile_locked` (or equivalent visible profile-in-use wording), not `sidecar_unavailable`; window A remains on profile A and no watchlist/recent/profile state changes.
+7. In the second window, merely selecting profile A must not grant mutation authority. Attempt a watchlist/recent-asset mutation and confirm it fails closed as a profile ownership/lock error, not as sidecar unavailability, while window A continues to mutate normally.
 8. Close window A (or explicitly leave its opened profile), then open profile A from the second window and confirm ownership can now be acquired and normal mutations succeed.
 9. Repeat with window A on profile A and window B on a different profile B. Confirm changing or opening B never silently changes A's active profile context.
 10. Verify no network traffic during catalog, detail, recent-asset, or watchlist operations.
