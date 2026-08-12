@@ -1,17 +1,125 @@
+use serde_json::Value;
+use std::collections::hash_map::DefaultHasher;
+use std::collections::HashMap;
 use std::env;
+use std::fs::{File, OpenOptions};
+use std::hash::{Hash, Hasher};
 use std::io::Write;
+use std::os::fd::AsRawFd;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
+use tauri::Manager;
 
 const MAX_MESSAGE_BYTES: usize = 1_048_576;
 const SIDECAR_TIMEOUT: Duration = Duration::from_secs(15);
 const SIDECAR_POLL_INTERVAL: Duration = Duration::from_millis(25);
+const LOCK_EX: i32 = 2;
+const LOCK_NB: i32 = 4;
+
+unsafe extern "C" {
+    fn flock(fd: i32, operation: i32) -> i32;
+}
+
+struct ProfileSessionLease {
+    profile_root: String,
+    _file: File,
+}
+
+#[derive(Default)]
+struct BrokerState {
+    leases: Mutex<HashMap<String, ProfileSessionLease>>,
+}
+
+impl BrokerState {
+    fn opened_profile(&self, window_label: &str) -> Result<Option<String>, String> {
+        let leases = self
+            .leases
+            .lock()
+            .map_err(|_| "desktop profile-session state is unavailable".to_string())?;
+        Ok(leases.get(window_label).map(|lease| lease.profile_root.clone()))
+    }
+
+    fn owns_profile(&self, window_label: &str, profile_root: &str) -> Result<bool, String> {
+        Ok(self.opened_profile(window_label)?.as_deref() == Some(profile_root))
+    }
+
+    fn require_owner(&self, window_label: &str, profile_root: &str) -> Result<(), String> {
+        if self.owns_profile(window_label, profile_root)? {
+            Ok(())
+        } else {
+            Err("profile mutation requires this OSCA window to open and own the profile first"
+                .to_string())
+        }
+    }
+
+    fn commit_lease(
+        &self,
+        window_label: &str,
+        lease: ProfileSessionLease,
+    ) -> Result<(), String> {
+        let mut leases = self
+            .leases
+            .lock()
+            .map_err(|_| "desktop profile-session state is unavailable".to_string())?;
+        leases.insert(window_label.to_string(), lease);
+        Ok(())
+    }
+
+    fn release_window(&self, window_label: &str) {
+        if let Ok(mut leases) = self.leases.lock() {
+            leases.remove(window_label);
+        }
+    }
+}
 
 #[tauri::command]
-fn desktop_request(request_json: String) -> Result<String, String> {
+fn desktop_request(
+    window: tauri::WebviewWindow,
+    state: tauri::State<'_, BrokerState>,
+    request_json: String,
+) -> Result<String, String> {
     validate_request_size(&request_json)?;
+    let (method, profile_root) = request_context(&request_json)?;
+    let window_label = window.label().to_string();
 
+    let mut pending_lease = None;
+    if matches!(method.as_str(), "profile.open" | "profile.create") {
+        let root = profile_root
+            .as_deref()
+            .ok_or_else(|| format!("{method} requires profile_root"))?;
+        if !state.owns_profile(&window_label, root)? {
+            pending_lease = Some(acquire_profile_session_lease(root)?);
+        }
+    } else if method == "profile.select" {
+        // Selection is a preference only. A later successful select releases this window's
+        // open-profile ownership without affecting any other window's session.
+    } else if is_profile_mutation(&method) {
+        let root = profile_root
+            .as_deref()
+            .ok_or_else(|| format!("{method} requires profile_root"))?;
+        state.require_owner(&window_label, root)?;
+    }
+
+    let decoded = invoke_sidecar(&request_json)?;
+    let succeeded = response_succeeded(&decoded)?;
+
+    if succeeded {
+        if let Some(lease) = pending_lease {
+            state.commit_lease(&window_label, lease)?;
+        }
+        if method == "profile.select" {
+            state.release_window(&window_label);
+        }
+    }
+
+    let opened_profile = state.opened_profile(&window_label)?;
+    override_window_profile(&decoded, &method, opened_profile.as_deref())
+}
+
+fn invoke_sidecar(request_json: &str) -> Result<String, String> {
     let (program, args) = sidecar_invocation(
         env::var("OSCA_DESKTOP_SIDECAR").ok(),
         env::var("OSCA_DESKTOP_PYTHON").ok(),
@@ -62,6 +170,96 @@ fn desktop_request(request_json: String) -> Result<String, String> {
     decode_response(&output.stdout)
 }
 
+fn request_context(request_json: &str) -> Result<(String, Option<String>), String> {
+    let request: Value = serde_json::from_str(request_json)
+        .map_err(|error| format!("desktop request is invalid JSON: {error}"))?;
+    let method = request
+        .get("method")
+        .and_then(Value::as_str)
+        .ok_or_else(|| "desktop request method is missing".to_string())?
+        .to_string();
+    let profile_root = request
+        .get("params")
+        .and_then(Value::as_object)
+        .and_then(|params| params.get("profile_root"))
+        .and_then(Value::as_str)
+        .map(normalize_profile_root);
+    Ok((method, profile_root))
+}
+
+fn normalize_profile_root(profile_root: &str) -> String {
+    let path = Path::new(profile_root);
+    path.canonicalize()
+        .unwrap_or_else(|_| PathBuf::from(path))
+        .to_string_lossy()
+        .into_owned()
+}
+
+fn is_profile_mutation(method: &str) -> bool {
+    matches!(
+        method,
+        "watchlist.create"
+            | "watchlist.rename"
+            | "watchlist.delete"
+            | "watchlist.asset.add"
+            | "watchlist.asset.remove"
+            | "watchlist.reorder"
+            | "asset.recent.record"
+    )
+}
+
+fn acquire_profile_session_lease(profile_root: &str) -> Result<ProfileSessionLease, String> {
+    let mut hasher = DefaultHasher::new();
+    profile_root.hash(&mut hasher);
+    let identity = hasher.finish();
+    let directory = env::temp_dir().join("osca-desktop-session-locks");
+    std::fs::create_dir_all(&directory)
+        .map_err(|error| format!("unable to create profile-session lock directory: {error}"))?;
+    let lock_path = directory.join(format!("{identity:016x}.lock"));
+    let file = OpenOptions::new()
+        .create(true)
+        .read(true)
+        .write(true)
+        .open(&lock_path)
+        .map_err(|error| format!("unable to open profile-session lock: {error}"))?;
+    let result = unsafe { flock(file.as_raw_fd(), LOCK_EX | LOCK_NB) };
+    if result != 0 {
+        return Err("profile is already open in another OSCA window or process".to_string());
+    }
+    Ok(ProfileSessionLease {
+        profile_root: profile_root.to_string(),
+        _file: file,
+    })
+}
+
+fn response_succeeded(response_json: &str) -> Result<bool, String> {
+    let response: Value = serde_json::from_str(response_json)
+        .map_err(|error| format!("desktop response is invalid JSON: {error}"))?;
+    Ok(response.get("status").and_then(Value::as_str) == Some("ok"))
+}
+
+fn override_window_profile(
+    response_json: &str,
+    method: &str,
+    opened_profile: Option<&str>,
+) -> Result<String, String> {
+    if opened_profile.is_none() || !matches!(method, "desktop.bootstrap" | "profile.list") {
+        return Ok(response_json.to_string());
+    }
+    let mut response: Value = serde_json::from_str(response_json)
+        .map_err(|error| format!("desktop response is invalid JSON: {error}"))?;
+    if response.get("status").and_then(Value::as_str) == Some("ok") {
+        if let Some(result) = response.get_mut("result").and_then(Value::as_object_mut) {
+            result.insert(
+                "selected_profile".to_string(),
+                Value::String(opened_profile.expect("opened profile checked").to_string()),
+            );
+        }
+    }
+    serde_json::to_string(&response)
+        .map_err(|error| format!("unable to encode desktop response: {error}"))
+}
+
 fn sidecar_invocation(sidecar: Option<String>, python: Option<String>) -> (String, Vec<String>) {
     match sidecar {
         Some(executable) => (executable, Vec::new()),
@@ -98,14 +296,27 @@ fn decode_response(stdout: &[u8]) -> Result<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .manage(BrokerState::default())
         .invoke_handler(tauri::generate_handler![desktop_request])
+        .on_window_event(|window, event| {
+            if matches!(event, tauri::WindowEvent::Destroyed) {
+                window
+                    .app_handle()
+                    .state::<BrokerState>()
+                    .release_window(window.label());
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running OSCA desktop");
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{decode_response, sidecar_invocation, validate_request_size, MAX_MESSAGE_BYTES};
+    use super::{
+        acquire_profile_session_lease, decode_response, override_window_profile,
+        sidecar_invocation, validate_request_size, BrokerState, MAX_MESSAGE_BYTES,
+    };
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[test]
     fn executable_sidecar_override_receives_no_python_module_arguments() {
@@ -160,5 +371,30 @@ mod tests {
             decode_response(oversized.as_bytes()).expect_err("oversized response must fail"),
             "desktop response exceeds 1 MiB"
         );
+    }
+
+    #[test]
+    fn profile_session_lease_excludes_a_second_window_owner() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let profile = format!("/tmp/osca-session-test-{}-{unique}", std::process::id());
+        let first = acquire_profile_session_lease(&profile).expect("first lease");
+        let state = BrokerState::default();
+        state.commit_lease("window-a", first).expect("commit lease");
+        let error = acquire_profile_session_lease(&profile)
+            .err()
+            .expect("second lease must fail");
+        assert!(error.contains("already open"));
+        assert!(state.owns_profile("window-a", &profile).expect("owner check"));
+    }
+
+    #[test]
+    fn bootstrap_selected_profile_is_overridden_by_window_owned_profile() {
+        let response = r#"{"status":"ok","result":{"selected_profile":"/other"}}"#;
+        let updated = override_window_profile(response, "desktop.bootstrap", Some("/owned"))
+            .expect("override");
+        assert!(updated.contains("\"selected_profile\":\"/owned\""));
     }
 }
