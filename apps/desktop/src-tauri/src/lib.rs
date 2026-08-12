@@ -125,7 +125,10 @@ fn desktop_request(
     override_window_profile(&decoded, &method, opened_profile.as_deref())
 }
 
-fn invoke_sidecar(request_json: &str, broker_owned_profile: Option<&str>) -> Result<String, String> {
+fn invoke_sidecar(
+    request_json: &str,
+    broker_owned_profile: Option<&str>,
+) -> Result<String, String> {
     let (program, args) = sidecar_invocation(
         env::var("OSCA_DESKTOP_SIDECAR").ok(),
         env::var("OSCA_DESKTOP_PYTHON").ok(),
@@ -337,8 +340,8 @@ pub fn run() {
 mod tests {
     use super::{
         acquire_profile_session_lease, apply_sidecar_profile_authorization, decode_response,
-        override_window_profile, sidecar_invocation, stable_profile_identity, validate_request_size,
-        BrokerState, BROKER_OWNED_PROFILE_ENV, MAX_MESSAGE_BYTES,
+        override_window_profile, sidecar_invocation, stable_profile_identity,
+        validate_request_size, BrokerState, BROKER_OWNED_PROFILE_ENV, MAX_MESSAGE_BYTES,
     };
     use std::ffi::OsStr;
     use std::process::Command;
