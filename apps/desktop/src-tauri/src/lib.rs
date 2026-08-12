@@ -209,9 +209,12 @@ fn is_profile_mutation(method: &str) -> bool {
 }
 
 fn stable_profile_identity(profile_root: &str) -> u64 {
-    profile_root.as_bytes().iter().fold(FNV_OFFSET_BASIS, |hash, byte| {
-        (hash ^ u64::from(*byte)).wrapping_mul(FNV_PRIME)
-    })
+    profile_root
+        .as_bytes()
+        .iter()
+        .fold(FNV_OFFSET_BASIS, |hash, byte| {
+            (hash ^ u64::from(*byte)).wrapping_mul(FNV_PRIME)
+        })
 }
 
 fn acquire_profile_session_lease(profile_root: &str) -> Result<ProfileSessionLease, String> {
