@@ -54,6 +54,8 @@ Selecting a profile is only a preference operation and does not grant mutation a
 
 Global remembered-profile preferences may be updated for future launches, but they must not silently replace the active profile context of another already-open desktop window.
 
+The lifetime session lease is also an inter-process safety boundary for supported non-UI mutations. A direct Python/CLI desktop-API mutation must acquire the same profile session lease before mutating and therefore must fail closed while a desktop window owns that profile. Broker-launched short-lived sidecars are authorized only for the exact profile already owned by the requesting window; that broker ownership context allows them to reuse the lifetime lease while the existing Python mutation lock continues to serialize the actual write. The authorization is profile-specific and must not allow a sidecar to mutate any other profile.
+
 Broker-level ownership conflicts are domain failures, not sidecar availability failures. The desktop client must surface them as a typed `profile_locked`/profile-ownership error with clear visible wording. `sidecar_unavailable` is reserved for failures to start, reach, or complete the sidecar request path itself.
 
 ## 7. Desktop application API
@@ -70,7 +72,7 @@ Python exposes typed request/response methods for:
 - `watchlist.membership.set`;
 - `watchlist.reorder`.
 
-React accesses these methods only through the existing `desktop_request` bridge. Rust gains no generic database, filesystem, network, or secret authority. The Rust broker may enforce window/session ownership and lifetime locking needed to preserve the Python-authoritative profile safety contract across short-lived sidecar requests.
+React accesses these methods only through the existing `desktop_request` bridge. Rust gains no generic database, filesystem, network, or secret authority. The Rust broker may enforce window/session ownership and lifetime locking needed to preserve the Python-authoritative profile safety contract across short-lived sidecar requests. Python remains authoritative for profile-scoped validation and persistence, including direct supported non-UI desktop-API mutations.
 
 ## 8. Desktop UX
 
@@ -103,6 +105,7 @@ D4 does not add streaming quotes, charting, quantitative analysis, recommendatio
 - Requirements and OpenSpec validation pass.
 - Unit, integration, migration, desktop API, frontend, broker, architecture, and persistence tests pass.
 - Regression tests prove one window cannot take over or mutate another window's opened profile and that ownership is released when the owning window closes/leaves the profile.
+- Regression tests prove a supported direct Python/CLI mutation cannot bypass a desktop-held session lease, while a broker-authorized sidecar can still mutate only its owning window's leased profile without deadlocking.
 - Regression tests prove broker profile-ownership conflicts are surfaced as typed profile-lock errors rather than `sidecar_unavailable`.
 - Clean-profile manual acceptance passes on macOS ARM64 and Linux x86-64.
 - Large-catalog performance evidence is retained.
