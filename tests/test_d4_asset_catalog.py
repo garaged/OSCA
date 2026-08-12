@@ -1,6 +1,8 @@
 import fcntl
 from pathlib import Path
 
+from pytest import MonkeyPatch
+
 from osca.desktop_api.asset_catalog import (
     add_watchlist_asset,
     create_watchlist,
@@ -84,13 +86,13 @@ def test_supported_python_mutation_fails_while_desktop_session_owns_profile(tmp_
 
 
 def test_broker_authorized_sidecar_reuses_desktop_session_lease(
-    tmp_path: Path, monkeypatch: object
+    tmp_path: Path, monkeypatch: MonkeyPatch
 ) -> None:
     profile = (tmp_path / "profile").resolve()
     session_path = profile_session_lock_path(profile)
     session_path.parent.mkdir(parents=True, exist_ok=True)
     with session_path.open("a+", encoding="utf-8") as session_stream:
         fcntl.flock(session_stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        monkeypatch.setenv("OSCA_DESKTOP_OWNED_PROFILE", str(profile))  # type: ignore[attr-defined]
+        monkeypatch.setenv("OSCA_DESKTOP_OWNED_PROFILE", str(profile))
         with ProfileMutationLock(profile):
             pass
