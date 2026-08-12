@@ -18,6 +18,7 @@ const LOCK_EX: i32 = 2;
 const LOCK_NB: i32 = 4;
 const FNV_OFFSET_BASIS: u64 = 0xcbf29ce484222325;
 const FNV_PRIME: u64 = 0x100000001b3;
+const BROKER_OWNED_PROFILE_ENV: &str = "OSCA_DESKTOP_OWNED_PROFILE";
 
 unsafe extern "C" {
     fn flock(fd: i32, operation: i32) -> i32;
@@ -86,6 +87,7 @@ fn desktop_request(
     let window_label = window.label().to_string();
 
     let mut pending_lease = None;
+    let mut broker_owned_profile = None;
     if matches!(method.as_str(), "profile.open" | "profile.create") {
         let root = profile_root
             .as_deref()
@@ -93,17 +95,21 @@ fn desktop_request(
         if !state.owns_profile(&window_label, root)? {
             pending_lease = Some(acquire_profile_session_lease(root)?);
         }
+        broker_owned_profile = Some(root.to_string());
     } else if method == "profile.select" {
         // Selection is a preference only. A later successful select releases this window's
         // open-profile ownership without affecting any other window's session.
-    } else if is_profile_mutation(&method) {
-        let root = profile_root
-            .as_deref()
-            .ok_or_else(|| format!("{method} requires profile_root"))?;
-        state.require_owner(&window_label, root)?;
+    } else if let Some(root) = profile_root.as_deref() {
+        let owns_profile = state.owns_profile(&window_label, root)?;
+        if is_profile_mutation(&method) {
+            state.require_owner(&window_label, root)?;
+        }
+        if owns_profile {
+            broker_owned_profile = Some(root.to_string());
+        }
     }
 
-    let decoded = invoke_sidecar(&request_json)?;
+    let decoded = invoke_sidecar(&request_json, broker_owned_profile.as_deref())?;
     let succeeded = response_succeeded(&decoded)?;
 
     if succeeded {
@@ -119,13 +125,14 @@ fn desktop_request(
     override_window_profile(&decoded, &method, opened_profile.as_deref())
 }
 
-fn invoke_sidecar(request_json: &str) -> Result<String, String> {
+fn invoke_sidecar(request_json: &str, broker_owned_profile: Option<&str>) -> Result<String, String> {
     let (program, args) = sidecar_invocation(
         env::var("OSCA_DESKTOP_SIDECAR").ok(),
         env::var("OSCA_DESKTOP_PYTHON").ok(),
     );
     let mut command = Command::new(program);
     command.args(args);
+    apply_sidecar_profile_authorization(&mut command, broker_owned_profile);
 
     let mut child = command
         .stdin(Stdio::piped())
@@ -168,6 +175,14 @@ fn invoke_sidecar(request_json: &str) -> Result<String, String> {
     }
 
     decode_response(&output.stdout)
+}
+
+fn apply_sidecar_profile_authorization(command: &mut Command, broker_owned_profile: Option<&str>) {
+    if let Some(profile_root) = broker_owned_profile {
+        command.env(BROKER_OWNED_PROFILE_ENV, profile_root);
+    } else {
+        command.env_remove(BROKER_OWNED_PROFILE_ENV);
+    }
 }
 
 fn request_context(request_json: &str) -> Result<(String, Option<String>), String> {
@@ -321,10 +336,12 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::{
-        acquire_profile_session_lease, decode_response, override_window_profile,
-        sidecar_invocation, stable_profile_identity, validate_request_size, BrokerState,
-        MAX_MESSAGE_BYTES,
+        acquire_profile_session_lease, apply_sidecar_profile_authorization, decode_response,
+        override_window_profile, sidecar_invocation, stable_profile_identity, validate_request_size,
+        BrokerState, BROKER_OWNED_PROFILE_ENV, MAX_MESSAGE_BYTES,
     };
+    use std::ffi::OsStr;
+    use std::process::Command;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     fn unique_profile(name: &str) -> String {
@@ -366,6 +383,24 @@ mod tests {
                 vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()]
             )
         );
+    }
+
+    #[test]
+    fn broker_owned_profile_is_passed_only_to_authorized_sidecar() {
+        let mut command = Command::new("python3");
+        apply_sidecar_profile_authorization(&mut command, Some("/tmp/profile-a"));
+        let owned = command
+            .get_envs()
+            .find(|(key, _)| *key == OsStr::new(BROKER_OWNED_PROFILE_ENV))
+            .and_then(|(_, value)| value);
+        assert_eq!(owned, Some(OsStr::new("/tmp/profile-a")));
+
+        let mut unowned = Command::new("python3");
+        apply_sidecar_profile_authorization(&mut unowned, None);
+        let removed = unowned
+            .get_envs()
+            .find(|(key, _)| *key == OsStr::new(BROKER_OWNED_PROFILE_ENV));
+        assert!(matches!(removed, Some((_, None))));
     }
 
     #[test]
