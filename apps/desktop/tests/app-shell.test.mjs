@@ -49,6 +49,16 @@ test("frontend source uses only the narrow Tauri desktop request capability", as
   assert.doesNotMatch(combined, /orders\.submit/);
 });
 
+test("broker profile ownership failures are surfaced as profile locks", async () => {
+  const apiSource = await readFile(new URL("../src/api.ts", import.meta.url), "utf8");
+
+  assert.match(apiSource, /function classifyInvokeFailure/);
+  assert.match(apiSource, /profile is already open in another OSCA window or process/);
+  assert.match(apiSource, /profile mutation requires this OSCA window to open and own the profile first/);
+  assert.match(apiSource, /code: "profile_locked"/);
+  assert.match(apiSource, /throw new DesktopClientError\(classifyInvokeFailure\(error\)\)/);
+});
+
 test("native window permits the specified 320 CSS-pixel responsive foundation", async () => {
   const configSource = await readFile(
     new URL("../src-tauri/tauri.conf.json", import.meta.url),
