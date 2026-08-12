@@ -1,9 +1,7 @@
 use serde_json::Value;
-use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
 use std::env;
 use std::fs::{File, OpenOptions};
-use std::hash::{Hash, Hasher};
 use std::io::Write;
 use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
@@ -18,6 +16,8 @@ const SIDECAR_TIMEOUT: Duration = Duration::from_secs(15);
 const SIDECAR_POLL_INTERVAL: Duration = Duration::from_millis(25);
 const LOCK_EX: i32 = 2;
 const LOCK_NB: i32 = 4;
+const FNV_OFFSET_BASIS: u64 = 0xcbf29ce484222325;
+const FNV_PRIME: u64 = 0x100000001b3;
 
 unsafe extern "C" {
     fn flock(fd: i32, operation: i32) -> i32;
@@ -39,7 +39,9 @@ impl BrokerState {
             .leases
             .lock()
             .map_err(|_| "desktop profile-session state is unavailable".to_string())?;
-        Ok(leases.get(window_label).map(|lease| lease.profile_root.clone()))
+        Ok(leases
+            .get(window_label)
+            .map(|lease| lease.profile_root.clone()))
     }
 
     fn owns_profile(&self, window_label: &str, profile_root: &str) -> Result<bool, String> {
@@ -50,16 +52,14 @@ impl BrokerState {
         if self.owns_profile(window_label, profile_root)? {
             Ok(())
         } else {
-            Err("profile mutation requires this OSCA window to open and own the profile first"
-                .to_string())
+            Err(
+                "profile mutation requires this OSCA window to open and own the profile first"
+                    .to_string(),
+            )
         }
     }
 
-    fn commit_lease(
-        &self,
-        window_label: &str,
-        lease: ProfileSessionLease,
-    ) -> Result<(), String> {
+    fn commit_lease(&self, window_label: &str, lease: ProfileSessionLease) -> Result<(), String> {
         let mut leases = self
             .leases
             .lock()
@@ -208,10 +208,14 @@ fn is_profile_mutation(method: &str) -> bool {
     )
 }
 
+fn stable_profile_identity(profile_root: &str) -> u64 {
+    profile_root.as_bytes().iter().fold(FNV_OFFSET_BASIS, |hash, byte| {
+        (hash ^ u64::from(*byte)).wrapping_mul(FNV_PRIME)
+    })
+}
+
 fn acquire_profile_session_lease(profile_root: &str) -> Result<ProfileSessionLease, String> {
-    let mut hasher = DefaultHasher::new();
-    profile_root.hash(&mut hasher);
-    let identity = hasher.finish();
+    let identity = stable_profile_identity(profile_root);
     let directory = env::temp_dir().join("osca-desktop-session-locks");
     std::fs::create_dir_all(&directory)
         .map_err(|error| format!("unable to create profile-session lock directory: {error}"))?;
@@ -220,6 +224,7 @@ fn acquire_profile_session_lease(profile_root: &str) -> Result<ProfileSessionLea
         .create(true)
         .read(true)
         .write(true)
+        .truncate(false)
         .open(&lock_path)
         .map_err(|error| format!("unable to open profile-session lock: {error}"))?;
     let result = unsafe { flock(file.as_raw_fd(), LOCK_EX | LOCK_NB) };
@@ -314,9 +319,21 @@ pub fn run() {
 mod tests {
     use super::{
         acquire_profile_session_lease, decode_response, override_window_profile,
-        sidecar_invocation, validate_request_size, BrokerState, MAX_MESSAGE_BYTES,
+        sidecar_invocation, stable_profile_identity, validate_request_size, BrokerState,
+        MAX_MESSAGE_BYTES,
     };
     use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn unique_profile(name: &str) -> String {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        format!(
+            "/tmp/osca-session-test-{name}-{}-{unique}",
+            std::process::id()
+        )
+    }
 
     #[test]
     fn executable_sidecar_override_receives_no_python_module_arguments() {
@@ -374,12 +391,20 @@ mod tests {
     }
 
     #[test]
+    fn profile_lock_identity_is_stable() {
+        assert_eq!(
+            stable_profile_identity("/tmp/profile-a"),
+            stable_profile_identity("/tmp/profile-a")
+        );
+        assert_ne!(
+            stable_profile_identity("/tmp/profile-a"),
+            stable_profile_identity("/tmp/profile-b")
+        );
+    }
+
+    #[test]
     fn profile_session_lease_excludes_a_second_window_owner() {
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_nanos();
-        let profile = format!("/tmp/osca-session-test-{}-{unique}", std::process::id());
+        let profile = unique_profile("exclusive");
         let first = acquire_profile_session_lease(&profile).expect("first lease");
         let state = BrokerState::default();
         state.commit_lease("window-a", first).expect("commit lease");
@@ -387,7 +412,64 @@ mod tests {
             .err()
             .expect("second lease must fail");
         assert!(error.contains("already open"));
-        assert!(state.owns_profile("window-a", &profile).expect("owner check"));
+        assert!(state
+            .owns_profile("window-a", &profile)
+            .expect("owner check"));
+    }
+
+    #[test]
+    fn selection_without_open_ownership_cannot_mutate_profile() {
+        let profile = unique_profile("selection-only");
+        let state = BrokerState::default();
+        let error = state
+            .require_owner("window-b", &profile)
+            .expect_err("selection alone must not grant mutation authority");
+        assert!(error.contains("open and own"));
+    }
+
+    #[test]
+    fn releasing_owner_allows_another_window_to_acquire_profile() {
+        let profile = unique_profile("release");
+        let first = acquire_profile_session_lease(&profile).expect("first lease");
+        let state = BrokerState::default();
+        state.commit_lease("window-a", first).expect("commit lease");
+        state.release_window("window-a");
+
+        let second = acquire_profile_session_lease(&profile).expect("lease after release");
+        state
+            .commit_lease("window-b", second)
+            .expect("commit second lease");
+        assert!(state
+            .owns_profile("window-b", &profile)
+            .expect("second owner check"));
+    }
+
+    #[test]
+    fn independent_windows_keep_independent_open_profile_context() {
+        let profile_a = unique_profile("a");
+        let profile_b = unique_profile("b");
+        let state = BrokerState::default();
+        state
+            .commit_lease(
+                "window-a",
+                acquire_profile_session_lease(&profile_a).expect("profile A lease"),
+            )
+            .expect("commit profile A");
+        state
+            .commit_lease(
+                "window-b",
+                acquire_profile_session_lease(&profile_b).expect("profile B lease"),
+            )
+            .expect("commit profile B");
+
+        assert_eq!(
+            state.opened_profile("window-a").expect("window A profile"),
+            Some(profile_a)
+        );
+        assert_eq!(
+            state.opened_profile("window-b").expect("window B profile"),
+            Some(profile_b)
+        );
     }
 
     #[test]
