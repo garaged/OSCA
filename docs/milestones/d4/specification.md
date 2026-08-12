@@ -54,6 +54,8 @@ Selecting a profile is only a preference operation and does not grant mutation a
 
 Global remembered-profile preferences may be updated for future launches, but they must not silently replace the active profile context of another already-open desktop window.
 
+Broker-level ownership conflicts are domain failures, not sidecar availability failures. The desktop client must surface them as a typed `profile_locked`/profile-ownership error with clear visible wording. `sidecar_unavailable` is reserved for failures to start, reach, or complete the sidecar request path itself.
+
 ## 7. Desktop application API
 
 Python exposes typed request/response methods for:
@@ -101,6 +103,7 @@ D4 does not add streaming quotes, charting, quantitative analysis, recommendatio
 - Requirements and OpenSpec validation pass.
 - Unit, integration, migration, desktop API, frontend, broker, architecture, and persistence tests pass.
 - Regression tests prove one window cannot take over or mutate another window's opened profile and that ownership is released when the owning window closes/leaves the profile.
+- Regression tests prove broker profile-ownership conflicts are surfaced as typed profile-lock errors rather than `sidecar_unavailable`.
 - Clean-profile manual acceptance passes on macOS ARM64 and Linux x86-64.
 - Large-catalog performance evidence is retained.
 - Accessibility, recovery, ambiguity, profile-lock, and per-window ownership behavior pass.
