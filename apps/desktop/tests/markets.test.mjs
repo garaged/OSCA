@@ -8,17 +8,37 @@ test("D4 exposes Markets as a first-class desktop area", async () => {
   assert.match(root, /"markets"/);
   assert.match(root, /MarketsSurface/);
   assert.match(surface, /Asset browser/);
+  assert.match(surface, /Asset details/);
+  assert.match(surface, /Recent assets/);
   assert.match(surface, /Watchlists/);
   assert.match(surface, /No streaming quotes or execution/);
 });
 
-test("D4 frontend uses canonical typed desktop methods only", async () => {
+test("D4 frontend wires all canonical asset and watchlist lifecycle methods", async () => {
   const api = await readFile(new URL("../src/marketsApi.ts", import.meta.url), "utf8");
-  assert.match(api, /asset\.search/);
-  assert.match(api, /asset\.get/);
-  assert.match(api, /watchlist\.list/);
-  assert.match(api, /watchlist\.asset\.add/);
+  const surface = await readFile(new URL("../src/Markets.tsx", import.meta.url), "utf8");
+
+  for (const method of [
+    "asset.search",
+    "asset.get",
+    "asset.recent.list",
+    "asset.recent.record",
+    "watchlist.list",
+    "watchlist.create",
+    "watchlist.rename",
+    "watchlist.delete",
+    "watchlist.asset.add",
+    "watchlist.asset.remove",
+    "watchlist.reorder"
+  ]) {
+    assert.match(api, new RegExp(method.replaceAll(".", "\\.")));
+  }
+
   assert.match(api, /invoke<string>\("desktop_request"/);
+  assert.match(surface, /Inspect/);
+  assert.match(surface, /Rename active watchlist/);
+  assert.match(surface, /Move .* up/);
+  assert.match(surface, /Move .* down/);
   assert.doesNotMatch(api, /plugin-fs|plugin-shell|fetch\(|WebSocket|orders\.submit/);
 });
 
