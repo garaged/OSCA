@@ -1,6 +1,6 @@
 # D4 Validation Evidence — Asset Catalog, Market Browser, and Watchlists
 
-- **Status:** Automated validation passed; macOS ARM64 manual acceptance passed; Linux x86-64 manual acceptance pending
+- **Status:** Automated validation passed; macOS ARM64 and Linux x86-64 manual acceptance passed
 - **Pull request:** #84
 - **Branch:** `agent/d4-asset-catalog-watchlists`
 - **Baseline:** D3 merge `c170e5b2c93f70092ec955159759424d65c4ad64`
@@ -44,33 +44,21 @@ The final implementation uses a two-phase temporary-position transaction for reo
 
 **Result: PASS.**
 
-The complete D4 macOS acceptance was executed in five batches. Accepted evidence includes:
+The complete D4 macOS acceptance was executed in five batches. Accepted evidence includes deterministic Markets behavior, persistence, locking and ownership, supported external mutation coordination, separate-profile isolation, no-network checks, accessibility/responsive behavior, direct packaged-app launch, packaged persistence/ownership, and the successful performance retest after the sidecar redesign.
 
-- deterministic Markets search, canonical identity, exact-symbol ambiguity, filtering, details, recent assets, and watchlist lifecycle;
-- restart persistence and ordered membership;
-- same-profile second-window rejection while the first owner remains healthy;
-- selection without ownership not granting mutation authority;
-- supported direct Python/CLI mutation rejected while desktop owns the profile and succeeding after ownership release;
-- separate-profile window isolation;
-- no-network/offline boundary checks;
-- responsive layout, keyboard use, light/dark/high-contrast, reduced-motion, and VoiceOver checks;
-- direct launch of the generated self-contained macOS application without a development server or separately started Python service;
-- packaged watchlist/recent persistence and profile-ownership behavior;
-- packaged performance retest after the sidecar redesign, with the prior multi-second/10–20 second stalls resolved.
+## Linux x86-64 manual acceptance
+
+**Result: PASS.**
+
+The complete clean-profile D4 procedure also passed on Linux x86-64, including catalog/search ambiguity behavior, details and recents, watchlist lifecycle and restart persistence, same-profile ownership rejection, supported external mutation coordination, separate-profile isolation, offline/network boundaries, keyboard/Orca/high-contrast/reduced-motion/responsive behavior, native package build and packaged-application smoke, and packaged responsiveness.
 
 Private host paths and machine-local profile identifiers are intentionally not committed.
-
-## Remaining evidence
-
-The complete clean-profile procedure in `manual-acceptance.md` must still pass on Linux x86-64. That evidence must include accessibility, network observation, restart persistence, concurrent profile locking, native package build, packaged-application smoke, and responsiveness.
-
-Machine-local evidence should remain outside the repository when it contains host-specific paths or private data.
 
 ## Current disposition
 
 - Implementation slices: complete.
-- Automated validation: pass on candidate `08b1c00e32440022d57e7c659625bf7eac490bd8`.
+- Automated validation: pass on implementation candidate `08b1c00e32440022d57e7c659625bf7eac490bd8`.
 - Security and narrow-authority checks: pass.
 - macOS ARM64 manual acceptance: pass.
-- Linux x86-64 manual acceptance: pending.
-- D4 exit decision: pending Linux evidence and explicit repository-owner direction.
+- Linux x86-64 manual acceptance: pass.
+- D4 exit decision: pass; merge authorized by the repository owner, subject only to final CI on the evidence-reconciliation head.
