@@ -4,6 +4,7 @@ import {
   getWorkbenchSeries,
   WorkbenchClientError,
   WorkbenchDerivedRequest,
+  WorkbenchRange,
   WorkbenchRow,
   WorkbenchSeries
 } from "./workbenchApi";
@@ -42,6 +43,7 @@ type AsyncResult<T> =
 
 const WIDTH = 900;
 const HEIGHT = 360;
+const VOLUME_HEIGHT = 120;
 const PADDING = 28;
 const DISPLAY_ROWS = 240;
 
@@ -50,6 +52,8 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
   const [assetId, setAssetId] = useState("equity:XNAS:AAPL");
   const [comparisonAssetId, setComparisonAssetId] = useState("equity:XNAS:MSFT");
   const [timeframe, setTimeframe] = useState("1d");
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
   const [indicator, setIndicator] = useState<WorkbenchDerivedRequest["kind"] | "none">("sma");
   const [windowSize, setWindowSize] = useState(3);
   const [state, setState] = useState<LoadState>({ kind: "idle" });
@@ -101,11 +105,19 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
     return [{ kind: indicator, window: windowSize }];
   }
 
+  function requestedRange(): WorkbenchRange {
+    return {
+      ...(rangeStart.trim() ? { start: rangeStart.trim() } : {}),
+      ...(rangeEnd.trim() ? { end: rangeEnd.trim() } : {})
+    };
+  }
+
   function currentConfig(): Record<string, unknown> {
     return {
       primary_asset_id: assetId,
       comparison_asset_id: comparisonAssetId,
       timeframe,
+      range: requestedRange(),
       max_rows: DISPLAY_ROWS,
       derived: derivedRequest(),
       layout: { volume_visible: true, table_visible: true }
@@ -134,7 +146,8 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
         assetId,
         timeframe,
         DISPLAY_ROWS,
-        derivedRequest()
+        derivedRequest(),
+        requestedRange()
       );
       setState({ kind: "ready", value });
     } catch (error) {
@@ -148,7 +161,14 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
     try {
       setAnalysis({
         kind: "ready",
-        value: await getQuantitativeAnalysis(profileRoot, assetId, timeframe, DISPLAY_ROWS)
+        value: await getQuantitativeAnalysis(
+          profileRoot,
+          assetId,
+          timeframe,
+          DISPLAY_ROWS,
+          {},
+          requestedRange()
+        )
       });
     } catch (error) {
       setAnalysis({ kind: "error", message: errorMessage(error) });
@@ -167,7 +187,8 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
           comparisonAssetId,
           timeframe,
           20,
-          DISPLAY_ROWS
+          DISPLAY_ROWS,
+          requestedRange()
         )
       });
     } catch (error) {
@@ -186,7 +207,8 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
           assetId,
           timeframe,
           DISPLAY_ROWS,
-          derivedRequest()
+          derivedRequest(),
+          requestedRange()
         )
       });
     } catch (error) {
@@ -246,10 +268,19 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
     const primary = config.primary_asset_id;
     const comparisonId = config.comparison_asset_id;
     const savedTimeframe = config.timeframe;
+    const savedRange = config.range;
     const derived = config.derived;
     if (typeof primary === "string") setAssetId(primary);
     if (typeof comparisonId === "string") setComparisonAssetId(comparisonId);
     if (typeof savedTimeframe === "string") setTimeframe(savedTimeframe);
+    if (typeof savedRange === "object" && savedRange !== null && !Array.isArray(savedRange)) {
+      const range = savedRange as Record<string, unknown>;
+      setRangeStart(typeof range.start === "string" ? range.start : "");
+      setRangeEnd(typeof range.end === "string" ? range.end : "");
+    } else {
+      setRangeStart("");
+      setRangeEnd("");
+    }
     if (Array.isArray(derived) && derived.length === 1 && typeof derived[0] === "object" && derived[0] !== null) {
       const item = derived[0] as Record<string, unknown>;
       if (typeof item.kind === "string" && isDerivedKind(item.kind)) {
@@ -334,6 +365,33 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
         </button>
       </form>
 
+      <section className="workbench-range-controls" aria-labelledby="workbench-range-title">
+        <div>
+          <h3 id="workbench-range-title">Authoritative data range</h3>
+          <p id="workbench-range-help">Optional ISO-8601 timestamps are sent unchanged to Python. Include timezone information.</p>
+        </div>
+        <label>
+          Start
+          <input
+            aria-describedby="workbench-range-help"
+            onChange={(event) => setRangeStart(event.target.value)}
+            placeholder="2026-01-01T00:00:00Z"
+            type="text"
+            value={rangeStart}
+          />
+        </label>
+        <label>
+          End
+          <input
+            aria-describedby="workbench-range-help"
+            onChange={(event) => setRangeEnd(event.target.value)}
+            placeholder="2026-12-31T23:59:59Z"
+            type="text"
+            value={rangeEnd}
+          />
+        </label>
+      </section>
+
       <section className="workbench-secondary-controls" aria-label="Quantitative workbench actions">
         <button disabled={state.kind !== "ready" || analysis.kind === "loading"} onClick={() => void runAnalysis()} type="button">
           {analysis.kind === "loading" ? "Analyzing…" : "Run RSI · ATR · Bollinger · MACD analysis"}
@@ -396,7 +454,39 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
 }
 
 function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
+  const returnedRows = result.series.rows;
+  const [viewportSize, setViewportSize] = useState(returnedRows.length);
+  const [viewportStart, setViewportStart] = useState(0);
   const downsampled = result.series.downsampling_method !== "none";
+
+  useEffect(() => {
+    setViewportSize(result.series.rows.length);
+    setViewportStart(0);
+  }, [result.series.payload_sha256, result.series.first_timestamp, result.series.last_timestamp]);
+
+  const boundedSize = Math.max(1, Math.min(viewportSize, returnedRows.length || 1));
+  const boundedStart = Math.max(0, Math.min(viewportStart, Math.max(0, returnedRows.length - boundedSize)));
+  const visibleRows = returnedRows.slice(boundedStart, boundedStart + boundedSize);
+  const step = Math.max(1, Math.floor(boundedSize / 3));
+
+  function zoomIn() {
+    const nextSize = Math.max(5, Math.floor(boundedSize / 2));
+    const center = boundedStart + boundedSize / 2;
+    setViewportSize(Math.min(nextSize, returnedRows.length));
+    setViewportStart(Math.max(0, Math.floor(center - nextSize / 2)));
+  }
+
+  function zoomOut() {
+    const nextSize = Math.min(returnedRows.length, Math.max(5, boundedSize * 2));
+    const center = boundedStart + boundedSize / 2;
+    setViewportSize(nextSize);
+    setViewportStart(Math.max(0, Math.floor(center - nextSize / 2)));
+  }
+
+  function pan(delta: number) {
+    setViewportStart(Math.max(0, Math.min(boundedStart + delta, returnedRows.length - boundedSize)));
+  }
+
   return (
     <div className="workbench-result">
       <dl className="workbench-provenance">
@@ -404,7 +494,7 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
         <div><dt>Dataset revision</dt><dd>{result.dataset.dataset_revision_id}</dd></div>
         <div><dt>Source</dt><dd>{result.dataset.source_attribution}</dd></div>
         <div><dt>Timeframe</dt><dd>{result.dataset.timeframe}</dd></div>
-        <div><dt>Rows</dt><dd>{result.series.filtered_row_count} filtered / {result.series.returned_row_count} displayed</dd></div>
+        <div><dt>Rows</dt><dd>{result.series.filtered_row_count} filtered / {result.series.returned_row_count} returned</dd></div>
         <div><dt>Display method</dt><dd>{result.series.downsampling_method}</dd></div>
       </dl>
       <p className={downsampled ? "workbench-downsampled" : "workbench-full-resolution"} role="status">
@@ -412,7 +502,19 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
           ? "Display is downsampled for bounded rendering. Full-resolution analytical data remains authoritative."
           : "All filtered rows fit the current display budget."}
       </p>
-      <PriceChart rows={result.series.rows} />
+      <section className="workbench-viewport" aria-label="Presentation viewport controls">
+        <p role="status">
+          Presentation viewport: rows {returnedRows.length ? boundedStart + 1 : 0}–{boundedStart + visibleRows.length} of {returnedRows.length} returned rows. Zoom and pan do not recalculate analytical values.
+        </p>
+        <div>
+          <button disabled={boundedStart === 0} onClick={() => pan(-step)} type="button">Pan earlier</button>
+          <button disabled={boundedSize <= 5} onClick={zoomIn} type="button">Zoom in</button>
+          <button disabled={boundedSize >= returnedRows.length} onClick={zoomOut} type="button">Zoom out</button>
+          <button disabled={boundedStart + boundedSize >= returnedRows.length} onClick={() => pan(step)} type="button">Pan later</button>
+        </div>
+      </section>
+      <PriceChart rows={visibleRows} />
+      <VolumePane rows={visibleRows} />
       {result.series.derived_evidence.length ? (
         <section className="workbench-evidence" aria-labelledby="indicator-evidence-title">
           <h3 id="indicator-evidence-title">Indicator evidence</h3>
@@ -423,7 +525,7 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
           ))}
         </section>
       ) : null}
-      <AccessibleSeriesTable rows={result.series.rows} />
+      <AccessibleSeriesTable rows={visibleRows} />
     </div>
   );
 }
@@ -464,7 +566,27 @@ function ComparisonPanel({ state }: { state: AsyncResult<ComparisonResult> }) {
         <div><dt>Beta</dt><dd>{formatNullable(state.value.beta)}</dd></div>
         <div><dt>Rolling window</dt><dd>{state.value.rolling_window}</dd></div>
       </dl>
+      <ComparisonTable result={state.value} />
     </section>
+  );
+}
+
+function ComparisonTable({ result }: { result: ComparisonResult }) {
+  return (
+    <div className="workbench-table-scroll">
+      <table>
+        <caption>Aligned authoritative return comparison</caption>
+        <thead><tr><th>Timestamp</th><th>{result.primary.symbol}</th><th>{result.comparison.symbol}</th><th>Rolling correlation</th></tr></thead>
+        <tbody>{result.points.map((point) => (
+          <tr key={point.timestamp}>
+            <th scope="row">{point.timestamp}</th>
+            <td>{format(point.primary_return)}</td>
+            <td>{format(point.benchmark_return)}</td>
+            <td>{formatNullable(point.rolling_correlation)}</td>
+          </tr>
+        ))}</tbody>
+      </table>
+    </div>
   );
 }
 
@@ -485,7 +607,7 @@ function ExportPanel({ state }: { state: AsyncResult<WorkbenchExport> }) {
 function PriceChart({ rows }: { rows: WorkbenchRow[] }) {
   const geometry = useMemo(() => chartGeometry(rows), [rows]);
   const summary = rows.length
-    ? `Price chart with ${rows.length} displayed observations. Exact displayed values are in the synchronized table.`
+    ? `Price chart with ${rows.length} visible observations. Exact visible values are in the synchronized table.`
     : "Price chart contains no observations.";
   return (
     <figure className="workbench-chart">
@@ -505,11 +627,33 @@ function PriceChart({ rows }: { rows: WorkbenchRow[] }) {
   );
 }
 
+function VolumePane({ rows }: { rows: WorkbenchRow[] }) {
+  const maximum = Math.max(1, ...rows.map((row) => row.volume));
+  const plotWidth = WIDTH - PADDING * 2;
+  const plotHeight = VOLUME_HEIGHT - PADDING;
+  const barWidth = rows.length ? Math.max(1, Math.min(12, (plotWidth / rows.length) * 0.7)) : 1;
+  const summary = rows.length
+    ? `Volume pane with ${rows.length} visible observations from the same returned rows as the price chart and table.`
+    : "Volume pane contains no observations.";
+  return (
+    <figure className="workbench-chart workbench-volume">
+      <figcaption><strong>Volume</strong><span>{summary}</span></figcaption>
+      <svg aria-label={summary} className="workbench-volume-svg" role="img" viewBox={`0 0 ${WIDTH} ${VOLUME_HEIGHT}`}>
+        {rows.map((row, index) => {
+          const x = PADDING + (rows.length === 1 ? plotWidth / 2 : (index * plotWidth) / (rows.length - 1));
+          const height = (row.volume / maximum) * plotHeight;
+          return <rect className="chart-volume" height={height} key={row.timestamp} width={barWidth} x={x - barWidth / 2} y={VOLUME_HEIGHT - height} />;
+        })}
+      </svg>
+    </figure>
+  );
+}
+
 function AccessibleSeriesTable({ rows }: { rows: WorkbenchRow[] }) {
   const derivedKeys = rows.length ? Object.keys(rows[0].derived) : [];
   return (
     <section className="workbench-table-region" aria-labelledby="workbench-table-title" tabIndex={0}>
-      <h3 id="workbench-table-title">Synchronized displayed values</h3>
+      <h3 id="workbench-table-title">Synchronized visible values</h3>
       <div className="workbench-table-scroll">
         <table>
           <thead><tr><th>Timestamp</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Volume</th>{derivedKeys.map((key) => <th key={key}>{key}</th>)}</tr></thead>
