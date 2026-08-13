@@ -31,6 +31,7 @@
 .workbench-empty,
 .workbench-analysis,
 .workbench-saved-views,
+.workbench-sample-import,
 .workbench-range-controls,
 .workbench-viewport {
   border: 1px solid currentColor;
@@ -84,13 +85,28 @@
 
 .workbench-range-controls h3,
 .workbench-range-controls p,
+.workbench-sample-import h3,
+.workbench-sample-import p,
 .workbench-viewport p {
   margin-top: 0;
 }
 
 .workbench-range-controls p,
+.workbench-sample-import p,
 .workbench-viewport p {
   margin-bottom: 0;
+}
+
+.workbench-sample-import {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.workbench-sample-import button {
+  min-height: 2.7rem;
+  font: inherit;
 }
 
 .workbench-view-actions {
@@ -113,6 +129,7 @@
 .workbench-view-actions :focus-visible,
 .workbench-view-list :focus-visible,
 .workbench-range-controls :focus-visible,
+.workbench-sample-import :focus-visible,
 .workbench-viewport :focus-visible,
 .workbench-table-region:focus-visible,
 .workbench-svg:focus-visible {
@@ -262,11 +279,13 @@
 @media (max-width: 900px) {
   .workbench-secondary-controls,
   .workbench-view-actions,
+  .workbench-sample-import,
   .workbench-range-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .workbench-range-controls > div:first-child {
+  .workbench-range-controls > div:first-child,
+  .workbench-sample-import > div:first-child {
     grid-column: 1 / -1;
   }
 }
@@ -279,12 +298,14 @@
   .workbench-controls,
   .workbench-secondary-controls,
   .workbench-view-actions,
+  .workbench-sample-import,
   .workbench-range-controls,
   .workbench-provenance {
     grid-template-columns: 1fr;
   }
 
-  .workbench-range-controls > div:first-child {
+  .workbench-range-controls > div:first-child,
+  .workbench-sample-import > div:first-child {
     grid-column: auto;
   }
 }
@@ -302,6 +323,7 @@
   .workbench-view-actions input,
   .workbench-view-actions button,
   .workbench-view-list button,
+  .workbench-sample-import button,
   .workbench-range-controls input,
   .workbench-viewport button {
     width: 100%;
@@ -326,6 +348,7 @@
   .workbench-error,
   .workbench-analysis,
   .workbench-saved-views,
+  .workbench-sample-import,
   .workbench-range-controls,
   .workbench-viewport {
     forced-color-adjust: auto;
