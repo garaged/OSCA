@@ -68,6 +68,55 @@ def test_workbench_series_resolves_governed_sample_without_client_path(
     assert series["derived_evidence"][0]["point_in_time_safe"] is True
 
 
+def test_workbench_series_resolves_bundled_comparison_sample(
+    tmp_path: Path,
+) -> None:
+    service, profile_root = _profile_with_sample(tmp_path)
+
+    response = _call(
+        service,
+        "workbench.series.get",
+        {
+            "profile_root": str(profile_root),
+            "asset_id": "equity:XNAS:MSFT",
+            "timeframe": "1d",
+            "max_rows": 5,
+        },
+    )
+
+    assert response.status == "ok"
+    assert response.result is not None
+    assert response.result["asset_id"] == "equity:XNAS:MSFT"
+    assert response.result["dataset"]["symbol"] == "MSFT-SYNTHETIC"
+    assert response.result["network_access_enabled"] is False
+
+
+def test_workbench_comparison_uses_bundled_compatible_samples(
+    tmp_path: Path,
+) -> None:
+    service, profile_root = _profile_with_sample(tmp_path)
+
+    response = _call(
+        service,
+        "workbench.comparison.get",
+        {
+            "profile_root": str(profile_root),
+            "primary_asset_id": "equity:XNAS:AAPL",
+            "comparison_asset_id": "equity:XNAS:MSFT",
+            "timeframe": "1d",
+            "rolling_window": 3,
+            "max_rows": 5,
+        },
+    )
+
+    assert response.status == "ok", response.error
+    assert response.result is not None
+    assert response.result["primary"]["symbol"] == "AAPL-SYNTHETIC"
+    assert response.result["comparison"]["symbol"] == "MSFT-SYNTHETIC"
+    assert response.result["aligned_return_count"] > 0
+    assert response.result["network_access_enabled"] is False
+
+
 def test_workbench_series_rejects_arbitrary_payload_path(tmp_path: Path) -> None:
     service, profile_root = _profile_with_sample(tmp_path)
 
