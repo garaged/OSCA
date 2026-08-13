@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:sidecar": "cd ../.. && uv run --with pyinstaller==6.15.0 python scripts/build_desktop_sidecar.py",
     "check": "tsc --noEmit",
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "tauri": "tauri"
