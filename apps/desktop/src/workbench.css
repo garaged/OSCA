@@ -210,6 +210,11 @@
   font-size: 0.75rem;
 }
 
+.chart-time-label {
+  font-size: 0.7rem;
+  opacity: 0.86;
+}
+
 .chart-up rect {
   fill: transparent;
   stroke-width: 2;
