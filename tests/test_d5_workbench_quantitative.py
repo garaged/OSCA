@@ -142,6 +142,37 @@ def test_same_dataset_comparison_has_identity_statistics(tmp_path: Path) -> None
     assert result["real_capital_execution_enabled"] is False
 
 
+def test_bundled_sample_pair_supports_compatible_comparison(tmp_path: Path) -> None:
+    service, profile_root = _sample_service(tmp_path)
+    response = _call(
+        service,
+        "workbench.comparison.get",
+        {
+            "profile_root": str(profile_root),
+            "primary_asset_id": "equity:XNAS:AAPL",
+            "comparison_asset_id": "equity:XNAS:MSFT",
+            "timeframe": "1d",
+            "rolling_window": 3,
+            "max_rows": 5,
+        },
+    )
+
+    assert response.status == "ok", response.error
+    assert response.result is not None
+    result = response.result
+    assert result["primary"]["symbol"] == "AAPL-SYNTHETIC"
+    assert result["comparison"]["symbol"] == "MSFT-SYNTHETIC"
+    assert result["aligned_return_count"] > 0
+    assert result["normalization_basis"] == (
+        "close-to-close simple returns aligned on exact shared timestamps"
+    )
+    assert result["point_in_time_safe"] is True
+    assert result["network_access_enabled"] is False
+    assert result["recommendations_enabled"] is False
+    assert result["broker_connections_enabled"] is False
+    assert result["real_capital_execution_enabled"] is False
+
+
 def test_comparison_rejects_incompatible_asset_semantics_before_dataset_join(
     tmp_path: Path,
 ) -> None:
