@@ -230,6 +230,11 @@ fn is_profile_mutation(method: &str) -> bool {
             | "watchlist.asset.remove"
             | "watchlist.reorder"
             | "asset.recent.record"
+            | "workbench.export.prepare"
+            | "workbench.view.create"
+            | "workbench.view.update"
+            | "workbench.view.rename"
+            | "workbench.view.delete"
     )
 }
 
@@ -380,7 +385,7 @@ pub fn run() {
 mod tests {
     use super::{
         acquire_profile_session_lease, apply_sidecar_profile_authorization, decode_response,
-        override_window_profile, resource_sidecar_path, sidecar_invocation,
+        is_profile_mutation, override_window_profile, resource_sidecar_path, sidecar_invocation,
         stable_profile_identity, validate_request_size, BrokerState, BROKER_OWNED_PROFILE_ENV,
         MAX_MESSAGE_BYTES,
     };
@@ -477,6 +482,24 @@ mod tests {
             .get_envs()
             .find(|(key, _)| *key == OsStr::new(BROKER_OWNED_PROFILE_ENV));
         assert!(matches!(removed, Some((_, None))));
+    }
+
+    #[test]
+    fn d5_workbench_writes_require_profile_ownership() {
+        for method in [
+            "workbench.export.prepare",
+            "workbench.view.create",
+            "workbench.view.update",
+            "workbench.view.rename",
+            "workbench.view.delete",
+        ] {
+            assert!(is_profile_mutation(method), "{method} must require ownership");
+        }
+        assert!(!is_profile_mutation("workbench.series.get"));
+        assert!(!is_profile_mutation("workbench.analysis.get"));
+        assert!(!is_profile_mutation("workbench.comparison.get"));
+        assert!(!is_profile_mutation("workbench.view.list"));
+        assert!(!is_profile_mutation("workbench.view.get"));
     }
 
     #[test]
@@ -588,7 +611,7 @@ mod tests {
 
     #[test]
     fn bootstrap_selected_profile_is_overridden_by_window_owned_profile() {
-        let response = r#"{"status":"ok","result":{"selected_profile":"/other"}}"#;
+        let response = r#"{\"status\":\"ok\",\"result\":{\"selected_profile\":\"/other\"}}"#;
         let updated = override_window_profile(response, "desktop.bootstrap", Some("/owned"))
             .expect("override");
         assert!(updated.contains("\"selected_profile\":\"/owned\""));
