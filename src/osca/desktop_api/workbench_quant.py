@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from pydantic import ValidationError
@@ -19,7 +20,7 @@ from osca.quantitative_analysis import (
 
 
 def get_quantitative_analysis(
-    profile_root: Any,
+    profile_root: Path,
     *,
     asset_id: str,
     timeframe: str,
@@ -28,12 +29,24 @@ def get_quantitative_analysis(
     max_rows: int,
     parameters: dict[str, Any],
 ) -> dict[str, Any]:
-    dataset = resolve_governed_dataset(profile_root, asset_id=asset_id, timeframe=timeframe)
-    request = _analysis_request(dataset, start=start, end=end, parameters=parameters)
+    dataset = resolve_governed_dataset(
+        profile_root,
+        asset_id=asset_id,
+        timeframe=timeframe,
+    )
+    request = _analysis_request(
+        dataset,
+        start=start,
+        end=end,
+        parameters=parameters,
+    )
     try:
         result = analyze_dataset(request)
-    except (ValidationError, ValueError) as exc:
-        raise DesktopServiceError("invalid_parameters", f"Invalid quantitative request: {exc}") from exc
+    except ValueError as exc:
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"Invalid quantitative request: {exc}",
+        ) from exc
     point_payloads = [point.model_dump(mode="json") for point in result.points]
     displayed = _bounded(point_payloads, max_rows)
     return {
@@ -46,7 +59,9 @@ def get_quantitative_analysis(
         "source_attribution": dataset.source_attribution,
         "source_point_count": len(point_payloads),
         "displayed_point_count": len(displayed),
-        "display_method": "none" if len(displayed) == len(point_payloads) else "evenly_spaced",
+        "display_method": (
+            "none" if len(displayed) == len(point_payloads) else "evenly_spaced"
+        ),
         "display_preserves_first_last": True,
         "summary": result.summary.model_dump(mode="json"),
         "parameters": result.parameters,
@@ -64,7 +79,7 @@ def get_quantitative_analysis(
 
 
 def get_comparison(
-    profile_root: Any,
+    profile_root: Path,
     *,
     primary_asset_id: str,
     comparison_asset_id: str,
@@ -77,7 +92,10 @@ def get_comparison(
     primary_asset = ASSET_BY_ID.get(primary_asset_id)
     comparison_asset = ASSET_BY_ID.get(comparison_asset_id)
     if primary_asset is None or comparison_asset is None:
-        raise DesktopServiceError("asset_not_found", "Comparison requires known canonical assets.")
+        raise DesktopServiceError(
+            "asset_not_found",
+            "Comparison requires known canonical assets.",
+        )
     if primary_asset.currency != comparison_asset.currency:
         raise DesktopServiceError(
             "workbench_comparison_incompatible",
@@ -101,13 +119,26 @@ def get_comparison(
     try:
         result = compare_datasets(
             DatasetComparisonRequest(
-                primary=_analysis_request(primary, start=start, end=end, parameters={}),
-                benchmark=_analysis_request(comparison, start=start, end=end, parameters={}),
+                primary=_analysis_request(
+                    primary,
+                    start=start,
+                    end=end,
+                    parameters={},
+                ),
+                benchmark=_analysis_request(
+                    comparison,
+                    start=start,
+                    end=end,
+                    parameters={},
+                ),
                 rolling_window=rolling_window,
             )
         )
     except (ValidationError, ValueError) as exc:
-        raise DesktopServiceError("invalid_parameters", f"Invalid comparison request: {exc}") from exc
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"Invalid comparison request: {exc}",
+        ) from exc
     points = [point.model_dump(mode="json") for point in result.points]
     displayed = _bounded(points, max_rows)
     return {
@@ -134,14 +165,18 @@ def get_comparison(
         "beta": result.beta,
         "rolling_window": rolling_window,
         "displayed_point_count": len(displayed),
-        "display_method": "none" if len(displayed) == len(points) else "evenly_spaced",
+        "display_method": (
+            "none" if len(displayed) == len(points) else "evenly_spaced"
+        ),
         "display_preserves_first_last": True,
         "points": displayed,
         "assumptions": list(result.assumptions),
         "input_digest": result.input_digest,
         "output_digest": result.output_digest,
         "point_in_time_safe": result.point_in_time_safe,
-        "normalization_basis": "close-to-close simple returns aligned on exact shared timestamps",
+        "normalization_basis": (
+            "close-to-close simple returns aligned on exact shared timestamps"
+        ),
         "network_access_enabled": False,
         "recommendations_enabled": False,
         "broker_connections_enabled": False,
@@ -185,12 +220,21 @@ def _analysis_request(
             **parameters,
         )
     except ValidationError as exc:
-        raise DesktopServiceError("invalid_parameters", f"Invalid quantitative parameters: {exc}") from exc
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"Invalid quantitative parameters: {exc}",
+        ) from exc
 
 
-def _bounded(values: list[dict[str, Any]], max_rows: int) -> list[dict[str, Any]]:
+def _bounded(
+    values: list[dict[str, Any]],
+    max_rows: int,
+) -> list[dict[str, Any]]:
     if max_rows < 2 or max_rows > 5000:
-        raise DesktopServiceError("invalid_parameters", "max_rows must be between 2 and 5000")
+        raise DesktopServiceError(
+            "invalid_parameters",
+            "max_rows must be between 2 and 5000",
+        )
     if len(values) <= max_rows:
         return values
     last = len(values) - 1
