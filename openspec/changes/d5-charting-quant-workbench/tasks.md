@@ -10,7 +10,7 @@
 - [x] Implement profile-scoped saved workbench views and versioned schema handling.
 - [x] Add frontend boundary, parity, accessibility, responsive-layout, range, viewport, inspection, and volume regression tests.
 - [x] Add automated performance and dependency/license evidence plus offline/safety source-boundary checks.
-- [ ] Pass both supported-platform clean-profile manual runs, including native packaging, offline observation, accessibility, and packaged responsiveness.
-- [x] Retain automated validation evidence and a provisional D5 exit review.
-- [ ] Reconcile final manual evidence and D5 exit decision.
+- [x] Pass both supported-platform clean-profile manual runs, including native packaging, offline observation, accessibility, and packaged responsiveness.
+- [x] Retain automated validation evidence and D5 exit review.
+- [x] Reconcile final manual evidence and D5 exit decision.
 - [ ] Obtain explicit owner direction before squash merge.
