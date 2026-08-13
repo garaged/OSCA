@@ -235,6 +235,19 @@ fn is_profile_mutation(method: &str) -> bool {
             | "workbench.view.update"
             | "workbench.view.rename"
             | "workbench.view.delete"
+            | "project.create"
+            | "project.update"
+            | "project.archive"
+            | "project.restore"
+            | "project.clone"
+            | "project.delete"
+            | "project.pin.add"
+            | "project.pin.update"
+            | "project.pin.remove"
+            | "project.note.add"
+            | "project.note.update"
+            | "project.workspace.save"
+            | "project.export.prepare"
     )
 }
 
@@ -503,6 +516,34 @@ mod tests {
         assert!(!is_profile_mutation("workbench.comparison.get"));
         assert!(!is_profile_mutation("workbench.view.list"));
         assert!(!is_profile_mutation("workbench.view.get"));
+    }
+
+    #[test]
+    fn d6_project_writes_require_profile_ownership() {
+        for method in [
+            "project.create",
+            "project.update",
+            "project.archive",
+            "project.restore",
+            "project.clone",
+            "project.delete",
+            "project.pin.add",
+            "project.pin.update",
+            "project.pin.remove",
+            "project.note.add",
+            "project.note.update",
+            "project.workspace.save",
+            "project.export.prepare",
+        ] {
+            assert!(
+                is_profile_mutation(method),
+                "{method} must require ownership"
+            );
+        }
+        assert!(!is_profile_mutation("project.list"));
+        assert!(!is_profile_mutation("project.get"));
+        assert!(!is_profile_mutation("project.workspace.list"));
+        assert!(!is_profile_mutation("project.workspace.get"));
     }
 
     #[test]

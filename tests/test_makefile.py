@@ -81,20 +81,21 @@ def test_makefile_help_and_build_dry_run_parse() -> None:
 def test_manual_acceptance_is_isolated_and_safe_by_default() -> None:
     source = MAKEFILE.read_text(encoding="utf-8")
 
-    assert "ACCEPTANCE_ROOT ?= $(CURDIR)/.osca/d5-manual-acceptance" in source
-    assert "D5 manual acceptance" in source
+    assert "ACCEPTANCE_ROOT ?= $(CURDIR)/.osca/d6-manual-acceptance" in source
+    assert "D6 manual acceptance" in source
     assert 'OSCA_DESKTOP_STATE_ROOT="$(ACCEPTANCE_STATE_ROOT)"' in source
     assert 'rm -rf "$(ACCEPTANCE_ROOT)"' in source
     assert "rm -rf $(HOME)" not in source
     assert "sudo" not in source
 
 
-def test_focused_desktop_suite_advances_through_d5() -> None:
+def test_focused_desktop_suite_advances_through_d6() -> None:
     source = MAKEFILE.read_text(encoding="utf-8")
 
     assert "tests/test_d3_desktop_*.py" in source
     assert "tests/test_d4_*.py" in source
     assert "tests/test_d5_*.py" in source
+    assert "tests/test_d6_*.py" in source
     assert "tests/test_desktop_packaging.py" in source
 
 

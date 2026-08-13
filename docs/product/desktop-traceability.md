@@ -1,13 +1,13 @@
 # Desktop Product Traceability
 
-Status: Active implementation baseline through D2
+Status: Active implementation baseline through D6 specification baseline
 
 | Product intent | Governing milestones | Required evidence | Current disposition |
 |---|---|---|---|
 | Maintain one authoritative local-first core across CLI, desktop, workspace, and personal server | D1-D19 | Shared application-service tests and architecture checks | D1/D2 application API and frontend architecture tests active |
 | Provide usable desktop onboarding and system diagnostics | D1-D3 | Clean-profile manual acceptance and failure-state tests | D2 implemented; cross-platform manual evidence pending |
 | Preserve free/offline foundational functionality | D2-D19 | Offline acceptance path without paid provider credentials | D2 bundled deterministic synthetic import implemented |
-| Provide governed asset discovery, analysis, and visualization | D4-D6 | Data lineage, numerical golden tests, chart accessibility evidence | Planned |
+| Provide governed asset discovery, analysis, and visualization | D4-D6 | Data lineage, numerical golden tests, chart accessibility evidence | D4 and D5 implemented; D6 specification baseline active |
 | Provide reproducible strategy research | D7 | Versioned strategy definitions, fidelity disclosures, benchmark and sensitivity evidence | Planned |
 | Provide auditable virtual portfolios and simulated orders | D8-D9 | Double-entry invariants, deterministic replay, fill-assumption evidence, recovery tests | Planned |
 | Provide leakage-resistant ML experimentation | D10-D11 | Point-in-time datasets, time-aware validation, baseline comparisons, approval and drift evidence | Planned |

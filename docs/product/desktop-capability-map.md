@@ -1,6 +1,6 @@
 # Desktop Capability Map
 
-Status: Active implementation authority through D2
+Status: Active implementation authority through D6 specification baseline
 
 Legend: **current** exists in the retained Python/U14 product; **foundation** is implemented as reusable desktop infrastructure; **planned** belongs to a future milestone; **gated** requires separate evidence or user enablement; **prohibited** must not be implemented.
 
@@ -19,9 +19,9 @@ Legend: **current** exists in the retained Python/U14 product; **foundation** is
 | Desktop accessibility and semantic design-system foundation | foundation | D2; completed release-wide in D18 |
 | Native profile-directory chooser | planned | Narrow host capability after D2 evidence; no generic frontend filesystem access |
 | Provider and credential setup UX | planned/gated | D3; provider and credential policy evidence |
-| Asset discovery and watchlists | planned | D4 |
-| Interactive charts and quantitative workbench | planned | D5 |
-| Research projects and saved workspaces | planned | D6 |
+| Asset discovery and watchlists | foundation | D4 |
+| Interactive charts and quantitative workbench | foundation | D5 |
+| Research projects and saved workspaces | active implementation | D6 |
 | Strategy builder and backtesting lab | planned | D7 |
 | Multiple virtual portfolios and double-entry accounting | planned | D8 |
 | Simulated orders and forward paper evaluation | planned | D9 |
