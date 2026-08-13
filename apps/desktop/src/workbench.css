@@ -181,6 +181,38 @@
   overflow-wrap: anywhere;
 }
 
+.workbench-selected-observation {
+  margin-top: 0.75rem;
+}
+
+.workbench-selected-observation h3 {
+  margin: 0 0 0.5rem;
+}
+
+.workbench-selected-observation dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.workbench-selected-observation div {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 0.45rem;
+  padding: 0.5rem 0.6rem;
+}
+
+.workbench-selected-observation dt {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.workbench-selected-observation dd {
+  margin: 0.15rem 0 0;
+  overflow-wrap: anywhere;
+}
+
 .workbench-svg,
 .workbench-volume-svg {
   display: block;
@@ -248,6 +280,12 @@
   stroke-width: 3;
 }
 
+.chart-hit-target {
+  cursor: pointer;
+  fill: transparent;
+  stroke: transparent;
+}
+
 .chart-volume {
   fill: currentColor;
   opacity: 0.6;
@@ -312,6 +350,10 @@
   .workbench-sample-import > div:first-child {
     grid-column: 1 / -1;
   }
+
+  .workbench-selected-observation dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 680px) {
@@ -333,6 +375,10 @@
   .workbench-export-action > div:first-child,
   .workbench-sample-import > div:first-child {
     grid-column: auto;
+  }
+
+  .workbench-selected-observation dl {
+    grid-template-columns: 1fr;
   }
 }
 
