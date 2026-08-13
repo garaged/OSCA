@@ -16,11 +16,12 @@ Run on macOS ARM64 and Linux x86-64 using an isolated clean profile.
 12. Verify no network traffic during catalog, detail, recent-asset, or watchlist operations.
 13. Validate light/dark/high contrast, reduced motion, VoiceOver/Orca, 320px/680px/desktop widths.
 14. Build native packages with the canonical repository build. Launch the generated packaged application directly with no development server, `make run`, manually started Python process, or repository-local Python environment running. Confirm the bundled desktop sidecar starts automatically, persisted watchlists are usable, and the same profile-ownership checks pass. A packaged application that reports `sidecar_unavailable`, exits its sidecar, or requires a separately started service fails this gate.
+15. Measure packaged responsiveness on the acceptance host. From direct packaged-app launch, the desktop service must become usable within 5 seconds. After bootstrap, repeat Workspace/Markets/Data Sources navigation plus local asset search, inspect/recent, and watchlist read/write actions. Each ordinary local interaction should complete within 2 seconds and there must be no recurring 5-second-or-longer stalls. Record approximate observed timings; repeated 10–20 second sidecar or screen delays fail this gate.
 
 For the concurrency checks, record which window owns each profile, the exact rejected action/error, and confirm the first owner's watchlists, ordering, recent assets, and selected profile remain unchanged.
 
 For the supported non-UI check, use the versioned desktop API (`uv run python -m osca.desktop_api.stdio`) rather than direct file/database edits. The required invariant is: desktop-owned profile + external supported mutation => rejected; no desktop owner + supported mutation => allowed.
 
-For the packaged-app check, validate the actual generated bundle rather than Tauri development mode. The packaged application must be self-contained for its desktop service on the supported platform.
+For the packaged-app check, validate the actual generated bundle rather than Tauri development mode. The packaged application must be self-contained for its desktop service on the supported platform. Its bundled runtime must not impose repeated extraction/startup delays on ordinary local requests.
 
-Record environment, screenshots, network observation, profile identifiers, and exact failures without committing private host paths.
+Record environment, screenshots, network observation, profile identifiers, approximate packaged timings, and exact failures without committing private host paths.
