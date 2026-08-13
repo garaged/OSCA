@@ -47,7 +47,7 @@ class D4DesktopApplicationService(D3EvidenceApplicationService):
     def _asset_search(self, params: dict[str, Any]) -> dict[str, Any]:
         _allowed(params, {"query", "asset_class", "venue", "limit", "offset", "profile_root"}, "asset.search")
         return search_assets(
-            _optional_text(params, "query") or "",
+            _optional_search_query(params),
             asset_class=_optional_text(params, "asset_class"),
             venue=_optional_text(params, "venue"),
             limit=_optional_int(params, "limit", 50),
@@ -130,6 +130,15 @@ def _optional_text(params: dict[str, Any], name: str) -> str | None:
     if name not in params or params[name] is None:
         return None
     return _required_text(params, name)
+
+
+def _optional_search_query(params: dict[str, Any]) -> str:
+    if "query" not in params or params["query"] is None:
+        return ""
+    value = params["query"]
+    if not isinstance(value, str) or len(value) > 256:
+        raise DesktopServiceError("invalid_parameters", "query must be a string up to 256 characters")
+    return value.strip()
 
 
 def _required_int(params: dict[str, Any], name: str) -> int:
