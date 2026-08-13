@@ -1,0 +1,190 @@
+.projects {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.projects-hero,
+.project-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.projects-hero h1,
+.projects-hero p,
+.project-detail-heading h2,
+.project-detail-heading p {
+  margin-top: 0;
+}
+
+.projects-boundaries,
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.projects-boundaries span,
+.projects-panel,
+.projects-notice,
+.projects-export,
+.project-detail {
+  border: 1px solid currentColor;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+}
+
+.projects-layout,
+.project-grid,
+.project-summary {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.projects-layout {
+  grid-template-columns: minmax(16rem, 1fr) minmax(18rem, 1.2fr);
+}
+
+.project-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.project-summary div {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+
+.project-summary dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.project-summary dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.projects-form,
+.projects-inline-action {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.projects-form label,
+.projects-inline-action label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.projects-form input,
+.projects-form select,
+.projects-form textarea,
+.projects-form button,
+.projects-inline-action input,
+.projects-inline-action button,
+.project-actions button,
+.project-list button {
+  min-height: 2.7rem;
+  font: inherit;
+}
+
+.projects-form textarea {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+.project-list,
+.project-items {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.project-list button,
+.project-items li {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  text-align: left;
+}
+
+.project-items li {
+  list-style: none;
+}
+
+.project-items code,
+.project-items p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.projects :focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .projects-layout,
+  .project-grid,
+  .project-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .projects-hero,
+  .project-detail-heading {
+    display: grid;
+  }
+}
+
+@media (max-width: 320px) {
+  .projects {
+    padding: 0.5rem;
+  }
+
+  .projects-form input,
+  .projects-form select,
+  .projects-form textarea,
+  .projects-form button,
+  .projects-inline-action input,
+  .projects-inline-action button,
+  .project-actions button,
+  .project-list button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projects * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .projects-boundaries span,
+  .projects-panel,
+  .projects-notice,
+  .projects-export,
+  .project-detail,
+  .project-summary div,
+  .project-list button,
+  .project-items li {
+    forced-color-adjust: auto;
+  }
+}
