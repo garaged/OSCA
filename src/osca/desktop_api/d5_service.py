@@ -53,7 +53,15 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
     def _workbench_series_get(self, params: dict[str, Any]) -> dict[str, Any]:
         _allowed(
             params,
-            {"profile_root", "asset_id", "timeframe", "start", "end", "max_rows", "derived"},
+            {
+                "profile_root",
+                "asset_id",
+                "timeframe",
+                "start",
+                "end",
+                "max_rows",
+                "derived",
+            },
             "workbench.series.get",
         )
         profile_root = _required_path(params, "profile_root")
@@ -159,7 +167,9 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
             timeframe=_required_text(params, "timeframe"),
         )
         request = _chart_request(params, dataset)
-        display_downsampling_active = dataset.row_count is not None and dataset.row_count > request.max_rows
+        display_downsampling_active = (
+            dataset.row_count is not None and dataset.row_count > request.max_rows
+        )
         with ProfileMutationLock(profile_root):
             return prepare_export(
                 profile_root,
@@ -231,7 +241,10 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
             return delete_view(profile_root, _required_int(params, "view_id"))
 
 
-def _chart_request(params: dict[str, Any], dataset: GovernedDataset) -> ChartSeriesRequest:
+def _chart_request(
+    params: dict[str, Any],
+    dataset: GovernedDataset,
+) -> ChartSeriesRequest:
     try:
         return ChartSeriesRequest(
             dataset_revision_id=dataset.dataset_revision_id,
@@ -244,7 +257,10 @@ def _chart_request(params: dict[str, Any], dataset: GovernedDataset) -> ChartSer
             derived=_derived_requests(params),
         )
     except ValidationError as exc:
-        raise DesktopServiceError("invalid_parameters", _validation_message(exc)) from exc
+        raise DesktopServiceError(
+            "invalid_parameters",
+            _validation_message(exc),
+        ) from exc
 
 
 def _derived_requests(params: dict[str, Any]) -> tuple[DerivedSeriesRequest, ...]:
@@ -260,7 +276,10 @@ def _derived_requests(params: dict[str, Any]) -> tuple[DerivedSeriesRequest, ...
             )
         kind = item.get("kind")
         if not isinstance(kind, str):
-            raise DesktopServiceError("invalid_parameters", "derived kind must be a string")
+            raise DesktopServiceError(
+                "invalid_parameters",
+                "derived kind must be a string",
+            )
         try:
             definition = DerivedSeriesRequest(
                 kind=DerivedSeriesKind(kind),
@@ -303,14 +322,20 @@ def _optional_text(params: dict[str, Any], name: str) -> str | None:
 def _required_path(params: dict[str, Any], name: str) -> Path:
     path = Path(_required_text(params, name)).expanduser()
     if not path.is_absolute():
-        raise DesktopServiceError("invalid_parameters", f"{name} must be an absolute path")
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"{name} must be an absolute path",
+        )
     return path.resolve()
 
 
 def _required_int(params: dict[str, Any], name: str) -> int:
     value = params.get(name)
     if not isinstance(value, int) or isinstance(value, bool) or value < 1:
-        raise DesktopServiceError("invalid_parameters", f"{name} must be a positive integer")
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"{name} must be a positive integer",
+        )
     return value
 
 
@@ -319,14 +344,20 @@ def _optional_int(params: dict[str, Any], name: str, default: int) -> int:
         return default
     value = params[name]
     if not isinstance(value, int) or isinstance(value, bool):
-        raise DesktopServiceError("invalid_parameters", f"{name} must be an integer")
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"{name} must be an integer",
+        )
     return value
 
 
 def _required_object(params: dict[str, Any], name: str) -> dict[str, Any]:
     value = params.get(name)
     if not isinstance(value, dict):
-        raise DesktopServiceError("invalid_parameters", f"{name} must be an object")
+        raise DesktopServiceError(
+            "invalid_parameters",
+            f"{name} must be an object",
+        )
     return value
 
 
@@ -363,4 +394,5 @@ def _optional_datetime(params: dict[str, Any], name: str) -> datetime | None:
 def _validation_message(exc: ValidationError) -> str:
     first = exc.errors()[0]
     location = ".".join(str(part) for part in first.get("loc", ())) or "request"
-    return f"Invalid workbench request at {location}: {first.get('msg', 'validation failed')}"
+    message = first.get("msg", "validation failed")
+    return f"Invalid workbench request at {location}: {message}"
