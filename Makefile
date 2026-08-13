@@ -57,7 +57,7 @@ frontend-install: ## Install locked desktop frontend dependencies.
 run: setup ## Launch the Tauri desktop app in development mode.
 	$(PYTHON) scripts/run_desktop.py
 
-run-clean: ## Reset isolated acceptance state and launch the app in a deterministic order.
+run-clean: ## Reset isolated acceptance state and launch manual testing in a deterministic order.
 	$(MAKE) acceptance-reset
 	$(MAKE) acceptance-run
 
@@ -92,7 +92,13 @@ acceptance-info: ## Print paths and source identity to record in manual-test evi
 	@$(CARGO) --version
 
 build: setup ## Build the native desktop application package for the current platform.
-	cd $(DESKTOP_DIR) && $(NPM) run tauri build
+	@if [ "$$(uname -s)" = "Darwin" ]; then \
+		cd $(DESKTOP_DIR) && $(NPM) run tauri -- build --bundles app; \
+	elif [ "$$(uname -s)" = "Linux" ]; then \
+		cd $(DESKTOP_DIR) && $(NPM) run tauri -- build --bundles deb; \
+	else \
+		cd $(DESKTOP_DIR) && $(NPM) run tauri -- build; \
+	fi
 	@printf '%s\n' 'Native package output:'
 	@find "$(TAURI_DIR)/target/release/bundle" -maxdepth 3 -type f 2>/dev/null || true
 

@@ -146,6 +146,31 @@ export async function importBundledSample(profileRoot: string): Promise<SampleIm
   return requestResult("sample.import", { profile_root: profileRoot }, parseSampleImport);
 }
 
+function classifyInvokeFailure(error: unknown): DesktopErrorPayload {
+  const message = error instanceof Error
+    ? error.message
+    : typeof error === "string"
+      ? error
+      : "The OSCA sidecar is unavailable.";
+
+  if (
+    message.includes("profile is already open in another OSCA window or process") ||
+    message.includes("profile mutation requires this OSCA window to open and own the profile first")
+  ) {
+    return {
+      code: "profile_locked",
+      message,
+      retryable: true
+    };
+  }
+
+  return {
+    code: "sidecar_unavailable",
+    message,
+    retryable: true
+  };
+}
+
 async function requestResult<T>(
   method: string,
   params: Record<string, unknown>,
@@ -165,11 +190,7 @@ async function requestResult<T>(
       requestJson: JSON.stringify(request)
     });
   } catch (error) {
-    throw new DesktopClientError({
-      code: "sidecar_unavailable",
-      message: error instanceof Error ? error.message : "The OSCA sidecar is unavailable.",
-      retryable: true
-    });
+    throw new DesktopClientError(classifyInvokeFailure(error));
   }
 
   let parsed: unknown;
@@ -273,107 +294,95 @@ function parseBootstrap(record: Record<string, unknown>): DesktopBootstrap {
       live_execution: expectString(disclosures.live_execution, "disclosures.live_execution")
     },
     capabilities: Object.fromEntries(
-      Object.entries(capabilities).map(([key, value]) => [
-        key,
-        expectBoolean(value, `capabilities.${key}`)
-      ])
+      Object.entries(capabilities).map(([key, value]) => [key, expectBoolean(value, `capabilities.${key}`)])
     )
   };
 }
 
-function parseProfileOperation(record: Record<string, unknown>): ProfileOperation {
-  const diagnostics = record.diagnostics === undefined
-    ? undefined
-    : expectRecord(record.diagnostics, "diagnostics");
-  return {
-    status: expectString(record.status, "status"),
-    selected_profile: expectString(record.selected_profile, "selected_profile"),
-    profile: parseProfileInspection(expectRecord(record.profile, "profile")),
-    ...(diagnostics ? { diagnostics } : {})
-  };
-}
-
 function parseProfileInspection(record: Record<string, unknown>): ProfileInspection {
-  const lockState = expectString(record.lock_state, "lock_state");
+  const lockState = expectString(record.lock_state, "profile.lock_state");
   if (lockState !== "available" && lockState !== "locked" && lockState !== "unavailable") {
     throw invalidResponse(`Unknown profile lock state: ${lockState}`);
   }
-  const findings = expectArray(record.findings, "findings").map((entry) => {
-    const finding = expectRecord(entry, "profile finding");
-    return {
-      check_id: expectString(finding.check_id, "finding.check_id"),
-      status: expectString(finding.status, "finding.status"),
-      message: expectString(finding.message, "finding.message"),
-      remediation: expectNullableString(finding.remediation, "finding.remediation")
-    };
-  });
-
   return {
-    profile_root: expectString(record.profile_root, "profile_root"),
-    exists: expectBoolean(record.exists, "exists"),
-    configured: expectBoolean(record.configured, "configured"),
-    writable: expectBoolean(record.writable, "writable"),
+    profile_root: expectString(record.profile_root, "profile.profile_root"),
+    exists: expectBoolean(record.exists, "profile.exists"),
+    configured: expectBoolean(record.configured, "profile.configured"),
+    writable: expectBoolean(record.writable, "profile.writable"),
     lock_state: lockState,
-    compatibility_status: expectString(record.compatibility_status, "compatibility_status"),
-    storage_root: expectNullableString(record.storage_root, "storage_root"),
-    can_open: expectBoolean(record.can_open, "can_open"),
-    findings
+    compatibility_status: expectString(record.compatibility_status, "profile.compatibility_status"),
+    storage_root: expectNullableString(record.storage_root, "profile.storage_root"),
+    can_open: expectBoolean(record.can_open, "profile.can_open"),
+    findings: expectArray(record.findings, "profile.findings").map((entry) => {
+      const finding = expectRecord(entry, "profile finding");
+      return {
+        check_id: expectString(finding.check_id, "profile finding.check_id"),
+        status: expectString(finding.status, "profile finding.status"),
+        message: expectString(finding.message, "profile finding.message"),
+        remediation: expectNullableString(finding.remediation, "profile finding.remediation")
+      };
+    })
+  };
+}
+
+function parseProfileOperation(record: Record<string, unknown>): ProfileOperation {
+  return {
+    status: expectString(record.status, "profile operation.status"),
+    selected_profile: expectString(record.selected_profile, "profile operation.selected_profile"),
+    profile: parseProfileInspection(expectRecord(record.profile, "profile operation.profile")),
+    ...(record.diagnostics === undefined || record.diagnostics === null
+      ? {}
+      : { diagnostics: expectRecord(record.diagnostics, "profile operation.diagnostics") })
   };
 }
 
 function parseDiagnostics(record: Record<string, unknown>): DesktopDiagnostics {
   return {
-    package: expectRecord(record.package, "package"),
-    protocol_version: expectString(record.protocol_version, "protocol_version"),
-    sidecar_status: expectString(record.sidecar_status, "sidecar_status"),
-    network_policy: expectString(record.network_policy, "network_policy"),
-    provider_status: expectString(record.provider_status, "provider_status"),
+    package: expectRecord(record.package, "diagnostics.package"),
+    protocol_version: expectString(record.protocol_version, "diagnostics.protocol_version"),
+    sidecar_status: expectString(record.sidecar_status, "diagnostics.sidecar_status"),
+    network_policy: expectString(record.network_policy, "diagnostics.network_policy"),
+    provider_status: expectString(record.provider_status, "diagnostics.provider_status"),
     recommendations_enabled: expectBoolean(
       record.recommendations_enabled,
-      "recommendations_enabled"
+      "diagnostics.recommendations_enabled"
     ),
-    live_execution_enabled: expectBoolean(
-      record.live_execution_enabled,
-      "live_execution_enabled"
-    ),
-    profile: record.profile === null
+    live_execution_enabled: expectBoolean(record.live_execution_enabled, "diagnostics.live_execution_enabled"),
+    profile: record.profile === null || record.profile === undefined
       ? null
-      : parseProfileInspection(expectRecord(record.profile, "profile")),
-    profile_diagnostics: record.profile_diagnostics === null
+      : parseProfileInspection(expectRecord(record.profile, "diagnostics.profile")),
+    profile_diagnostics: record.profile_diagnostics === null || record.profile_diagnostics === undefined
       ? null
-      : expectRecord(record.profile_diagnostics, "profile_diagnostics")
+      : expectRecord(record.profile_diagnostics, "diagnostics.profile_diagnostics")
   };
 }
 
 function parseSampleImport(record: Record<string, unknown>): SampleImportResult {
-  const imported = expectRecord(record.import, "import");
+  const imported = expectRecord(record.import, "sample import.import");
   return {
-    status: expectString(record.status, "status"),
-    sample_id: expectString(record.sample_id, "sample_id"),
-    sample_label: expectString(record.sample_label, "sample_label"),
-    synthetic: expectBoolean(record.synthetic, "synthetic"),
+    status: expectString(record.status, "sample import.status"),
+    sample_id: expectString(record.sample_id, "sample import.sample_id"),
+    sample_label: expectString(record.sample_label, "sample import.sample_label"),
+    synthetic: expectBoolean(record.synthetic, "sample import.synthetic"),
     network_access_enabled: expectBoolean(
       record.network_access_enabled,
-      "network_access_enabled"
+      "sample import.network_access_enabled"
     ),
     provider_account_required: expectBoolean(
       record.provider_account_required,
-      "provider_account_required"
+      "sample import.provider_account_required"
     ),
-    credential_required: expectBoolean(record.credential_required, "credential_required"),
+    credential_required: expectBoolean(record.credential_required, "sample import.credential_required"),
     import: {
-      dataset_revision_id: expectString(
-        imported.dataset_revision_id,
-        "import.dataset_revision_id"
-      ),
-      symbol: expectString(imported.symbol, "import.symbol"),
-      timeframe: expectString(imported.timeframe, "import.timeframe"),
-      row_count: expectNumber(imported.row_count, "import.row_count"),
-      payload_uri: expectString(imported.payload_uri, "import.payload_uri"),
-      metadata_uri: expectString(imported.metadata_uri, "import.metadata_uri"),
+      dataset_revision_id: expectString(imported.dataset_revision_id, "sample import.dataset_revision_id"),
+      symbol: expectString(imported.symbol, "sample import.symbol"),
+      timeframe: expectString(imported.timeframe, "sample import.timeframe"),
+      row_count: expectNumber(imported.row_count, "sample import.row_count"),
+      payload_uri: expectString(imported.payload_uri, "sample import.payload_uri"),
+      metadata_uri: expectString(imported.metadata_uri, "sample import.metadata_uri"),
       network_access_enabled: expectBoolean(
         imported.network_access_enabled,
-        "import.network_access_enabled"
+        "sample import.import.network_access_enabled"
       )
     }
   };
@@ -385,6 +394,14 @@ function parseError(record: Record<string, unknown>): DesktopErrorPayload {
     message: expectString(record.message, "error.message"),
     retryable: expectBoolean(record.retryable, "error.retryable")
   };
+}
+
+function invalidResponse(message: string): DesktopClientError {
+  return new DesktopClientError({
+    code: "invalid_response",
+    message,
+    retryable: true
+  });
 }
 
 function expectRecord(value: unknown, label: string): Record<string, unknown> {
@@ -409,7 +426,7 @@ function expectString(value: unknown, label: string): string {
 }
 
 function expectNullableString(value: unknown, label: string): string | null {
-  if (value === null || value === undefined) {
+  if (value === null) {
     return null;
   }
   return expectString(value, label);
@@ -423,20 +440,12 @@ function expectBoolean(value: unknown, label: string): boolean {
 }
 
 function expectNumber(value: unknown, label: string): number {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    throw invalidResponse(`${label} must be a finite number.`);
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    throw invalidResponse(`${label} must be a number.`);
   }
   return value;
 }
 
 function isNavigationId(value: string): value is NavigationItem["id"] {
   return value === "home" || value === "research" || value === "evidence" || value === "system";
-}
-
-function invalidResponse(message: string): DesktopClientError {
-  return new DesktopClientError({
-    code: "invalid_response",
-    message,
-    retryable: true
-  });
 }

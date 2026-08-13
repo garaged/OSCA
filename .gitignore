@@ -12,6 +12,9 @@ build/
 # Node development tooling
 node_modules/
 
+# Generated desktop sidecars
+apps/desktop/src-tauri/binaries/
+
 # Local OSCA state
 .osca/
 *.db
