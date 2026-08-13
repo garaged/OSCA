@@ -45,7 +45,7 @@ type AsyncResult<T> =
 const WIDTH = 900;
 const HEIGHT = 360;
 const VOLUME_HEIGHT = 120;
-const PADDING = 28;
+const PADDING = 72;
 const DISPLAY_ROWS = 240;
 
 export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
@@ -719,6 +719,14 @@ function PriceChart({
         tabIndex={rows.length ? 0 : -1}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       >
+        {geometry.priceTicks.map((tick) => (
+          <g className="chart-scale-tick" key={tick.value}>
+            <line className="chart-grid" x1={PADDING} x2={WIDTH - PADDING} y1={tick.y} y2={tick.y} />
+            <text className="chart-axis-label" dominantBaseline="middle" textAnchor="end" x={PADDING - 8} y={tick.y}>
+              {format(tick.value)}
+            </text>
+          </g>
+        ))}
         <line className="chart-axis" x1={PADDING} x2={PADDING} y1={PADDING} y2={HEIGHT - PADDING} />
         <line className="chart-axis" x1={PADDING} x2={WIDTH - PADDING} y1={HEIGHT - PADDING} y2={HEIGHT - PADDING} />
         {geometry.candles.map((item) => (
@@ -810,7 +818,13 @@ function inspectionSummary(row: WorkbenchRow): string {
 }
 
 function chartGeometry(rows: WorkbenchRow[]) {
-  if (!rows.length) return { candles: [], derived: [] as Array<{ id: string; points: string }> };
+  if (!rows.length) {
+    return {
+      candles: [],
+      derived: [] as Array<{ id: string; points: string }>,
+      priceTicks: [] as Array<{ value: number; y: number }>
+    };
+  }
   const values = rows.flatMap((row) => [row.low, row.high, ...Object.values(row.derived).filter((value): value is number => value !== null)]);
   const minimum = Math.min(...values);
   const maximum = Math.max(...values);
@@ -821,11 +835,15 @@ function chartGeometry(rows: WorkbenchRow[]) {
   const y = (value: number) => PADDING + ((maximum - value) / span) * plotHeight;
   const width = Math.min(14, Math.max(3, (plotWidth / rows.length) * 0.55));
   const candles = rows.map((row, index) => ({ timestamp: row.timestamp, x: x(index), width, highY: y(row.high), lowY: y(row.low), openY: y(row.open), closeY: y(row.close), direction: row.close >= row.open ? "up" : "down" }));
+  const priceTicks = Array.from({ length: 4 }, (_, index) => {
+    const value = maximum - (span * index) / 3;
+    return { value, y: y(value) };
+  });
   const derived = Object.keys(rows[0].derived).map((id) => ({
     id,
     points: rows.map((row, index) => row.derived[id] == null ? null : `${x(index)},${y(row.derived[id] as number)}`).filter((point): point is string => point !== null).join(" ")
   }));
-  return { candles, derived };
+  return { candles, derived, priceTicks };
 }
 
 function isDerivedKind(value: string): value is WorkbenchDerivedRequest["kind"] {
