@@ -1,12 +1,12 @@
 # D6 Tasks
 
 - [x] Define D6 executable requirements, specification, traceability baseline, manual acceptance, and OpenSpec change.
-- [ ] Implement profile-scoped project persistence, lifecycle, archive/restore, clone, and timeline records.
-- [ ] Add Python service, contract, migration, recovery, profile-isolation, ownership, and failure regression tests.
-- [ ] Implement typed project pins for governed resources with degraded/broken-link disclosure.
-- [ ] Implement bounded user notes and saved project workspace definitions.
-- [ ] Implement governed thin manifest export with schema/version, provenance, digest, note labeling, and degraded-link disclosure.
-- [ ] Add narrow D6 desktop application API methods and Rust profile-mutation classification.
+- [x] Implement profile-scoped project persistence, lifecycle, archive/restore, clone, and timeline records.
+- [x] Add Python service, contract, migration, recovery, profile-isolation, ownership, and failure regression tests.
+- [x] Implement typed project pins for governed resources with degraded/broken-link disclosure.
+- [x] Implement bounded user notes and saved project workspace definitions.
+- [x] Implement governed thin manifest export with schema/version, provenance, digest, note labeling, and degraded-link disclosure.
+- [x] Add narrow D6 desktop application API methods and Rust profile-mutation classification.
 - [ ] Implement accessible responsive Projects UI and shell navigation.
 - [ ] Add frontend boundary, accessibility, responsive-layout, empty/error/degraded-state, and safety regression tests.
 - [ ] Add offline/source-boundary and no-execution checks.
