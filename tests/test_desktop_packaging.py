@@ -25,7 +25,7 @@ def test_sidecar_build_is_pinned_onedir_and_performance_smoked() -> None:
     assert '"--onedir"' in source
     assert '"--onefile"' not in source
     assert "osca-sidecar-runtime" in source
-    assert "_SMOKE_TIMEOUT_SECONDS = 5.0" in source
+    assert "_SMOKE_TIMEOUT_SECONDS = 15.0" in source
     assert "for attempt in range(2)" in source
     assert '"--collect-submodules"' in source
     assert '"osca"' in source
