@@ -1,6 +1,6 @@
 # D5 Production Charting and Quantitative Analysis Workbench
 
-- **Status:** Implementation and automated validation complete; supported-platform manual acceptance pending
+- **Status:** Implementation, hosted validation, and supported-platform manual acceptance complete
 - **Baseline:** D4 merge `a4e733292ff42775848520afd536d57a18cada1f`
 - **Branch:** `agent/d5-charting-quant-workbench`
 - **Intent:** `intent.md`
@@ -32,16 +32,19 @@ D5 turns OSCA's existing governed analytical and quantitative capabilities into 
 3. Desktop price/volume chart, synchronized table, explicit row/downsampling evidence, and presentation zoom/pan.
 4. Deterministic indicator and compatible comparison controls.
 5. Profile-scoped saved views with schema/version, security validation, persistence, and ownership locking.
-6. Keyboard-selectable synchronized chart inspection with matching table-row state.
-7. Automated performance, dependency/license, boundary, accessibility-source, and supported desktop CI evidence.
+6. Keyboard and mouse-selectable synchronized chart inspection with matching table-row state and a readable selected-observation panel.
+7. Clean-profile bundled AAPL/MSFT sample import for offline Workbench and comparison acceptance.
+8. Automated performance, dependency/license, boundary, accessibility-source, and supported desktop CI evidence.
 
-## Remaining exit work
+## Validation disposition
 
-The complete clean-profile manual procedure must pass on both supported D5 platforms:
+Quality, Desktop Foundation, and the PR aggregate passed on final implementation/evidence head `12724813d1a542663a5fbdd8649754107a8f3357`.
+
+The complete clean-profile manual procedure passed on both supported D5 platforms:
 
 - macOS ARM64;
 - Linux x86-64.
 
-After both passes, validation evidence and the provisional exit review must be reconciled, final hosted CI must pass on that evidence head, and PR #85 requires explicit repository-owner direction before **Squash and merge**.
+PR #85 remains subject to explicit repository-owner direction before **Squash and merge**.
 
 D5 does not add recommendations, model training, strategy execution, brokerage connectivity, or real-capital execution.
