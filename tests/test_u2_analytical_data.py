@@ -13,6 +13,7 @@ from osca.analytical_data import (
     DerivedSeriesRequest,
     DownsamplingMethod,
     build_chart_series,
+    build_full_resolution_chart_series,
 )
 
 
@@ -85,6 +86,31 @@ def test_chart_query_filters_and_downsamples_deterministically(tmp_path: Path) -
     assert first.rows == second.rows
     assert first.rows[0].timestamp == start
     assert first.rows[-1].timestamp == end
+
+
+def test_full_resolution_chart_path_ignores_display_row_budget(tmp_path: Path) -> None:
+    payload = _payload(tmp_path / "bars.parquet", count=20)
+    request = ChartSeriesRequest(
+        dataset_revision_id=uuid4(),
+        payload_path=payload,
+        symbol="AAPL",
+        timeframe="1d",
+        max_rows=5,
+        derived=(DerivedSeriesRequest(kind=DerivedSeriesKind.SMA, window=3),),
+    )
+
+    display = build_chart_series(request)
+    full = build_full_resolution_chart_series(request)
+
+    assert display.returned_row_count == 5
+    assert display.downsampling_method is DownsamplingMethod.EVENLY_SPACED
+    assert full.filtered_row_count == 20
+    assert full.returned_row_count == 20
+    assert full.downsampling_method is DownsamplingMethod.NONE
+    assert full.rows[0].timestamp == display.rows[0].timestamp
+    assert full.rows[-1].timestamp == display.rows[-1].timestamp
+    assert full.derived_evidence == display.derived_evidence
+    assert full.payload_sha256 == display.payload_sha256
 
 
 def test_chart_query_fails_closed_for_missing_payload(tmp_path: Path) -> None:
