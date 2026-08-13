@@ -140,3 +140,22 @@ def test_same_dataset_comparison_has_identity_statistics(tmp_path: Path) -> None
     assert result["recommendations_enabled"] is False
     assert result["broker_connections_enabled"] is False
     assert result["real_capital_execution_enabled"] is False
+
+
+def test_comparison_rejects_incompatible_currency_before_dataset_join(tmp_path: Path) -> None:
+    service, profile_root = _sample_service(tmp_path)
+    response = _call(
+        service,
+        "workbench.comparison.get",
+        {
+            "profile_root": str(profile_root),
+            "primary_asset_id": "equity:XNAS:AAPL",
+            "comparison_asset_id": "crypto:KRAKEN:XBTUSD",
+            "timeframe": "1d",
+        },
+    )
+
+    assert response.status == "error"
+    assert response.error is not None
+    assert response.error.code == "workbench_comparison_incompatible"
+    assert "matching currency semantics" in response.error.message
