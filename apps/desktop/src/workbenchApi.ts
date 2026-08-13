@@ -5,6 +5,11 @@ export type WorkbenchDerivedRequest = {
   window?: number;
 };
 
+export type WorkbenchRange = {
+  start?: string;
+  end?: string;
+};
+
 export type WorkbenchRow = {
   timestamp: string;
   open: number;
@@ -68,16 +73,19 @@ export function getWorkbenchSeries(
   assetId: string,
   timeframe: string,
   maxRows: number,
-  derived: WorkbenchDerivedRequest[]
+  derived: WorkbenchDerivedRequest[],
+  range: WorkbenchRange = {}
 ): Promise<WorkbenchSeries> {
   return request(
     "workbench.series.get",
     {
       profile_root: profileRoot,
       asset_id: assetId,
-      timeframe: timeframe,
+      timeframe,
       max_rows: maxRows,
-      derived
+      derived,
+      ...(range.start ? { start: range.start } : {}),
+      ...(range.end ? { end: range.end } : {})
     },
     parseWorkbenchSeries
   );
