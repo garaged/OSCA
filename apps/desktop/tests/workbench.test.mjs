@@ -11,6 +11,8 @@ test("D5 exposes Workbench as a first-class desktop area", async () => {
   assert.match(surface, /Synchronized visible values/);
   assert.match(surface, /Saved workbench views/);
   assert.match(surface, /full-resolution CSV evidence/i);
+  assert.match(surface, /Full-resolution evidence export/);
+  assert.match(surface, /workbench-export-action/);
   assert.match(surface, /Import bundled synthetic samples/);
   assert.match(surface, /AAPL\/MSFT/);
   assert.match(surface, /importBundledSample/);
