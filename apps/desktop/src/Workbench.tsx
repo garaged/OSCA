@@ -45,7 +45,8 @@ type AsyncResult<T> =
 const WIDTH = 900;
 const HEIGHT = 360;
 const VOLUME_HEIGHT = 120;
-const PADDING = 72;
+const PADDING = 28;
+const PRICE_AXIS_PADDING = 72;
 const DISPLAY_ROWS = 240;
 
 export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
@@ -721,14 +722,14 @@ function PriceChart({
       >
         {geometry.priceTicks.map((tick) => (
           <g className="chart-scale-tick" key={tick.value}>
-            <line className="chart-grid" x1={PADDING} x2={WIDTH - PADDING} y1={tick.y} y2={tick.y} />
-            <text className="chart-axis-label" dominantBaseline="middle" textAnchor="end" x={PADDING - 8} y={tick.y}>
+            <line className="chart-grid" x1={PRICE_AXIS_PADDING} x2={WIDTH - PADDING} y1={tick.y} y2={tick.y} />
+            <text className="chart-axis-label" dominantBaseline="middle" textAnchor="end" x={PRICE_AXIS_PADDING - 8} y={tick.y}>
               {format(tick.value)}
             </text>
           </g>
         ))}
-        <line className="chart-axis" x1={PADDING} x2={PADDING} y1={PADDING} y2={HEIGHT - PADDING} />
-        <line className="chart-axis" x1={PADDING} x2={WIDTH - PADDING} y1={HEIGHT - PADDING} y2={HEIGHT - PADDING} />
+        <line className="chart-axis" x1={PRICE_AXIS_PADDING} x2={PRICE_AXIS_PADDING} y1={PADDING} y2={HEIGHT - PADDING} />
+        <line className="chart-axis" x1={PRICE_AXIS_PADDING} x2={WIDTH - PADDING} y1={HEIGHT - PADDING} y2={HEIGHT - PADDING} />
         {geometry.candles.map((item) => (
           <g className={item.direction === "up" ? "chart-up" : "chart-down"} key={item.timestamp}>
             <line x1={item.x} x2={item.x} y1={item.highY} y2={item.lowY} />
@@ -829,9 +830,9 @@ function chartGeometry(rows: WorkbenchRow[]) {
   const minimum = Math.min(...values);
   const maximum = Math.max(...values);
   const span = Math.max(maximum - minimum, 1e-9);
-  const plotWidth = WIDTH - PADDING * 2;
+  const plotWidth = WIDTH - PRICE_AXIS_PADDING - PADDING;
   const plotHeight = HEIGHT - PADDING * 2;
-  const x = (index: number) => PADDING + (rows.length === 1 ? plotWidth / 2 : (index * plotWidth) / (rows.length - 1));
+  const x = (index: number) => PRICE_AXIS_PADDING + (rows.length === 1 ? plotWidth / 2 : (index * plotWidth) / (rows.length - 1));
   const y = (value: number) => PADDING + ((maximum - value) / span) * plotHeight;
   const width = Math.min(14, Math.max(3, (plotWidth / rows.length) * 0.55));
   const candles = rows.map((row, index) => ({ timestamp: row.timestamp, x: x(index), width, highY: y(row.high), lowY: y(row.low), openY: y(row.open), closeY: y(row.close), direction: row.close >= row.open ? "up" : "down" }));
