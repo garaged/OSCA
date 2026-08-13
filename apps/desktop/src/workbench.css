@@ -193,11 +193,21 @@
 }
 
 .chart-axis,
+.chart-grid,
 .chart-up,
 .chart-down,
 .chart-derived,
 .chart-inspection-marker {
   stroke: currentColor;
+}
+
+.chart-grid {
+  opacity: 0.22;
+}
+
+.chart-axis-label {
+  fill: currentColor;
+  font-size: 0.75rem;
 }
 
 .chart-up rect {
