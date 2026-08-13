@@ -730,6 +730,14 @@ function PriceChart({
         ))}
         <line className="chart-axis" x1={PRICE_AXIS_PADDING} x2={PRICE_AXIS_PADDING} y1={PADDING} y2={HEIGHT - PADDING} />
         <line className="chart-axis" x1={PRICE_AXIS_PADDING} x2={WIDTH - PADDING} y1={HEIGHT - PADDING} y2={HEIGHT - PADDING} />
+        {geometry.timeTicks.map((tick) => (
+          <g className="chart-time-tick" key={tick.timestamp}>
+            <line className="chart-axis" x1={tick.x} x2={tick.x} y1={HEIGHT - PADDING} y2={HEIGHT - PADDING + 5} />
+            <text className="chart-axis-label chart-time-label" textAnchor={tick.anchor} x={tick.x} y={HEIGHT - 8}>
+              {tick.label}
+            </text>
+          </g>
+        ))}
         {geometry.candles.map((item) => (
           <g className={item.direction === "up" ? "chart-up" : "chart-down"} key={item.timestamp}>
             <line x1={item.x} x2={item.x} y1={item.highY} y2={item.lowY} />
@@ -823,7 +831,8 @@ function chartGeometry(rows: WorkbenchRow[]) {
     return {
       candles: [],
       derived: [] as Array<{ id: string; points: string }>,
-      priceTicks: [] as Array<{ value: number; y: number }>
+      priceTicks: [] as Array<{ value: number; y: number }>,
+      timeTicks: [] as Array<{ anchor: "start" | "middle" | "end"; label: string; timestamp: string; x: number }>
     };
   }
   const values = rows.flatMap((row) => [row.low, row.high, ...Object.values(row.derived).filter((value): value is number => value !== null)]);
@@ -840,11 +849,42 @@ function chartGeometry(rows: WorkbenchRow[]) {
     const value = maximum - (span * index) / 3;
     return { value, y: y(value) };
   });
+  const tickIndexes = timeTickIndexes(rows.length);
+  const timeLabels = formatTimestampTicks(rows.map((row) => row.timestamp));
+  const timeTicks = tickIndexes.map((index, tickPosition) => ({
+    anchor: tickPosition === 0 ? "start" as const : tickPosition === tickIndexes.length - 1 ? "end" as const : "middle" as const,
+    label: timeLabels[index],
+    timestamp: rows[index].timestamp,
+    x: x(index)
+  }));
   const derived = Object.keys(rows[0].derived).map((id) => ({
     id,
     points: rows.map((row, index) => row.derived[id] == null ? null : `${x(index)},${y(row.derived[id] as number)}`).filter((point): point is string => point !== null).join(" ")
   }));
-  return { candles, derived, priceTicks };
+  return { candles, derived, priceTicks, timeTicks };
+}
+
+function timeTickIndexes(rowCount: number): number[] {
+  const count = Math.min(4, rowCount);
+  if (count <= 1) return rowCount ? [0] : [];
+  return Array.from(
+    new Set(Array.from({ length: count }, (_, index) => Math.round((index * (rowCount - 1)) / (count - 1))))
+  );
+}
+
+function formatTimestampTicks(timestamps: string[]): string[] {
+  const dates = timestamps.map((timestamp) => new Date(timestamp));
+  if (dates.some((date) => Number.isNaN(date.getTime()))) {
+    return timestamps.map((timestamp) => timestamp.slice(0, 10));
+  }
+  const sameDate = dates.every((date) => date.toISOString().slice(0, 10) === dates[0].toISOString().slice(0, 10));
+  const sameYear = dates.every((date) => date.getUTCFullYear() === dates[0].getUTCFullYear());
+  const formatter = sameDate
+    ? new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
+    : sameYear
+      ? new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", timeZone: "UTC" })
+      : new Intl.DateTimeFormat(undefined, { month: "short", year: "numeric", timeZone: "UTC" });
+  return dates.map((date) => formatter.format(date));
 }
 
 function isDerivedKind(value: string): value is WorkbenchDerivedRequest["kind"] {
