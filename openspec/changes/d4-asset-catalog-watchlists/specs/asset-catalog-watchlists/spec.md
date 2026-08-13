@@ -81,6 +81,21 @@ React SHALL use only the existing `desktop_request` bridge and Python SHALL rema
 - **THEN** the persistent desktop broker rejects the request
 - **AND** the Python sidecar is not used to bypass window ownership
 
+### Requirement: Self-contained native desktop service
+Native OSCA packages SHALL include the Python desktop sidecar needed by the Tauri broker and SHALL NOT require a separately started development server, repository checkout, active virtual environment, or system-installed `osca` package for normal packaged operation.
+
+#### Scenario: Packaged application starts its bundled sidecar
+- **GIVEN** a native OSCA package built for a supported platform
+- **WHEN** the packaged application is launched directly outside development mode
+- **THEN** the broker invokes the bundled target-specific sidecar automatically
+- **AND** desktop bootstrap succeeds without `make run`, a manually started Python service, or `OSCA_DESKTOP_PYTHON`
+- **AND** Markets and profile-scoped watchlists remain usable
+
+#### Scenario: Development interpreter override remains supported
+- **GIVEN** the repository development launcher explicitly supplies `OSCA_DESKTOP_PYTHON`
+- **WHEN** the Tauri development application invokes the desktop service
+- **THEN** the broker uses that locked development interpreter rather than the packaged sidecar
+
 ### Requirement: Accessible responsive Markets surface
 The desktop application SHALL provide keyboard, focus, reduced-motion, forced-colors, screen-reader, and narrow-layout safeguards for the Markets surface.
 
