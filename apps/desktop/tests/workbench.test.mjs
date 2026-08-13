@@ -8,9 +8,11 @@ test("D5 exposes Workbench as a first-class desktop area", async () => {
   assert.match(root, /"workbench"/);
   assert.match(root, /WorkbenchSurface/);
   assert.match(surface, /Charting workbench/);
-  assert.match(surface, /Synchronized displayed values/);
+  assert.match(surface, /Synchronized visible values/);
   assert.match(surface, /Saved workbench views/);
   assert.match(surface, /full-resolution CSV evidence/i);
+  assert.match(surface, /Authoritative data range/);
+  assert.match(surface, /Presentation viewport/);
   assert.match(surface, /Research only/);
 });
 
@@ -34,6 +36,8 @@ test("D5 frontend uses only typed desktop workbench methods for authoritative an
   assert.match(seriesApi, /workbench\.series\.get/);
   assert.match(seriesApi, /invoke<string>\("desktop_request"/);
   assert.match(lifecycleApi, /invoke<string>\("desktop_request"/);
+  assert.match(seriesApi, /range\.start/);
+  assert.match(lifecycleApi, /rangeParams\(range\)/);
   assert.doesNotMatch(seriesApi + lifecycleApi + surface, /fetch\(|WebSocket|orders\.submit|provider_url|plugin-shell/);
 
   for (const forbiddenFormula of [
@@ -47,12 +51,23 @@ test("D5 frontend uses only typed desktop workbench methods for authoritative an
   }
 });
 
-test("D5 chart and accessible table share the same returned row collection", async () => {
+test("D5 chart volume pane and accessible table share the same presentation viewport", async () => {
   const surface = await readFile(new URL("../src/Workbench.tsx", import.meta.url), "utf8");
-  assert.match(surface, /<PriceChart rows=\{result\.series\.rows\}/);
-  assert.match(surface, /<AccessibleSeriesTable rows=\{result\.series\.rows\}/);
-  assert.match(surface, /Exact displayed values are in the synchronized table/);
+  assert.match(surface, /const visibleRows = returnedRows\.slice/);
+  assert.match(surface, /<PriceChart rows=\{visibleRows\}/);
+  assert.match(surface, /<VolumePane rows=\{visibleRows\}/);
+  assert.match(surface, /<AccessibleSeriesTable rows=\{visibleRows\}/);
+  assert.match(surface, /Exact visible values are in the synchronized table/);
+  assert.match(surface, /Zoom and pan do not recalculate analytical values/);
   assert.match(surface, /Display is downsampled for bounded rendering/);
+});
+
+test("D5 comparison exposes authoritative aligned rows instead of frontend normalization", async () => {
+  const surface = await readFile(new URL("../src/Workbench.tsx", import.meta.url), "utf8");
+  assert.match(surface, /Aligned authoritative return comparison/);
+  assert.match(surface, /point\.primary_return/);
+  assert.match(surface, /point\.benchmark_return/);
+  assert.match(surface, /point\.rolling_correlation/);
 });
 
 test("D5 responsive and accessibility safeguards are explicit", async () => {
@@ -66,4 +81,5 @@ test("D5 responsive and accessibility safeguards are explicit", async () => {
   assert.match(surface, /aria-label=\{summary\}/);
   assert.match(surface, /tabIndex=\{0\}/);
   assert.match(surface, /aria-pressed/);
+  assert.match(surface, /aria-describedby="workbench-range-help"/);
 });
