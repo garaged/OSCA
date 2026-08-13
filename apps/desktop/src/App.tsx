@@ -51,7 +51,7 @@ const FALLBACK_DISCLOSURES: DesktopDisclosures = {
   research_only: "OSCA is research and simulation software, not financial advice.",
   local_storage: "Profiles and imported data are stored locally on this machine.",
   optional_network: "Network access is optional and must be enabled explicitly.",
-  providers: "No provider account is required for the bundled synthetic sample.",
+  providers: "No provider account is required for the bundled synthetic samples.",
   credentials: "This foundation does not request or expose provider credentials.",
   recommendations: "Recommendation generation is unavailable in D2.",
   live_execution: "Broker, exchange, autonomous, and real-capital execution are disabled."
@@ -240,7 +240,7 @@ export function App() {
     if (!openedProfile) {
       return;
     }
-    setAction({ kind: "loading", message: "Importing the bundled synthetic sample…" });
+    setAction({ kind: "loading", message: "Importing the bundled synthetic samples…" });
     try {
       const result = await importBundledSample(openedProfile.profile_root);
       setSample(result);
@@ -430,7 +430,7 @@ function HomeSurface({
       intro={
         value.first_run_required
           ? "Create or open a validated local profile to begin an offline research workspace."
-          : "Open a validated profile, inspect system readiness, or import the bundled synthetic sample."
+          : "Open a validated profile, inspect system readiness, or import the bundled synthetic samples."
       }
       title={value.first_run_required ? "Welcome to OSCA" : "Research home"}
       titleRef={titleRef}
@@ -533,13 +533,13 @@ function HomeSurface({
         <div className="section-heading">
           <div>
             <p className="eyebrow">Offline first run</p>
-            <h2 id="sample-heading">Bundled synthetic sample</h2>
+            <h2 id="sample-heading">Bundled synthetic samples</h2>
           </div>
           <StatusBadge tone="neutral">No network</StatusBadge>
         </div>
         <p>
-          Import ten deterministic synthetic daily observations through OSCA's canonical Python
-          import service. The sample is labelled synthetic, retains lineage, and requires no
+          Import paired deterministic synthetic daily observations through OSCA's canonical Python
+          import service. The samples are labelled synthetic, retain lineage, and require no
           provider account or credential.
         </p>
         {openedProfile ? (
@@ -548,7 +548,7 @@ function HomeSurface({
             onClick={() => void onSampleImport()}
             type="button"
           >
-            Import synthetic sample
+            Import synthetic samples
           </button>
         ) : (
           <p className="inline-guidance">Open a validated profile to enable sample import.</p>
@@ -722,6 +722,7 @@ function ProfileSummary({ profile }: { profile: ProfileInspection }) {
 }
 
 function SampleSummary({ sample }: { sample: SampleImportResult }) {
+  const importedDatasets = sample.imports.length ? sample.imports : [sample.import];
   return (
     <div className="sample-summary" role="status">
       <div className="section-heading">
@@ -733,10 +734,9 @@ function SampleSummary({ sample }: { sample: SampleImportResult }) {
       </div>
       <DefinitionGrid
         entries={[
-          ["Dataset revision", sample.import.dataset_revision_id],
-          ["Symbol", sample.import.symbol],
-          ["Rows", String(sample.import.row_count)],
-          ["Timeframe", sample.import.timeframe],
+          ["Datasets", importedDatasets.map((item) => item.symbol).join(", ")],
+          ["Rows", importedDatasets.map((item) => `${item.symbol}: ${item.row_count}`).join(", ")],
+          ["Timeframes", Array.from(new Set(importedDatasets.map((item) => item.timeframe))).join(", ")],
           ["Network used", sample.network_access_enabled ? "Yes" : "No"],
           ["Credential required", sample.credential_required ? "Yes" : "No"]
         ]}
