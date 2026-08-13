@@ -67,9 +67,9 @@ Disposition: accepted by repository owner. Future identity changes remain an own
 
 ### Fixtures and datasets
 
-- `tests/fixtures/local_ohlcv/aapl_backtest_daily.csv` and the D2 bundled sample are deterministic synthetic OHLCV data.
+- `tests/fixtures/local_ohlcv/aapl_backtest_daily.csv` and the bundled AAPL/MSFT desktop samples are deterministic synthetic OHLCV data.
 - Their round-number sequences, constant volume, and constructed timestamps are not copied market history.
-- `AAPL` is a scenario label only. D2 uses `AAPL-SYNTHETIC` in the retained imported dataset identity.
+- `AAPL` and `MSFT` are scenario labels only. The desktop importer uses `AAPL-SYNTHETIC` and `MSFT-SYNTHETIC` in retained imported dataset identities.
 - No provider response, credential-bearing export, user profile, or generated evidence may be committed.
 
 Disposition: accepted with retained provenance and synthetic labelling.
