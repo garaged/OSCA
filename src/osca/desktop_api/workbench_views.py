@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from osca.desktop_api.service import DesktopServiceError
 
@@ -18,7 +18,7 @@ def list_views(profile_root: Path) -> dict[str, Any]:
             "SELECT id, name, description, config_json, created_at, updated_at "
             "FROM workbench_views ORDER BY lower(name), id"
         ).fetchall()
-        views = [_row_payload(row) for row in rows]
+        views = [_row_payload(cast(sqlite3.Row, row)) for row in rows]
     return {
         "family": "osca.desktop-workbench-view-list.result",
         "version": "1.0.0",
@@ -142,7 +142,8 @@ def _connect(profile_root: Path) -> sqlite3.Connection:
     connection = sqlite3.connect(_database(profile_root))
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys=ON")
-    current = int(connection.execute("PRAGMA user_version").fetchone()[0])
+    current_row = connection.execute("PRAGMA user_version").fetchone()
+    current = int(cast(tuple[int], current_row)[0])
     if current > _SCHEMA_VERSION:
         connection.close()
         raise DesktopServiceError(
@@ -177,7 +178,7 @@ def _require_view(connection: sqlite3.Connection, view_id: int) -> sqlite3.Row:
             "workbench_view_not_found",
             "Saved workbench view was not found.",
         )
-    return row
+    return cast(sqlite3.Row, row)
 
 
 def _row_payload(row: sqlite3.Row) -> dict[str, Any]:
