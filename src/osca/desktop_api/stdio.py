@@ -9,7 +9,7 @@ from typing import TextIO
 from pydantic import ValidationError
 
 from osca.desktop_api.contracts import DesktopError, DesktopRequest, DesktopResponse
-from osca.desktop_api.d4_service import D4DesktopApplicationService
+from osca.desktop_api.d5_service import D5DesktopApplicationService
 
 MAX_MESSAGE_BYTES = 1_048_576
 
@@ -20,7 +20,7 @@ def _error_response(request_id: str, code: str, message: str) -> DesktopResponse
 
 def serve(stdin: TextIO, stdout: TextIO) -> int:
     storage_value = os.environ.get("OSCA_STORAGE_ROOT")
-    service = D4DesktopApplicationService(storage_root=Path(storage_value).expanduser() if storage_value else None)
+    service = D5DesktopApplicationService(storage_root=Path(storage_value).expanduser() if storage_value else None)
     for raw_line in stdin:
         if len(raw_line.encode("utf-8")) > MAX_MESSAGE_BYTES:
             response = _error_response("unknown", "message_too_large", "Request exceeds 1 MiB")
