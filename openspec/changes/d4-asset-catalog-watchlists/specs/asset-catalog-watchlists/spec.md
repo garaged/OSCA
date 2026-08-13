@@ -81,15 +81,27 @@ React SHALL use only the existing `desktop_request` bridge and Python SHALL rema
 - **THEN** the persistent desktop broker rejects the request
 - **AND** the Python sidecar is not used to bypass window ownership
 
-### Requirement: Self-contained native desktop service
-Native OSCA packages SHALL include the Python desktop sidecar needed by the Tauri broker and SHALL NOT require a separately started development server, repository checkout, active virtual environment, or system-installed `osca` package for normal packaged operation.
+### Requirement: Self-contained responsive native desktop service
+Native OSCA packages SHALL include the Python desktop sidecar needed by the Tauri broker and SHALL NOT require a separately started development server, repository checkout, active virtual environment, or system-installed `osca` package for normal packaged operation. The packaged runtime SHALL avoid repeated self-extraction or equivalent startup work that causes recurring multi-second delays for local requests.
 
 #### Scenario: Packaged application starts its bundled sidecar
 - **GIVEN** a native OSCA package built for a supported platform
 - **WHEN** the packaged application is launched directly outside development mode
-- **THEN** the broker invokes the bundled target-specific sidecar automatically
+- **THEN** the broker invokes the bundled sidecar automatically
 - **AND** desktop bootstrap succeeds without `make run`, a manually started Python service, or `OSCA_DESKTOP_PYTHON`
 - **AND** Markets and profile-scoped watchlists remain usable
+
+#### Scenario: Packaged sidecar cold starts stay bounded
+- **GIVEN** the packaged frozen sidecar runtime for a supported platform
+- **WHEN** two independent desktop bootstrap requests launch separate sidecar processes
+- **THEN** each process returns a successful bootstrap response within 5 seconds
+- **AND** the package build fails if either cold-start smoke exceeds that limit
+
+#### Scenario: Packaged local interactions remain responsive
+- **GIVEN** the packaged application has completed bootstrap
+- **WHEN** the user performs ordinary local navigation, asset search/detail/recent, or watchlist read/write interactions
+- **THEN** each interaction should complete within 2 seconds on supported acceptance hardware
+- **AND** recurring 5-second-or-longer packaging or process-startup stalls fail acceptance
 
 #### Scenario: Development interpreter override remains supported
 - **GIVEN** the repository development launcher explicitly supplies `OSCA_DESKTOP_PYTHON`
