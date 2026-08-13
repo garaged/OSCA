@@ -1,4 +1,5 @@
 import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { importBundledSample, SampleImportResult } from "./api";
 import { Asset, searchAssets } from "./marketsApi";
 import {
   getWorkbenchSeries,
@@ -60,6 +61,7 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
   const [analysis, setAnalysis] = useState<AsyncResult<QuantitativeAnalysis>>({ kind: "idle" });
   const [comparison, setComparison] = useState<AsyncResult<ComparisonResult>>({ kind: "idle" });
   const [exportState, setExportState] = useState<AsyncResult<WorkbenchExport>>({ kind: "idle" });
+  const [sampleImport, setSampleImport] = useState<AsyncResult<SampleImportResult>>({ kind: "idle" });
   const [views, setViews] = useState<AsyncResult<SavedWorkbenchView[]>>({ kind: "idle" });
   const [viewName, setViewName] = useState("");
   const [activeViewId, setActiveViewId] = useState<number | null>(null);
@@ -97,12 +99,15 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
     void refreshViews(profileRoot);
   }, [profileRoot]);
 
-  function derivedRequest(): WorkbenchDerivedRequest[] {
-    if (indicator === "none") return [];
-    if (indicator === "simple_return" || indicator === "log_return") {
-      return [{ kind: indicator }];
+  function derivedRequest(
+    selectedIndicator: WorkbenchDerivedRequest["kind"] | "none" = indicator,
+    selectedWindow = windowSize
+  ): WorkbenchDerivedRequest[] {
+    if (selectedIndicator === "none") return [];
+    if (selectedIndicator === "simple_return" || selectedIndicator === "log_return") {
+      return [{ kind: selectedIndicator }];
     }
-    return [{ kind: indicator, window: windowSize }];
+    return [{ kind: selectedIndicator, window: selectedWindow }];
   }
 
   function requestedRange(): WorkbenchRange {
@@ -135,6 +140,15 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
 
   async function load(event?: FormEvent) {
     event?.preventDefault();
+    await loadSeries(assetId, timeframe, derivedRequest(), requestedRange());
+  }
+
+  async function loadSeries(
+    selectedAssetId: string,
+    selectedTimeframe: string,
+    selectedDerived: WorkbenchDerivedRequest[],
+    selectedRange: WorkbenchRange
+  ) {
     if (!profileRoot) return;
     setState({ kind: "loading" });
     setAnalysis({ kind: "idle" });
@@ -143,14 +157,45 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
     try {
       const value = await getWorkbenchSeries(
         profileRoot,
-        assetId,
-        timeframe,
+        selectedAssetId,
+        selectedTimeframe,
         DISPLAY_ROWS,
-        derivedRequest(),
-        requestedRange()
+        selectedDerived,
+        selectedRange
       );
       setState({ kind: "ready", value });
     } catch (error) {
+      setState({ kind: "error", error: asWorkbenchError(error) });
+    }
+  }
+
+  async function importSampleForWorkbench() {
+    if (!profileRoot) return;
+    setSampleImport({ kind: "loading" });
+    setState({ kind: "loading" });
+    setAnalysis({ kind: "idle" });
+    setComparison({ kind: "idle" });
+    setExportState({ kind: "idle" });
+    try {
+      const result = await importBundledSample(profileRoot);
+      setSampleImport({ kind: "ready", value: result });
+      setAssetId("equity:XNAS:AAPL");
+      setTimeframe(result.import.timeframe);
+      setRangeStart("");
+      setRangeEnd("");
+      await loadSeries(
+        "equity:XNAS:AAPL",
+        result.import.timeframe,
+        derivedRequest(),
+        {}
+      );
+      if (profileRoot) {
+        void searchAssets("", profileRoot)
+          .then((catalog) => setAssets({ kind: "ready", assets: catalog.assets }))
+          .catch(() => undefined);
+      }
+    } catch (error) {
+      setSampleImport({ kind: "error", message: errorMessage(error) });
       setState({ kind: "error", error: asWorkbenchError(error) });
     }
   }
@@ -436,8 +481,24 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
       {assets.kind === "error" ? <p className="workbench-error" role="alert">{assets.message}</p> : null}
       {state.kind === "idle" ? (
         <p className="workbench-status" role="status">
-          Load a retained asset. The bundled synthetic AAPL sample is supported after import from Workspace.
+          Load a retained asset, or import the bundled synthetic AAPL sample directly for offline Workbench acceptance.
         </p>
+      ) : null}
+      {state.kind === "idle" || state.kind === "error" ? (
+        <section className="workbench-sample-import" aria-labelledby="workbench-sample-import-title">
+          <div>
+            <h3 id="workbench-sample-import-title">Offline sample for Workbench</h3>
+            <p>Imports deterministic synthetic AAPL-labelled daily observations into this profile and loads AAPL 1d without network, credentials, or a provider account.</p>
+          </div>
+          <button disabled={sampleImport.kind === "loading"} onClick={() => void importSampleForWorkbench()} type="button">
+            {sampleImport.kind === "loading" ? "Importing sample…" : "Import bundled synthetic sample"}
+          </button>
+          {sampleImport.kind === "ready" ? (
+            <p role="status">Imported {sampleImport.value.import.row_count} synthetic rows as {sampleImport.value.import.symbol} {sampleImport.value.import.timeframe}.</p>
+          ) : sampleImport.kind === "error" ? (
+            <p className="workbench-error" role="alert">{sampleImport.message}</p>
+          ) : null}
+        </section>
       ) : null}
       {state.kind === "loading" ? <p className="workbench-status" role="status">Loading governed analytical data…</p> : null}
       {state.kind === "error" ? (
