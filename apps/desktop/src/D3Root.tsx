@@ -3,16 +3,17 @@ import { App } from "./App";
 import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
 import { MarketsSurface } from "./Markets";
+import { ProjectsSurface } from "./Projects";
 import { WorkbenchSurface } from "./Workbench";
 import "./d3Root.css";
 
-type RootView = "workspace" | "markets" | "workbench" | "data-sources";
+type RootView = "workspace" | "markets" | "workbench" | "projects" | "data-sources";
 type ProfileState =
   | { kind: "loading" }
   | { kind: "ready"; profileRoot?: string }
   | { kind: "error"; error: DesktopClientError };
 
-const views: RootView[] = ["workspace", "markets", "workbench", "data-sources"];
+const views: RootView[] = ["workspace", "markets", "workbench", "projects", "data-sources"];
 
 export function D3Root() {
   const [view, setView] = useState<RootView>("workspace");
@@ -107,6 +108,8 @@ export function D3Root() {
                     ? "Asset search remains available, but persistent watchlists and recent assets require a validated profile selected from Workspace."
                     : view === "workbench"
                       ? "Open a validated profile from Workspace before loading governed analytical data in Workbench."
+                      : view === "projects"
+                        ? "Open a validated profile from Workspace before creating research projects."
                       : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
                 </aside>
               ) : null}
@@ -114,6 +117,8 @@ export function D3Root() {
                 <MarketsSurface profileRoot={profile.profileRoot} />
               ) : view === "workbench" ? (
                 <WorkbenchSurface profileRoot={profile.profileRoot} />
+              ) : view === "projects" ? (
+                <ProjectsSurface profileRoot={profile.profileRoot} />
               ) : (
                 <DataSourcesSurface profileRoot={profile.profileRoot} />
               )}
