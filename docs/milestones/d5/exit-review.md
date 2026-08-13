@@ -49,7 +49,7 @@ Disposition: automated performance/dependency pass; packaged acceptance-hardware
 
 ## Persistence and safety disposition
 
-Saved views support create/list/get/update/rename/delete with unique normalized names, optional descriptions, bounded declarative JSON configuration, restart persistence, profile isolation, schema-version rejection, and forbidden executable/query/secret/provider/broker/order fields.
+Saved views support create/list/get/update/rename/delete with unique normalized names, optional descriptions, bounded declarative JSON configuration, restart persistence, profile isolation, schema-version rejection, and forbidden executable/query/broker/order fields.
 
 D5 mutations use the established desktop window/profile lease plus Python profile mutation locking. Comparison compatibility is validated before joining datasets, and incompatible asset-class/currency semantics fail visibly.
 
@@ -63,6 +63,12 @@ Disposition: automated pass; concurrent-owner and restart behavior remain part o
 The complete clean-profile procedure in `manual-acceptance.md` must pass on both platforms. Required evidence includes packaged launch, offline network observation, keyboard chart/table parity, deterministic indicators and invalid-parameter handling, compatible/incompatible comparisons, downsampling disclosure, full-resolution export, saved-view restart/profile isolation/ownership, VoiceOver or Orca, high contrast/forced colors, reduced motion, 320/680/desktop layouts, and packaged responsiveness.
 
 Disposition: blocking until both platform runs pass.
+
+## Post-D5 cleanup candidate
+
+Some `src/osca/desktop_api` modules still carry milestone-oriented names such as `d3_*`, `d4_*`, and `d5_*`. This reflects incremental delivery history, not the desired durable architecture. Do not rename them during D5 manual acceptance because the change would create broad import churn with no acceptance behavior value.
+
+After D5 is accepted, plan a small capability-naming cleanup that renames milestone-oriented desktop API modules toward domain names such as data sources, acquisition, asset catalog, watchlists, workbench, workbench data, workbench export, and saved views. The cleanup should preserve behavior and keep the desktop service composition explicit.
 
 ## Exit decision
 
