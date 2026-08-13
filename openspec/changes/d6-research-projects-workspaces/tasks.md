@@ -10,7 +10,7 @@
 - [x] Implement accessible responsive Projects UI and shell navigation.
 - [x] Add frontend boundary, accessibility, responsive-layout, empty/error/degraded-state, and safety regression tests.
 - [x] Add offline/source-boundary and no-execution checks.
-- [ ] Retain automated validation evidence and D6 exit review.
-- [ ] Pass both supported-platform clean-profile manual runs, including native packaging, offline observation, accessibility, profile isolation, and packaged responsiveness.
-- [ ] Reconcile final manual evidence and D6 exit decision.
-- [ ] Obtain explicit owner direction before squash merge.
+- [x] Retain automated validation evidence and D6 exit review.
+- [x] Pass both supported-platform clean-profile manual runs, including native packaging, offline observation, accessibility, profile isolation, and packaged responsiveness.
+- [x] Reconcile final manual evidence and D6 exit decision.
+- [x] Obtain explicit owner direction before squash merge.
