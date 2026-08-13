@@ -380,8 +380,9 @@ pub fn run() {
 mod tests {
     use super::{
         acquire_profile_session_lease, apply_sidecar_profile_authorization, decode_response,
-        override_window_profile, resource_sidecar_path, sidecar_invocation, stable_profile_identity,
-        validate_request_size, BrokerState, BROKER_OWNED_PROFILE_ENV, MAX_MESSAGE_BYTES,
+        override_window_profile, resource_sidecar_path, sidecar_invocation,
+        stable_profile_identity, validate_request_size, BrokerState, BROKER_OWNED_PROFILE_ENV,
+        MAX_MESSAGE_BYTES,
     };
     use std::ffi::OsStr;
     use std::fs;
@@ -587,7 +588,7 @@ mod tests {
 
     #[test]
     fn bootstrap_selected_profile_is_overridden_by_window_owned_profile() {
-        let response = r#"{"status":"ok","result":{"selected_profile":"/other"}}"#;
+        let response = r#"{\"status\":\"ok\",\"result\":{\"selected_profile\":\"/other\"}}"#;
         let updated = override_window_profile(response, "desktop.bootstrap", Some("/owned"))
             .expect("override");
         assert!(updated.contains("\"selected_profile\":\"/owned\""));
