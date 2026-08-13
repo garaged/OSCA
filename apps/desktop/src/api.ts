@@ -96,15 +96,19 @@ export type SampleImportResult = {
   network_access_enabled: boolean;
   provider_account_required: boolean;
   credential_required: boolean;
-  import: {
-    dataset_revision_id: string;
-    symbol: string;
-    timeframe: string;
-    row_count: number;
-    payload_uri: string;
-    metadata_uri: string;
-    network_access_enabled: boolean;
-  };
+  import: SampleImportedDataset;
+  comparison_imports: SampleImportedDataset[];
+  imports: SampleImportedDataset[];
+};
+
+export type SampleImportedDataset = {
+  dataset_revision_id: string;
+  symbol: string;
+  timeframe: string;
+  row_count: number;
+  payload_uri: string;
+  metadata_uri: string;
+  network_access_enabled: boolean;
 };
 
 type DesktopEnvelope = {
@@ -359,6 +363,16 @@ function parseDiagnostics(record: Record<string, unknown>): DesktopDiagnostics {
 
 function parseSampleImport(record: Record<string, unknown>): SampleImportResult {
   const imported = expectRecord(record.import, "sample import.import");
+  const comparisonImports = Array.isArray(record.comparison_imports)
+    ? record.comparison_imports.map((value, index) => parseSampleImportedDataset(
+        expectRecord(value, `sample import.comparison_imports[${index}]`)
+      ))
+    : [];
+  const imports = Array.isArray(record.imports)
+    ? record.imports.map((value, index) => parseSampleImportedDataset(
+        expectRecord(value, `sample import.imports[${index}]`)
+      ))
+    : [];
   return {
     status: expectString(record.status, "sample import.status"),
     sample_id: expectString(record.sample_id, "sample import.sample_id"),
@@ -373,18 +387,24 @@ function parseSampleImport(record: Record<string, unknown>): SampleImportResult 
       "sample import.provider_account_required"
     ),
     credential_required: expectBoolean(record.credential_required, "sample import.credential_required"),
-    import: {
-      dataset_revision_id: expectString(imported.dataset_revision_id, "sample import.dataset_revision_id"),
-      symbol: expectString(imported.symbol, "sample import.symbol"),
-      timeframe: expectString(imported.timeframe, "sample import.timeframe"),
-      row_count: expectNumber(imported.row_count, "sample import.row_count"),
-      payload_uri: expectString(imported.payload_uri, "sample import.payload_uri"),
-      metadata_uri: expectString(imported.metadata_uri, "sample import.metadata_uri"),
-      network_access_enabled: expectBoolean(
-        imported.network_access_enabled,
-        "sample import.import.network_access_enabled"
-      )
-    }
+    import: parseSampleImportedDataset(imported),
+    comparison_imports: comparisonImports,
+    imports: imports.length ? imports : [parseSampleImportedDataset(imported), ...comparisonImports]
+  };
+}
+
+function parseSampleImportedDataset(record: Record<string, unknown>): SampleImportedDataset {
+  return {
+    dataset_revision_id: expectString(record.dataset_revision_id, "sample import.dataset_revision_id"),
+    symbol: expectString(record.symbol, "sample import.symbol"),
+    timeframe: expectString(record.timeframe, "sample import.timeframe"),
+    row_count: expectNumber(record.row_count, "sample import.row_count"),
+    payload_uri: expectString(record.payload_uri, "sample import.payload_uri"),
+    metadata_uri: expectString(record.metadata_uri, "sample import.metadata_uri"),
+    network_access_enabled: expectBoolean(
+      record.network_access_enabled,
+      "sample import.import.network_access_enabled"
+    )
   };
 }
 

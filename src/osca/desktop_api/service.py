@@ -52,6 +52,9 @@ class DesktopApplicationService:
         self._sample_path = sample_path or (
             Path(__file__).parent / "sample_data" / "synthetic_aapl_daily.csv"
         )
+        self._comparison_sample_path = (
+            Path(__file__).parent / "sample_data" / "synthetic_msft_daily.csv"
+        )
         self._handlers: dict[str, Handler] = {
             "system.health": self._system_health,
             "desktop.bootstrap": self._desktop_bootstrap,
@@ -277,36 +280,51 @@ class DesktopApplicationService:
                 "profile_unavailable",
                 "a compatible writable profile is required before importing sample data",
             )
-        if not self._sample_path.is_file():
+        if not self._sample_path.is_file() or not self._comparison_sample_path.is_file():
             raise DesktopServiceError(
                 "sample_unavailable",
-                "the bundled synthetic sample is unavailable in this installation",
+                "the bundled synthetic samples are unavailable in this installation",
             )
 
         config = load_operator_config(profile_root)
-        request = LocalOHLCVImportRequest(
-            input_path=str(self._sample_path),
-            storage_root=config.storage_root,
-            symbol="AAPL-SYNTHETIC",
-            timeframe=LocalOHLCVTimeframe.ONE_DAY,
-            input_format=LocalOHLCVImportFormat.CSV,
-            source_uri="bundled-synthetic://osca/d2/aapl-daily-v1",
-            revision_salt="d2-bundled-synthetic-aapl-daily-v1",
-            calendar_assumption="synthetic-daily-sequence",
-        )
         with ProfileMutationLock(profile_root):
-            result = import_local_ohlcv(request)
+            primary = import_local_ohlcv(
+                LocalOHLCVImportRequest(
+                    input_path=str(self._sample_path),
+                    storage_root=config.storage_root,
+                    symbol="AAPL-SYNTHETIC",
+                    timeframe=LocalOHLCVTimeframe.ONE_DAY,
+                    input_format=LocalOHLCVImportFormat.CSV,
+                    source_uri="bundled-synthetic://osca/d2/aapl-daily-v1",
+                    revision_salt="d2-bundled-synthetic-aapl-daily-v1",
+                    calendar_assumption="synthetic-daily-sequence",
+                )
+            )
+            comparison = import_local_ohlcv(
+                LocalOHLCVImportRequest(
+                    input_path=str(self._comparison_sample_path),
+                    storage_root=config.storage_root,
+                    symbol="MSFT-SYNTHETIC",
+                    timeframe=LocalOHLCVTimeframe.ONE_DAY,
+                    input_format=LocalOHLCVImportFormat.CSV,
+                    source_uri="bundled-synthetic://osca/d5/msft-daily-v1",
+                    revision_salt="d5-bundled-synthetic-msft-daily-v1",
+                    calendar_assumption="synthetic-daily-sequence",
+                )
+            )
         return {
             "family": "osca.desktop-sample-import.result",
             "version": "1.0.0",
             "status": "available",
-            "sample_id": "d2-synthetic-aapl-daily-v1",
-            "sample_label": "Synthetic AAPL-labelled daily research sample",
+            "sample_id": "d5-synthetic-comparison-daily-v1",
+            "sample_label": "Synthetic AAPL/MSFT-labelled daily research samples",
             "synthetic": True,
             "network_access_enabled": False,
             "provider_account_required": False,
             "credential_required": False,
-            "import": result.model_dump(mode="json"),
+            "import": primary.model_dump(mode="json"),
+            "comparison_imports": [comparison.model_dump(mode="json")],
+            "imports": [primary.model_dump(mode="json"), comparison.model_dump(mode="json")],
         }
 
     def _legacy_profile_inspect(self) -> dict[str, Any]:

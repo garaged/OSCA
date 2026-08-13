@@ -7,7 +7,10 @@ from osca.analytical_data.contracts import (
     DerivedSeriesRequest,
     DownsamplingMethod,
 )
-from osca.analytical_data.services import build_chart_series
+from osca.analytical_data.services import (
+    build_chart_series,
+    build_full_resolution_chart_series,
+)
 
 __all__ = [
     "ChartRow",
@@ -18,4 +21,5 @@ __all__ = [
     "DerivedSeriesRequest",
     "DownsamplingMethod",
     "build_chart_series",
+    "build_full_resolution_chart_series",
 ]

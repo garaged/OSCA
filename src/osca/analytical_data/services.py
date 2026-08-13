@@ -25,6 +25,20 @@ _REQUIRED_COLUMNS = ("timestamp", "open", "high", "low", "close", "volume")
 
 
 def build_chart_series(request: ChartSeriesRequest) -> ChartSeriesResult:
+    """Build the bounded display result for an analytical chart request."""
+    return _build_chart_series(request, display_limit=request.max_rows)
+
+
+def build_full_resolution_chart_series(request: ChartSeriesRequest) -> ChartSeriesResult:
+    """Build the full filtered analytical result without display downsampling."""
+    return _build_chart_series(request, display_limit=None)
+
+
+def _build_chart_series(
+    request: ChartSeriesRequest,
+    *,
+    display_limit: int | None,
+) -> ChartSeriesResult:
     payload_path = request.payload_path
     if not payload_path.is_file():
         raise FileNotFoundError(f"analytical payload does not exist: {payload_path}")
@@ -32,7 +46,9 @@ def build_chart_series(request: ChartSeriesRequest) -> ChartSeriesResult:
     table = pq.read_table(payload_path)
     missing = tuple(column for column in _REQUIRED_COLUMNS if column not in table.column_names)
     if missing:
-        raise ValueError(f"analytical payload is missing required columns: {', '.join(missing)}")
+        raise ValueError(
+            f"analytical payload is missing required columns: {', '.join(missing)}"
+        )
 
     raw_rows: Any = table.select(list(_REQUIRED_COLUMNS)).to_pylist()
     if not isinstance(raw_rows, list) or not raw_rows:
@@ -79,7 +95,11 @@ def build_chart_series(request: ChartSeriesRequest) -> ChartSeriesResult:
         )
         for index, row in enumerate(filtered_rows)
     )
-    returned, method = _downsample(enriched, request.max_rows)
+    if display_limit is None:
+        returned = enriched
+        method = DownsamplingMethod.NONE
+    else:
+        returned, method = _downsample(enriched, display_limit)
     return ChartSeriesResult(
         dataset_revision_id=request.dataset_revision_id,
         payload_path=str(payload_path),
@@ -145,7 +165,10 @@ def _series_id(definition: DerivedSeriesRequest) -> str:
 
 
 def _warmup_rows(definition: DerivedSeriesRequest) -> int:
-    if definition.kind in {DerivedSeriesKind.SIMPLE_RETURN, DerivedSeriesKind.LOG_RETURN}:
+    if definition.kind in {
+        DerivedSeriesKind.SIMPLE_RETURN,
+        DerivedSeriesKind.LOG_RETURN,
+    }:
         return 1
     if definition.kind is DerivedSeriesKind.EMA:
         return 0
@@ -173,7 +196,11 @@ def _derive(
     return _rolling_mean(volumes, definition.window)
 
 
-def _returns(values: tuple[float, ...], *, logarithmic: bool) -> tuple[float | None, ...]:
+def _returns(
+    values: tuple[float, ...],
+    *,
+    logarithmic: bool,
+) -> tuple[float | None, ...]:
     result: list[float | None] = [None]
     for previous, current in pairwise(values):
         if previous <= 0 or (logarithmic and current <= 0):
@@ -185,7 +212,10 @@ def _returns(values: tuple[float, ...], *, logarithmic: bool) -> tuple[float | N
     return tuple(result)
 
 
-def _rolling_mean(values: tuple[float, ...], window: int) -> tuple[float | None, ...]:
+def _rolling_mean(
+    values: tuple[float, ...],
+    window: int,
+) -> tuple[float | None, ...]:
     result: list[float | None] = []
     running = 0.0
     for index, value in enumerate(values):
@@ -206,7 +236,10 @@ def _ema(values: tuple[float, ...], window: int) -> tuple[float | None, ...]:
     return tuple(result)
 
 
-def _rolling_std(values: tuple[float | None, ...], window: int) -> tuple[float | None, ...]:
+def _rolling_std(
+    values: tuple[float | None, ...],
+    window: int,
+) -> tuple[float | None, ...]:
     result: list[float | None] = []
     for index in range(len(values)):
         segment = values[max(0, index - window + 1) : index + 1]
@@ -227,8 +260,13 @@ def _downsample(
     if len(rows) <= max_rows:
         return rows, DownsamplingMethod.NONE
     last = len(rows) - 1
-    indexes = tuple(round(position * last / (max_rows - 1)) for position in range(max_rows))
-    return tuple(rows[index] for index in indexes), DownsamplingMethod.EVENLY_SPACED
+    indexes = tuple(
+        round(position * last / (max_rows - 1)) for position in range(max_rows)
+    )
+    return (
+        tuple(rows[index] for index in indexes),
+        DownsamplingMethod.EVENLY_SPACED,
+    )
 
 
 def _rows_digest(rows: Iterable[ChartRow]) -> str:
@@ -237,7 +275,9 @@ def _rows_digest(rows: Iterable[ChartRow]) -> str:
 
 
 def _values_digest(values: tuple[float | None, ...]) -> str:
-    return hashlib.sha256(json.dumps(values, separators=(",", ":")).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(values, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def _sha256_file(path: Path) -> str:

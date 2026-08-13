@@ -81,6 +81,32 @@ def test_local_csv_import_is_offline_governed_and_idempotent(tmp_path: Path) -> 
     assert Path(imported["metadata_uri"]).is_file()
 
 
+def test_local_import_trims_pasted_absolute_paths(tmp_path: Path) -> None:
+    profile_root = tmp_path / "profiles" / "pasted-path"
+    source = tmp_path / "evidence.csv"
+    _write_valid_csv(source)
+    service = D3DesktopApplicationService(
+        state_root=tmp_path / "state",
+        secret_vault=InMemoryVault(),
+    )
+    _create_profile(service, profile_root)
+
+    response = _request(
+        service,
+        "local.import",
+        {
+            "profile_root": str(profile_root),
+            "input_path": f"  {source}  ",
+            "symbol": "TEST-EQUITY",
+            "timeframe": "1d",
+        },
+    )
+
+    assert response.status == "ok", response.error
+    assert response.result is not None
+    assert response.result["import"]["row_count"] == 2
+
+
 def test_local_import_rejects_hidden_network_parameter(tmp_path: Path) -> None:
     profile_root = tmp_path / "profiles" / "network-rejected"
     source = tmp_path / "evidence.csv"

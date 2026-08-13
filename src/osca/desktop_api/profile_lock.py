@@ -34,7 +34,9 @@ def profile_session_lock_path(profile_root: Path) -> Path:
     return Path(tempfile.gettempdir()) / "osca-desktop-session-locks" / f"{identity:016x}.lock"
 
 
-def _broker_owns_profile(profile_root: Path) -> bool:
+def broker_owns_profile(profile_root: Path) -> bool:
+    """Return whether the supervising desktop broker authorized this exact profile."""
+
     owned = os.environ.get(_BROKER_OWNED_PROFILE_ENV)
     if not owned:
         return False
@@ -68,7 +70,7 @@ class ProfileMutationLock:
         return self._session_lock_path
 
     def __enter__(self) -> Self:
-        if not _broker_owns_profile(self._profile_root):
+        if not broker_owns_profile(self._profile_root):
             self._session_lock_path.parent.mkdir(parents=True, exist_ok=True)
             session_stream = self._session_lock_path.open("a+", encoding="utf-8")
             try:

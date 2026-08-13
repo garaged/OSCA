@@ -270,12 +270,23 @@ def test_bundled_sample_import_is_offline_synthetic_and_idempotent(tmp_path: Pat
     assert first.result["provider_account_required"] is False
     assert first.result["credential_required"] is False
     assert first.result["import"]["symbol"] == "AAPL-SYNTHETIC"
+    assert first.result["comparison_imports"][0]["symbol"] == "MSFT-SYNTHETIC"
+    assert [item["symbol"] for item in first.result["imports"]] == [
+        "AAPL-SYNTHETIC",
+        "MSFT-SYNTHETIC",
+    ]
     assert first.result["import"]["network_access_enabled"] is False
+    assert first.result["comparison_imports"][0]["network_access_enabled"] is False
     assert (
         first.result["import"]["dataset_revision_id"]
         == second.result["import"]["dataset_revision_id"]
     )
+    assert (
+        first.result["comparison_imports"][0]["dataset_revision_id"]
+        == second.result["comparison_imports"][0]["dataset_revision_id"]
+    )
     assert Path(first.result["import"]["payload_uri"]).is_file()
+    assert Path(first.result["comparison_imports"][0]["payload_uri"]).is_file()
     assert Path(first.result["import"]["metadata_uri"]).is_file()
 
 

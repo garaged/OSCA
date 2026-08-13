@@ -65,6 +65,22 @@ def test_desktop_methods_remain_typed_and_offline(tmp_path: Path) -> None:
     assert response.result["assets"][0]["asset_id"] == "equity:XNAS:AAPL"
 
 
+def test_desktop_search_allows_empty_query_for_initial_catalog_load(tmp_path: Path) -> None:
+    service = D4DesktopApplicationService(state_root=tmp_path / "state")
+    response = service.handle(
+        DesktopRequest(
+            request_id="d4-empty-search",
+            method="asset.search",
+            params={"query": "", "profile_root": str(tmp_path / "profile")},
+        )
+    )
+    assert response.status == "ok"
+    assert response.result is not None
+    assert response.result["query"] == ""
+    assert response.result["total"] >= 2
+    assert response.result["assets"][0]["asset_id"] == "crypto:KRAKEN:ETHUSD"
+
+
 def test_supported_python_mutation_fails_while_desktop_session_owns_profile(tmp_path: Path) -> None:
     profile = tmp_path / "profile"
     session_path = profile_session_lock_path(profile)

@@ -129,6 +129,15 @@ Batching never permits implementation before its governing requirement, ADR, con
 
 PRs must state scope, governing requirements and ADRs, validation performed, evidence links, residual risks, and deferred work. Review the complete diff, unresolved threads, approvals, mergeability, and required checks.
 
+PRs targeting `main` must be **squash-merged by default** so that `main` receives one coherent commit per merged PR rather than the branch's full intermediate commit history. Development branches may contain as many small, reviewable commits as needed; those commits are implementation checkpoints and must not be replayed individually onto `main`.
+
+When merging a PR into `main`:
+
+- use GitHub's **Squash and merge** method; do not use a merge commit or rebase-and-merge;
+- use a concise squash commit title that identifies the delivered milestone or capability, with the PR number when GitHub includes it;
+- verify the resulting `main` revision is the expected squash commit before starting dependent work;
+- use a different merge strategy only when the repository owner explicitly authorizes an exception and the reason is documented on the PR.
+
 A merge is allowed only when:
 
 - the branch is current with its base;
