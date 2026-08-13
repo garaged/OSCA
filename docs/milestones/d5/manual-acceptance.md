@@ -1,6 +1,6 @@
 # D5 Manual Acceptance — Charting and Quantitative Analysis Workbench
 
-Run this procedure from a clean profile on each supported D5 platform: macOS ARM64 and Linux x86-64. Use bundled sample data or governed local/cached data so the core acceptance path requires no paid provider and no network access.
+Run this procedure from a clean profile on each supported D5 platform: macOS ARM64 and Linux x86-64. Use bundled sample data or governed local/cached data so the core acceptance path requires no paid provider and no network access. The bundled Workbench path imports paired synthetic AAPL/MSFT daily datasets so the compatible-comparison check can run from a clean offline profile.
 
 Record only generic PASS/FAIL evidence in the repository. Do not commit private filesystem paths, credentials, provider account details, or personal data.
 
@@ -15,11 +15,12 @@ Expected: Workbench starts from governed local/sample/cached data without a paid
 
 ## 2. Governed series and range interaction
 
-1. Select a canonical asset with retained/sample OHLCV data.
-2. Load a supported timeframe and inspect the displayed dataset revision/provenance context.
-3. Change the bounded date/time range.
-4. Zoom and pan the visible chart.
-5. Inspect price, volume, source row count, filtered row count, displayed row count, and downsampling state.
+1. Import the bundled synthetic samples from Workbench or Workspace when starting from a clean offline profile.
+2. Select a canonical asset with retained/sample OHLCV data.
+3. Load a supported timeframe and inspect the displayed dataset revision/provenance context.
+4. Change the bounded date/time range.
+5. Zoom and pan the visible chart.
+6. Inspect price, volume, source row count, filtered row count, displayed row count, and downsampling state.
 
 Expected: chart updates remain bounded and deterministic; purely visual viewport changes do not imply a new dataset or numerical recomputation; provenance and row-count semantics stay visible.
 
@@ -42,7 +43,7 @@ Expected: valid calculations come from the authoritative service; invalid combin
 
 ## 5. Comparisons
 
-1. Add a compatible comparison asset/series over the same declared range.
+1. Add the bundled compatible MSFT comparison asset/series over the same declared range after importing the bundled synthetic samples.
 2. Inspect both canonical identities, timeframes, units/currency semantics, and provenance.
 3. Attempt an intentionally incompatible comparison when the UI exposes one.
 
