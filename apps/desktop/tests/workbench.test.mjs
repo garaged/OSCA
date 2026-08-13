@@ -11,6 +11,8 @@ test("D5 exposes Workbench as a first-class desktop area", async () => {
   assert.match(surface, /Synchronized visible values/);
   assert.match(surface, /Saved workbench views/);
   assert.match(surface, /full-resolution CSV evidence/i);
+  assert.match(surface, /Import bundled synthetic sample/);
+  assert.match(surface, /importBundledSample/);
   assert.match(surface, /Authoritative data range/);
   assert.match(surface, /Presentation viewport/);
   assert.match(surface, /Research only/);
@@ -34,6 +36,7 @@ test("D5 frontend uses only typed desktop workbench methods for authoritative an
     assert.match(lifecycleApi, new RegExp(method.replaceAll(".", "\\.")));
   }
   assert.match(seriesApi, /workbench\.series\.get/);
+  assert.match(await readFile(new URL("../src/api.ts", import.meta.url), "utf8"), /sample\.import/);
   assert.match(seriesApi, /invoke<string>\("desktop_request"/);
   assert.match(lifecycleApi, /invoke<string>\("desktop_request"/);
   assert.match(seriesApi, /range\.start/);
