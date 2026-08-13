@@ -41,9 +41,18 @@ def test_makefile_wraps_canonical_locked_commands() -> None:
     assert "uv sync --locked" in source or "$(UV) sync --locked" in source
     assert "npm ci" in source or "$(NPM) ci" in source
     assert "scripts/run_desktop.py" in source
-    assert "npm run tauri build" in source or "$(NPM) run tauri build" in source
+    assert "$(NPM) run tauri -- build" in source
     assert "scripts/contributor_check.py" in source
     assert "cargo clippy" in source or "$(CARGO) clippy" in source
+
+
+def test_makefile_builds_only_platform_native_acceptance_bundle() -> None:
+    source = MAKEFILE.read_text(encoding="utf-8")
+
+    assert '"$$(uname -s)" = "Darwin"' in source
+    assert "$(NPM) run tauri -- build --bundles app" in source
+    assert '"$$(uname -s)" = "Linux"' in source
+    assert "$(NPM) run tauri -- build --bundles deb" in source
 
 
 def test_makefile_help_and_build_dry_run_parse() -> None:
@@ -65,7 +74,8 @@ def test_makefile_help_and_build_dry_run_parse() -> None:
         capture_output=True,
         text=True,
     )
-    assert "npm run tauri build" in dry_run.stdout
+    assert "npm run tauri -- build --bundles app" in dry_run.stdout
+    assert "npm run tauri -- build --bundles deb" in dry_run.stdout
 
 
 def test_manual_acceptance_is_isolated_and_safe_by_default() -> None:
