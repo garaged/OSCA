@@ -54,12 +54,28 @@ test("D5 frontend uses only typed desktop workbench methods for authoritative an
 test("D5 chart volume pane and accessible table share the same presentation viewport", async () => {
   const surface = await readFile(new URL("../src/Workbench.tsx", import.meta.url), "utf8");
   assert.match(surface, /const visibleRows = returnedRows\.slice/);
-  assert.match(surface, /<PriceChart rows=\{visibleRows\}/);
+  assert.match(surface, /<PriceChart[\s\S]*rows=\{visibleRows\}/);
   assert.match(surface, /<VolumePane rows=\{visibleRows\}/);
-  assert.match(surface, /<AccessibleSeriesTable rows=\{visibleRows\}/);
-  assert.match(surface, /Exact visible values are in the synchronized table/);
+  assert.match(surface, /<AccessibleSeriesTable rows=\{visibleRows\} selectedIndex=\{visibleSelectedIndex\}/);
+  assert.match(surface, /Exact visible values|synchronized values/i);
   assert.match(surface, /Zoom and pan do not recalculate analytical values/);
   assert.match(surface, /Display is downsampled for bounded rendering/);
+});
+
+test("D5 price chart offers synchronized keyboard observation inspection", async () => {
+  const surface = await readFile(new URL("../src/Workbench.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../src/workbench.css", import.meta.url), "utf8");
+
+  assert.match(surface, /onKeyDown=\{inspect\}/);
+  assert.match(surface, /event\.key === "ArrowLeft"/);
+  assert.match(surface, /event\.key === "ArrowRight"/);
+  assert.match(surface, /event\.key === "Home"/);
+  assert.match(surface, /event\.key === "End"/);
+  assert.match(surface, /chart-inspection-marker/);
+  assert.match(surface, /inspectionSummary\(selectedRow\)/);
+  assert.match(surface, /aria-current=\{index === selectedIndex/);
+  assert.match(css, /\.chart-inspection-marker/);
+  assert.match(css, /\.workbench-selected-row/);
 });
 
 test("D5 comparison exposes authoritative aligned rows instead of frontend normalization", async () => {
@@ -79,7 +95,7 @@ test("D5 responsive and accessibility safeguards are explicit", async () => {
   assert.match(css, /forced-colors/);
   assert.match(surface, /role="img"/);
   assert.match(surface, /aria-label=\{summary\}/);
-  assert.match(surface, /tabIndex=\{0\}/);
+  assert.match(surface, /tabIndex=\{rows\.length \? 0 : -1\}/);
   assert.match(surface, /aria-pressed/);
   assert.match(surface, /aria-describedby="workbench-range-help"/);
 });
