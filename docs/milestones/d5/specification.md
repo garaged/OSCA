@@ -88,9 +88,10 @@ SQLite is authoritative for saved-view metadata. Mutations use the established p
 
 ## 10. Desktop application API
 
-Python exposes narrow typed methods for the D5 surface. The target method family is:
+Python exposes narrow typed methods for the D5 surface. The implemented method family is:
 
 - `workbench.series.get`;
+- `workbench.analysis.get`;
 - `workbench.comparison.get`;
 - `workbench.export.prepare`;
 - `workbench.view.list`;
@@ -100,9 +101,7 @@ Python exposes narrow typed methods for the D5 surface. The target method family
 - `workbench.view.rename`;
 - `workbench.view.delete`.
 
-Method names may be refined before the public contract is frozen, but runtime implementation and this specification must be reconciled before D5 exit.
-
-React accesses D5 only through `desktop_request`. Rust remains a transport/session broker and gains no numerical calculation, generic database/filesystem/network access, provider credentials, brokerage authority, or order execution authority.
+React accesses D5 only through `desktop_request`. Rust remains a transport/session broker; it classifies D5 profile mutations for the established window-ownership lease but gains no numerical calculation, generic database/filesystem/network access, provider credentials, brokerage authority, or order execution authority.
 
 ## 11. Desktop UX
 
