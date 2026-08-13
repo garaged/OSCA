@@ -3,15 +3,16 @@ import { App } from "./App";
 import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
 import { MarketsSurface } from "./Markets";
+import { WorkbenchSurface } from "./Workbench";
 import "./d3Root.css";
 
-type RootView = "workspace" | "markets" | "data-sources";
+type RootView = "workspace" | "markets" | "workbench" | "data-sources";
 type ProfileState =
   | { kind: "loading" }
   | { kind: "ready"; profileRoot?: string }
   | { kind: "error"; error: DesktopClientError };
 
-const views: RootView[] = ["workspace", "markets", "data-sources"];
+const views: RootView[] = ["workspace", "markets", "workbench", "data-sources"];
 
 export function D3Root() {
   const [view, setView] = useState<RootView>("workspace");
@@ -81,7 +82,9 @@ export function D3Root() {
       ) : (
         <main className="d3-data-sources-main">
           <h1 className="visually-hidden" ref={headingRef} tabIndex={-1}>
-            {view === "markets" ? "Markets" : "Data Sources"}
+            {view === "data-sources"
+              ? "Data Sources"
+              : view[0].toUpperCase() + view.slice(1)}
           </h1>
           {profile.kind === "loading" ? (
             <p className="d3-context-state" role="status">
@@ -102,11 +105,15 @@ export function D3Root() {
                   <strong>No profile selected.</strong>{" "}
                   {view === "markets"
                     ? "Asset search remains available, but persistent watchlists and recent assets require a validated profile selected from Workspace."
-                    : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
+                    : view === "workbench"
+                      ? "Open a validated profile from Workspace before loading governed analytical data in Workbench."
+                      : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
                 </aside>
               ) : null}
               {view === "markets" ? (
                 <MarketsSurface profileRoot={profile.profileRoot} />
+              ) : view === "workbench" ? (
+                <WorkbenchSurface profileRoot={profile.profileRoot} />
               ) : (
                 <DataSourcesSurface profileRoot={profile.profileRoot} />
               )}
