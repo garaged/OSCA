@@ -1,17 +1,18 @@
 # D5 Validation Evidence — Production Charting and Quantitative Analysis Workbench
 
-- **Status:** Automated validation passed; macOS ARM64 and Linux x86-64 manual acceptance pending
+- **Status:** Automated validation passed; macOS ARM64 and Linux x86-64 manual acceptance passed
 - **Pull request:** #85
 - **Branch:** `agent/d5-charting-quant-workbench`
 - **Baseline:** D4 merge `a4e733292ff42775848520afd536d57a18cada1f`
-- **Validated implementation candidate:** `02b8c58aa706fa857e8b0abbfa440b5e6c65455c`
+- **Validated implementation candidate:** `12724813d1a542663a5fbdd8649754107a8f3357`
 
 ## Automated validation
 
-The implementation candidate passed:
+The final implementation candidate passed:
 
-- Quality run `31689929269` (#1091);
-- Desktop Foundation run `31689929139` (#238);
+- Quality run `31731274246`;
+- Desktop Foundation run `31731274364`;
+- PR aggregate run `31731272397`;
 - strict OpenSpec validation;
 - secret scanning;
 - Ruff and strict mypy;
@@ -23,7 +24,7 @@ The implementation candidate passed:
 
 The full Python suite includes focused D5 regressions for governed dataset resolution, range propagation, deterministic display downsampling, full-resolution export, saved-view persistence/schema/security, quantitative analysis, compatible/incompatible comparison behavior, and a cached 25,000-row performance case whose analytical/display path must complete within the D5 three-second budget while returning at most 240 display rows.
 
-The frontend suite verifies typed `desktop_request` usage, absence of frontend-authored authoritative financial formulas, shared chart/volume/table presentation rows, synchronized keyboard inspection, range/viewport behavior, downsampling disclosure, comparison result rendering, accessibility safeguards, reduced motion, forced colors, and 320/680 CSS-pixel responsive breakpoints.
+The frontend suite verifies typed `desktop_request` usage, absence of frontend-authored authoritative financial formulas, shared chart/volume/table presentation rows, synchronized keyboard and mouse chart inspection, readable selected-observation details, range/viewport behavior, downsampling disclosure, comparison result rendering, accessibility safeguards, reduced motion, forced colors, and 320/680 CSS-pixel responsive breakpoints.
 
 The renderer dependency inspection confirms D5 adds no third-party chart runtime. The desktop runtime dependencies remain the existing Tauri API, React, and React DOM set; the Workbench chart is OSCA-owned SVG/DOM.
 
@@ -55,14 +56,15 @@ The Workbench provides:
 
 - an accessible synchronized table sourced from the same returned rows as the price and volume panes;
 - a focusable price chart with Left/Right Arrow and Home/End observation inspection;
-- an inspection marker and live textual OHLCV/derived-value summary synchronized to the selected table row;
+- mouse-selectable chart observations through explicit candle hit targets;
+- an inspection marker and live selected-observation panel with OHLCV/derived values synchronized to the selected table row;
 - visible focus styling;
 - screen-reader chart/volume summaries;
 - non-color direction/state cues where practical;
 - reduced-motion and forced-colors handling;
 - responsive layouts at the required narrow/intermediate widths.
 
-Supported-platform VoiceOver/Orca and final keyboard behavior remain manual acceptance obligations.
+Supported-platform VoiceOver/Orca, keyboard behavior, mouse chart selection, and selected-observation readability passed manual acceptance.
 
 ## Offline, packaging, and performance disposition
 
@@ -85,23 +87,26 @@ Validation identified and resolved:
 
 All listed defects are corrected on the validated candidate.
 
-## Remaining evidence
+## macOS ARM64 manual acceptance
 
-The complete procedure in `manual-acceptance.md` must still pass from a clean profile on:
+**Result: PASS.**
 
-- macOS ARM64;
-- Linux x86-64.
+The complete clean-profile D5 procedure passed on macOS ARM64, including packaged/native launch, offline Workbench sample and retained-data paths, governed series/range interaction, chart/table parity, keyboard and mouse chart observation inspection, readable selected-observation evidence, indicators, compatible and incompatible comparisons, downsampling disclosure, full-resolution CSV/metadata export, saved-view lifecycle and isolation, accessibility/responsive behavior, and typical cached/local responsiveness.
 
-Those runs must include packaged native launch, offline network observation, chart/table keyboard parity, indicators/comparisons, full-resolution export, saved-view restart/profile ownership/isolation, accessibility, responsive layouts, and the three-second typical cached/local Workbench target.
+## Linux x86-64 manual acceptance
+
+**Result: PASS.**
+
+The complete clean-profile D5 procedure passed on Linux x86-64, including packaged/native launch, offline Workbench sample and retained-data paths, governed series/range interaction, chart/table parity, keyboard and mouse chart observation inspection, readable selected-observation evidence, indicators, compatible and incompatible comparisons, downsampling disclosure, full-resolution CSV/metadata export, saved-view lifecycle and isolation, accessibility/responsive behavior, and typical cached/local responsiveness.
 
 Private host paths, credentials, provider account information, and machine-local profile identifiers must not be committed.
 
 ## Current disposition
 
 - Implementation slices: complete.
-- Automated validation: pass on `02b8c58aa706fa857e8b0abbfa440b5e6c65455c`.
+- Automated validation: pass on `12724813d1a542663a5fbdd8649754107a8f3357`.
 - Numerical-authority and narrow-desktop-boundary checks: pass.
 - Automated performance and dependency/license checks: pass.
-- macOS ARM64 manual acceptance: pending.
-- Linux x86-64 manual acceptance: pending.
-- D5 exit decision: pending supported-platform manual evidence and explicit repository-owner merge direction.
+- macOS ARM64 manual acceptance: pass.
+- Linux x86-64 manual acceptance: pass.
+- D5 exit decision: pass; merge remains subject to explicit repository-owner direction.
