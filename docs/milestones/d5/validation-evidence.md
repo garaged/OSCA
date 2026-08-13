@@ -34,6 +34,7 @@ D5 reuses the authoritative `osca.analytical_data` and `osca.quantitative_analys
 Automated evidence covers:
 
 - canonical governed payload resolution from retained profile metadata;
+- bundled offline AAPL/MSFT synthetic sample import for clean-profile compatible comparison acceptance;
 - rejection of arbitrary client payload paths and metadata that escapes governed storage;
 - OHLCV plus derived-series output from the same analytical result used by the chart/table surface;
 - Python-authoritative RSI, ATR, Bollinger, MACD, summary statistics, exact-timestamp aligned returns, correlation, and beta;
@@ -79,7 +80,8 @@ Validation identified and resolved:
 4. new test files exposed Ruff import-layout failures before deeper validation could run;
 5. a saved-view test fixture initially created a nested profile path incorrectly;
 6. a frontend range-client edit briefly diverged from the shared typed range-object contract;
-7. an initial responsive test asserted CSS formatting rather than the semantic breakpoint.
+7. an initial responsive test asserted CSS formatting rather than the semantic breakpoint;
+8. the clean-profile offline acceptance path initially imported only AAPL, leaving no bundled compatible comparison dataset for the default MSFT comparison.
 
 All listed defects are corrected on the validated candidate.
 
