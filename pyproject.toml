@@ -65,6 +65,7 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 "src/osca/ml_experiments/contracts.py" = ["E501"]
 "src/osca/ml_experiments/services.py" = ["E501", "F401", "B009", "RUF007", "SIM102"]
 "src/osca/ml_experiments/engine.py" = ["E501", "I001", "B009"]
+"tests/test_d5_renderer_dependency_boundary.py" = ["I001"]
 "tests/test_makefile.py" = ["I001"]
 "tests/test_u10_research_evidence_workspace.py" = ["E501"]
 
