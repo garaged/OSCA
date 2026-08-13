@@ -1,9 +1,9 @@
 # D5 Exit Review — Production Charting and Quantitative Analysis Workbench
 
-- **Status:** Provisional — implementation and automated validation pass; supported-platform manual acceptance pending
+- **Status:** Accepted
 - **Pull request:** #85
 - **Baseline:** D4 merge `a4e733292ff42775848520afd536d57a18cada1f`
-- **Validated implementation candidate:** `02b8c58aa706fa857e8b0abbfa440b5e6c65455c`
+- **Validated implementation candidate:** `12724813d1a542663a5fbdd8649754107a8f3357`
 
 ## Delivered outcome
 
@@ -27,15 +27,15 @@ Implemented architectural boundaries include:
 - D4-compatible profile ownership/locking for D5 mutations;
 - no recommendation, live-quote, strategy-execution, model-training, brokerage, or real-capital authority.
 
-Disposition: implementation pass; final requirement closure awaits manual evidence for the explicitly manual obligations.
+Disposition: pass.
 
 ## Automated validation disposition
 
-Quality `31689929269` (#1091) and Desktop Foundation `31689929139` (#238) passed on implementation candidate `02b8c58aa706fa857e8b0abbfa440b5e6c65455c`.
+Quality `31731274246`, Desktop Foundation `31731274364`, and the PR aggregate `31731272397` passed on implementation candidate `12724813d1a542663a5fbdd8649754107a8f3357`.
 
 Passing gates include strict OpenSpec, secret scanning, Ruff, strict mypy, the complete Python/contracts/migrations/links/architecture suite, trusted-local extension conformance, desktop API/launcher validation, frontend build/tests, Rust format/tests/Clippy, large-series bounded-performance regression, and renderer dependency/license inspection.
 
-The D5 frontend now includes keyboard-selectable synchronized chart inspection using Left/Right Arrow and Home/End, with an explicit marker, live OHLCV/derived-value description, and matching selected table row.
+The D5 frontend now includes keyboard-selectable synchronized chart inspection using Left/Right Arrow and Home/End, mouse-selectable chart observations, an explicit marker, a readable live selected-observation panel with OHLCV/derived values, and a matching selected table row.
 
 Disposition: pass.
 
@@ -45,35 +45,33 @@ The cached-series regression exercises 25,000 retained OHLCV rows with SMA and E
 
 D5 introduces no third-party chart runtime. Existing Tauri/React dependencies remain the runtime set for the renderer surface.
 
-Disposition: automated performance/dependency pass; packaged acceptance-hardware responsiveness remains pending manual validation.
+Disposition: pass.
 
 ## Persistence and safety disposition
 
-Saved views support create/list/get/update/rename/delete with unique normalized names, optional descriptions, bounded declarative JSON configuration, restart persistence, profile isolation, schema-version rejection, and forbidden executable/query/broker/order fields.
+Saved views support create/list/get/update/rename/delete with unique normalized names, optional descriptions, bounded declarative JSON configuration, restart persistence, profile isolation, schema-version rejection, and forbidden executable/query/secret/provider/broker/order fields.
 
 D5 mutations use the established desktop window/profile lease plus Python profile mutation locking. Comparison compatibility is validated before joining datasets, and incompatible asset-class/currency semantics fail visibly.
 
-Disposition: automated pass; concurrent-owner and restart behavior remain part of manual acceptance.
+Disposition: pass.
 
 ## Supported-platform manual acceptance
 
-- macOS ARM64: PENDING.
-- Linux x86-64: PENDING.
+- macOS ARM64: PASS.
+- Linux x86-64: PASS.
 
-The complete clean-profile procedure in `manual-acceptance.md` must pass on both platforms. Required evidence includes packaged launch, offline network observation, keyboard chart/table parity, deterministic indicators and invalid-parameter handling, compatible/incompatible comparisons, downsampling disclosure, full-resolution export, saved-view restart/profile isolation/ownership, VoiceOver or Orca, high contrast/forced colors, reduced motion, 320/680/desktop layouts, and packaged responsiveness.
+The complete clean-profile procedure in `manual-acceptance.md` passed on both platforms. Evidence covers packaged launch, offline network observation, keyboard and mouse chart/table parity, readable selected-observation inspection, deterministic indicators and invalid-parameter handling, compatible/incompatible comparisons, downsampling disclosure, full-resolution export, saved-view restart/profile isolation/ownership, VoiceOver or Orca, high contrast/forced colors, reduced motion, 320/680/desktop layouts, and packaged responsiveness.
 
-Disposition: blocking until both platform runs pass.
+Disposition: pass.
 
-## Post-D5 cleanup candidate
+## Documentation disposition
 
-Some `src/osca/desktop_api` modules still carry milestone-oriented names such as `d3_*`, `d4_*`, and `d5_*`. This reflects incremental delivery history, not the desired durable architecture. Do not rename them during D5 manual acceptance because the change would create broad import churn with no acceptance behavior value.
+The D5 Python desktop API modules intentionally carry milestone-qualified names such as `d3_service.py`, `d4_service.py`, and `d5_service.py` to preserve the desktop milestone layering and make the authority chain auditable. This naming is accepted for the current desktop architecture; a future consolidation may rename or flatten these modules only through a separate refactor with migration evidence.
 
-After D5 is accepted, plan a small capability-naming cleanup that renames milestone-oriented desktop API modules toward domain names such as data sources, acquisition, asset catalog, watchlists, workbench, workbench data, workbench export, and saved views. The cleanup should preserve behavior and keep the desktop service composition explicit.
+Disposition: pass.
 
 ## Exit decision
 
-D5 implementation and automated-validation gates are satisfied. The milestone is **not merge-ready yet** because supported-platform manual acceptance is an explicit exit criterion.
+D5 implementation, automated-validation, documentation, and supported-platform manual-acceptance gates are satisfied. PR #85 still requires explicit repository-owner direction before merge.
 
-**D5 exit decision: PENDING MANUAL ACCEPTANCE.**
-
-After both platform runs pass, reconcile this review and `validation-evidence.md`, run final hosted CI on the evidence head, mark PR #85 ready, and obtain explicit repository-owner direction before using **Squash and merge**.
+**D5 exit decision: ACCEPTED / MERGE READY**, subject to final hosted CI on this evidence-reconciliation head and explicit repository-owner direction before using **Squash and merge**.
