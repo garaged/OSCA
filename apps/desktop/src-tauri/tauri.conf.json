@@ -42,6 +42,6 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "externalBin": ["binaries/osca-sidecar"]
+    "resources": ["binaries/osca-sidecar-runtime"]
   }
 }
