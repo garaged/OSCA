@@ -58,7 +58,7 @@ The lifetime session lease is also an inter-process safety boundary for supporte
 
 Broker-level ownership conflicts are domain failures, not sidecar availability failures. The desktop client must surface them as a typed `profile_locked`/profile-ownership error with clear visible wording. `sidecar_unavailable` is reserved for failures to start, reach, or complete the sidecar request path itself.
 
-## 7. Desktop application API
+## 7. Desktop application API and native packaging
 
 Python exposes typed request/response methods for:
 
@@ -73,6 +73,8 @@ Python exposes typed request/response methods for:
 - `watchlist.reorder`.
 
 React accesses these methods only through the existing `desktop_request` bridge. Rust gains no generic database, filesystem, network, or secret authority. The Rust broker may enforce window/session ownership and lifetime locking needed to preserve the Python-authoritative profile safety contract across short-lived sidecar requests. Python remains authoritative for profile-scoped validation and persistence, including direct supported non-UI desktop-API mutations.
+
+Native packages must include a target-specific, self-contained executable form of the Python desktop sidecar. A packaged OSCA application must bootstrap and serve desktop requests without a separately started development server, repository checkout, active virtual environment, system-installed `osca` package, or `OSCA_DESKTOP_PYTHON` override. The repository development launcher may continue to inject its locked Python interpreter explicitly; packaged execution must prefer the bundled sidecar when no development override is present. The bundled executable does not widen Rust authority: it is only the packaged transport for the same Python application-service boundary.
 
 ## 8. Desktop UX
 
@@ -103,10 +105,11 @@ D4 does not add streaming quotes, charting, quantitative analysis, recommendatio
 ## 11. Exit criteria
 
 - Requirements and OpenSpec validation pass.
-- Unit, integration, migration, desktop API, frontend, broker, architecture, and persistence tests pass.
+- Unit, integration, migration, desktop API, frontend, broker, architecture, persistence, and packaging regression tests pass.
 - Regression tests prove one window cannot take over or mutate another window's opened profile and that ownership is released when the owning window closes/leaves the profile.
 - Regression tests prove a supported direct Python/CLI mutation cannot bypass a desktop-held session lease, while a broker-authorized sidecar can still mutate only its owning window's leased profile without deadlocking.
 - Regression tests prove broker profile-ownership conflicts are surfaced as typed profile-lock errors rather than `sidecar_unavailable`.
+- Native-package smoke proves the packaged application starts its bundled desktop sidecar with no separately started service or repository-local Python runtime.
 - Clean-profile manual acceptance passes on macOS ARM64 and Linux x86-64.
 - Large-catalog performance evidence is retained.
 - Accessibility, recovery, ambiguity, profile-lock, and per-window ownership behavior pass.
