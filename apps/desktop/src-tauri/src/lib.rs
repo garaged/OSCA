@@ -109,7 +109,12 @@ fn desktop_request(
         }
     }
 
-    let decoded = invoke_sidecar(&request_json, broker_owned_profile.as_deref())?;
+    let bundled_sidecar = bundled_sidecar_path(window.app_handle());
+    let decoded = invoke_sidecar(
+        &request_json,
+        broker_owned_profile.as_deref(),
+        bundled_sidecar.as_deref(),
+    )?;
     let succeeded = response_succeeded(&decoded)?;
 
     if succeeded {
@@ -128,11 +133,12 @@ fn desktop_request(
 fn invoke_sidecar(
     request_json: &str,
     broker_owned_profile: Option<&str>,
+    bundled_sidecar: Option<&str>,
 ) -> Result<String, String> {
     let (program, args) = sidecar_invocation(
         env::var("OSCA_DESKTOP_SIDECAR").ok(),
         env::var("OSCA_DESKTOP_PYTHON").ok(),
-        bundled_sidecar_path(),
+        bundled_sidecar.map(str::to_string),
     );
     let mut command = Command::new(program);
     command.args(args);
@@ -310,12 +316,24 @@ fn sidecar_invocation(
     )
 }
 
-fn bundled_sidecar_path() -> Option<String> {
-    let executable = env::current_exe().ok()?;
-    let sibling = executable.parent()?.join("osca-sidecar");
-    sibling
+fn bundled_sidecar_path(app: &tauri::AppHandle) -> Option<String> {
+    let resource_dir = app.path().resource_dir().ok()?;
+    resource_sidecar_path(&resource_dir)
+}
+
+fn resource_sidecar_path(resource_dir: &Path) -> Option<String> {
+    let executable_name = if cfg!(target_os = "windows") {
+        "osca-sidecar.exe"
+    } else {
+        "osca-sidecar"
+    };
+    let executable = resource_dir
+        .join("binaries")
+        .join("osca-sidecar-runtime")
+        .join(executable_name);
+    executable
         .is_file()
-        .then(|| sibling.to_string_lossy().into_owned())
+        .then(|| executable.to_string_lossy().into_owned())
 }
 
 fn validate_request_size(request_json: &str) -> Result<(), String> {
@@ -362,10 +380,12 @@ pub fn run() {
 mod tests {
     use super::{
         acquire_profile_session_lease, apply_sidecar_profile_authorization, decode_response,
-        override_window_profile, sidecar_invocation, stable_profile_identity,
+        override_window_profile, resource_sidecar_path, sidecar_invocation, stable_profile_identity,
         validate_request_size, BrokerState, BROKER_OWNED_PROFILE_ENV, MAX_MESSAGE_BYTES,
     };
     use std::ffi::OsStr;
+    use std::fs;
+    use std::path::PathBuf;
     use std::process::Command;
     use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -378,6 +398,10 @@ mod tests {
             "/tmp/osca-session-test-{name}-{}-{unique}",
             std::process::id()
         )
+    }
+
+    fn unique_resource_root(name: &str) -> PathBuf {
+        PathBuf::from(unique_profile(name))
     }
 
     #[test]
@@ -402,6 +426,26 @@ mod tests {
     fn bundled_sidecar_is_used_without_development_overrides() {
         let invocation = sidecar_invocation(None, None, Some("/app/osca-sidecar".to_string()));
         assert_eq!(invocation, ("/app/osca-sidecar".to_string(), Vec::new()));
+    }
+
+    #[test]
+    fn packaged_sidecar_is_resolved_from_resource_runtime() {
+        let root = unique_resource_root("resource-runtime");
+        let runtime = root.join("binaries").join("osca-sidecar-runtime");
+        fs::create_dir_all(&runtime).expect("create runtime");
+        let executable_name = if cfg!(target_os = "windows") {
+            "osca-sidecar.exe"
+        } else {
+            "osca-sidecar"
+        };
+        let executable = runtime.join(executable_name);
+        fs::write(&executable, b"test").expect("write executable fixture");
+
+        assert_eq!(
+            resource_sidecar_path(&root),
+            Some(executable.to_string_lossy().into_owned())
+        );
+        fs::remove_dir_all(root).expect("remove runtime fixture");
     }
 
     #[test]
@@ -543,7 +587,7 @@ mod tests {
 
     #[test]
     fn bootstrap_selected_profile_is_overridden_by_window_owned_profile() {
-        let response = r#"{"status":"ok","result":{"selected_profile":"/other"}}"#;
+        let response = r#"{\"status\":\"ok\",\"result\":{\"selected_profile\":\"/other\"}}"#;
         let updated = override_window_profile(response, "desktop.bootstrap", Some("/owned"))
             .expect("override");
         assert!(updated.contains("\"selected_profile\":\"/owned\""));
