@@ -482,20 +482,20 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
       {assets.kind === "error" ? <p className="workbench-error" role="alert">{assets.message}</p> : null}
       {state.kind === "idle" ? (
         <p className="workbench-status" role="status">
-          Load a retained asset, or import the bundled synthetic AAPL sample directly for offline Workbench acceptance.
+          Load a retained asset, or import the bundled synthetic AAPL/MSFT samples directly for offline Workbench acceptance.
         </p>
       ) : null}
       {state.kind === "idle" || state.kind === "error" ? (
         <section className="workbench-sample-import" aria-labelledby="workbench-sample-import-title">
           <div>
             <h3 id="workbench-sample-import-title">Offline sample for Workbench</h3>
-            <p>Imports deterministic synthetic AAPL-labelled daily observations into this profile and loads AAPL 1d without network, credentials, or a provider account.</p>
+            <p>Imports deterministic synthetic AAPL/MSFT-labelled daily observations into this profile and loads AAPL 1d without network, credentials, or a provider account.</p>
           </div>
           <button disabled={sampleImport.kind === "loading"} onClick={() => void importSampleForWorkbench()} type="button">
-            {sampleImport.kind === "loading" ? "Importing sample…" : "Import bundled synthetic sample"}
+            {sampleImport.kind === "loading" ? "Importing samples…" : "Import bundled synthetic samples"}
           </button>
           {sampleImport.kind === "ready" ? (
-            <p role="status">Imported {sampleImport.value.import.row_count} synthetic rows as {sampleImport.value.import.symbol} {sampleImport.value.import.timeframe}.</p>
+            <p role="status">Imported {sampleImport.value.imports.length} synthetic datasets for Workbench: {sampleImport.value.imports.map((item) => `${item.symbol} ${item.timeframe}`).join(", ")}.</p>
           ) : sampleImport.kind === "error" ? (
             <p className="workbench-error" role="alert">{sampleImport.message}</p>
           ) : null}
