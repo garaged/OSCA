@@ -1,0 +1,210 @@
+.workbench-surface {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.workbench-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.workbench-heading h2,
+.workbench-heading p {
+  margin-top: 0;
+}
+
+.workbench-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workbench-boundary,
+.workbench-downsampled,
+.workbench-full-resolution,
+.workbench-status,
+.workbench-error,
+.workbench-empty {
+  border: 1px solid currentColor;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+}
+
+.workbench-controls {
+  display: grid;
+  grid-template-columns: minmax(12rem, 2fr) repeat(3, minmax(8rem, 1fr)) auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.workbench-controls label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.workbench-controls select,
+.workbench-controls input,
+.workbench-controls button {
+  min-height: 2.7rem;
+  font: inherit;
+}
+
+.workbench-controls :focus-visible,
+.workbench-table-region:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+.workbench-provenance {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.workbench-provenance div {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+
+.workbench-provenance dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.workbench-provenance dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.workbench-chart {
+  margin: 0;
+}
+
+.workbench-chart figcaption {
+  display: grid;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.workbench-svg {
+  display: block;
+  width: 100%;
+  min-height: 14rem;
+  max-height: 28rem;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: 0.5rem;
+}
+
+.chart-axis,
+.chart-up,
+.chart-down,
+.chart-derived {
+  stroke: currentColor;
+}
+
+.chart-up rect {
+  fill: transparent;
+  stroke-width: 2;
+}
+
+.chart-down rect {
+  fill: currentColor;
+  stroke-width: 2;
+}
+
+.chart-up line,
+.chart-down line {
+  stroke-width: 1.5;
+}
+
+.chart-derived {
+  fill: none;
+  stroke-dasharray: 5 3;
+  stroke-width: 2;
+}
+
+.workbench-evidence p {
+  overflow-wrap: anywhere;
+}
+
+.workbench-table-region {
+  max-width: 100%;
+}
+
+.workbench-table-scroll {
+  overflow: auto;
+  max-height: 28rem;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: 0.5rem;
+}
+
+.workbench-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.workbench-table-scroll th,
+.workbench-table-scroll td {
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  text-align: right;
+}
+
+.workbench-table-scroll th:first-child,
+.workbench-table-scroll td:first-child {
+  text-align: left;
+}
+
+@media (max-width: 680px) {
+  .workbench-heading {
+    display: grid;
+  }
+
+  .workbench-controls,
+  .workbench-provenance {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 320px) {
+  .workbench-surface {
+    padding: 0.5rem;
+  }
+
+  .workbench-controls select,
+  .workbench-controls input,
+  .workbench-controls button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workbench-surface * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .workbench-svg,
+  .workbench-table-scroll,
+  .workbench-boundary,
+  .workbench-downsampled,
+  .workbench-full-resolution,
+  .workbench-error {
+    forced-color-adjust: auto;
+  }
+
+  .chart-derived {
+    stroke-dasharray: 8 4;
+  }
+}
