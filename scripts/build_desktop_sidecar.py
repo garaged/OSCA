@@ -21,7 +21,8 @@ _RUNTIME_ROOT = (
     / "osca-sidecar-runtime"
 )
 _BINARY_NAME = "osca-sidecar"
-_SMOKE_TIMEOUT_SECONDS = 5.0
+# Keep package-build smoke validation aligned with the Tauri broker's runtime request budget.
+_SMOKE_TIMEOUT_SECONDS = 15.0
 
 
 def _clear_generated_runtime() -> None:
@@ -42,14 +43,20 @@ def _smoke_sidecar(executable: Path) -> None:
     )
     for attempt in range(2):
         started = time.monotonic()
-        completed = subprocess.run(
-            [str(executable)],
-            input=request,
-            capture_output=True,
-            text=True,
-            timeout=_SMOKE_TIMEOUT_SECONDS,
-            check=False,
-        )
+        try:
+            completed = subprocess.run(
+                [str(executable)],
+                input=request,
+                capture_output=True,
+                text=True,
+                timeout=_SMOKE_TIMEOUT_SECONDS,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError(
+                f"packaged sidecar smoke attempt {attempt + 1} exceeded "
+                f"the {_SMOKE_TIMEOUT_SECONDS:.0f}s desktop broker request budget"
+            ) from exc
         elapsed = time.monotonic() - started
         if completed.returncode != 0:
             raise RuntimeError(
