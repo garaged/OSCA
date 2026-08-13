@@ -1,4 +1,4 @@
-import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { importBundledSample, SampleImportResult } from "./api";
 import { Asset, searchAssets } from "./marketsApi";
 import {
@@ -728,9 +728,17 @@ function PriceChart({
     onSelectIndex(nextIndex);
   }
 
+  function selectObservation(index: number, event: MouseEvent<SVGRectElement>) {
+    event.preventDefault();
+    onSelectIndex(index);
+  }
+
   return (
     <figure className="workbench-chart">
-      <figcaption><strong>Price and returned indicator series</strong><span>{summary}</span></figcaption>
+      <figcaption>
+        <strong>Price and returned indicator series</strong>
+        <span>{summary} Click a candle region to select the same synchronized observation with a mouse.</span>
+      </figcaption>
       <svg
         aria-describedby="workbench-chart-inspection"
         aria-label={summary}
@@ -774,11 +782,55 @@ function PriceChart({
             y2={HEIGHT - PADDING}
           />
         ) : null}
+        {geometry.candles.map((item, index) => (
+          <rect
+            aria-label={`Select ${item.timestamp}`}
+            className="chart-hit-target"
+            height={HEIGHT - PADDING * 2}
+            key={`${item.timestamp}-hit`}
+            onClick={(event) => selectObservation(index, event)}
+            role="button"
+            width={Math.max(item.width * 2, 18)}
+            x={item.x - Math.max(item.width, 9)}
+            y={PADDING}
+          />
+        ))}
       </svg>
-      <p id="workbench-chart-inspection" role="status">
-        {selectedRow ? inspectionSummary(selectedRow) : "No chart observation selected."}
-      </p>
+      <SelectedObservationPanel row={selectedRow} />
     </figure>
+  );
+}
+
+function SelectedObservationPanel({ row }: { row?: WorkbenchRow }) {
+  if (!row) {
+    return <p id="workbench-chart-inspection" role="status">No chart observation selected.</p>;
+  }
+  const derived = Object.entries(row.derived);
+  return (
+    <section
+      aria-labelledby="workbench-chart-inspection-title"
+      aria-live="polite"
+      className="workbench-selected-observation"
+      id="workbench-chart-inspection"
+    >
+      <h3 id="workbench-chart-inspection-title">Selected observation</h3>
+      <dl>
+        <div><dt>Timestamp</dt><dd>{row.timestamp}</dd></div>
+        <div><dt>Open</dt><dd>{format(row.open)}</dd></div>
+        <div><dt>High</dt><dd>{format(row.high)}</dd></div>
+        <div><dt>Low</dt><dd>{format(row.low)}</dd></div>
+        <div><dt>Close</dt><dd>{format(row.close)}</dd></div>
+        <div><dt>Volume</dt><dd>{format(row.volume)}</dd></div>
+        {derived.length ? derived.map(([key, value]) => (
+          <div key={key}>
+            <dt>{key}</dt>
+            <dd>{value == null ? "Unavailable" : format(value)}</dd>
+          </div>
+        )) : (
+          <div><dt>Derived</dt><dd>None requested</dd></div>
+        )}
+      </dl>
+    </section>
   );
 }
 
@@ -833,17 +885,6 @@ function AccessibleSeriesTable({
       </div>
     </section>
   );
-}
-
-function inspectionSummary(row: WorkbenchRow): string {
-  const derived = Object.entries(row.derived)
-    .map(([key, value]) => `${key} ${value == null ? "unavailable" : format(value)}`)
-    .join(", ");
-  return [
-    `Selected ${row.timestamp}.`,
-    `Open ${format(row.open)}, high ${format(row.high)}, low ${format(row.low)}, close ${format(row.close)}, volume ${format(row.volume)}.`,
-    derived ? `Derived: ${derived}.` : ""
-  ].filter(Boolean).join(" ");
 }
 
 function chartGeometry(rows: WorkbenchRow[]) {
