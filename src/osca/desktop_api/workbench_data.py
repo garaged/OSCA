@@ -169,6 +169,8 @@ def _accepted_symbols(asset: Asset) -> tuple[str, ...]:
     values = {asset.symbol.upper(), *(alias.upper() for alias in asset.aliases)}
     if asset.asset_id == "equity:XNAS:AAPL":
         values.add("AAPL-SYNTHETIC")
+    if asset.asset_id == "equity:XNAS:MSFT":
+        values.add("MSFT-SYNTHETIC")
     return tuple(sorted(values))
 
 
