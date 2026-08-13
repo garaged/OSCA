@@ -30,7 +30,9 @@
 .workbench-error,
 .workbench-empty,
 .workbench-analysis,
-.workbench-saved-views {
+.workbench-saved-views,
+.workbench-range-controls,
+.workbench-viewport {
   border: 1px solid currentColor;
   border-radius: 0.6rem;
   padding: 0.75rem;
@@ -45,7 +47,8 @@
 
 .workbench-controls label,
 .workbench-secondary-controls label,
-.workbench-view-actions label {
+.workbench-view-actions label,
+.workbench-range-controls label {
   display: grid;
   gap: 0.35rem;
   font-weight: 600;
@@ -58,7 +61,9 @@
 .workbench-secondary-controls button,
 .workbench-view-actions input,
 .workbench-view-actions button,
-.workbench-view-list button {
+.workbench-view-list button,
+.workbench-range-controls input,
+.workbench-viewport button {
   min-height: 2.7rem;
   font: inherit;
 }
@@ -70,6 +75,24 @@
   gap: 0.75rem;
 }
 
+.workbench-range-controls {
+  display: grid;
+  grid-template-columns: minmax(16rem, 2fr) repeat(2, minmax(12rem, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.workbench-range-controls h3,
+.workbench-range-controls p,
+.workbench-viewport p {
+  margin-top: 0;
+}
+
+.workbench-range-controls p,
+.workbench-viewport p {
+  margin-bottom: 0;
+}
+
 .workbench-view-actions {
   display: grid;
   grid-template-columns: minmax(12rem, 2fr) repeat(3, minmax(8rem, 1fr));
@@ -77,7 +100,8 @@
   gap: 0.75rem;
 }
 
-.workbench-view-list {
+.workbench-view-list,
+.workbench-viewport div {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -88,6 +112,8 @@
 .workbench-secondary-controls :focus-visible,
 .workbench-view-actions :focus-visible,
 .workbench-view-list :focus-visible,
+.workbench-range-controls :focus-visible,
+.workbench-viewport :focus-visible,
 .workbench-table-region:focus-visible {
   outline: 3px solid currentColor;
   outline-offset: 3px;
@@ -126,13 +152,22 @@
   margin-bottom: 0.5rem;
 }
 
-.workbench-svg {
+.workbench-svg,
+.workbench-volume-svg {
   display: block;
   width: 100%;
-  min-height: 14rem;
-  max-height: 28rem;
   border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
   border-radius: 0.5rem;
+}
+
+.workbench-svg {
+  min-height: 14rem;
+  max-height: 28rem;
+}
+
+.workbench-volume-svg {
+  min-height: 6rem;
+  max-height: 10rem;
 }
 
 .chart-axis,
@@ -163,6 +198,11 @@
   stroke-width: 2;
 }
 
+.chart-volume {
+  fill: currentColor;
+  opacity: 0.6;
+}
+
 .workbench-evidence p,
 .workbench-analysis p {
   overflow-wrap: anywhere;
@@ -185,6 +225,12 @@
   white-space: nowrap;
 }
 
+.workbench-table-scroll caption {
+  padding: 0.6rem;
+  text-align: left;
+  font-weight: 700;
+}
+
 .workbench-table-scroll th,
 .workbench-table-scroll td {
   padding: 0.5rem 0.65rem;
@@ -199,8 +245,13 @@
 
 @media (max-width: 900px) {
   .workbench-secondary-controls,
-  .workbench-view-actions {
+  .workbench-view-actions,
+  .workbench-range-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workbench-range-controls > div:first-child {
+    grid-column: 1 / -1;
   }
 }
 
@@ -212,8 +263,13 @@
   .workbench-controls,
   .workbench-secondary-controls,
   .workbench-view-actions,
+  .workbench-range-controls,
   .workbench-provenance {
     grid-template-columns: 1fr;
+  }
+
+  .workbench-range-controls > div:first-child {
+    grid-column: auto;
   }
 }
 
@@ -229,7 +285,9 @@
   .workbench-secondary-controls button,
   .workbench-view-actions input,
   .workbench-view-actions button,
-  .workbench-view-list button {
+  .workbench-view-list button,
+  .workbench-range-controls input,
+  .workbench-viewport button {
     width: 100%;
   }
 }
@@ -244,17 +302,24 @@
 
 @media (forced-colors: active) {
   .workbench-svg,
+  .workbench-volume-svg,
   .workbench-table-scroll,
   .workbench-boundary,
   .workbench-downsampled,
   .workbench-full-resolution,
   .workbench-error,
   .workbench-analysis,
-  .workbench-saved-views {
+  .workbench-saved-views,
+  .workbench-range-controls,
+  .workbench-viewport {
     forced-color-adjust: auto;
   }
 
   .chart-derived {
     stroke-dasharray: 8 4;
+  }
+
+  .chart-volume {
+    opacity: 1;
   }
 }
