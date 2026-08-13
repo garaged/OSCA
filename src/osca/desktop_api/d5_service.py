@@ -17,8 +17,9 @@ from osca.analytical_data import (
 from osca.desktop_api.d4_service import D4DesktopApplicationService
 from osca.desktop_api.profile_lock import ProfileMutationLock
 from osca.desktop_api.service import DesktopServiceError
-from osca.desktop_api.workbench_data import resolve_governed_dataset
+from osca.desktop_api.workbench_data import GovernedDataset, resolve_governed_dataset
 from osca.desktop_api.workbench_export import prepare_export
+from osca.desktop_api.workbench_quant import get_comparison, get_quantitative_analysis
 from osca.desktop_api.workbench_views import (
     create_view,
     delete_view,
@@ -37,6 +38,8 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
         self._handlers.update(
             {
                 "workbench.series.get": self._workbench_series_get,
+                "workbench.analysis.get": self._workbench_analysis_get,
+                "workbench.comparison.get": self._workbench_comparison_get,
                 "workbench.export.prepare": self._workbench_export_prepare,
                 "workbench.view.list": self._workbench_view_list,
                 "workbench.view.get": self._workbench_view_get,
@@ -62,10 +65,7 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
             timeframe=timeframe,
         )
         request = _chart_request(params, dataset)
-        try:
-            result = build_chart_series(request)
-        except ValidationError as exc:
-            raise DesktopServiceError("invalid_parameters", _validation_message(exc)) from exc
+        result = build_chart_series(request)
         payload = result.model_dump(mode="json", exclude={"payload_path"})
         return {
             "family": "osca.desktop-workbench-series.result",
@@ -86,6 +86,56 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
             "broker_connections_enabled": False,
             "real_capital_execution_enabled": False,
         }
+
+    def _workbench_analysis_get(self, params: dict[str, Any]) -> dict[str, Any]:
+        _allowed(
+            params,
+            {
+                "profile_root",
+                "asset_id",
+                "timeframe",
+                "start",
+                "end",
+                "max_rows",
+                "parameters",
+            },
+            "workbench.analysis.get",
+        )
+        return get_quantitative_analysis(
+            _required_path(params, "profile_root"),
+            asset_id=_required_text(params, "asset_id"),
+            timeframe=_required_text(params, "timeframe"),
+            start=_optional_datetime(params, "start"),
+            end=_optional_datetime(params, "end"),
+            max_rows=_optional_int(params, "max_rows", 500),
+            parameters=_optional_object(params, "parameters"),
+        )
+
+    def _workbench_comparison_get(self, params: dict[str, Any]) -> dict[str, Any]:
+        _allowed(
+            params,
+            {
+                "profile_root",
+                "primary_asset_id",
+                "comparison_asset_id",
+                "timeframe",
+                "start",
+                "end",
+                "rolling_window",
+                "max_rows",
+            },
+            "workbench.comparison.get",
+        )
+        return get_comparison(
+            _required_path(params, "profile_root"),
+            primary_asset_id=_required_text(params, "primary_asset_id"),
+            comparison_asset_id=_required_text(params, "comparison_asset_id"),
+            timeframe=_required_text(params, "timeframe"),
+            start=_optional_datetime(params, "start"),
+            end=_optional_datetime(params, "end"),
+            rolling_window=_optional_int(params, "rolling_window", 20),
+            max_rows=_optional_int(params, "max_rows", 500),
+        )
 
     def _workbench_export_prepare(self, params: dict[str, Any]) -> dict[str, Any]:
         _allowed(
@@ -181,7 +231,7 @@ class D5DesktopApplicationService(D4DesktopApplicationService):
             return delete_view(profile_root, _required_int(params, "view_id"))
 
 
-def _chart_request(params: dict[str, Any], dataset: Any) -> ChartSeriesRequest:
+def _chart_request(params: dict[str, Any], dataset: GovernedDataset) -> ChartSeriesRequest:
     try:
         return ChartSeriesRequest(
             dataset_revision_id=dataset.dataset_revision_id,
@@ -278,6 +328,12 @@ def _required_object(params: dict[str, Any], name: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise DesktopServiceError("invalid_parameters", f"{name} must be an object")
     return value
+
+
+def _optional_object(params: dict[str, Any], name: str) -> dict[str, Any]:
+    if name not in params or params[name] is None:
+        return {}
+    return _required_object(params, name)
 
 
 def _optional_datetime(params: dict[str, Any], name: str) -> datetime | None:
