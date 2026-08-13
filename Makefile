@@ -7,7 +7,7 @@ CARGO ?= cargo
 PYTHON ?= $(UV) run python
 DESKTOP_DIR := apps/desktop
 TAURI_DIR := $(DESKTOP_DIR)/src-tauri
-ACCEPTANCE_ROOT ?= $(CURDIR)/.osca/d3-manual-acceptance
+ACCEPTANCE_ROOT ?= $(CURDIR)/.osca/d5-manual-acceptance
 ACCEPTANCE_STATE_ROOT ?= $(ACCEPTANCE_ROOT)/state
 ACCEPTANCE_PROFILE ?= $(ACCEPTANCE_ROOT)/profile
 ACCEPTANCE_EVIDENCE ?= $(ACCEPTANCE_ROOT)/evidence
@@ -72,7 +72,7 @@ acceptance-reset: ## Remove and recreate isolated manual-acceptance state; does 
 	rm -rf "$(ACCEPTANCE_ROOT)"
 	@mkdir -p "$(ACCEPTANCE_STATE_ROOT)" "$(ACCEPTANCE_EVIDENCE)"
 
-acceptance-run: acceptance-prepare ## Launch the app with isolated state for D3 manual acceptance.
+acceptance-run: acceptance-prepare ## Launch the app with isolated state for D5 manual acceptance.
 	OSCA_DESKTOP_STATE_ROOT="$(ACCEPTANCE_STATE_ROOT)" $(PYTHON) scripts/run_desktop.py
 
 acceptance-check: test-desktop acceptance-info ## Run focused desktop tests and print evidence metadata.
@@ -112,8 +112,8 @@ test: test-python test-frontend test-rust ## Run Python, frontend, and Rust desk
 test-python: sync ## Run the complete Python test suite.
 	$(UV) run pytest
 
-test-desktop: sync frontend-install ## Run focused D1-D3 desktop API, launcher, Makefile, and frontend tests.
-	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_desktop_launcher.py tests/test_makefile.py
+test-desktop: sync frontend-install ## Run focused D1-D5 desktop API, launcher, Makefile, and frontend tests.
+	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_d4_*.py tests/test_d5_*.py tests/test_desktop_launcher.py tests/test_desktop_packaging.py tests/test_makefile.py
 	cd $(DESKTOP_DIR) && $(NPM) test
 
 test-frontend: frontend-install ## Run desktop frontend tests.
