@@ -58,8 +58,8 @@ test("D5 chart and accessible table share the same returned row collection", asy
 test("D5 responsive and accessibility safeguards are explicit", async () => {
   const css = await readFile(new URL("../src/workbench.css", import.meta.url), "utf8");
   const surface = await readFile(new URL("../src/Workbench.tsx", import.meta.url), "utf8");
-  assert.match(css, /max-width:680px/);
-  assert.match(css, /max-width:320px/);
+  assert.match(css, /max-width:\s*680px/);
+  assert.match(css, /max-width:\s*320px/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /forced-colors/);
   assert.match(surface, /role="img"/);
