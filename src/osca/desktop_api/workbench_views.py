@@ -77,7 +77,10 @@ def update_view(
             (normalized_description, _json(normalized_config), view_id),
         )
         if cursor.rowcount != 1:
-            raise DesktopServiceError("workbench_view_not_found", "Saved workbench view was not found.")
+            raise DesktopServiceError(
+                "workbench_view_not_found",
+                "Saved workbench view was not found.",
+            )
         payload = _row_payload(_require_view(connection, view_id))
     return _single_result(payload)
 
@@ -97,16 +100,25 @@ def rename_view(profile_root: Path, *, view_id: int, name: str) -> dict[str, Any
                 "A saved workbench view with that name already exists.",
             ) from exc
         if cursor.rowcount != 1:
-            raise DesktopServiceError("workbench_view_not_found", "Saved workbench view was not found.")
+            raise DesktopServiceError(
+                "workbench_view_not_found",
+                "Saved workbench view was not found.",
+            )
         payload = _row_payload(_require_view(connection, view_id))
     return _single_result(payload)
 
 
 def delete_view(profile_root: Path, view_id: int) -> dict[str, Any]:
     with _connect(profile_root) as connection:
-        cursor = connection.execute("DELETE FROM workbench_views WHERE id=?", (view_id,))
+        cursor = connection.execute(
+            "DELETE FROM workbench_views WHERE id=?",
+            (view_id,),
+        )
         if cursor.rowcount != 1:
-            raise DesktopServiceError("workbench_view_not_found", "Saved workbench view was not found.")
+            raise DesktopServiceError(
+                "workbench_view_not_found",
+                "Saved workbench view was not found.",
+            )
     return {
         "family": "osca.desktop-workbench-view-delete.result",
         "version": "1.0.0",
@@ -117,7 +129,10 @@ def delete_view(profile_root: Path, view_id: int) -> dict[str, Any]:
 
 def _database(profile_root: Path) -> Path:
     if not profile_root.is_absolute() or not profile_root.is_dir():
-        raise DesktopServiceError("profile_unavailable", "A valid absolute profile directory is required.")
+        raise DesktopServiceError(
+            "profile_unavailable",
+            "A valid absolute profile directory is required.",
+        )
     directory = profile_root / ".osca" / "desktop"
     directory.mkdir(parents=True, exist_ok=True)
     return directory / "d5-workbench.sqlite3"
@@ -158,7 +173,10 @@ def _require_view(connection: sqlite3.Connection, view_id: int) -> sqlite3.Row:
         (view_id,),
     ).fetchone()
     if row is None:
-        raise DesktopServiceError("workbench_view_not_found", "Saved workbench view was not found.")
+        raise DesktopServiceError(
+            "workbench_view_not_found",
+            "Saved workbench view was not found.",
+        )
     return row
 
 
@@ -217,15 +235,28 @@ def _description(value: str | None) -> str | None:
 
 
 def _config(value: dict[str, Any]) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise DesktopServiceError("invalid_parameters", "config must be an object")
     encoded = _json(value)
     if len(encoded.encode("utf-8")) > 32_768:
-        raise DesktopServiceError("invalid_parameters", "Saved view configuration exceeds 32 KiB.")
-    forbidden = {"sql", "query", "provider_url", "credential", "secret", "token", "order", "broker"}
+        raise DesktopServiceError(
+            "invalid_parameters",
+            "Saved view configuration exceeds 32 KiB.",
+        )
+    forbidden = {
+        "sql",
+        "query",
+        "provider_url",
+        "credential",
+        "secret",
+        "token",
+        "order",
+        "broker",
+    }
+    sensitive_fragments = ("password", "api_key", "private_key")
     for key in _walk_keys(value):
         lowered = key.lower()
-        if lowered in forbidden or any(term in lowered for term in ("password", "api_key", "private_key")):
+        if lowered in forbidden or any(
+            fragment in lowered for fragment in sensitive_fragments
+        ):
             raise DesktopServiceError(
                 "invalid_parameters",
                 f"Saved view configuration contains forbidden field: {key}",
@@ -247,7 +278,12 @@ def _walk_keys(value: Any) -> list[str]:
 
 def _json(value: dict[str, Any]) -> str:
     try:
-        return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        return json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
     except (TypeError, ValueError) as exc:
         raise DesktopServiceError(
             "invalid_parameters",
