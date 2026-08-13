@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { Asset, searchAssets } from "./marketsApi";
 import {
   getWorkbenchSeries,
@@ -457,23 +457,31 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
   const returnedRows = result.series.rows;
   const [viewportSize, setViewportSize] = useState(returnedRows.length);
   const [viewportStart, setViewportStart] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const downsampled = result.series.downsampling_method !== "none";
 
   useEffect(() => {
     setViewportSize(result.series.rows.length);
     setViewportStart(0);
+    setSelectedIndex(0);
   }, [result.series.payload_sha256, result.series.first_timestamp, result.series.last_timestamp]);
 
   const boundedSize = Math.max(1, Math.min(viewportSize, returnedRows.length || 1));
   const boundedStart = Math.max(0, Math.min(viewportStart, Math.max(0, returnedRows.length - boundedSize)));
   const visibleRows = returnedRows.slice(boundedStart, boundedStart + boundedSize);
+  const visibleSelectedIndex = Math.max(0, Math.min(selectedIndex, Math.max(0, visibleRows.length - 1)));
   const step = Math.max(1, Math.floor(boundedSize / 3));
+
+  function resetInspection() {
+    setSelectedIndex(0);
+  }
 
   function zoomIn() {
     const nextSize = Math.max(5, Math.floor(boundedSize / 2));
     const center = boundedStart + boundedSize / 2;
     setViewportSize(Math.min(nextSize, returnedRows.length));
     setViewportStart(Math.max(0, Math.floor(center - nextSize / 2)));
+    resetInspection();
   }
 
   function zoomOut() {
@@ -481,10 +489,12 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
     const center = boundedStart + boundedSize / 2;
     setViewportSize(nextSize);
     setViewportStart(Math.max(0, Math.floor(center - nextSize / 2)));
+    resetInspection();
   }
 
   function pan(delta: number) {
     setViewportStart(Math.max(0, Math.min(boundedStart + delta, returnedRows.length - boundedSize)));
+    resetInspection();
   }
 
   return (
@@ -513,7 +523,11 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
           <button disabled={boundedStart + boundedSize >= returnedRows.length} onClick={() => pan(step)} type="button">Pan later</button>
         </div>
       </section>
-      <PriceChart rows={visibleRows} />
+      <PriceChart
+        rows={visibleRows}
+        selectedIndex={visibleSelectedIndex}
+        onSelectIndex={setSelectedIndex}
+      />
       <VolumePane rows={visibleRows} />
       {result.series.derived_evidence.length ? (
         <section className="workbench-evidence" aria-labelledby="indicator-evidence-title">
@@ -525,7 +539,7 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
           ))}
         </section>
       ) : null}
-      <AccessibleSeriesTable rows={visibleRows} />
+      <AccessibleSeriesTable rows={visibleRows} selectedIndex={visibleSelectedIndex} />
     </div>
   );
 }
@@ -604,15 +618,46 @@ function ExportPanel({ state }: { state: AsyncResult<WorkbenchExport> }) {
   );
 }
 
-function PriceChart({ rows }: { rows: WorkbenchRow[] }) {
+function PriceChart({
+  rows,
+  selectedIndex,
+  onSelectIndex
+}: {
+  rows: WorkbenchRow[];
+  selectedIndex: number;
+  onSelectIndex: (index: number) => void;
+}) {
   const geometry = useMemo(() => chartGeometry(rows), [rows]);
+  const selectedRow = rows[selectedIndex];
+  const selectedCandle = geometry.candles[selectedIndex];
   const summary = rows.length
-    ? `Price chart with ${rows.length} visible observations. Exact visible values are in the synchronized table.`
+    ? `Price chart with ${rows.length} visible observations. Use Left and Right Arrow, Home, and End to inspect the synchronized values.`
     : "Price chart contains no observations.";
+
+  function inspect(event: KeyboardEvent<SVGSVGElement>) {
+    if (!rows.length) return;
+    let nextIndex = selectedIndex;
+    if (event.key === "ArrowLeft") nextIndex = Math.max(0, selectedIndex - 1);
+    else if (event.key === "ArrowRight") nextIndex = Math.min(rows.length - 1, selectedIndex + 1);
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = rows.length - 1;
+    else return;
+    event.preventDefault();
+    onSelectIndex(nextIndex);
+  }
+
   return (
     <figure className="workbench-chart">
       <figcaption><strong>Price and returned indicator series</strong><span>{summary}</span></figcaption>
-      <svg aria-label={summary} className="workbench-svg" role="img" viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
+      <svg
+        aria-describedby="workbench-chart-inspection"
+        aria-label={summary}
+        className="workbench-svg"
+        onKeyDown={inspect}
+        role="img"
+        tabIndex={rows.length ? 0 : -1}
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      >
         <line className="chart-axis" x1={PADDING} x2={PADDING} y1={PADDING} y2={HEIGHT - PADDING} />
         <line className="chart-axis" x1={PADDING} x2={WIDTH - PADDING} y1={HEIGHT - PADDING} y2={HEIGHT - PADDING} />
         {geometry.candles.map((item) => (
@@ -622,7 +667,19 @@ function PriceChart({ rows }: { rows: WorkbenchRow[] }) {
           </g>
         ))}
         {geometry.derived.map((series) => <polyline className="chart-derived" key={series.id} points={series.points} />)}
+        {selectedCandle ? (
+          <line
+            className="chart-inspection-marker"
+            x1={selectedCandle.x}
+            x2={selectedCandle.x}
+            y1={PADDING}
+            y2={HEIGHT - PADDING}
+          />
+        ) : null}
       </svg>
+      <p id="workbench-chart-inspection" role="status">
+        {selectedRow ? inspectionSummary(selectedRow) : "No chart observation selected."}
+      </p>
     </figure>
   );
 }
@@ -649,7 +706,13 @@ function VolumePane({ rows }: { rows: WorkbenchRow[] }) {
   );
 }
 
-function AccessibleSeriesTable({ rows }: { rows: WorkbenchRow[] }) {
+function AccessibleSeriesTable({
+  rows,
+  selectedIndex
+}: {
+  rows: WorkbenchRow[];
+  selectedIndex: number;
+}) {
   const derivedKeys = rows.length ? Object.keys(rows[0].derived) : [];
   return (
     <section className="workbench-table-region" aria-labelledby="workbench-table-title" tabIndex={0}>
@@ -657,11 +720,32 @@ function AccessibleSeriesTable({ rows }: { rows: WorkbenchRow[] }) {
       <div className="workbench-table-scroll">
         <table>
           <thead><tr><th>Timestamp</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Volume</th>{derivedKeys.map((key) => <th key={key}>{key}</th>)}</tr></thead>
-          <tbody>{rows.map((row) => <tr key={row.timestamp}><th scope="row">{row.timestamp}</th><td>{format(row.open)}</td><td>{format(row.high)}</td><td>{format(row.low)}</td><td>{format(row.close)}</td><td>{format(row.volume)}</td>{derivedKeys.map((key) => <td key={key}>{row.derived[key] == null ? "—" : format(row.derived[key] as number)}</td>)}</tr>)}</tbody>
+          <tbody>{rows.map((row, index) => (
+            <tr aria-current={index === selectedIndex ? "true" : undefined} className={index === selectedIndex ? "workbench-selected-row" : undefined} key={row.timestamp}>
+              <th scope="row">{row.timestamp}</th>
+              <td>{format(row.open)}</td>
+              <td>{format(row.high)}</td>
+              <td>{format(row.low)}</td>
+              <td>{format(row.close)}</td>
+              <td>{format(row.volume)}</td>
+              {derivedKeys.map((key) => <td key={key}>{row.derived[key] == null ? "—" : format(row.derived[key] as number)}</td>)}
+            </tr>
+          ))}</tbody>
         </table>
       </div>
     </section>
   );
+}
+
+function inspectionSummary(row: WorkbenchRow): string {
+  const derived = Object.entries(row.derived)
+    .map(([key, value]) => `${key} ${value == null ? "unavailable" : format(value)}`)
+    .join(", ");
+  return [
+    `Selected ${row.timestamp}.`,
+    `Open ${format(row.open)}, high ${format(row.high)}, low ${format(row.low)}, close ${format(row.close)}, volume ${format(row.volume)}.`,
+    derived ? `Derived: ${derived}.` : ""
+  ].filter(Boolean).join(" ");
 }
 
 function chartGeometry(rows: WorkbenchRow[]) {
