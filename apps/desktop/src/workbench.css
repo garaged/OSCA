@@ -114,7 +114,8 @@
 .workbench-view-list :focus-visible,
 .workbench-range-controls :focus-visible,
 .workbench-viewport :focus-visible,
-.workbench-table-region:focus-visible {
+.workbench-table-region:focus-visible,
+.workbench-svg:focus-visible {
   outline: 3px solid currentColor;
   outline-offset: 3px;
 }
@@ -152,6 +153,10 @@
   margin-bottom: 0.5rem;
 }
 
+.workbench-chart p {
+  overflow-wrap: anywhere;
+}
+
 .workbench-svg,
 .workbench-volume-svg {
   display: block;
@@ -173,7 +178,8 @@
 .chart-axis,
 .chart-up,
 .chart-down,
-.chart-derived {
+.chart-derived,
+.chart-inspection-marker {
   stroke: currentColor;
 }
 
@@ -196,6 +202,11 @@
   fill: none;
   stroke-dasharray: 5 3;
   stroke-width: 2;
+}
+
+.chart-inspection-marker {
+  stroke-dasharray: 2 2;
+  stroke-width: 3;
 }
 
 .chart-volume {
@@ -241,6 +252,11 @@
 .workbench-table-scroll th:first-child,
 .workbench-table-scroll td:first-child {
   text-align: left;
+}
+
+.workbench-selected-row {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
 }
 
 @media (max-width: 900px) {
@@ -317,6 +333,10 @@
 
   .chart-derived {
     stroke-dasharray: 8 4;
+  }
+
+  .chart-inspection-marker {
+    stroke-width: 4;
   }
 
   .chart-volume {
