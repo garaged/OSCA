@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
 
@@ -33,6 +34,7 @@ class GovernedDataset:
     source_kind: str
     source_attribution: str
     row_count: int | None
+    effective_end: datetime
 
 
 def resolve_governed_dataset(
@@ -95,10 +97,11 @@ def _local_import_candidates(
         ) from exc
 
     candidates: list[GovernedDataset] = []
-    for revision, symbol, stored_timeframe, source_uri, payload_uri, row_count, _ in rows:
+    for revision, symbol, stored_timeframe, source_uri, payload_uri, row_count, last_at in rows:
         try:
             payload_path = _safe_payload_path(storage_root, str(payload_uri))
             dataset_revision_id = UUID(str(revision))
+            effective_end = _aware_datetime(str(last_at))
         except (ValueError, OSError):
             continue
         if not payload_path.is_file():
@@ -112,6 +115,7 @@ def _local_import_candidates(
                 source_kind="local-import",
                 source_attribution=str(source_uri),
                 row_count=int(row_count),
+                effective_end=effective_end,
             )
         )
     return tuple(candidates)
@@ -131,7 +135,7 @@ def _acquisition_candidates(
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
             evidence = HistoricalAcquisitionEvidence.model_validate(payload)
-        except (OSError, ValueError, json.JSONDecodeError):
+        except (OSError, ValueError):
             continue
         if evidence.status not in _USABLE_ACQUISITION_STATUSES:
             continue
@@ -155,6 +159,7 @@ def _acquisition_candidates(
                 source_kind="historical-acquisition",
                 source_attribution=evidence.source_attribution,
                 row_count=evidence.canonical_row_count,
+                effective_end=evidence.end_at or evidence.completed_at,
             )
         )
     return tuple(candidates)
@@ -175,6 +180,13 @@ def _safe_payload_path(storage_root: Path, payload_uri: str) -> Path:
     return candidate
 
 
-def _dataset_rank(dataset: GovernedDataset) -> tuple[int, str]:
+def _aware_datetime(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError("retained dataset timestamp must be timezone-aware")
+    return parsed.astimezone(UTC)
+
+
+def _dataset_rank(dataset: GovernedDataset) -> tuple[float, int, str]:
     source_rank = 1 if dataset.source_kind == "local-import" else 0
-    return source_rank, str(dataset.dataset_revision_id)
+    return dataset.effective_end.timestamp(), source_rank, str(dataset.dataset_revision_id)
