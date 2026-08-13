@@ -75,8 +75,12 @@ test("D5 price chart offers synchronized keyboard observation inspection", async
   assert.match(surface, /event\.key === "Home"/);
   assert.match(surface, /event\.key === "End"/);
   assert.match(surface, /chart-inspection-marker/);
+  assert.match(surface, /priceTicks\.map/);
+  assert.match(surface, /chart-axis-label/);
   assert.match(surface, /inspectionSummary\(selectedRow\)/);
   assert.match(surface, /aria-current=\{index === selectedIndex/);
+  assert.match(css, /\.chart-axis-label/);
+  assert.match(css, /\.chart-grid/);
   assert.match(css, /\.chart-inspection-marker/);
   assert.match(css, /\.workbench-selected-row/);
 });
