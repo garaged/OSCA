@@ -142,7 +142,9 @@ def test_same_dataset_comparison_has_identity_statistics(tmp_path: Path) -> None
     assert result["real_capital_execution_enabled"] is False
 
 
-def test_comparison_rejects_incompatible_currency_before_dataset_join(tmp_path: Path) -> None:
+def test_comparison_rejects_incompatible_asset_semantics_before_dataset_join(
+    tmp_path: Path,
+) -> None:
     service, profile_root = _sample_service(tmp_path)
     response = _call(
         service,
@@ -158,4 +160,4 @@ def test_comparison_rejects_incompatible_currency_before_dataset_join(tmp_path: 
     assert response.status == "error"
     assert response.error is not None
     assert response.error.code == "workbench_comparison_incompatible"
-    assert "matching currency semantics" in response.error.message
+    assert "matching asset-class and currency semantics" in response.error.message
