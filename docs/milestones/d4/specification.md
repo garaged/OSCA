@@ -74,7 +74,9 @@ Python exposes typed request/response methods for:
 
 React accesses these methods only through the existing `desktop_request` bridge. Rust gains no generic database, filesystem, network, or secret authority. The Rust broker may enforce window/session ownership and lifetime locking needed to preserve the Python-authoritative profile safety contract across short-lived sidecar requests. Python remains authoritative for profile-scoped validation and persistence, including direct supported non-UI desktop-API mutations.
 
-Native packages must include a target-specific, self-contained executable form of the Python desktop sidecar. A packaged OSCA application must bootstrap and serve desktop requests without a separately started development server, repository checkout, active virtual environment, system-installed `osca` package, or `OSCA_DESKTOP_PYTHON` override. The repository development launcher may continue to inject its locked Python interpreter explicitly; packaged execution must prefer the bundled sidecar when no development override is present. The bundled executable does not widen Rust authority: it is only the packaged transport for the same Python application-service boundary.
+Native packages must include a self-contained executable form of the Python desktop sidecar. A packaged OSCA application must bootstrap and serve desktop requests without a separately started development server, repository checkout, active virtual environment, system-installed `osca` package, or `OSCA_DESKTOP_PYTHON` override. The repository development launcher may continue to inject its locked Python interpreter explicitly; packaged execution must prefer the bundled sidecar when no development override is present. The bundled executable does not widen Rust authority: it is only the packaged transport for the same Python application-service boundary.
+
+The frozen packaged runtime must be deployed in a form that does not repeatedly unpack the Python runtime for ordinary desktop requests. Packaging validation shall exercise independent cold starts of the bundled sidecar, and normal Rust unit tests must not depend on generated packaging artifacts being present in the source tree.
 
 ## 8. Desktop UX
 
@@ -98,6 +100,13 @@ On a catalog of 50,000 assets and 100 watchlists:
 - watchlist mutation p95 is at most 250 ms excluding lock wait;
 - UI remains responsive through pagination or virtualization.
 
+For the packaged desktop transport on supported acceptance hardware:
+
+- direct packaged launch shall reach a usable desktop service within 5 seconds;
+- each independent frozen-sidecar cold-start smoke shall complete within 5 seconds;
+- after bootstrap, ordinary local navigation, asset search/detail/recent, and watchlist read/write interactions should complete within 2 seconds end to end;
+- recurring 5-second-or-longer stalls caused by sidecar packaging or process startup are release-blocking.
+
 ## 10. Safety and non-goals
 
 D4 does not add streaming quotes, charting, quantitative analysis, recommendation ranking, alerts, portfolio ownership, brokerage connections, or order execution. Provider enrichment must reuse D3 policy and explicit network-consent boundaries.
@@ -109,8 +118,8 @@ D4 does not add streaming quotes, charting, quantitative analysis, recommendatio
 - Regression tests prove one window cannot take over or mutate another window's opened profile and that ownership is released when the owning window closes/leaves the profile.
 - Regression tests prove a supported direct Python/CLI mutation cannot bypass a desktop-held session lease, while a broker-authorized sidecar can still mutate only its owning window's leased profile without deadlocking.
 - Regression tests prove broker profile-ownership conflicts are surfaced as typed profile-lock errors rather than `sidecar_unavailable`.
-- Native-package smoke proves the packaged application starts its bundled desktop sidecar with no separately started service or repository-local Python runtime.
+- Native-package smoke proves the packaged application starts its bundled desktop sidecar with no separately started service or repository-local Python runtime and meets the packaged-startup responsiveness budget.
 - Clean-profile manual acceptance passes on macOS ARM64 and Linux x86-64.
-- Large-catalog performance evidence is retained.
+- Large-catalog and packaged-transport performance evidence is retained.
 - Accessibility, recovery, ambiguity, profile-lock, and per-window ownership behavior pass.
 - Traceability and exit review are reconciled before owner-directed merge.
