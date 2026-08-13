@@ -96,10 +96,13 @@ def get_comparison(
             "asset_not_found",
             "Comparison requires known canonical assets.",
         )
-    if primary_asset.currency != comparison_asset.currency:
+    if (
+        primary_asset.asset_class != comparison_asset.asset_class
+        or primary_asset.currency != comparison_asset.currency
+    ):
         raise DesktopServiceError(
             "workbench_comparison_incompatible",
-            "Direct comparison requires matching currency semantics.",
+            "Direct comparison requires matching asset-class and currency semantics.",
         )
     primary = resolve_governed_dataset(
         profile_root,
