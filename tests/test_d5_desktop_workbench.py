@@ -27,6 +27,7 @@ def _call(
 def _profile_with_sample(
     tmp_path: Path,
 ) -> tuple[D5DesktopApplicationService, Path]:
+    tmp_path.mkdir(parents=True, exist_ok=True)
     service = D5DesktopApplicationService(state_root=tmp_path / "state")
     profile_root = tmp_path / "profile"
     created = _call(service, "profile.create", {"profile_root": str(profile_root)})
@@ -238,7 +239,9 @@ def test_saved_workbench_views_are_profile_scoped_and_reject_secret_fields(
     tmp_path: Path,
 ) -> None:
     service, first = _profile_with_sample(tmp_path / "first")
-    second = tmp_path / "second" / "profile"
+    second_parent = tmp_path / "second"
+    second_parent.mkdir(parents=True, exist_ok=True)
+    second = second_parent / "profile"
     assert _call(service, "profile.create", {"profile_root": str(second)}).status == "ok"
 
     rejected = _call(
