@@ -132,6 +132,7 @@ fn invoke_sidecar(
     let (program, args) = sidecar_invocation(
         env::var("OSCA_DESKTOP_SIDECAR").ok(),
         env::var("OSCA_DESKTOP_PYTHON").ok(),
+        bundled_sidecar_path(),
     );
     let mut command = Command::new(program);
     command.args(args);
@@ -286,14 +287,35 @@ fn override_window_profile(
         .map_err(|error| format!("unable to encode desktop response: {error}"))
 }
 
-fn sidecar_invocation(sidecar: Option<String>, python: Option<String>) -> (String, Vec<String>) {
-    match sidecar {
-        Some(executable) => (executable, Vec::new()),
-        None => (
-            python.unwrap_or_else(|| "python3".to_string()),
-            vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()],
-        ),
+fn sidecar_invocation(
+    sidecar: Option<String>,
+    python: Option<String>,
+    bundled: Option<String>,
+) -> (String, Vec<String>) {
+    if let Some(executable) = sidecar {
+        return (executable, Vec::new());
     }
+    if let Some(interpreter) = python {
+        return (
+            interpreter,
+            vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()],
+        );
+    }
+    if let Some(executable) = bundled {
+        return (executable, Vec::new());
+    }
+    (
+        "python3".to_string(),
+        vec!["-m".to_string(), "osca.desktop_api.stdio".to_string()],
+    )
+}
+
+fn bundled_sidecar_path() -> Option<String> {
+    let executable = env::current_exe().ok()?;
+    let sibling = executable.parent()?.join("osca-sidecar");
+    sibling
+        .is_file()
+        .then(|| sibling.to_string_lossy().into_owned())
 }
 
 fn validate_request_size(request_json: &str) -> Result<(), String> {
@@ -360,13 +382,13 @@ mod tests {
 
     #[test]
     fn executable_sidecar_override_receives_no_python_module_arguments() {
-        let invocation = sidecar_invocation(Some("osca-sidecar".to_string()), None);
+        let invocation = sidecar_invocation(Some("osca-sidecar".to_string()), None, None);
         assert_eq!(invocation, ("osca-sidecar".to_string(), Vec::new()));
     }
 
     #[test]
     fn python_override_runs_the_versioned_desktop_module() {
-        let invocation = sidecar_invocation(None, Some("/tmp/osca-python".to_string()));
+        let invocation = sidecar_invocation(None, Some("/tmp/osca-python".to_string()), None);
         assert_eq!(
             invocation,
             (
@@ -377,8 +399,14 @@ mod tests {
     }
 
     #[test]
-    fn default_sidecar_uses_python3_module_execution() {
-        let invocation = sidecar_invocation(None, None);
+    fn bundled_sidecar_is_used_without_development_overrides() {
+        let invocation = sidecar_invocation(None, None, Some("/app/osca-sidecar".to_string()));
+        assert_eq!(invocation, ("/app/osca-sidecar".to_string(), Vec::new()));
+    }
+
+    #[test]
+    fn default_sidecar_uses_python3_module_execution_as_last_resort() {
+        let invocation = sidecar_invocation(None, None, None);
         assert_eq!(
             invocation,
             (
