@@ -1,5 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { WorkbenchClientError, WorkbenchDerivedRequest } from "./workbenchApi";
+import {
+  WorkbenchClientError,
+  WorkbenchDerivedRequest,
+  WorkbenchRange
+} from "./workbenchApi";
 
 export type QuantitativePoint = {
   timestamp: string;
@@ -72,14 +76,16 @@ export function getQuantitativeAnalysis(
   assetId: string,
   timeframe: string,
   maxRows = 240,
-  parameters: Record<string, number> = {}
+  parameters: Record<string, number> = {},
+  range: WorkbenchRange = {}
 ): Promise<QuantitativeAnalysis> {
   return request("workbench.analysis.get", {
     profile_root: profileRoot,
     asset_id: assetId,
     timeframe,
     max_rows: maxRows,
-    parameters
+    parameters,
+    ...rangeParams(range)
   }, parseAnalysis);
 }
 
@@ -89,7 +95,8 @@ export function getComparison(
   comparisonAssetId: string,
   timeframe: string,
   rollingWindow = 20,
-  maxRows = 240
+  maxRows = 240,
+  range: WorkbenchRange = {}
 ): Promise<ComparisonResult> {
   return request("workbench.comparison.get", {
     profile_root: profileRoot,
@@ -97,7 +104,8 @@ export function getComparison(
     comparison_asset_id: comparisonAssetId,
     timeframe,
     rolling_window: rollingWindow,
-    max_rows: maxRows
+    max_rows: maxRows,
+    ...rangeParams(range)
   }, parseComparison);
 }
 
@@ -106,14 +114,16 @@ export function prepareWorkbenchExport(
   assetId: string,
   timeframe: string,
   maxRows: number,
-  derived: WorkbenchDerivedRequest[]
+  derived: WorkbenchDerivedRequest[],
+  range: WorkbenchRange = {}
 ): Promise<WorkbenchExport> {
   return request("workbench.export.prepare", {
     profile_root: profileRoot,
     asset_id: assetId,
     timeframe,
     max_rows: maxRows,
-    derived
+    derived,
+    ...rangeParams(range)
   }, (row) => ({
     export_id: text(row.export_id, "export_id"),
     row_count: number(row.row_count, "row_count"),
@@ -172,7 +182,18 @@ export function renameWorkbenchView(
 }
 
 export function deleteWorkbenchView(profileRoot: string, viewId: number): Promise<void> {
-  return request("workbench.view.delete", { profile_root: profileRoot, view_id: viewId }, () => undefined);
+  return request(
+    "workbench.view.delete",
+    { profile_root: profileRoot, view_id: viewId },
+    () => undefined
+  );
+}
+
+function rangeParams(range: WorkbenchRange): Record<string, string> {
+  return {
+    ...(range.start ? { start: range.start } : {}),
+    ...(range.end ? { end: range.end } : {})
+  };
 }
 
 async function request<T>(
@@ -195,7 +216,11 @@ async function request<T>(
   }
   const envelope = object(JSON.parse(raw) as unknown, "desktop response");
   if (text(envelope.request_id, "request_id") !== requestId) {
-    throw new WorkbenchClientError("invalid_response", "Desktop response identity did not match the request.", true);
+    throw new WorkbenchClientError(
+      "invalid_response",
+      "Desktop response identity did not match the request.",
+      true
+    );
   }
   if (text(envelope.status, "status") === "error") {
     const failure = object(envelope.error, "error");
