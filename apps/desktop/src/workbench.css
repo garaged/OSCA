@@ -28,7 +28,9 @@
 .workbench-full-resolution,
 .workbench-status,
 .workbench-error,
-.workbench-empty {
+.workbench-empty,
+.workbench-analysis,
+.workbench-saved-views {
   border: 1px solid currentColor;
   border-radius: 0.6rem;
   padding: 0.75rem;
@@ -41,7 +43,9 @@
   gap: 0.75rem;
 }
 
-.workbench-controls label {
+.workbench-controls label,
+.workbench-secondary-controls label,
+.workbench-view-actions label {
   display: grid;
   gap: 0.35rem;
   font-weight: 600;
@@ -49,12 +53,41 @@
 
 .workbench-controls select,
 .workbench-controls input,
-.workbench-controls button {
+.workbench-controls button,
+.workbench-secondary-controls select,
+.workbench-secondary-controls button,
+.workbench-view-actions input,
+.workbench-view-actions button,
+.workbench-view-list button {
   min-height: 2.7rem;
   font: inherit;
 }
 
+.workbench-secondary-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.workbench-view-actions {
+  display: grid;
+  grid-template-columns: minmax(12rem, 2fr) repeat(3, minmax(8rem, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.workbench-view-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
 .workbench-controls :focus-visible,
+.workbench-secondary-controls :focus-visible,
+.workbench-view-actions :focus-visible,
+.workbench-view-list :focus-visible,
 .workbench-table-region:focus-visible {
   outline: 3px solid currentColor;
   outline-offset: 3px;
@@ -130,7 +163,8 @@
   stroke-width: 2;
 }
 
-.workbench-evidence p {
+.workbench-evidence p,
+.workbench-analysis p {
   overflow-wrap: anywhere;
 }
 
@@ -163,12 +197,21 @@
   text-align: left;
 }
 
+@media (max-width: 900px) {
+  .workbench-secondary-controls,
+  .workbench-view-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 680px) {
   .workbench-heading {
     display: grid;
   }
 
   .workbench-controls,
+  .workbench-secondary-controls,
+  .workbench-view-actions,
   .workbench-provenance {
     grid-template-columns: 1fr;
   }
@@ -181,7 +224,12 @@
 
   .workbench-controls select,
   .workbench-controls input,
-  .workbench-controls button {
+  .workbench-controls button,
+  .workbench-secondary-controls select,
+  .workbench-secondary-controls button,
+  .workbench-view-actions input,
+  .workbench-view-actions button,
+  .workbench-view-list button {
     width: 100%;
   }
 }
@@ -200,7 +248,9 @@
   .workbench-boundary,
   .workbench-downsampled,
   .workbench-full-resolution,
-  .workbench-error {
+  .workbench-error,
+  .workbench-analysis,
+  .workbench-saved-views {
     forced-color-adjust: auto;
   }
 
