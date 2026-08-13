@@ -1,5 +1,4 @@
 from pathlib import Path
-import json
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -7,6 +6,8 @@ DESKTOP = ROOT / "apps" / "desktop"
 
 
 def test_d5_renderer_adds_no_third_party_chart_runtime() -> None:
+    import json
+
     package = json.loads((DESKTOP / "package.json").read_text(encoding="utf-8"))
     dependencies = set(package["dependencies"])
 
