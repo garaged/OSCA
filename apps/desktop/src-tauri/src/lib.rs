@@ -493,7 +493,10 @@ mod tests {
             "workbench.view.rename",
             "workbench.view.delete",
         ] {
-            assert!(is_profile_mutation(method), "{method} must require ownership");
+            assert!(
+                is_profile_mutation(method),
+                "{method} must require ownership"
+            );
         }
         assert!(!is_profile_mutation("workbench.series.get"));
         assert!(!is_profile_mutation("workbench.analysis.get"));
