@@ -453,9 +453,6 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
         <button disabled={state.kind !== "ready" || comparison.kind === "loading"} onClick={() => void runComparison()} type="button">
           {comparison.kind === "loading" ? "Comparing…" : "Compare governed returns"}
         </button>
-        <button disabled={state.kind !== "ready" || exportState.kind === "loading"} onClick={() => void prepareExport()} type="button">
-          {exportState.kind === "loading" ? "Exporting…" : "Prepare full-resolution CSV evidence"}
-        </button>
       </section>
 
       <section className="workbench-saved-views" aria-labelledby="saved-views-title">
@@ -507,7 +504,13 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
           <strong>Workbench data unavailable.</strong> {state.error.message}
         </section>
       ) : null}
-      {state.kind === "ready" ? <WorkbenchResult result={state.value} /> : null}
+      {state.kind === "ready" ? (
+        <WorkbenchResult
+          exportState={exportState}
+          onPrepareExport={prepareExport}
+          result={state.value}
+        />
+      ) : null}
       <AnalysisResult state={analysis} />
       <ComparisonPanel state={comparison} />
       <ExportPanel state={exportState} />
@@ -515,7 +518,15 @@ export function WorkbenchSurface({ profileRoot }: { profileRoot?: string }) {
   );
 }
 
-function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
+function WorkbenchResult({
+  exportState,
+  onPrepareExport,
+  result
+}: {
+  exportState: AsyncResult<WorkbenchExport>;
+  onPrepareExport: () => Promise<void>;
+  result: WorkbenchSeries;
+}) {
   const returnedRows = result.series.rows;
   const [viewportSize, setViewportSize] = useState(returnedRows.length);
   const [viewportStart, setViewportStart] = useState(0);
@@ -574,6 +585,15 @@ function WorkbenchResult({ result }: { result: WorkbenchSeries }) {
           ? "Display is downsampled for bounded rendering. Full-resolution analytical data remains authoritative."
           : "All filtered rows fit the current display budget."}
       </p>
+      <section className="workbench-export-action" aria-labelledby="workbench-export-action-title">
+        <div>
+          <h3 id="workbench-export-action-title">Full-resolution evidence export</h3>
+          <p>Prepare CSV data and reproduction metadata for the full filtered analytical result, independent of the displayed row budget.</p>
+        </div>
+        <button disabled={exportState.kind === "loading"} onClick={() => void onPrepareExport()} type="button">
+          {exportState.kind === "loading" ? "Exporting…" : "Prepare full-resolution CSV evidence"}
+        </button>
+      </section>
       <section className="workbench-viewport" aria-label="Presentation viewport controls">
         <p role="status">
           Presentation viewport: rows {returnedRows.length ? boundedStart + 1 : 0}–{boundedStart + visibleRows.length} of {returnedRows.length} returned rows. Zoom and pan do not recalculate analytical values.
