@@ -1,27 +1,27 @@
 # D7 Traceability
 
-Status: specification baseline; implementation pending
+Status: implementation complete; hosted validation and manual acceptance pending
 
 | Requirement | Planned implementation | Planned verification | Status |
 |---|---|---|---|
-| REQ-0357 | profile-scoped strategy definitions and immutable versions | strategy service, persistence, migration, restart tests | Planned |
-| REQ-0358 | typed declarative DSL and guided templates | parser/validator, frontend source-boundary, Rust/API tests | Planned |
-| REQ-0359 | rule compatibility and unsupported-combination validation | rule validation, negative, and property tests | Planned |
-| REQ-0360 | look-ahead and dataset-integrity blocking | bias/integrity tests and manual acceptance | Planned |
-| REQ-0361 | Python authoritative backtest service with provenance | service, provenance, and restart tests | Planned |
-| REQ-0362 | explicit fidelity levels and disclosures | contract tests and UI disclosure checks | Planned |
-| REQ-0363 | conservative research assumptions for costs/fills/accounting | cost/fill/accounting tests and manual acceptance | Planned |
-| REQ-0364 | deterministic metrics, curves, trades, exposure, benchmarks | golden metrics, no-mutation, and parity tests | Planned |
-| REQ-0365 | bounded sensitivity and parameter-sweep views | sweep budget, cancellation, and UI tests | Planned |
-| REQ-0366 | walk-forward/out-of-sample partitions | partition and bias tests | Planned |
-| REQ-0367 | governed result evidence retention | persistence/export tests | Planned |
-| REQ-0368 | D6 project pinning and view integration | workspace/project integration tests | Planned |
-| REQ-0369 | accessible responsive Strategy Lab UI | accessibility/responsive tests and manual acceptance | Planned |
-| REQ-0370 | chart/table synchronized inspection and export parity | chart/table parity and export tests | Planned |
-| REQ-0371 | offline local/sample/cached operation | offline/source-boundary tests and manual acceptance | Planned |
-| REQ-0372 | research-only/no-execution boundary | source, UI, Rust boundary, and manual safety checks | Planned |
-| REQ-0373 | profile-scoped versioned storage and ownership locks | migration, interruption, isolation, and lock tests | Planned |
-| REQ-0374 | retained D7 validation and exit evidence | validation evidence, traceability, manual acceptance, and exit review | Planned |
+| REQ-0357 | profile-scoped strategy definitions and immutable versions | strategy service, persistence, migration, restart tests | Implemented |
+| REQ-0358 | typed declarative DSL and guided templates | parser/validator, frontend source-boundary, Rust/API tests | Implemented |
+| REQ-0359 | rule compatibility and unsupported-combination validation | rule validation, negative, and property tests | Implemented |
+| REQ-0360 | look-ahead and dataset-integrity blocking | bias/integrity tests and manual acceptance | Implemented |
+| REQ-0361 | Python authoritative backtest service with provenance | service, provenance, and restart tests | Implemented |
+| REQ-0362 | explicit fidelity levels and disclosures | contract tests and UI disclosure checks | Implemented |
+| REQ-0363 | conservative research assumptions for costs/fills/accounting | cost/fill/accounting tests and manual acceptance | Implemented |
+| REQ-0364 | deterministic metrics, curves, trades, exposure, benchmarks | golden metrics, no-mutation, and parity tests | Implemented |
+| REQ-0365 | bounded sensitivity and parameter-sweep views | sweep budget, cancellation, and UI tests | Implemented |
+| REQ-0366 | walk-forward/out-of-sample partitions | partition and bias tests | Implemented |
+| REQ-0367 | governed result evidence retention | persistence/export tests | Implemented |
+| REQ-0368 | D6 project pinning and view integration | workspace/project integration tests | Implemented |
+| REQ-0369 | accessible responsive Strategy Lab UI | accessibility/responsive tests and manual acceptance | Implemented |
+| REQ-0370 | chart/table synchronized inspection and export parity | chart/table parity and export tests | Implemented |
+| REQ-0371 | offline local/sample/cached operation | offline/source-boundary tests and manual acceptance | Implemented |
+| REQ-0372 | research-only/no-execution boundary | source, UI, Rust boundary, and manual safety checks | Implemented |
+| REQ-0373 | profile-scoped versioned storage and ownership locks | migration, interruption, isolation, and lock tests | Implemented |
+| REQ-0374 | retained D7 validation and exit evidence | validation evidence, traceability, manual acceptance, and exit review | Partial: implementation evidence retained; hosted/manual acceptance pending |
 
 ## Reused Authoritative Capabilities
 

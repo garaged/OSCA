@@ -248,6 +248,13 @@ fn is_profile_mutation(method: &str) -> bool {
             | "project.note.update"
             | "project.workspace.save"
             | "project.export.prepare"
+            | "strategy.create"
+            | "strategy.version.create"
+            | "backtest.run"
+            | "backtest.cancel"
+            | "backtest.export.prepare"
+            | "backtest.sensitivity.run"
+            | "backtest.walkforward.run"
     )
 }
 
@@ -544,6 +551,29 @@ mod tests {
         assert!(!is_profile_mutation("project.get"));
         assert!(!is_profile_mutation("project.workspace.list"));
         assert!(!is_profile_mutation("project.workspace.get"));
+    }
+
+    #[test]
+    fn d7_strategy_and_backtest_writes_require_profile_ownership() {
+        for method in [
+            "strategy.create",
+            "strategy.version.create",
+            "backtest.run",
+            "backtest.cancel",
+            "backtest.export.prepare",
+            "backtest.sensitivity.run",
+            "backtest.walkforward.run",
+        ] {
+            assert!(
+                is_profile_mutation(method),
+                "{method} should require profile ownership"
+            );
+        }
+        assert!(!is_profile_mutation("strategy.list"));
+        assert!(!is_profile_mutation("strategy.get"));
+        assert!(!is_profile_mutation("strategy.validate"));
+        assert!(!is_profile_mutation("backtest.list"));
+        assert!(!is_profile_mutation("backtest.get"));
     }
 
     #[test]

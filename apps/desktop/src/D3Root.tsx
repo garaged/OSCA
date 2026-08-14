@@ -4,16 +4,17 @@ import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
 import { MarketsSurface } from "./Markets";
 import { ProjectsSurface } from "./Projects";
+import { StrategyLabSurface } from "./StrategyLab";
 import { WorkbenchSurface } from "./Workbench";
 import "./d3Root.css";
 
-type RootView = "workspace" | "markets" | "workbench" | "projects" | "data-sources";
+type RootView = "workspace" | "markets" | "workbench" | "projects" | "strategy-lab" | "data-sources";
 type ProfileState =
   | { kind: "loading" }
   | { kind: "ready"; profileRoot?: string }
   | { kind: "error"; error: DesktopClientError };
 
-const views: RootView[] = ["workspace", "markets", "workbench", "projects", "data-sources"];
+const views: RootView[] = ["workspace", "markets", "workbench", "projects", "strategy-lab", "data-sources"];
 
 export function D3Root() {
   const [view, setView] = useState<RootView>("workspace");
@@ -73,6 +74,8 @@ export function D3Root() {
           >
             {item === "data-sources"
               ? "Data Sources"
+              : item === "strategy-lab"
+                ? "Strategy Lab"
               : item[0].toUpperCase() + item.slice(1)}
           </button>
         ))}
@@ -85,6 +88,8 @@ export function D3Root() {
           <h1 className="visually-hidden" ref={headingRef} tabIndex={-1}>
             {view === "data-sources"
               ? "Data Sources"
+              : view === "strategy-lab"
+                ? "Strategy Lab"
               : view[0].toUpperCase() + view.slice(1)}
           </h1>
           {profile.kind === "loading" ? (
@@ -110,6 +115,8 @@ export function D3Root() {
                       ? "Open a validated profile from Workspace before loading governed analytical data in Workbench."
                       : view === "projects"
                         ? "Open a validated profile from Workspace before creating research projects."
+                        : view === "strategy-lab"
+                          ? "Open a validated profile from Workspace before using Strategy Lab."
                       : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
                 </aside>
               ) : null}
@@ -119,6 +126,8 @@ export function D3Root() {
                 <WorkbenchSurface profileRoot={profile.profileRoot} />
               ) : view === "projects" ? (
                 <ProjectsSurface profileRoot={profile.profileRoot} />
+              ) : view === "strategy-lab" ? (
+                <StrategyLabSurface profileRoot={profile.profileRoot} />
               ) : (
                 <DataSourcesSurface profileRoot={profile.profileRoot} />
               )}
