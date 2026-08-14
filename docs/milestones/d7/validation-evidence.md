@@ -1,6 +1,6 @@
 # D7 Validation Evidence — Visual Strategy Builder and Backtest Lab
 
-- **Status:** Implementation retained; hosted validation and manual acceptance pending
+- **Status:** Implementation and hosted validation retained; manual acceptance pending
 - **Pull request:** [#87](https://github.com/garaged/OSCA/pull/87)
 - **Branch:** `agent/d7-strategy-builder-backtest-lab`
 - **Baseline:** D6 merge `9d7210011f0bc86b8e811ae92796d84ebc3c10ab`
@@ -21,6 +21,12 @@ Local validation passed for the D7 implementation:
 - source-boundary scan found only expected forbidden-key, negative-test, and disclosure references;
 - local Rust validation not run because `cargo` is unavailable in the Codex container.
 
+Hosted exact-head validation passed on PR head
+`5e27cf0cfb45af851738118a644d2df8de6fbe1d`:
+
+- Quality run `31756401775`: success;
+- Desktop Foundation run `31756401858`: success.
+
 Covered in this slice:
 
 - profile-scoped strategy definitions and immutable strategy versions;
@@ -36,7 +42,6 @@ Covered in this slice:
 
 Still pending for full D7 acceptance:
 
-- final hosted exact-head validation;
 - supported-platform clean-profile manual acceptance.
 
 ## Manual Acceptance
@@ -51,7 +56,7 @@ Private host paths, credentials, provider account information, and machine-local
 ## Current Disposition
 
 - Implementation slices: D7 implementation complete.
-- Automated validation: local focused validation passed for implementation.
+- Automated validation: local focused and hosted exact-head validation passed.
 - macOS ARM64 manual acceptance: pending.
 - Linux x86-64 manual acceptance: pending.
 - D7 exit decision: pending full implementation and supported-platform manual acceptance.

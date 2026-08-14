@@ -1,6 +1,6 @@
 # D7 Exit Review — Visual Strategy Builder and Backtest Lab
 
-- **Status:** Implementation complete; hosted validation and manual acceptance pending
+- **Status:** Implementation and hosted validation complete; manual acceptance pending
 - **Pull request:** [#87](https://github.com/garaged/OSCA/pull/87)
 - **Baseline:** D6 merge `9d7210011f0bc86b8e811ae92796d84ebc3c10ab`
 
@@ -15,16 +15,17 @@ result CSV export, bounded sensitivity studies, and walk-forward evaluation.
 
 Requirements `REQ-0357` through `REQ-0374` are allocated across the D7 specification, OpenSpec capability, planned implementation, tests, manual-acceptance procedure, traceability, validation evidence, and this review.
 
-Disposition: implementation complete pending hosted exact-head validation and supported-platform manual acceptance.
+Disposition: implementation complete pending supported-platform manual acceptance.
 
 ## Automated Validation Disposition
 
-Local focused validation is retained in `validation-evidence.md`.
+Local focused validation and hosted exact-head validation are retained in
+`validation-evidence.md`.
 
 Rust/Tauri unit validation is deferred to hosted Desktop Foundation because `cargo`
 is not available in the local Codex container.
 
-Disposition: local validation passed; hosted validation pending.
+Disposition: local and hosted validation passed.
 
 ## Final-Pass Cleanup Notes
 
@@ -43,4 +44,4 @@ Disposition: pending.
 
 ## Exit Decision
 
-**D7 exit decision: PENDING HOSTED VALIDATION AND SUPPORTED-PLATFORM MANUAL ACCEPTANCE.**
+**D7 exit decision: PENDING SUPPORTED-PLATFORM MANUAL ACCEPTANCE.**
