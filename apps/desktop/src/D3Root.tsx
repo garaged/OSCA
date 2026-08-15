@@ -3,6 +3,7 @@ import { App } from "./App";
 import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
 import { MarketsSurface } from "./Markets";
+import { PortfolioAnalyticsSurface } from "./PortfolioAnalytics";
 import { PortfolioLabSurface } from "./PortfolioLab";
 import { ProjectsSurface } from "./Projects";
 import { StrategyLabSurface } from "./StrategyLab";
@@ -146,7 +147,10 @@ export function D3Root() {
               ) : view === "strategy-lab" ? (
                 <StrategyLabSurface profileRoot={profile.profileRoot} />
               ) : view === "portfolio-lab" ? (
-                <PortfolioLabSurface profileRoot={profile.profileRoot} />
+                <>
+                  <PortfolioLabSurface profileRoot={profile.profileRoot} />
+                  <PortfolioAnalyticsSurface profileRoot={profile.profileRoot} />
+                </>
               ) : (
                 <DataSourcesSurface profileRoot={profile.profileRoot} />
               )}
