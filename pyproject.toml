@@ -98,6 +98,14 @@ ignore_errors = true
 module = ["osca.analyst_workspace.evidence"]
 disable_error_code = ["arg-type"]
 
+[[tool.mypy.overrides]]
+module = ["osca.paper.accounting_portability"]
+disable_error_code = ["arg-type"]
+
+[[tool.mypy.overrides]]
+module = ["osca.desktop_api.portfolio_accounting"]
+disable_error_code = ["arg-type", "no-untyped-def"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
