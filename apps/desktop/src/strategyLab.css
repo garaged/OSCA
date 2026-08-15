@@ -1,0 +1,267 @@
+.strategy-lab {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.strategy-lab-hero,
+.strategy-lab-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.strategy-lab-hero h1,
+.strategy-lab-hero p,
+.strategy-lab-heading-row h2,
+.strategy-lab-heading-row p {
+  margin-top: 0;
+}
+
+.strategy-lab-boundaries,
+.strategy-lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.strategy-lab-boundaries span,
+.strategy-lab-panel,
+.strategy-lab-notice,
+.strategy-lab-export {
+  border: 1px solid currentColor;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+}
+
+.strategy-lab-layout,
+.strategy-lab-form,
+.strategy-list,
+.strategy-result-grid,
+.strategy-selected dl,
+.strategy-evaluation,
+.strategy-evaluation-budget {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.strategy-lab-layout {
+  grid-template-columns: minmax(18rem, 1fr) minmax(18rem, 1fr);
+}
+
+.strategy-lab-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.strategy-lab-form input,
+.strategy-lab-form button,
+.strategy-lab-actions button,
+.strategy-list button {
+  min-height: 2.7rem;
+  font: inherit;
+}
+
+.strategy-list button {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  text-align: left;
+}
+
+.strategy-result-grid,
+.strategy-evaluation-budget {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.strategy-result-grid div,
+.strategy-selected div,
+.strategy-evaluation-budget div {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+
+.strategy-result-grid dt,
+.strategy-selected dt,
+.strategy-evaluation-budget dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.strategy-result-grid dd,
+.strategy-selected dd,
+.strategy-evaluation-budget dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.strategy-lab-validation,
+.strategy-lab-evidence {
+  overflow-wrap: anywhere;
+}
+
+.strategy-chart {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.strategy-chart figcaption,
+.strategy-selected h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.strategy-chart-svg {
+  width: 100%;
+  min-height: 16rem;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+}
+
+.strategy-axis,
+.strategy-tick {
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+.strategy-gridline {
+  stroke: color-mix(in srgb, currentColor 22%, transparent);
+  stroke-width: 1;
+}
+
+.strategy-axis-label {
+  fill: currentColor;
+  font-size: 0.75rem;
+}
+
+.strategy-equity-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+}
+
+.strategy-point,
+.strategy-marker-point {
+  fill: Canvas;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.strategy-point {
+  cursor: pointer;
+}
+
+.strategy-point-selected {
+  fill: currentColor;
+}
+
+.strategy-marker {
+  stroke: currentColor;
+  stroke-dasharray: 5 5;
+  stroke-width: 1.5;
+}
+
+.strategy-selected {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.strategy-selected dl {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+}
+
+.strategy-evaluation h3,
+.strategy-evaluation p,
+.strategy-evaluation ul {
+  margin: 0;
+}
+
+.strategy-evaluation-table {
+  overflow-x: auto;
+}
+
+.strategy-evaluation-table table {
+  width: 100%;
+  min-width: 42rem;
+  border-collapse: collapse;
+}
+
+.strategy-evaluation-table th,
+.strategy-evaluation-table td {
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  padding: 0.45rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.strategy-lab :focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .strategy-lab-layout,
+  .strategy-result-grid,
+  .strategy-selected dl,
+  .strategy-evaluation-budget {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .strategy-lab-hero,
+  .strategy-lab-heading-row {
+    display: grid;
+  }
+}
+
+@media (max-width: 320px) {
+  .strategy-lab {
+    padding: 0.5rem;
+  }
+
+  .strategy-lab-form input,
+  .strategy-lab-form button,
+  .strategy-lab-actions button,
+  .strategy-list button {
+    width: 100%;
+  }
+
+  .strategy-axis-label {
+    font-size: 0.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strategy-lab * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .strategy-lab-boundaries span,
+  .strategy-lab-panel,
+  .strategy-lab-notice,
+  .strategy-lab-export,
+  .strategy-list button,
+  .strategy-result-grid div,
+  .strategy-selected div,
+  .strategy-evaluation-budget div,
+  .strategy-evaluation-table th,
+  .strategy-evaluation-table td,
+  .strategy-chart-svg {
+    forced-color-adjust: auto;
+  }
+}

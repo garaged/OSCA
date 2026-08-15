@@ -409,9 +409,10 @@ def _required_path(params: dict[str, Any], name: str) -> Path:
     value = params.get(name)
     if not isinstance(value, str) or not value.strip():
         raise DesktopServiceError("invalid_parameters", f"{name} must be a non-empty path")
-    if len(value) > 4096:
+    normalized = value.strip()
+    if len(normalized) > 4096:
         raise DesktopServiceError("invalid_parameters", f"{name} exceeds 4096 characters")
-    path = Path(value).expanduser()
+    path = Path(normalized).expanduser()
     if not path.is_absolute():
         raise DesktopServiceError("invalid_parameters", f"{name} must be an absolute path")
     return path.resolve()

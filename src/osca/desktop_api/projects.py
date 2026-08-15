@@ -20,6 +20,9 @@ _PIN_TYPES = {
     "local_import",
     "workbench_view",
     "workbench_export",
+    "strategy",
+    "strategy_version",
+    "backtest_result",
     "report",
     "external_reference",
 }
