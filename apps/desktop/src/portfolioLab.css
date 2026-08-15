@@ -56,9 +56,31 @@
   gap: 0.3rem;
 }
 
-.portfolio-lab-form input {
+.portfolio-lab-form input,
+.portfolio-lab-form select {
   font: inherit;
   padding: 0.45rem 0.55rem;
+}
+
+.portfolio-lab button,
+.portfolio-lab input,
+.portfolio-lab select,
+.portfolio-lab summary,
+.portfolio-analytics button,
+.portfolio-analytics input,
+.portfolio-analytics select {
+  min-height: 2.5rem;
+}
+
+.portfolio-lab button:focus-visible,
+.portfolio-lab input:focus-visible,
+.portfolio-lab select:focus-visible,
+.portfolio-lab summary:focus-visible,
+.portfolio-analytics button:focus-visible,
+.portfolio-analytics input:focus-visible,
+.portfolio-analytics select:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
 }
 
 .portfolio-list button {
@@ -156,5 +178,27 @@
 
   .portfolio-lab-boundaries {
     justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-lab *,
+  .portfolio-analytics * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .portfolio-lab-panel,
+  .portfolio-lab-notice,
+  .portfolio-degraded,
+  .portfolio-health,
+  .portfolio-lab-boundaries span {
+    border-color: CanvasText;
+  }
+
+  .portfolio-health-degraded {
+    text-decoration-thickness: 2px;
   }
 }
