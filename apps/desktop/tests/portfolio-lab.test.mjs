@@ -5,16 +5,23 @@ import test from "node:test";
 test("D8 exposes Portfolio Lab as a first-class desktop area", async () => {
   const root = await readFile(new URL("../src/D3Root.tsx", import.meta.url), "utf8");
   const surface = await readFile(new URL("../src/PortfolioLab.tsx", import.meta.url), "utf8");
+  const operations = await readFile(new URL("../src/PortfolioOperations.tsx", import.meta.url), "utf8");
   const analytics = await readFile(new URL("../src/PortfolioAnalytics.tsx", import.meta.url), "utf8");
 
   assert.match(root, /"portfolio-lab"/);
   assert.match(root, /PortfolioLabSurface/);
+  assert.match(root, /PortfolioOperationsSurface/);
   assert.match(root, /PortfolioAnalyticsSurface/);
   assert.match(root, /Open a validated profile from Workspace before using Portfolio Lab/);
   assert.match(surface, /Append-only journal/);
   assert.match(surface, /No real capital/);
   assert.match(surface, /Valuation evidence incomplete/);
   assert.match(surface, /Immutable journal evidence/);
+  assert.match(operations, /Accounting operations and lifecycle/);
+  assert.match(operations, /Simulated disposal/);
+  assert.match(operations, /Correction reversal/);
+  assert.match(operations, /Clone \/ reset/);
+  assert.match(operations, /Portable export \/ restore/);
   assert.match(analytics, /Performance, attribution and scenarios/);
   assert.match(analytics, /Capture snapshot/);
   assert.match(analytics, /Descriptive benchmark/);
@@ -23,11 +30,16 @@ test("D8 exposes Portfolio Lab as a first-class desktop area", async () => {
 
 test("D8 frontend wires only typed portfolio research methods", async () => {
   const api = await readFile(new URL("../src/portfolioApi.ts", import.meta.url), "utf8");
+  const operationsApi = await readFile(
+    new URL("../src/portfolioOperationsApi.ts", import.meta.url),
+    "utf8"
+  );
   const analyticsApi = await readFile(
     new URL("../src/portfolioAnalyticsApi.ts", import.meta.url),
     "utf8"
   );
   const surface = await readFile(new URL("../src/PortfolioLab.tsx", import.meta.url), "utf8");
+  const operations = await readFile(new URL("../src/PortfolioOperations.tsx", import.meta.url), "utf8");
   const analytics = await readFile(new URL("../src/PortfolioAnalytics.tsx", import.meta.url), "utf8");
 
   for (const method of [
@@ -40,6 +52,20 @@ test("D8 frontend wires only typed portfolio research methods", async () => {
     assert.match(api, new RegExp(method.replaceAll(".", "\\.")));
   }
   for (const method of [
+    "portfolio.disposal.record",
+    "portfolio.dividend.record",
+    "portfolio.split.record",
+    "portfolio.fork.record",
+    "portfolio.fx.record",
+    "portfolio.reversal.record",
+    "portfolio.clone",
+    "portfolio.reset",
+    "portfolio.export.prepare",
+    "portfolio.restore"
+  ]) {
+    assert.match(operationsApi, new RegExp(method.replaceAll(".", "\\.")));
+  }
+  for (const method of [
     "portfolio.analytics.snapshot.capture",
     "portfolio.analytics.report",
     "portfolio.analytics.scenario",
@@ -48,12 +74,26 @@ test("D8 frontend wires only typed portfolio research methods", async () => {
     assert.match(analyticsApi, new RegExp(method.replaceAll(".", "\\.")));
   }
 
-  const combined = `${api}\n${analyticsApi}\n${surface}\n${analytics}`;
+  const combined = `${api}\n${operationsApi}\n${analyticsApi}\n${surface}\n${operations}\n${analytics}`;
   assert.match(combined, /invoke<string>\("desktop_request"/);
   assert.doesNotMatch(combined, /@tauri-apps\/plugin-fs|@tauri-apps\/plugin-shell/);
   assert.doesNotMatch(combined, /fetch\s*\(|WebSocket|provider_url|orders?\.submit|broker\.submit/i);
   assert.match(combined, /recommendations_enabled/);
   assert.match(combined, /real_capital_execution_enabled/);
+  assert.match(operationsApi, /provider_data_embedded: false/);
+});
+
+test("D8 accounting operations stay simulated, journaled, and non-destructive", async () => {
+  const operations = await readFile(new URL("../src/PortfolioOperations.tsx", import.meta.url), "utf8");
+
+  assert.match(operations, /No market order was sent/);
+  assert.match(operations, /do not connect to a broker/);
+  assert.match(operations, /compensating reversal; original evidence was preserved/);
+  assert.match(operations, /fresh successor; source journal remains unchanged/);
+  assert.match(operations, /digest-protected portfolio bundle/);
+  assert.match(operations, /validated and restored atomically/);
+  assert.match(operations, /lotAllocations/);
+  assert.match(operations, /sourceLotAllocations/);
 });
 
 test("D8 analytical controls keep exact decimal inputs and non-mutating scenarios", async () => {
@@ -71,6 +111,10 @@ test("D8 analytical controls keep exact decimal inputs and non-mutating scenario
 
 test("D8 responsive and accessibility safeguards are explicit", async () => {
   const css = await readFile(new URL("../src/portfolioLab.css", import.meta.url), "utf8");
+  const operationsCss = await readFile(
+    new URL("../src/portfolioOperations.css", import.meta.url),
+    "utf8"
+  );
   const analyticsCss = await readFile(
     new URL("../src/portfolioAnalytics.css", import.meta.url),
     "utf8"
@@ -82,5 +126,8 @@ test("D8 responsive and accessibility safeguards are explicit", async () => {
   assert.match(css, /focus-visible/);
   assert.match(css, /min-height: 2\.5rem/);
   assert.match(css, /overflow-x: auto/);
+  assert.match(operationsCss, /minmax\(18rem, 1fr\)/);
+  assert.match(operationsCss, /overflow-wrap: anywhere/);
+  assert.match(operationsCss, /forced-colors/);
   assert.match(analyticsCss, /max-width: 28rem/);
 });
