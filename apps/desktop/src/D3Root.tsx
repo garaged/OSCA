@@ -10,6 +10,7 @@ import { ProjectsSurface } from "./Projects";
 import { StrategyLabSurface } from "./StrategyLab";
 import { WorkbenchSurface } from "./Workbench";
 import "./d3Root.css";
+import "./portfolioOperations.css";
 
 type RootView =
   | "workspace"
