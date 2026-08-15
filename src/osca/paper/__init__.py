@@ -23,6 +23,17 @@ from osca.paper.accounting_persistence import (
     AccountingPersistenceError,
     SQLitePortfolioAccountingStore,
 )
+from osca.paper.accounting_portability import (
+    PortfolioBundle,
+    bundle_digest,
+    clone_portfolio,
+    export_portfolio_bundle,
+    read_portfolio_bundle,
+    reset_portfolio,
+    restore_portfolio_bundle,
+    verify_portfolio_bundle,
+    write_portfolio_bundle,
+)
 from osca.paper.contracts import (
     ApprovedPaperCandidate,
     DeliveryAdapterDeclaration,
@@ -104,6 +115,7 @@ __all__ = [
     "PaperScheduleStatus",
     "PortfolioAccountingError",
     "PortfolioAccountingService",
+    "PortfolioBundle",
     "PortfolioProjection",
     "PortfolioStatus",
     "PositionState",
@@ -117,9 +129,17 @@ __all__ = [
     "build_forward_comparison",
     "build_notification_digest",
     "build_paper_notification",
+    "bundle_digest",
+    "clone_portfolio",
     "decide_paper_control",
     "decimal_value",
     "evaluate_paper_health_gate",
     "evaluate_paper_recovery",
+    "export_portfolio_bundle",
     "plan_delivery_attempt",
+    "read_portfolio_bundle",
+    "reset_portfolio",
+    "restore_portfolio_bundle",
+    "verify_portfolio_bundle",
+    "write_portfolio_bundle",
 ]
