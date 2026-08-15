@@ -255,6 +255,20 @@ fn is_profile_mutation(method: &str) -> bool {
             | "backtest.export.prepare"
             | "backtest.sensitivity.run"
             | "backtest.walkforward.run"
+            | "portfolio.create"
+            | "portfolio.acquisition.record"
+            | "portfolio.disposal.record"
+            | "portfolio.dividend.record"
+            | "portfolio.split.record"
+            | "portfolio.fork.record"
+            | "portfolio.fx.record"
+            | "portfolio.reversal.record"
+            | "portfolio.valuation.record"
+            | "portfolio.clone"
+            | "portfolio.reset"
+            | "portfolio.export.prepare"
+            | "portfolio.restore"
+            | "portfolio.analytics.snapshot.capture"
     )
 }
 
@@ -574,6 +588,36 @@ mod tests {
         assert!(!is_profile_mutation("strategy.validate"));
         assert!(!is_profile_mutation("backtest.list"));
         assert!(!is_profile_mutation("backtest.get"));
+    }
+
+    #[test]
+    fn d8_portfolio_writes_require_profile_ownership() {
+        for method in [
+            "portfolio.create",
+            "portfolio.acquisition.record",
+            "portfolio.disposal.record",
+            "portfolio.dividend.record",
+            "portfolio.split.record",
+            "portfolio.fork.record",
+            "portfolio.fx.record",
+            "portfolio.reversal.record",
+            "portfolio.valuation.record",
+            "portfolio.clone",
+            "portfolio.reset",
+            "portfolio.export.prepare",
+            "portfolio.restore",
+            "portfolio.analytics.snapshot.capture",
+        ] {
+            assert!(
+                is_profile_mutation(method),
+                "{method} should require profile ownership"
+            );
+        }
+        assert!(!is_profile_mutation("portfolio.list"));
+        assert!(!is_profile_mutation("portfolio.get"));
+        assert!(!is_profile_mutation("portfolio.analytics.report"));
+        assert!(!is_profile_mutation("portfolio.analytics.scenario"));
+        assert!(!is_profile_mutation("portfolio.analytics.benchmark"));
     }
 
     #[test]
