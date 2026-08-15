@@ -1,0 +1,35 @@
+.portfolio-operations {
+  display: grid;
+  gap: 1rem;
+}
+
+.portfolio-operations-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.portfolio-operations-grid details {
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 0.65rem;
+  padding: 0.75rem;
+}
+
+.portfolio-operations-grid summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin: -0.25rem 0 0.65rem;
+  padding: 0.25rem;
+}
+
+.portfolio-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+@media (forced-colors: active) {
+  .portfolio-operations-grid details {
+    border-color: CanvasText;
+  }
+}
