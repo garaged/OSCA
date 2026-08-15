@@ -9,23 +9,31 @@ from typing import TextIO
 from pydantic import ValidationError
 
 from osca.desktop_api.contracts import DesktopError, DesktopRequest, DesktopResponse
-from osca.desktop_api.portfolio_accounting import PortfolioAccountingDesktopService
+from osca.desktop_api.portfolio_analytics import PortfolioAnalyticsDesktopService
 
 MAX_MESSAGE_BYTES = 1_048_576
 
 
 def _error_response(request_id: str, code: str, message: str) -> DesktopResponse:
-    return DesktopResponse(request_id=request_id, status="error", error=DesktopError(code=code, message=message))
+    return DesktopResponse(
+        request_id=request_id,
+        status="error",
+        error=DesktopError(code=code, message=message),
+    )
 
 
 def serve(stdin: TextIO, stdout: TextIO) -> int:
     storage_value = os.environ.get("OSCA_STORAGE_ROOT")
-    service = PortfolioAccountingDesktopService(
+    service = PortfolioAnalyticsDesktopService(
         storage_root=Path(storage_value).expanduser() if storage_value else None
     )
     for raw_line in stdin:
         if len(raw_line.encode("utf-8")) > MAX_MESSAGE_BYTES:
-            response = _error_response("unknown", "message_too_large", "Request exceeds 1 MiB")
+            response = _error_response(
+                "unknown",
+                "message_too_large",
+                "Request exceeds 1 MiB",
+            )
         else:
             try:
                 payload = json.loads(raw_line)
