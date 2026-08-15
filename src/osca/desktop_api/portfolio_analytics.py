@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
@@ -153,10 +154,9 @@ def _allowed(params: dict[str, Any], allowed: set[str], method: str) -> None:
         )
 
 
-def _analytics_call[T](operation: Any) -> T:
+def _analytics_call[T](operation: Callable[[], T]) -> T:
     try:
-        result: T = operation()
-        return result
+        return operation()
     except PortfolioAccountingError as exc:
         raise DesktopServiceError("portfolio_analytics_error", str(exc)) from exc
 
