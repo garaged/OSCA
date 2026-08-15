@@ -5,6 +5,7 @@ import { DataSourcesSurface } from "./DataSources";
 import { MarketsSurface } from "./Markets";
 import { PortfolioAnalyticsSurface } from "./PortfolioAnalytics";
 import { PortfolioLabSurface } from "./PortfolioLab";
+import { PortfolioOperationsSurface } from "./PortfolioOperations";
 import { ProjectsSurface } from "./Projects";
 import { StrategyLabSurface } from "./StrategyLab";
 import { WorkbenchSurface } from "./Workbench";
@@ -149,6 +150,7 @@ export function D3Root() {
               ) : view === "portfolio-lab" ? (
                 <>
                   <PortfolioLabSurface profileRoot={profile.profileRoot} />
+                  <PortfolioOperationsSurface profileRoot={profile.profileRoot} />
                   <PortfolioAnalyticsSurface profileRoot={profile.profileRoot} />
                 </>
               ) : (
