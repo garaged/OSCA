@@ -49,8 +49,10 @@ class _MutableLot:
 
 def decimal_value(value: Decimal | str | int) -> Decimal:
     """Normalize supported exact inputs without accepting binary floats."""
-    if isinstance(value, bool) or isinstance(value, float):
-        raise PortfolioAccountingError("authoritative accounting values must not use binary floats")
+    if isinstance(value, (bool, float)):
+        raise PortfolioAccountingError(
+            "authoritative accounting values must not use binary floats"
+        )
     try:
         normalized = value if isinstance(value, Decimal) else Decimal(str(value).strip())
     except Exception as exc:
@@ -303,9 +305,11 @@ class PortfolioAccountingService:
         projection = self.project(portfolio_id)
         available_cash = projection.cash_by_currency.get(normalized_currency, ZERO)
         if available_cash < required_cash:
-            raise PortfolioAccountingError(
-                f"insufficient {normalized_currency} cash: need {required_cash}, have {available_cash}"
+            message = (
+                f"insufficient {normalized_currency} cash: "
+                f"need {required_cash}, have {available_cash}"
             )
+            raise PortfolioAccountingError(message)
         sequence = self.store.next_sequence(portfolio_id)
         timestamp = _utc(effective_at)
         temporary_id = _event_id(
@@ -385,18 +389,22 @@ class PortfolioAccountingService:
         ]
         if not open_lots:
             raise PortfolioAccountingError(f"no open lots exist for {instrument}")
-        allocation = self._resolve_allocations(qty, open_lots, lot_allocations)
+        lot_allocation = self._resolve_allocations(qty, open_lots, lot_allocations)
         allocated_book = ZERO
         payload_allocations: list[dict[str, str]] = []
         lots_by_id = {lot.lot_id: lot for lot in open_lots}
-        for lot_id, allocated_quantity in allocation.items():
+        for lot_id, allocated_quantity in lot_allocation.items():
             lot = lots_by_id.get(lot_id)
             if lot is None:
                 raise PortfolioAccountingError(f"unknown open lot {lot_id}")
             if lot.currency != normalized_currency:
-                raise PortfolioAccountingError("disposal currency must match allocated lot currency")
+                raise PortfolioAccountingError(
+                    "disposal currency must match allocated lot currency"
+                )
             if allocated_quantity > lot.quantity:
-                raise PortfolioAccountingError(f"allocation exceeds remaining quantity for lot {lot_id}")
+                raise PortfolioAccountingError(
+                    f"allocation exceeds remaining quantity for lot {lot_id}"
+                )
             unit_book_cost = lot.book_cost / lot.quantity
             book_cost = unit_book_cost * allocated_quantity
             allocated_book += book_cost
@@ -719,14 +727,16 @@ class PortfolioAccountingService:
                     )
                 source_lot_allocations = {open_lots[0].lot_id: book_cost}
             allocated_total = ZERO
-            lots = {lot.lot_id: lot for lot in open_lots}
+            lots_by_id = {lot.lot_id: lot for lot in open_lots}
             for lot_id, raw_amount in source_lot_allocations.items():
                 amount = _non_negative(raw_amount, "source lot book-cost allocation")
-                lot = lots.get(lot_id)
-                if lot is None:
+                selected_lot = lots_by_id.get(lot_id)
+                if selected_lot is None:
                     raise PortfolioAccountingError(f"unknown source lot {lot_id}")
-                if amount > lot.book_cost:
-                    raise PortfolioAccountingError(f"book-cost allocation exceeds lot {lot_id}")
+                if amount > selected_lot.book_cost:
+                    raise PortfolioAccountingError(
+                        f"book-cost allocation exceeds lot {lot_id}"
+                    )
                 allocated_total += amount
                 allocations.append({"lot_id": str(lot_id), "book_cost": str(amount)})
             if allocated_total != book_cost:
@@ -867,9 +877,13 @@ class PortfolioAccountingService:
         realized: defaultdict[str, Decimal] = defaultdict(lambda: ZERO)
         income: defaultdict[str, Decimal] = defaultdict(lambda: ZERO)
         fees: defaultdict[str, Decimal] = defaultdict(lambda: ZERO)
-        for transaction in transactions:
-            for posting in transaction.postings:
-                signed_asset = posting.amount if posting.side is PostingSide.DEBIT else -posting.amount
+        for journal_transaction in transactions:
+            for posting in journal_transaction.postings:
+                signed_asset = (
+                    posting.amount
+                    if posting.side is PostingSide.DEBIT
+                    else -posting.amount
+                )
                 if posting.account_code == "asset:cash":
                     cash[posting.currency] += signed_asset
                 elif posting.account_code == "income:realized-pnl":
@@ -890,7 +904,31 @@ class PortfolioAccountingService:
             if event.event_id in reversed_ids or event.event_type is AccountingEventType.REVERSAL:
                 continue
             payload = event.payload
-            if event.event_type is AccountingEventType.ACQUISITION:
+            if event.event_type in {
+                AccountingEventType.CLONE_OPENING,
+                AccountingEventType.RESET_OPENING,
+            }:
+                opening_lots = json.loads(payload.get("lots_json", "[]"))
+                if not isinstance(opening_lots, list):
+                    raise PortfolioAccountingError("retained opening lots are invalid")
+                for opening_lot in opening_lots:
+                    if not isinstance(opening_lot, dict):
+                        raise PortfolioAccountingError("retained opening lot is invalid")
+                    lot_id = UUID(str(opening_lot["lot_id"]))
+                    acquired_at = datetime.fromisoformat(str(opening_lot["acquired_at"]))
+                    if acquired_at.tzinfo is None or acquired_at.utcoffset() is None:
+                        raise PortfolioAccountingError(
+                            "retained opening lot timestamp must be timezone-aware"
+                        )
+                    mutable_lots[lot_id] = _MutableLot(
+                        lot_id=lot_id,
+                        instrument_id=str(opening_lot["instrument_id"]),
+                        acquired_at=acquired_at,
+                        quantity=Decimal(str(opening_lot["quantity"])),
+                        book_cost=Decimal(str(opening_lot["book_cost"])),
+                        currency=str(opening_lot["currency"]),
+                    )
+            elif event.event_type is AccountingEventType.ACQUISITION:
                 lot_id = UUID(payload["lot_id"])
                 mutable_lots[lot_id] = _MutableLot(
                     lot_id=lot_id,
@@ -904,36 +942,40 @@ class PortfolioAccountingService:
                 allocations = json.loads(payload["lot_allocations_json"])
                 if not isinstance(allocations, list):
                     raise PortfolioAccountingError("retained disposal allocations are invalid")
-                for allocation in allocations:
-                    if not isinstance(allocation, dict):
+                for allocation_row in allocations:
+                    if not isinstance(allocation_row, dict):
                         raise PortfolioAccountingError("retained disposal allocation is invalid")
-                    lot_id = UUID(str(allocation["lot_id"]))
-                    lot = mutable_lots.get(lot_id)
-                    if lot is None:
-                        raise PortfolioAccountingError(f"replay cannot resolve disposal lot {lot_id}")
-                    quantity = Decimal(str(allocation["quantity"]))
-                    book_cost = Decimal(str(allocation["book_cost"]))
-                    lot.quantity -= quantity
-                    lot.book_cost -= book_cost
+                    lot_id = UUID(str(allocation_row["lot_id"]))
+                    mutable_lot = mutable_lots.get(lot_id)
+                    if mutable_lot is None:
+                        raise PortfolioAccountingError(
+                            f"replay cannot resolve disposal lot {lot_id}"
+                        )
+                    quantity = Decimal(str(allocation_row["quantity"]))
+                    book_cost = Decimal(str(allocation_row["book_cost"]))
+                    mutable_lot.quantity -= quantity
+                    mutable_lot.book_cost -= book_cost
             elif event.event_type is AccountingEventType.SPLIT:
                 instrument = payload["instrument_id"]
                 factor = Decimal(payload["factor"])
-                for lot in mutable_lots.values():
-                    if lot.instrument_id == instrument:
-                        lot.quantity *= factor
+                for mutable_lot in mutable_lots.values():
+                    if mutable_lot.instrument_id == instrument:
+                        mutable_lot.quantity *= factor
             elif event.event_type is AccountingEventType.FORK:
                 allocations = json.loads(payload["source_allocations_json"])
                 if not isinstance(allocations, list):
                     raise PortfolioAccountingError("retained fork allocations are invalid")
-                for allocation in allocations:
-                    if not isinstance(allocation, dict):
+                for allocation_row in allocations:
+                    if not isinstance(allocation_row, dict):
                         raise PortfolioAccountingError("retained fork allocation is invalid")
-                    lot_id = UUID(str(allocation["lot_id"]))
-                    lot = mutable_lots.get(lot_id)
-                    if lot is None:
-                        raise PortfolioAccountingError(f"replay cannot resolve fork lot {lot_id}")
-                    amount = Decimal(str(allocation["book_cost"]))
-                    lot.book_cost -= amount
+                    lot_id = UUID(str(allocation_row["lot_id"]))
+                    mutable_lot = mutable_lots.get(lot_id)
+                    if mutable_lot is None:
+                        raise PortfolioAccountingError(
+                            f"replay cannot resolve fork lot {lot_id}"
+                        )
+                    amount = Decimal(str(allocation_row["book_cost"]))
+                    mutable_lot.book_cost -= amount
                 new_lot_id = UUID(payload["new_lot_id"])
                 mutable_lots[new_lot_id] = _MutableLot(
                     lot_id=new_lot_id,
@@ -946,23 +988,25 @@ class PortfolioAccountingService:
 
         lots = tuple(
             LotState(
-                lot_id=lot.lot_id,
-                instrument_id=lot.instrument_id,
-                acquired_at=lot.acquired_at,
-                quantity=lot.quantity,
-                book_cost=lot.book_cost,
-                currency=lot.currency,
+                lot_id=mutable_lot.lot_id,
+                instrument_id=mutable_lot.instrument_id,
+                acquired_at=mutable_lot.acquired_at,
+                quantity=mutable_lot.quantity,
+                book_cost=mutable_lot.book_cost,
+                currency=mutable_lot.currency,
             )
-            for lot in sorted(mutable_lots.values(), key=lambda item: str(item.lot_id))
-            if lot.quantity > ZERO
+            for mutable_lot in sorted(
+                mutable_lots.values(), key=lambda item: str(item.lot_id)
+            )
+            if mutable_lot.quantity > ZERO
         )
         positions_by_key: defaultdict[tuple[str, str], list[Decimal]] = defaultdict(
             lambda: [ZERO, ZERO]
         )
-        for lot in lots:
-            key = (lot.instrument_id, lot.currency)
-            positions_by_key[key][0] += lot.quantity
-            positions_by_key[key][1] += lot.book_cost
+        for lot_state in lots:
+            key = (lot_state.instrument_id, lot_state.currency)
+            positions_by_key[key][0] += lot_state.quantity
+            positions_by_key[key][1] += lot_state.book_cost
         positions = tuple(
             PositionState(
                 instrument_id=instrument,
@@ -1013,12 +1057,12 @@ class PortfolioAccountingService:
         health = ProjectionHealth.HEALTHY if not missing else ProjectionHealth.DEGRADED
         equity: Decimal | None = None
         unrealized: Decimal | None = None
-        allocation: dict[str, Decimal] = {}
+        allocation_by_asset: dict[str, Decimal] = {}
         if health is ProjectionHealth.HEALTHY:
             equity = cash_base + market_value
             unrealized = market_value - total_book_base
             if gross_exposure > ZERO:
-                allocation = {
+                allocation_by_asset = {
                     asset_id: value / gross_exposure
                     for asset_id, value in sorted(allocation_values.items())
                 }
@@ -1037,9 +1081,13 @@ class PortfolioAccountingService:
             missing_evidence=tuple(sorted(set(missing))),
             equity_base=equity,
             unrealized_pnl_base=unrealized,
-            gross_exposure_base=gross_exposure if health is ProjectionHealth.HEALTHY else None,
-            net_exposure_base=net_exposure if health is ProjectionHealth.HEALTHY else None,
-            allocation_by_asset=allocation,
+            gross_exposure_base=(
+                gross_exposure if health is ProjectionHealth.HEALTHY else None
+            ),
+            net_exposure_base=(
+                net_exposure if health is ProjectionHealth.HEALTHY else None
+            ),
+            allocation_by_asset=allocation_by_asset,
         )
 
     def journal(self, portfolio_id: UUID) -> tuple[JournalTransaction, ...]:
