@@ -1,6 +1,12 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DesktopClientError } from "./api";
 import {
+  createPaperAccount,
+  listPaperAccounts,
+  PaperAccountRecord,
+  recordPaperControl
+} from "./paperAccountApi";
+import {
   appendPaperMark,
   bindPaperRun,
   buildPaperComparison,
@@ -56,8 +62,10 @@ function newBar(
 export function PaperForwardLabSurface({ profileRoot }: Props) {
   const [portfolios, setPortfolios] = useState<VirtualPortfolio[]>([]);
   const [portfolioId, setPortfolioId] = useState("");
+  const [paperAccounts, setPaperAccounts] = useState<PaperAccountRecord[]>([]);
+  const [paperAccountId, setPaperAccountId] = useState("");
+  const [paperAccountName, setPaperAccountName] = useState("D9 paper research");
   const [paperRunId, setPaperRunId] = useState<string>(() => crypto.randomUUID());
-  const [paperAccountId, setPaperAccountId] = useState<string>(() => crypto.randomUUID());
   const [assumptionId, setAssumptionId] = useState<string>(() => crypto.randomUUID());
   const [inspection, setInspection] = useState<PaperRunInspection | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -107,19 +115,32 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
     () => inspection?.orders.find((item) => item.order.order_id === selectedOrderId) ?? null,
     [inspection, selectedOrderId]
   );
+  const selectedPaperAccount = useMemo(
+    () => paperAccounts.find((item) => item.account.paper_account_id === paperAccountId) ?? null,
+    [paperAccounts, paperAccountId]
+  );
 
   useEffect(() => {
     if (!profileRoot) {
       setPortfolios([]);
       setPortfolioId("");
+      setPaperAccounts([]);
+      setPaperAccountId("");
       return;
     }
     let active = true;
-    void listPortfolios(profileRoot)
-      .then((result) => {
+    void Promise.all([listPortfolios(profileRoot), listPaperAccounts(profileRoot)])
+      .then(([portfolioResult, accountRecords]) => {
         if (!active) return;
-        setPortfolios(result.portfolios);
-        setPortfolioId((current) => current || result.portfolios[0]?.portfolio_id || "");
+        setPortfolios(portfolioResult.portfolios);
+        setPortfolioId((current) => current || portfolioResult.portfolios[0]?.portfolio_id || "");
+        setPaperAccounts(accountRecords);
+        setPaperAccountId(
+          (current) =>
+            current ||
+            accountRecords.find((item) => item.account.status === "active")?.account.paper_account_id ||
+            ""
+        );
       })
       .catch((error) => {
         if (active) setFeedback({ kind: "error", message: errorMessage(error) });
@@ -128,6 +149,19 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
       active = false;
     };
   }, [profileRoot]);
+
+  async function reloadAccounts(preferredAccountId?: string) {
+    if (!profileRoot) return;
+    const records = await listPaperAccounts(profileRoot);
+    setPaperAccounts(records);
+    setPaperAccountId((current) => {
+      const preferred = preferredAccountId ?? current;
+      if (preferred && records.some((item) => item.account.paper_account_id === preferred)) {
+        return preferred;
+      }
+      return records.find((item) => item.account.status === "active")?.account.paper_account_id ?? "";
+    });
+  }
 
   async function refresh() {
     if (!profileRoot || !paperRunId) return;
@@ -151,9 +185,36 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
     }
   }
 
+  async function createAccount() {
+    if (!profileRoot || !paperAccountName.trim()) return;
+    await perform(async () => {
+      const selectedPortfolio = portfolios.find((item) => item.portfolio_id === portfolioId);
+      const account = await createPaperAccount(
+        profileRoot,
+        paperAccountName.trim(),
+        selectedPortfolio?.base_currency ?? "USD"
+      );
+      await reloadAccounts(account.paper_account_id);
+    }, "Retained M8 paper account created for local simulated research.");
+  }
+
+  async function setControl(action: "allow" | "pause" | "kill_switch") {
+    if (!profileRoot || !paperAccountId) return;
+    await perform(async () => {
+      await recordPaperControl(
+        profileRoot,
+        paperAccountId,
+        action,
+        `Paper Lab retained ${action} control decision`
+      );
+      await reloadAccounts(paperAccountId);
+      if (inspection) await refresh();
+    }, `Retained paper-account control: ${action}.`);
+  }
+
   async function setupRun(event: FormEvent) {
     event.preventDefault();
-    if (!profileRoot || !portfolioId) return;
+    if (!profileRoot || !portfolioId || !paperAccountId) return;
     await perform(async () => {
       await bindPaperRun(profileRoot, paperRunId, paperAccountId, portfolioId);
       await retainPaperAssumptions(profileRoot, {
@@ -173,7 +234,7 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
 
   async function saveDraft(event: FormEvent) {
     event.preventDefault();
-    if (!profileRoot || !portfolioId) return;
+    if (!profileRoot || !portfolioId || !paperAccountId) return;
     await perform(async () => {
       const input: PaperDraftInput = {
         draftId,
@@ -215,15 +276,17 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
     await perform(async () => {
       const result = await confirmPaperDraft(profileRoot, paperRunId, draftId, draftVersion);
       setSelectedOrderId(result.order.order_id);
+      await reloadAccounts(paperAccountId);
       await refresh();
     }, "SIMULATED-ONLY order confirmed. No external destination exists.");
   }
 
   async function processBar(event: FormEvent) {
     event.preventDefault();
-    if (!profileRoot || !selectedOrderId) return;
+    if (!profileRoot || !selectedOrderId || !paperAccountId) return;
     await perform(async () => {
       await processPaperBar(profileRoot, paperRunId, paperAccountId, selectedOrderId, bar);
+      await reloadAccounts(paperAccountId);
       await refresh();
     }, "Governed bar processed through the deterministic simulator.");
   }
@@ -286,7 +349,6 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
   function startNewRun() {
     const nextDatasetRevision = crypto.randomUUID();
     setPaperRunId(crypto.randomUUID());
-    setPaperAccountId(crypto.randomUUID());
     setAssumptionId(crypto.randomUUID());
     setDraftId(crypto.randomUUID());
     setDraftVersion(1);
@@ -340,7 +402,7 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
       ) : null}
 
       <form className="paper-lab-card" onSubmit={(event) => void setupRun(event)}>
-        <CardHeading title="1. Run and execution assumptions" note="Immutable evidence" />
+        <CardHeading title="1. Run, retained account and execution assumptions" note="Immutable evidence" />
         <div className="paper-lab-grid">
           <label>
             Virtual portfolio
@@ -357,8 +419,33 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
               ))}
             </select>
           </label>
+          <label>
+            Retained M8 paper account
+            <select
+              required
+              value={paperAccountId}
+              onChange={(event) => setPaperAccountId(event.target.value)}
+            >
+              <option value="">Select retained paper account</option>
+              {paperAccounts.map(({ account, latest_control }) => (
+                <option
+                  disabled={account.status !== "active"}
+                  key={account.paper_account_id}
+                  value={account.paper_account_id}
+                >
+                  {account.name} · {account.base_currency} · {account.status}
+                  {latest_control ? ` · ${latest_control.action}` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+          <TextField
+            label="New paper account name"
+            value={paperAccountName}
+            onChange={setPaperAccountName}
+          />
           <ReadOnlyField label="Paper run ID" value={paperRunId} />
-          <ReadOnlyField label="Paper account ID" value={paperAccountId} />
+          <ReadOnlyField label="Paper account ID" value={paperAccountId || "select or create an account"} />
           <ReadOnlyField label="Assumption ID" value={assumptionId} />
           <TextField label="Spread (bps)" value={spreadBps} onChange={setSpreadBps} />
           <TextField label="Slippage (bps)" value={slippageBps} onChange={setSlippageBps} />
@@ -391,7 +478,25 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
             required={false}
           />
         </div>
-        <button disabled={busy || !portfolioId} type="submit">
+        <div className="paper-lab-actions">
+          <button disabled={busy || !portfolioId || !paperAccountName.trim()} type="button" onClick={() => void createAccount()}>
+            Create retained paper account
+          </button>
+          <button disabled={busy || !paperAccountId} type="button" onClick={() => void setControl("allow")}>
+            Allow simulation
+          </button>
+          <button disabled={busy || !paperAccountId} type="button" onClick={() => void setControl("pause")}>
+            Pause simulation
+          </button>
+          <button disabled={busy || !paperAccountId} type="button" onClick={() => void setControl("kill_switch")}>
+            Engage simulated kill switch
+          </button>
+        </div>
+        <p className="paper-lab-help">
+          Current retained control: {selectedPaperAccount?.latest_control?.action ?? "none yet"}.
+          Account/control evidence is stored separately from D8 balances and cannot authorize live execution.
+        </p>
+        <button disabled={busy || !portfolioId || !paperAccountId} type="submit">
           Retain run + assumptions
         </button>
       </form>
