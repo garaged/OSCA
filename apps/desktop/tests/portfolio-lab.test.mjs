@@ -28,6 +28,26 @@ test("D8 exposes Portfolio Lab as a first-class desktop area", async () => {
   assert.match(analytics, /Portfolio mutated/);
 });
 
+test("D8 Portfolio Lab surfaces synchronize portfolio selection and mutations", async () => {
+  const events = await readFile(
+    new URL("../src/portfolioWorkspaceEvents.ts", import.meta.url),
+    "utf8"
+  );
+  const surface = await readFile(new URL("../src/PortfolioLab.tsx", import.meta.url), "utf8");
+  const operations = await readFile(new URL("../src/PortfolioOperations.tsx", import.meta.url), "utf8");
+  const analytics = await readFile(new URL("../src/PortfolioAnalytics.tsx", import.meta.url), "utf8");
+
+  assert.match(events, /osca:portfolio-workspace-change/);
+  assert.match(events, /detail\.source === source/);
+  for (const source of [surface, operations, analytics]) {
+    assert.match(source, /announcePortfolioWorkspaceChange/);
+    assert.match(source, /subscribePortfolioWorkspaceChanges/);
+  }
+  assert.match(operations, /setLotId\(""\)/);
+  assert.match(operations, /No explicit lot — exercise fail-closed allocation/);
+  assert.match(operations, /multiple open lots can satisfy the disposal/);
+});
+
 test("D8 frontend wires only typed portfolio research methods", async () => {
   const api = await readFile(new URL("../src/portfolioApi.ts", import.meta.url), "utf8");
   const operationsApi = await readFile(
