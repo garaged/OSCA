@@ -61,7 +61,7 @@ jobs:
             | sha256sum --check -
           tar --extract --gzip --no-same-owner --file /tmp/age.tar.gz --directory /tmp
       - name: Ruff
-        run: uv run ruff check --fix --diff .
+        run: uv run ruff check .
       - name: Strict mypy
         run: uv run mypy
       - name: Tests, contracts, migrations, links, and architecture
