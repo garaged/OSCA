@@ -206,16 +206,6 @@ class ForwardPaperService:
         order = self.store.get_order(order_id)
         self._require_control(order.paper_account_id, control_decision)
         self._require_health(order.paper_run_id, health_gate)
-        status = self.current_status(order_id)
-        if status in _TERMINAL:
-            return ForwardStepResult(
-                order_id=order_id,
-                market_evidence_id=market_bar.evidence_id,
-                decision=FillDecision(
-                    can_fill=False,
-                    reason=f"simulated order is terminal in {status} state",
-                ),
-            )
         existing = next(
             (
                 fill
@@ -240,6 +230,16 @@ class ForwardPaperService:
                 fill=existing,
                 lifecycle_event=replay_lifecycle,
                 accounting_event_id=accounting_event_id,
+            )
+        status = self.current_status(order_id)
+        if status in _TERMINAL:
+            return ForwardStepResult(
+                order_id=order_id,
+                market_evidence_id=market_bar.evidence_id,
+                decision=FillDecision(
+                    can_fill=False,
+                    reason=f"simulated order is terminal in {status} state",
+                ),
             )
         assumptions = self.store.get_assumptions(order.assumption_id)
         remaining = self.remaining_quantity(order_id)
