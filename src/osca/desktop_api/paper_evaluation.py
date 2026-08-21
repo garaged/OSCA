@@ -10,7 +10,14 @@ from typing import Any
 from uuid import UUID
 
 from osca.desktop_api import paper_forward
-from osca.desktop_api.portfolio_accounting import _allowed
+from osca.desktop_api.portfolio_accounting import (
+    _allowed,
+    _optional_datetime,
+    _required_datetime,
+    _required_path,
+    _required_text,
+    _required_uuid,
+)
 from osca.desktop_api.profile_lock import ProfileMutationLock
 from osca.desktop_api.service import DesktopServiceError
 from osca.paper.contracts import (
@@ -42,7 +49,7 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
 
     def _account_list(self, params: dict[str, Any]) -> dict[str, Any]:
         _allowed(params, {"profile_root"}, "paper.account.list")
-        profile_root = paper_forward._required_path(params, "profile_root")
+        profile_root = _required_path(params, "profile_root")
         store = _evaluation_store(profile_root)
         accounts = _evaluation_call(store.list_paper_accounts)
         records: list[dict[str, Any]] = []
@@ -67,16 +74,16 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             {"profile_root", "name", "base_currency", "created_at"},
             "paper.account.create",
         )
-        profile_root = paper_forward._required_path(params, "profile_root")
+        profile_root = _required_path(params, "profile_root")
         account = paper_forward._model_call(
             lambda: PaperAccount(
-                name=paper_forward._required_text(params, "name", limit=128),
-                base_currency=paper_forward._required_text(
+                name=_required_text(params, "name", limit=128),
+                base_currency=_required_text(
                     params,
                     "base_currency",
                     limit=3,
                 ).upper(),
-                created_at=paper_forward._optional_datetime(params, "created_at")
+                created_at=_optional_datetime(params, "created_at")
                 or datetime.now().astimezone(),
             )
         )
@@ -94,15 +101,13 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             {"profile_root", "paper_account_id", "action", "reason"},
             "paper.account.control.record",
         )
-        profile_root = paper_forward._required_path(params, "profile_root")
-        account_id = paper_forward._required_uuid(params, "paper_account_id")
+        profile_root = _required_path(params, "profile_root")
+        account_id = _required_uuid(params, "paper_account_id")
         try:
-            action = PaperControlAction(
-                paper_forward._required_text(params, "action", limit=32)
-            )
+            action = PaperControlAction(_required_text(params, "action", limit=32))
         except ValueError as exc:
             raise DesktopServiceError("invalid_parameters", "action is invalid") from exc
-        reason = paper_forward._required_text(params, "reason", limit=500)
+        reason = _required_text(params, "reason", limit=500)
         store = _evaluation_store(profile_root)
         with ProfileMutationLock(profile_root):
             account = _require_account(store, account_id)
@@ -132,19 +137,19 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             },
             "paper.run.bind",
         )
-        profile_root = paper_forward._required_path(params, "profile_root")
-        account_id = paper_forward._required_uuid(params, "paper_account_id")
+        profile_root = _required_path(params, "profile_root")
+        account_id = _required_uuid(params, "paper_account_id")
         evaluation_store = _evaluation_store(profile_root)
         service = paper_forward._paper_service(profile_root)
         with ProfileMutationLock(profile_root):
             account = _require_active_account(evaluation_store, account_id)
             binding = paper_forward._paper_call(
                 lambda: service.bind_run(
-                    paper_run_id=paper_forward._required_uuid(params, "paper_run_id"),
+                    paper_run_id=_required_uuid(params, "paper_run_id"),
                     paper_account_id=account.paper_account_id,
-                    portfolio_id=paper_forward._required_uuid(params, "portfolio_id"),
+                    portfolio_id=_required_uuid(params, "portfolio_id"),
                     approved_candidate_id=_optional_uuid(params, "approved_candidate_id"),
-                    created_at=paper_forward._optional_datetime(params, "created_at"),
+                    created_at=_optional_datetime(params, "created_at"),
                 )
             )
         return paper_forward._safe_result(
@@ -155,12 +160,12 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
 
     def _run_inspect(self, params: dict[str, Any]) -> dict[str, Any]:
         result = super()._run_inspect(params)
-        profile_root = paper_forward._required_path(params, "profile_root")
+        profile_root = _required_path(params, "profile_root")
         binding = result.get("binding")
         if not isinstance(binding, dict):
             raise DesktopServiceError("paper_error", "paper run binding is malformed")
         account_id = UUID(str(binding["paper_account_id"]))
-        run_id = paper_forward._required_uuid(params, "paper_run_id")
+        run_id = _required_uuid(params, "paper_run_id")
         store = _evaluation_store(profile_root)
         account = _require_account(store, account_id)
         controls = _list_control_decisions(store, account_id)
@@ -182,9 +187,9 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             },
             "paper.order.confirm",
         )
-        profile_root = paper_forward._required_path(params, "profile_root")
-        run_id = paper_forward._required_uuid(params, "paper_run_id")
-        draft_id = paper_forward._required_uuid(params, "draft_id")
+        profile_root = _required_path(params, "profile_root")
+        run_id = _required_uuid(params, "paper_run_id")
+        draft_id = _required_uuid(params, "draft_id")
         draft_version = paper_forward._optional_int(
             params,
             "draft_version",
@@ -213,10 +218,7 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             result = paper_forward._paper_call(
                 lambda: service.confirm_draft(
                     draft,
-                    confirmed_at=paper_forward._required_datetime(
-                        params,
-                        "confirmed_at",
-                    ),
+                    confirmed_at=_required_datetime(params, "confirmed_at"),
                     control_decision=control,
                 )
             )
@@ -244,12 +246,12 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             },
             "paper.order.process_bar",
         )
-        profile_root = paper_forward._required_path(params, "profile_root")
+        profile_root = _required_path(params, "profile_root")
         service = paper_forward._paper_service(profile_root)
         evaluation_store = _evaluation_store(profile_root)
-        order_id = paper_forward._required_uuid(params, "order_id")
-        run_id = paper_forward._required_uuid(params, "paper_run_id")
-        supplied_account_id = paper_forward._required_uuid(params, "paper_account_id")
+        order_id = _required_uuid(params, "order_id")
+        run_id = _required_uuid(params, "paper_run_id")
+        supplied_account_id = _required_uuid(params, "paper_account_id")
         market_bar = paper_forward._bar_from_params(params)
         with ProfileMutationLock(profile_root):
             order = paper_forward._paper_call(lambda: service.store.get_order(order_id))
@@ -397,4 +399,4 @@ def _decision_for_action(
 def _optional_uuid(params: dict[str, Any], name: str) -> UUID | None:
     if name not in params or params[name] is None:
         return None
-    return paper_forward._required_uuid(params, name)
+    return _required_uuid(params, name)
