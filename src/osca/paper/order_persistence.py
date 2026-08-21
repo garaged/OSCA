@@ -6,6 +6,8 @@ import sqlite3
 from pathlib import Path
 from uuid import UUID
 
+from pydantic import BaseModel
+
 from osca.paper.contracts import PaperRunCheckpoint
 from osca.paper.order_contracts import (
     ExecutionAssumptions,
@@ -282,7 +284,9 @@ class SQLitePaperOrderStore:
                 (str(confirmation.draft_id), confirmation.draft_version),
             ).fetchone()
             if existing is not None:
-                retained_confirmation = SimulatedOrderConfirmation.model_validate_json(str(existing[0]))
+                retained_confirmation = SimulatedOrderConfirmation.model_validate_json(
+                    str(existing[0])
+                )
                 retained_order = SimulatedOrder.model_validate_json(str(existing[1]))
                 self._require_same(retained_confirmation, confirmation, "order confirmation")
                 self._require_same(retained_order, order, "simulated order")
@@ -322,7 +326,9 @@ class SQLitePaperOrderStore:
                 connection.commit()
             except sqlite3.IntegrityError as exc:
                 connection.rollback()
-                raise OrderConflictError("confirmation/order conflicts with retained evidence") from exc
+                raise OrderConflictError(
+                    "confirmation/order conflicts with retained evidence"
+                ) from exc
         return confirmation, order
 
     def get_order(self, order_id: UUID) -> SimulatedOrder:
@@ -490,7 +496,7 @@ class SQLitePaperOrderStore:
             return None
         return PaperRunCheckpoint.model_validate_json(str(row[0]))
 
-    def _append_identity_payload[ModelT](
+    def _append_identity_payload[ModelT: BaseModel](
         self,
         *,
         table: str,
@@ -510,25 +516,24 @@ class SQLitePaperOrderStore:
             parameters.append(scope[1])
         with self._connect() as connection:
             row = connection.execute(
-                f"SELECT payload_json FROM {table} WHERE {where}",  # noqa: S608
+                f"SELECT payload_json FROM {table} WHERE {where}",
                 tuple(parameters),
             ).fetchone()
             if row is not None:
-                validator = getattr(model, "model_validate_json")
-                retained = validator(str(row[0]))
+                retained = model.model_validate_json(str(row[0]))
                 self._require_same(retained, value, label)
                 return retained
             placeholders = ", ".join("?" for _ in columns)
             column_sql = ", ".join(columns)
             self._execute_insert(
                 connection,
-                f"INSERT INTO {table}({column_sql}) VALUES({placeholders})",  # noqa: S608
+                f"INSERT INTO {table}({column_sql}) VALUES({placeholders})",
                 values,
                 label,
             )
         return value
 
-    def _get_one[ModelT](
+    def _get_one[ModelT: BaseModel](
         self,
         table: str,
         identity_column: str,
@@ -538,18 +543,18 @@ class SQLitePaperOrderStore:
     ) -> ModelT:
         with self._connect() as connection:
             row = connection.execute(
-                f"SELECT payload_json FROM {table} WHERE {identity_column} = ?",  # noqa: S608
+                f"SELECT payload_json FROM {table} WHERE {identity_column} = ?",
                 (identity,),
             ).fetchone()
         if row is None:
             raise OrderNotFoundError(f"{label} {identity} was not found")
-        validator = getattr(model, "model_validate_json")
-        return validator(str(row[0]))
+        return model.model_validate_json(str(row[0]))
 
     def _next_sequence(self, table: str, scope_column: str, scope_id: str) -> int:
         with self._connect() as connection:
             row = connection.execute(
-                f"SELECT COALESCE(MAX(sequence), 0) + 1 FROM {table} WHERE {scope_column} = ?",  # noqa: S608
+                f"SELECT COALESCE(MAX(sequence), 0) + 1 FROM {table} "
+                f"WHERE {scope_column} = ?",
                 (scope_id,),
             ).fetchone()
         if row is None:
