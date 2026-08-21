@@ -353,7 +353,11 @@ class ForwardPaperService:
             and order_notional > assumptions.max_order_notional
         ):
             return (
-                _risk(order, RiskDecisionStatus.REJECT, "maximum simulated order notional exceeded"),
+                _risk(
+                    order,
+                    RiskDecisionStatus.REJECT,
+                    "maximum simulated order notional exceeded",
+                ),
                 {},
             )
         if order.side is OrderSide.BUY:
@@ -456,7 +460,11 @@ class ForwardPaperService:
         fill: SimulatedFill,
     ) -> OrderLifecycleEvent:
         existing = next(
-            (event for event in self.store.list_lifecycle(order.order_id) if event.fill_id == fill.fill_id),
+            (
+                event
+                for event in self.store.list_lifecycle(order.order_id)
+                if event.fill_id == fill.fill_id
+            ),
             None,
         )
         if existing is not None:
@@ -487,7 +495,11 @@ class ForwardPaperService:
         fill_id: UUID | None = None,
     ) -> OrderLifecycleEvent:
         existing = next(
-            (event for event in self.store.list_lifecycle(order.order_id) if event.source_id == source_id),
+            (
+                event
+                for event in self.store.list_lifecycle(order.order_id)
+                if event.source_id == source_id
+            ),
             None,
         )
         if existing is not None:
