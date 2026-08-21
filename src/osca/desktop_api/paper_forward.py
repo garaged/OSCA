@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -454,7 +455,7 @@ def _paper_service(profile_root: Path) -> ForwardPaperService:
     return _paper_call(lambda: ForwardPaperService.for_profile(profile_root))
 
 
-def _paper_call(operation: Any) -> Any:
+def _paper_call[T](operation: Callable[[], T]) -> T:
     try:
         return operation()
     except OrderConflictError as exc:
@@ -467,7 +468,7 @@ def _paper_call(operation: Any) -> Any:
         raise DesktopServiceError("invalid_parameters", str(exc)) from exc
 
 
-def _model_call(operation: Any) -> Any:
+def _model_call[T](operation: Callable[[], T]) -> T:
     try:
         return operation()
     except (ValidationError, ValueError) as exc:
@@ -597,7 +598,7 @@ def _optional_int(
     value = params[name]
     if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
         raise DesktopServiceError("invalid_parameters", f"{name} must be an integer >= {minimum}")
-    return value
+    return int(value)
 
 
 def _required_positive_int(params: dict[str, Any], name: str) -> int:
@@ -606,7 +607,7 @@ def _required_positive_int(params: dict[str, Any], name: str) -> int:
     value = params[name]
     if isinstance(value, bool) or not isinstance(value, int) or value < 1:
         raise DesktopServiceError("invalid_parameters", f"{name} must be a positive integer")
-    return value
+    return int(value)
 
 
 def _uuid_list(params: dict[str, Any], name: str) -> tuple[UUID, ...]:
