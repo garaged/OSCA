@@ -8,6 +8,10 @@ import {
   recordValuation,
   VirtualPortfolio
 } from "./portfolioApi";
+import {
+  announcePortfolioWorkspaceChange,
+  subscribePortfolioWorkspaceChanges
+} from "./portfolioWorkspaceEvents";
 import "./portfolioLab.css";
 
 type LoadState =
@@ -52,6 +56,9 @@ export function PortfolioLabSurface({ profileRoot }: { profileRoot?: string }) {
 
   useEffect(() => {
     void reload();
+    return subscribePortfolioWorkspaceChanges("lab", (detail) => {
+      void reload(detail.portfolioId);
+    });
   }, [profileRoot]);
 
   async function selectPortfolio(portfolioId: string) {
@@ -60,6 +67,11 @@ export function PortfolioLabSurface({ profileRoot }: { profileRoot?: string }) {
     try {
       setActive(await getPortfolio(profileRoot, portfolioId));
       setState({ kind: "ready" });
+      announcePortfolioWorkspaceChange({
+        kind: "selection",
+        portfolioId,
+        source: "lab"
+      });
     } catch (error) {
       setState({ kind: "error", message: message(error) });
     }
@@ -70,8 +82,10 @@ export function PortfolioLabSurface({ profileRoot }: { profileRoot?: string }) {
     if (!profileRoot) return;
     try {
       const created = await createPortfolio(profileRoot, name, "USD", startingCash);
+      const portfolioId = created.portfolio.portfolio_id;
       setNotice("Virtual portfolio created with immutable starting-cash evidence.");
-      await reload(created.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "lab" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -91,9 +105,11 @@ export function PortfolioLabSurface({ profileRoot }: { profileRoot?: string }) {
         fee,
         crypto.randomUUID()
       );
+      const portfolioId = updated.portfolio.portfolio_id;
       setNotice("Simulated acquisition journaled. No order was sent anywhere.");
-      setActive(await getPortfolio(profileRoot, updated.portfolio.portfolio_id));
-      await reload(updated.portfolio.portfolio_id);
+      setActive(await getPortfolio(profileRoot, portfolioId));
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "lab" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -121,8 +137,10 @@ export function PortfolioLabSurface({ profileRoot }: { profileRoot?: string }) {
         new Date().toISOString(),
         crypto.randomUUID()
       );
+      const portfolioId = updated.portfolio.portfolio_id;
       setNotice("Local valuation evidence retained with source and effective time.");
-      setActive(await getPortfolio(profileRoot, updated.portfolio.portfolio_id));
+      setActive(await getPortfolio(profileRoot, portfolioId));
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "lab" });
     } catch (error) {
       setNotice(message(error));
     }
