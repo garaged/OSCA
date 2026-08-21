@@ -17,8 +17,9 @@ Use this checklist only after the D8 branch has passed hosted automated validati
 3. Create `Portfolio A` with base currency USD and starting cash `10000.01`.
 4. Create `Portfolio B` with starting cash `2500`.
 5. Switch between the two portfolios.
+6. Confirm **Accounting operations and lifecycle** and **Performance, attribution and scenarios** automatically follow the selected/newly created portfolio without leaving Portfolio Lab or manually refreshing it.
 
-Pass when each portfolio retains an independent identity, starting balance, revision, journal, and state. No value from one portfolio should appear in the other.
+Pass when each portfolio retains an independent identity, starting balance, revision, journal, and state. No value from one portfolio should appear in the other, and all Portfolio Lab sections stay synchronized to the current portfolio.
 
 ## 2. Acquisition, cash, positions, lots, and journal
 
@@ -30,10 +31,11 @@ Pass when cash decreases by `501`, the position quantity is `5`, book cost is `5
 
 ## 3. Multiple lots and explicit disposal allocation
 
-1. Add a second acquisition of the same instrument at a different price.
-2. In **Accounting operations and lifecycle**, attempt a disposal without an explicit lot allocation when multiple lots can satisfy it.
-3. Confirm the operation fails closed with an explicit-lot requirement.
-4. Select a retained lot and repeat the disposal.
+1. Add a second acquisition of the same instrument at a different price so two open lots can satisfy a disposal.
+2. In **Accounting operations and lifecycle → Simulated disposal**, confirm **Lot allocation** defaults to **No explicit lot — exercise fail-closed allocation**.
+3. Leave that value selected and submit a quantity that either open lot could satisfy.
+4. Confirm the operation fails closed with an explicit-lot requirement and does not mutate the portfolio.
+5. Select one retained lot explicitly and repeat the disposal.
 
 Pass when ambiguous disposal is rejected, the selected lot is reduced exactly, cash/proceeds/fees/realized P&L update consistently, and no implicit FIFO/LIFO/tax-accounting policy is invented.
 
