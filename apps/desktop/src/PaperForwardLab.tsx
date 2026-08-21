@@ -1,6 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DesktopClientError } from "./api";
-import { listPortfolios, VirtualPortfolio } from "./portfolioApi";
 import {
   appendPaperMark,
   bindPaperRun,
@@ -17,24 +16,32 @@ import {
   retainPaperAssumptions,
   retainPaperDraft
 } from "./paperForwardApi";
+import { listPortfolios, VirtualPortfolio } from "./portfolioApi";
 import "./paperForwardLab.css";
 
 type Props = { profileRoot?: string };
 type Feedback = { kind: "success" | "error"; message: string } | null;
+type OrderType = "market" | "limit" | "stop" | "scheduled_market";
 
 const nowIso = () => new Date().toISOString();
-const nextHourIso = () => new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-function newBar(): PaperBarInput {
+function newBar(
+  instrumentId: string,
+  datasetRevisionId: string,
+  timeframe: string
+): PaperBarInput {
+  const started = new Date();
+  const ended = new Date(started.getTime() + 60 * 60 * 1000);
+  const available = new Date(ended.getTime() + 1000);
   return {
     evidenceId: crypto.randomUUID(),
-    instrumentId: "equity:XNAS:AAPL",
-    datasetRevisionId: crypto.randomUUID(),
+    instrumentId,
+    datasetRevisionId,
     marketSourceId: "local-paper-lab",
-    timeframe: "1h",
-    barStartedAt: nowIso(),
-    barEndedAt: nextHourIso(),
-    availableAt: new Date(Date.now() + 60 * 60 * 1000 + 1000).toISOString(),
+    timeframe,
+    barStartedAt: started.toISOString(),
+    barEndedAt: ended.toISOString(),
+    availableAt: available.toISOString(),
     open: "100",
     high: "102",
     low: "99",
@@ -49,9 +56,9 @@ function newBar(): PaperBarInput {
 export function PaperForwardLabSurface({ profileRoot }: Props) {
   const [portfolios, setPortfolios] = useState<VirtualPortfolio[]>([]);
   const [portfolioId, setPortfolioId] = useState("");
-  const [paperRunId, setPaperRunId] = useState(() => crypto.randomUUID());
-  const [paperAccountId, setPaperAccountId] = useState(() => crypto.randomUUID());
-  const [assumptionId, setAssumptionId] = useState(() => crypto.randomUUID());
+  const [paperRunId, setPaperRunId] = useState<string>(() => crypto.randomUUID());
+  const [paperAccountId, setPaperAccountId] = useState<string>(() => crypto.randomUUID());
+  const [assumptionId, setAssumptionId] = useState<string>(() => crypto.randomUUID());
   const [inspection, setInspection] = useState<PaperRunInspection | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState(false);
@@ -65,16 +72,14 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
   const [maxOrderNotional, setMaxOrderNotional] = useState("");
   const [maxPositionNotional, setMaxPositionNotional] = useState("");
 
-  const [draftId, setDraftId] = useState(() => crypto.randomUUID());
+  const [draftId, setDraftId] = useState<string>(() => crypto.randomUUID());
   const [draftVersion, setDraftVersion] = useState(1);
   const [instrumentId, setInstrumentId] = useState("equity:XNAS:AAPL");
   const [timeframe, setTimeframe] = useState("1h");
   const [currency, setCurrency] = useState("USD");
-  const [datasetRevisionId, setDatasetRevisionId] = useState(() => crypto.randomUUID());
+  const [datasetRevisionId, setDatasetRevisionId] = useState<string>(() => crypto.randomUUID());
   const [side, setSide] = useState<"buy" | "sell">("buy");
-  const [orderType, setOrderType] = useState<
-    "market" | "limit" | "stop" | "scheduled_market"
-  >("market");
+  const [orderType, setOrderType] = useState<OrderType>("market");
   const [quantity, setQuantity] = useState("10");
   const [limitPrice, setLimitPrice] = useState("");
   const [stopPrice, setStopPrice] = useState("");
@@ -83,7 +88,9 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
   const [lotAllocationsText, setLotAllocationsText] = useState("");
 
   const [selectedOrderId, setSelectedOrderId] = useState("");
-  const [bar, setBar] = useState<PaperBarInput>(() => newBar());
+  const [bar, setBar] = useState<PaperBarInput>(() =>
+    newBar("equity:XNAS:AAPL", datasetRevisionId, "1h")
+  );
 
   const [backtestResultId, setBacktestResultId] = useState(1);
   const [strategyVersionId, setStrategyVersionId] = useState(1);
@@ -126,7 +133,9 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
     if (!profileRoot || !paperRunId) return;
     const result = await inspectPaperRun(profileRoot, paperRunId);
     setInspection(result);
-    if (!selectedOrderId && result.orders[0]) setSelectedOrderId(result.orders[0].order.order_id);
+    if (!selectedOrderId && result.orders[0]) {
+      setSelectedOrderId(result.orders[0].order.order_id);
+    }
   }
 
   async function perform(action: () => Promise<void>, success: string) {
@@ -185,9 +194,18 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
         ...(stopPrice ? { stopPrice } : {}),
         ...(scheduledAt ? { scheduledAt } : {}),
         ...(expiresAt ? { expiresAt } : {}),
-        ...(lotAllocationsText ? { lotAllocations: parseLotAllocations(lotAllocationsText) } : {})
+        ...(lotAllocationsText
+          ? { lotAllocations: parseLotAllocations(lotAllocationsText) }
+          : {})
       };
       await retainPaperDraft(profileRoot, input);
+      setBar((current) => ({
+        ...current,
+        evidenceId: crypto.randomUUID(),
+        instrumentId,
+        datasetRevisionId,
+        timeframe
+      }));
       await refresh();
     }, `Draft v${draftVersion} retained. It is not active until explicitly confirmed.`);
   }
@@ -265,16 +283,15 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
     }, "Descriptive comparison built. It is not an investment recommendation.");
   }
 
-  function startNewDraftVersion() {
-    setDraftVersion((value) => value + 1);
-  }
-
   function startNewRun() {
+    const nextDatasetRevision = crypto.randomUUID();
     setPaperRunId(crypto.randomUUID());
     setPaperAccountId(crypto.randomUUID());
     setAssumptionId(crypto.randomUUID());
     setDraftId(crypto.randomUUID());
     setDraftVersion(1);
+    setDatasetRevisionId(nextDatasetRevision);
+    setBar(newBar(instrumentId, nextDatasetRevision, timeframe));
     setInspection(null);
     setSelectedOrderId("");
     setComparisonResult(null);
@@ -308,24 +325,30 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
 
       <aside className="paper-lab-safety" role="note" aria-label="Simulation safety boundary">
         <strong>SIMULATED ONLY</strong>
-        <span>Confirmation activates research simulation only. It cannot submit an external order.</span>
+        <span>
+          Confirmation activates research simulation only. It cannot submit an external order.
+        </span>
       </aside>
 
       {feedback ? (
-        <p className={`paper-lab-feedback ${feedback.kind}`} role={feedback.kind === "error" ? "alert" : "status"}>
+        <p
+          className={`paper-lab-feedback ${feedback.kind}`}
+          role={feedback.kind === "error" ? "alert" : "status"}
+        >
           {feedback.message}
         </p>
       ) : null}
 
       <form className="paper-lab-card" onSubmit={(event) => void setupRun(event)}>
-        <div className="paper-lab-card-heading">
-          <h3>1. Run and execution assumptions</h3>
-          <span>Immutable evidence</span>
-        </div>
+        <CardHeading title="1. Run and execution assumptions" note="Immutable evidence" />
         <div className="paper-lab-grid">
           <label>
             Virtual portfolio
-            <select value={portfolioId} onChange={(event) => setPortfolioId(event.target.value)} required>
+            <select
+              required
+              value={portfolioId}
+              onChange={(event) => setPortfolioId(event.target.value)}
+            >
               <option value="">Select portfolio</option>
               {portfolios.map((portfolio) => (
                 <option key={portfolio.portfolio_id} value={portfolio.portfolio_id}>
@@ -343,23 +366,46 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
           <TextField label="Flat fee" value={flatFee} onChange={setFlatFee} />
           <label>
             Latency (ms)
-            <input min={0} onChange={(event) => setLatencyMs(Number(event.target.value))} type="number" value={latencyMs} />
+            <input
+              min={0}
+              type="number"
+              value={latencyMs}
+              onChange={(event) => setLatencyMs(Number(event.target.value))}
+            />
           </label>
           <TextField
             label="Max volume participation"
             value={maxVolumeParticipation}
             onChange={setMaxVolumeParticipation}
           />
-          <TextField label="Max order notional (optional)" value={maxOrderNotional} onChange={setMaxOrderNotional} required={false} />
-          <TextField label="Max position notional (optional)" value={maxPositionNotional} onChange={setMaxPositionNotional} required={false} />
+          <TextField
+            label="Max order notional (optional)"
+            value={maxOrderNotional}
+            onChange={setMaxOrderNotional}
+            required={false}
+          />
+          <TextField
+            label="Max position notional (optional)"
+            value={maxPositionNotional}
+            onChange={setMaxPositionNotional}
+            required={false}
+          />
         </div>
-        <button disabled={busy || !portfolioId} type="submit">Retain run + assumptions</button>
+        <button disabled={busy || !portfolioId} type="submit">
+          Retain run + assumptions
+        </button>
       </form>
 
       <form className="paper-lab-card" onSubmit={(event) => void saveDraft(event)}>
         <div className="paper-lab-card-heading">
           <h3>2. Immutable simulated-order draft</h3>
-          <button disabled={busy} onClick={startNewDraftVersion} type="button">New draft version</button>
+          <button
+            disabled={busy}
+            type="button"
+            onClick={() => setDraftVersion((value) => value + 1)}
+          >
+            New draft version
+          </button>
         </div>
         <div className="paper-lab-grid">
           <ReadOnlyField label="Draft ID" value={draftId} />
@@ -367,17 +413,27 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
           <TextField label="Instrument ID" value={instrumentId} onChange={setInstrumentId} />
           <TextField label="Timeframe" value={timeframe} onChange={setTimeframe} />
           <TextField label="Currency" value={currency} onChange={setCurrency} />
-          <TextField label="Dataset revision UUID" value={datasetRevisionId} onChange={setDatasetRevisionId} />
+          <TextField
+            label="Dataset revision UUID"
+            value={datasetRevisionId}
+            onChange={setDatasetRevisionId}
+          />
           <label>
             Side
-            <select value={side} onChange={(event) => setSide(event.target.value as "buy" | "sell")}>
+            <select
+              value={side}
+              onChange={(event) => setSide(event.target.value as "buy" | "sell")}
+            >
               <option value="buy">Buy</option>
               <option value="sell">Sell</option>
             </select>
           </label>
           <label>
             Simulated order type
-            <select value={orderType} onChange={(event) => setOrderType(event.target.value as typeof orderType)}>
+            <select
+              value={orderType}
+              onChange={(event) => setOrderType(event.target.value as OrderType)}
+            >
               <option value="market">Market</option>
               <option value="limit">Limit</option>
               <option value="stop">Stop</option>
@@ -385,25 +441,55 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
             </select>
           </label>
           <TextField label="Quantity" value={quantity} onChange={setQuantity} />
-          <TextField label="Limit price" value={limitPrice} onChange={setLimitPrice} required={false} disabled={orderType !== "limit"} />
-          <TextField label="Stop price" value={stopPrice} onChange={setStopPrice} required={false} disabled={orderType !== "stop"} />
-          <TextField label="Scheduled at (ISO-8601)" value={scheduledAt} onChange={setScheduledAt} required={false} disabled={orderType !== "scheduled_market"} />
-          <TextField label="Expires at (optional ISO-8601)" value={expiresAt} onChange={setExpiresAt} required={false} />
           <TextField
+            disabled={orderType !== "limit"}
+            label="Limit price"
+            required={false}
+            value={limitPrice}
+            onChange={setLimitPrice}
+          />
+          <TextField
+            disabled={orderType !== "stop"}
+            label="Stop price"
+            required={false}
+            value={stopPrice}
+            onChange={setStopPrice}
+          />
+          <TextField
+            disabled={orderType !== "scheduled_market"}
+            label="Scheduled at (ISO-8601)"
+            required={false}
+            value={scheduledAt}
+            onChange={setScheduledAt}
+          />
+          <TextField
+            label="Expires at (optional ISO-8601)"
+            required={false}
+            value={expiresAt}
+            onChange={setExpiresAt}
+          />
+          <TextField
+            disabled={side !== "sell"}
             label="Sell lot allocations (lot UUID=quantity, comma separated)"
+            required={false}
             value={lotAllocationsText}
             onChange={setLotAllocationsText}
-            required={false}
-            disabled={side !== "sell"}
           />
         </div>
         <div className="paper-lab-actions">
-          <button disabled={busy || !inspection} type="submit">Retain draft v{draftVersion}</button>
+          <button disabled={busy || !inspection} type="submit">
+            Retain draft v{draftVersion}
+          </button>
           <button
             className="paper-lab-confirm"
-            disabled={busy || !inspection?.drafts.some((item) => item.draft_id === draftId && item.draft_version === draftVersion)}
-            onClick={() => void confirmDraft()}
+            disabled={
+              busy ||
+              !inspection?.drafts.some(
+                (item) => item.draft_id === draftId && item.draft_version === draftVersion
+              )
+            }
             type="button"
+            onClick={() => void confirmDraft()}
           >
             Confirm SIMULATED-ONLY order
           </button>
@@ -413,83 +499,112 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
       <section className="paper-lab-card" aria-labelledby="paper-orders-title">
         <div className="paper-lab-card-heading">
           <h3 id="paper-orders-title">3. Retained order lifecycle and fills</h3>
-          <button disabled={busy || !inspection} onClick={() => void refresh()} type="button">Refresh</button>
+          <button disabled={busy || !inspection} type="button" onClick={() => void refresh()}>
+            Refresh
+          </button>
         </div>
-        {!inspection ? <p>Retain a run before inspecting paper evidence.</p> : inspection.orders.length === 0 ? <p>No confirmed simulated orders yet.</p> : (
-          <div className="paper-lab-order-list">
-            {inspection.orders.map((row) => (
-              <article className="paper-lab-order" data-selected={selectedOrderId === row.order.order_id} key={row.order.order_id}>
-                <button className="paper-lab-order-select" onClick={() => setSelectedOrderId(row.order.order_id)} type="button">
-                  <strong>{row.order.side.toUpperCase()} {row.order.quantity} · {row.order.instrument_id}</strong>
-                  <span>{row.status} · remaining {row.remaining_quantity}</span>
-                </button>
-                <dl>
-                  <div><dt>Order</dt><dd>{shortId(row.order.order_id)}</dd></div>
-                  <div><dt>Assumptions</dt><dd>{shortId(row.order.assumption_id)}</dd></div>
-                  <div><dt>Eligible</dt><dd>{row.order.eligible_at}</dd></div>
-                  <div><dt>Fills</dt><dd>{row.fills.length}</dd></div>
-                </dl>
-                {row.lifecycle.length ? (
-                  <ol className="paper-lab-timeline" aria-label={`Lifecycle for ${row.order.order_id}`}>
-                    {row.lifecycle.map((event) => <li key={event.event_id}><strong>{event.status}</strong> · {event.reason}</li>)}
-                  </ol>
-                ) : null}
-                {row.fills.map((fill) => (
-                  <p className="paper-lab-fill" key={fill.fill_id}>
-                    Fill #{fill.sequence}: {fill.quantity} @ {fill.execution_price}, fee {fill.fee} · bar {shortId(fill.bar_evidence_id)}
-                  </p>
-                ))}
-                {!terminal(row.status) ? <button disabled={busy} onClick={() => void cancelOrder(row)} type="button">Cancel simulated order</button> : null}
-              </article>
-            ))}
-          </div>
-        )}
-        {inspection ? (
-          <div className="paper-lab-projection">
-            <strong>D8 accounting revision {inspection.projection.revision}</strong>
-            <span>Cash: {formatRecord(inspection.projection.cash_by_currency)}</span>
-            <span>Projection: {inspection.projection.health}</span>
-            <span>Equity: {inspection.projection.equity_base ?? "needs valuation evidence"}</span>
-          </div>
-        ) : null}
+        <OrderEvidence
+          inspection={inspection}
+          selectedOrderId={selectedOrderId}
+          onSelect={setSelectedOrderId}
+          onCancel={(row) => void cancelOrder(row)}
+          busy={busy}
+        />
       </section>
 
       <form className="paper-lab-card" onSubmit={(event) => void processBar(event)}>
         <div className="paper-lab-card-heading">
           <h3>4. Governed completed-bar evidence</h3>
-          <button disabled={busy} onClick={() => setBar(newBar())} type="button">New bar identity</button>
+          <button
+            disabled={busy}
+            type="button"
+            onClick={() => setBar(newBar(instrumentId, datasetRevisionId, timeframe))}
+          >
+            New bar identity
+          </button>
         </div>
-        <p className="paper-lab-help">Paper Lab never fetches a provider or sends an order. Enter retained/local/synthetic governed bar evidence explicitly.</p>
+        <p className="paper-lab-help">
+          Paper Lab never fetches a provider or sends an order. Enter retained, local, or
+          synthetic governed bar evidence explicitly. New bars inherit the draft instrument,
+          timeframe, and dataset revision.
+        </p>
         <div className="paper-lab-grid">
-          <TextField label="Bar evidence UUID" value={bar.evidenceId} onChange={(value) => setBar({ ...bar, evidenceId: value })} />
-          <TextField label="Instrument ID" value={bar.instrumentId} onChange={(value) => setBar({ ...bar, instrumentId: value })} />
-          <TextField label="Dataset revision UUID" value={bar.datasetRevisionId} onChange={(value) => setBar({ ...bar, datasetRevisionId: value })} />
-          <TextField label="Source ID" value={bar.marketSourceId} onChange={(value) => setBar({ ...bar, marketSourceId: value })} />
-          <TextField label="Timeframe" value={bar.timeframe} onChange={(value) => setBar({ ...bar, timeframe: value })} />
-          <TextField label="Bar start" value={bar.barStartedAt} onChange={(value) => setBar({ ...bar, barStartedAt: value })} />
-          <TextField label="Bar end" value={bar.barEndedAt} onChange={(value) => setBar({ ...bar, barEndedAt: value })} />
-          <TextField label="Available at" value={bar.availableAt} onChange={(value) => setBar({ ...bar, availableAt: value })} />
-          <TextField label="Open" value={bar.open} onChange={(value) => setBar({ ...bar, open: value })} />
-          <TextField label="High" value={bar.high} onChange={(value) => setBar({ ...bar, high: value })} />
-          <TextField label="Low" value={bar.low} onChange={(value) => setBar({ ...bar, low: value })} />
-          <TextField label="Close" value={bar.close} onChange={(value) => setBar({ ...bar, close: value })} />
-          <TextField label="Volume" value={bar.volume ?? ""} onChange={(value) => setBar({ ...bar, volume: value })} required={false} />
-          <TextField label="Market calendar" value={bar.marketCalendarId ?? ""} onChange={(value) => setBar({ ...bar, marketCalendarId: value })} required={false} />
-          <label className="paper-lab-checkbox"><input checked={bar.complete} onChange={(event) => setBar({ ...bar, complete: event.target.checked })} type="checkbox" />Complete bar</label>
-          <label className="paper-lab-checkbox"><input checked={bar.sessionOpen} onChange={(event) => setBar({ ...bar, sessionOpen: event.target.checked })} type="checkbox" />Market session open</label>
+          <BarText label="Bar evidence UUID" field="evidenceId" bar={bar} setBar={setBar} />
+          <BarText label="Instrument ID" field="instrumentId" bar={bar} setBar={setBar} />
+          <BarText
+            label="Dataset revision UUID"
+            field="datasetRevisionId"
+            bar={bar}
+            setBar={setBar}
+          />
+          <BarText label="Source ID" field="marketSourceId" bar={bar} setBar={setBar} />
+          <BarText label="Timeframe" field="timeframe" bar={bar} setBar={setBar} />
+          <BarText label="Bar start" field="barStartedAt" bar={bar} setBar={setBar} />
+          <BarText label="Bar end" field="barEndedAt" bar={bar} setBar={setBar} />
+          <BarText label="Available at" field="availableAt" bar={bar} setBar={setBar} />
+          <BarText label="Open" field="open" bar={bar} setBar={setBar} />
+          <BarText label="High" field="high" bar={bar} setBar={setBar} />
+          <BarText label="Low" field="low" bar={bar} setBar={setBar} />
+          <BarText label="Close" field="close" bar={bar} setBar={setBar} />
+          <BarText label="Volume" field="volume" bar={bar} setBar={setBar} required={false} />
+          <BarText
+            label="Market calendar"
+            field="marketCalendarId"
+            bar={bar}
+            setBar={setBar}
+            required={false}
+          />
+          <label className="paper-lab-checkbox">
+            <input
+              checked={bar.complete}
+              type="checkbox"
+              onChange={(event) => setBar({ ...bar, complete: event.target.checked })}
+            />
+            Complete bar
+          </label>
+          <label className="paper-lab-checkbox">
+            <input
+              checked={bar.sessionOpen}
+              type="checkbox"
+              onChange={(event) => setBar({ ...bar, sessionOpen: event.target.checked })}
+            />
+            Market session open
+          </label>
         </div>
         <div className="paper-lab-actions">
-          <button disabled={busy || !selectedOrder} type="submit">Process bar for selected order</button>
-          <button disabled={busy || !inspection} onClick={() => void appendMark()} type="button">Retain close as valuation mark</button>
-          <button disabled={busy || !inspection} onClick={() => void checkpoint()} type="button">Checkpoint this bar</button>
+          <button disabled={busy || !selectedOrder} type="submit">
+            Process bar for selected order
+          </button>
+          <button disabled={busy || !inspection} type="button" onClick={() => void appendMark()}>
+            Retain close as valuation mark
+          </button>
+          <button disabled={busy || !inspection} type="button" onClick={() => void checkpoint()}>
+            Checkpoint this bar
+          </button>
         </div>
       </form>
 
       <form className="paper-lab-card" onSubmit={(event) => void compare(event)}>
-        <div className="paper-lab-card-heading"><h3>5. Forward vs. backtest evidence</h3><span>Descriptive only</span></div>
+        <CardHeading title="5. Forward vs. backtest evidence" note="Descriptive only" />
         <div className="paper-lab-grid">
-          <label>Backtest result ID<input min={1} type="number" value={backtestResultId} onChange={(event) => setBacktestResultId(Number(event.target.value))} /></label>
-          <label>Strategy version ID<input min={1} type="number" value={strategyVersionId} onChange={(event) => setStrategyVersionId(Number(event.target.value))} /></label>
+          <label>
+            Backtest result ID
+            <input
+              min={1}
+              type="number"
+              value={backtestResultId}
+              onChange={(event) => setBacktestResultId(Number(event.target.value))}
+            />
+          </label>
+          <label>
+            Strategy version ID
+            <input
+              min={1}
+              type="number"
+              value={strategyVersionId}
+              onChange={(event) => setStrategyVersionId(Number(event.target.value))}
+            />
+          </label>
           <TextField label="Backtest start" value={backtestStart} onChange={setBacktestStart} />
           <TextField label="Backtest end" value={backtestEnd} onChange={setBacktestEnd} />
           <TextField label="Forward start" value={forwardStart} onChange={setForwardStart} />
@@ -498,27 +613,186 @@ export function PaperForwardLabSurface({ profileRoot }: Props) {
           <TextField label="Backtest value" value={backtestMetric} onChange={setBacktestMetric} />
           <TextField label="Forward value" value={forwardMetric} onChange={setForwardMetric} />
         </div>
-        <button disabled={busy || !inspection} type="submit">Build descriptive comparison</button>
-        {comparisonResult ? <pre className="paper-lab-comparison" aria-label="Descriptive comparison evidence">{JSON.stringify(comparisonResult.comparison, null, 2)}</pre> : null}
+        <button disabled={busy || !inspection} type="submit">
+          Build descriptive comparison
+        </button>
+        {comparisonResult ? (
+          <pre className="paper-lab-comparison" aria-label="Descriptive comparison evidence">
+            {JSON.stringify(comparisonResult.comparison, null, 2)}
+          </pre>
+        ) : null}
       </form>
     </section>
   );
 }
 
-function TextField({ label, value, onChange, required = true, disabled = false }: { label: string; value: string; onChange: (value: string) => void; required?: boolean; disabled?: boolean }) {
-  return <label>{label}<input disabled={disabled} onChange={(event) => onChange(event.target.value)} required={required && !disabled} type="text" value={value} /></label>;
+function CardHeading({ title, note }: { title: string; note: string }) {
+  return (
+    <div className="paper-lab-card-heading">
+      <h3>{title}</h3>
+      <span>{note}</span>
+    </div>
+  );
+}
+
+function TextField({
+  label,
+  value,
+  onChange,
+  required = true,
+  disabled = false
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <label>
+      {label}
+      <input
+        disabled={disabled}
+        required={required && !disabled}
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </label>
+  );
 }
 
 function ReadOnlyField({ label, value }: { label: string; value: string }) {
-  return <label>{label}<input readOnly type="text" value={value} /></label>;
+  return (
+    <label>
+      {label}
+      <input readOnly type="text" value={value} />
+    </label>
+  );
+}
+
+function BarText({
+  label,
+  field,
+  bar,
+  setBar,
+  required = true
+}: {
+  label: string;
+  field: keyof Pick<
+    PaperBarInput,
+    | "evidenceId"
+    | "instrumentId"
+    | "datasetRevisionId"
+    | "marketSourceId"
+    | "timeframe"
+    | "barStartedAt"
+    | "barEndedAt"
+    | "availableAt"
+    | "open"
+    | "high"
+    | "low"
+    | "close"
+    | "volume"
+    | "marketCalendarId"
+  >;
+  bar: PaperBarInput;
+  setBar: (value: PaperBarInput) => void;
+  required?: boolean;
+}) {
+  return (
+    <TextField
+      label={label}
+      required={required}
+      value={bar[field] ?? ""}
+      onChange={(value) => setBar({ ...bar, [field]: value })}
+    />
+  );
+}
+
+function OrderEvidence({
+  inspection,
+  selectedOrderId,
+  onSelect,
+  onCancel,
+  busy
+}: {
+  inspection: PaperRunInspection | null;
+  selectedOrderId: string;
+  onSelect: (value: string) => void;
+  onCancel: (row: PaperOrderRow) => void;
+  busy: boolean;
+}) {
+  if (!inspection) return <p>Retain a run before inspecting paper evidence.</p>;
+  return (
+    <>
+      {inspection.orders.length === 0 ? (
+        <p>No confirmed simulated orders yet.</p>
+      ) : (
+        <div className="paper-lab-order-list">
+          {inspection.orders.map((row) => (
+            <article
+              className="paper-lab-order"
+              data-selected={selectedOrderId === row.order.order_id}
+              key={row.order.order_id}
+            >
+              <button
+                className="paper-lab-order-select"
+                type="button"
+                onClick={() => onSelect(row.order.order_id)}
+              >
+                <strong>
+                  {row.order.side.toUpperCase()} {row.order.quantity} · {row.order.instrument_id}
+                </strong>
+                <span>
+                  {row.status} · remaining {row.remaining_quantity}
+                </span>
+              </button>
+              <dl>
+                <div><dt>Order</dt><dd>{shortId(row.order.order_id)}</dd></div>
+                <div><dt>Assumptions</dt><dd>{shortId(row.order.assumption_id)}</dd></div>
+                <div><dt>Eligible</dt><dd>{row.order.eligible_at}</dd></div>
+                <div><dt>Fills</dt><dd>{row.fills.length}</dd></div>
+              </dl>
+              {row.lifecycle.length ? (
+                <ol className="paper-lab-timeline" aria-label={`Lifecycle for ${row.order.order_id}`}>
+                  {row.lifecycle.map((event) => (
+                    <li key={event.event_id}><strong>{event.status}</strong> · {event.reason}</li>
+                  ))}
+                </ol>
+              ) : null}
+              {row.fills.map((fill) => (
+                <p className="paper-lab-fill" key={fill.fill_id}>
+                  Fill #{fill.sequence}: {fill.quantity} @ {fill.execution_price}, fee {fill.fee} · bar {shortId(fill.bar_evidence_id)}
+                </p>
+              ))}
+              {!terminal(row.status) ? (
+                <button disabled={busy} type="button" onClick={() => onCancel(row)}>
+                  Cancel simulated order
+                </button>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      )}
+      <div className="paper-lab-projection">
+        <strong>D8 accounting revision {inspection.projection.revision}</strong>
+        <span>Cash: {formatRecord(inspection.projection.cash_by_currency)}</span>
+        <span>Projection: {inspection.projection.health}</span>
+        <span>Equity: {inspection.projection.equity_base ?? "needs valuation evidence"}</span>
+      </div>
+    </>
+  );
 }
 
 function parseLotAllocations(value: string): Record<string, string> {
   const result: Record<string, string> = {};
   for (const item of value.split(",")) {
-    const [lotId, quantity] = item.split("=").map((part) => part.trim());
-    if (!lotId || !quantity) throw new Error("Lot allocations must use lot-UUID=quantity pairs.");
-    result[lotId] = quantity;
+    const [lotId, allocatedQuantity] = item.split("=").map((part) => part.trim());
+    if (!lotId || !allocatedQuantity) {
+      throw new Error("Lot allocations must use lot-UUID=quantity pairs.");
+    }
+    result[lotId] = allocatedQuantity;
   }
   return result;
 }
@@ -538,5 +812,7 @@ function shortId(value: string): string {
 
 function formatRecord(value: Record<string, string>): string {
   const entries = Object.entries(value);
-  return entries.length ? entries.map(([key, amount]) => `${key} ${amount}`).join(" · ") : "none";
+  return entries.length
+    ? entries.map(([key, amount]) => `${key} ${amount}`).join(" · ")
+    : "none";
 }
