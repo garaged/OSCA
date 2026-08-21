@@ -226,7 +226,7 @@ class ForwardPaperService:
         )
         if existing is not None:
             accounting_event_id = self._post_fill(order, existing)
-            lifecycle = self._ensure_fill_lifecycle(order, existing)
+            replay_lifecycle = self._ensure_fill_lifecycle(order, existing)
             return ForwardStepResult(
                 order_id=order_id,
                 market_evidence_id=market_bar.evidence_id,
@@ -238,7 +238,7 @@ class ForwardPaperService:
                     fee=existing.fee,
                 ),
                 fill=existing,
-                lifecycle_event=lifecycle,
+                lifecycle_event=replay_lifecycle,
                 accounting_event_id=accounting_event_id,
             )
         assumptions = self.store.get_assumptions(order.assumption_id)
@@ -250,12 +250,12 @@ class ForwardPaperService:
             remaining_quantity=remaining,
         )
         if not decision.can_fill:
-            lifecycle = self._terminal_no_fill_lifecycle(order, market_bar, decision)
+            no_fill_lifecycle = self._terminal_no_fill_lifecycle(order, market_bar, decision)
             return ForwardStepResult(
                 order_id=order_id,
                 market_evidence_id=market_bar.evidence_id,
                 decision=decision,
-                lifecycle_event=lifecycle,
+                lifecycle_event=no_fill_lifecycle,
             )
         assert decision.execution_price is not None
         risk, allocations = self._fill_risk(
@@ -268,9 +268,9 @@ class ForwardPaperService:
         )
         self.store.append_risk_decision(risk)
         if risk.status is not RiskDecisionStatus.ALLOW:
-            lifecycle = None
+            risk_lifecycle: OrderLifecycleEvent | None = None
             if risk.status is RiskDecisionStatus.REJECT:
-                lifecycle = self._ensure_lifecycle(
+                risk_lifecycle = self._ensure_lifecycle(
                     order,
                     status=SimulatedOrderStatus.REJECTED,
                     source_id=f"risk:{risk.risk_decision_id}",
@@ -282,19 +282,19 @@ class ForwardPaperService:
                 market_evidence_id=market_bar.evidence_id,
                 decision=FillDecision(can_fill=False, reason=risk.reason),
                 risk_decision=risk,
-                lifecycle_event=lifecycle,
+                lifecycle_event=risk_lifecycle,
             )
         fill = self._make_fill(order, market_bar, decision, allocations)
         accounting_event_id = self._post_fill(order, fill)
         fill = self.store.append_fill(fill)
-        lifecycle = self._ensure_fill_lifecycle(order, fill)
+        fill_lifecycle = self._ensure_fill_lifecycle(order, fill)
         return ForwardStepResult(
             order_id=order_id,
             market_evidence_id=market_bar.evidence_id,
             decision=decision,
             risk_decision=risk,
             fill=fill,
-            lifecycle_event=lifecycle,
+            lifecycle_event=fill_lifecycle,
             accounting_event_id=accounting_event_id,
         )
 
@@ -306,6 +306,16 @@ class ForwardPaperService:
         last_processed_at: datetime,
         source_event_ids: tuple[UUID, ...],
     ) -> PaperRunCheckpoint:
+        existing = self.store.get_checkpoint_by_key(paper_run_id, idempotency_key)
+        if existing is not None:
+            if (
+                existing.last_processed_at != last_processed_at
+                or existing.source_event_ids != source_event_ids
+            ):
+                raise ForwardPaperError(
+                    "checkpoint idempotency key already exists with different recovery evidence"
+                )
+            return existing
         latest = self.store.latest_checkpoint(paper_run_id)
         checkpoint = PaperRunCheckpoint(
             paper_run_id=paper_run_id,
@@ -491,24 +501,37 @@ class ForwardPaperService:
         )
 
     def _post_fill(self, order: SimulatedOrder, fill: SimulatedFill) -> UUID:
-        common = {
-            "instrument_id": order.instrument_id,
-            "quantity": fill.quantity,
-            "unit_price": fill.execution_price,
-            "currency": order.currency,
-            "fee": fill.fee,
-            "effective_at": fill.effective_at,
-            "source_kind": "paper.simulated-fill",
-            "source_id": str(fill.fill_id),
-        }
         try:
             if fill.side is OrderSide.BUY:
-                event = self.accounting.record_acquisition(order.portfolio_id, **common)
+                event = self.accounting.record_acquisition(
+                    order.portfolio_id,
+                    instrument_id=order.instrument_id,
+                    quantity=fill.quantity,
+                    unit_price=fill.execution_price,
+                    currency=order.currency,
+                    fee=fill.fee,
+                    effective_at=fill.effective_at,
+                    source_kind="paper.simulated-fill",
+                    source_id=str(fill.fill_id),
+                )
             else:
+                lot_allocations: dict[UUID, Decimal | str | int] | None = None
+                if fill.lot_allocations:
+                    lot_allocations = {
+                        lot_id: quantity
+                        for lot_id, quantity in fill.lot_allocations.items()
+                    }
                 event = self.accounting.record_disposal(
                     order.portfolio_id,
-                    lot_allocations=fill.lot_allocations or None,
-                    **common,
+                    instrument_id=order.instrument_id,
+                    quantity=fill.quantity,
+                    unit_price=fill.execution_price,
+                    currency=order.currency,
+                    fee=fill.fee,
+                    lot_allocations=lot_allocations,
+                    effective_at=fill.effective_at,
+                    source_kind="paper.simulated-fill",
+                    source_id=str(fill.fill_id),
                 )
         except PortfolioAccountingError as exc:
             raise ForwardPaperError(f"D8 accounting rejected simulated fill: {exc}") from exc
@@ -629,10 +652,10 @@ def _resolve_fill_allocations(
             raise ForwardPaperError(
                 "explicit lot allocations are required for ambiguous simulated disposal"
             )
-        lot_id, lot = next(iter(open_lots.items()))
-        if lot.quantity < fill_quantity:
+        sole_lot_id, sole_lot = next(iter(open_lots.items()))
+        if sole_lot.quantity < fill_quantity:
             raise ForwardPaperError("held lot quantity is insufficient for simulated disposal")
-        return {lot_id: fill_quantity}
+        return {sole_lot_id: fill_quantity}
     consumed: dict[UUID, Decimal] = {}
     for fill in prior_fills:
         for lot_id, quantity in fill.lot_allocations.items():
@@ -642,10 +665,14 @@ def _resolve_fill_allocations(
     for lot_id in sorted(order.lot_allocations, key=str):
         requested = order.lot_allocations[lot_id]
         remaining_order_allocation = requested - consumed.get(lot_id, _ZERO)
-        lot = open_lots.get(lot_id)
-        if lot is None or remaining_order_allocation <= _ZERO:
+        candidate_lot = open_lots.get(lot_id)
+        if candidate_lot is None or remaining_order_allocation <= _ZERO:
             continue
-        quantity = min(remaining_to_allocate, remaining_order_allocation, lot.quantity)
+        quantity = min(
+            remaining_to_allocate,
+            remaining_order_allocation,
+            candidate_lot.quantity,
+        )
         if quantity > _ZERO:
             result[lot_id] = quantity
             remaining_to_allocate -= quantity
