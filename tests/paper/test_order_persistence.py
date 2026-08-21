@@ -22,7 +22,6 @@ from osca.paper.order_contracts import (
 )
 from osca.paper.order_persistence import OrderConflictError, SQLitePaperOrderStore
 
-
 RUN_ID = UUID("10000000-0000-0000-0000-000000000001")
 ACCOUNT_ID = UUID("20000000-0000-0000-0000-000000000002")
 PORTFOLIO_ID = UUID("30000000-0000-0000-0000-000000000003")
