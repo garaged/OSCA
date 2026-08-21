@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
 from osca.desktop_api.paper_forward import (
+    PaperForwardDesktopService,
     _BAR_FIELDS,
     _bar_from_params,
     _health_status,
@@ -22,7 +24,6 @@ from osca.desktop_api.paper_forward import (
     _required_text,
     _required_uuid,
     _safe_result,
-    PaperForwardDesktopService,
 )
 from osca.desktop_api.portfolio_accounting import _allowed
 from osca.desktop_api.profile_lock import ProfileMutationLock
@@ -62,7 +63,7 @@ class PaperEvaluationDesktopService(PaperForwardDesktopService):
         records: list[dict[str, Any]] = []
         for account in accounts:
             controls = _evaluation_call(
-                lambda account_id=account.paper_account_id: store.list_control_decisions(account_id)
+                lambda: store.list_control_decisions(account.paper_account_id)
             )
             records.append(
                 {
@@ -293,7 +294,7 @@ def _evaluation_store(profile_root: Path) -> SQLitePaperEvaluationStore:
     return store
 
 
-def _evaluation_call[T](operation: Any) -> T:
+def _evaluation_call[T](operation: Callable[[], T]) -> T:
     try:
         return operation()
     except sqlite3.Error as exc:
@@ -316,7 +317,8 @@ def _require_active_account(store: SQLitePaperEvaluationStore, account_id: UUID)
     if account.status is not PaperAccountStatus.ACTIVE:
         raise DesktopServiceError(
             "paper_account_inactive",
-            f"paper account must be active before binding a D9 run; status is {account.status.value}",
+            "paper account must be active before binding a D9 run; "
+            f"status is {account.status.value}",
         )
     return account
 
