@@ -146,7 +146,10 @@ test("D8 responsive and accessibility safeguards are explicit", async () => {
   assert.match(css, /focus-visible/);
   assert.match(css, /min-height: 2\.5rem/);
   assert.match(css, /overflow-x: auto/);
-  assert.match(operationsCss, /minmax\(18rem, 1fr\)/);
+  assert.match(operationsCss, /align-items: start/);
+  assert.match(operationsCss, /details\[open\]/);
+  assert.match(operationsCss, /grid-column: 1 \/ -1/);
+  assert.match(operationsCss, /minmax\(12rem, 1fr\)/);
   assert.match(operationsCss, /overflow-wrap: anywhere/);
   assert.match(operationsCss, /forced-colors/);
   assert.match(analyticsCss, /max-width: 28rem/);
