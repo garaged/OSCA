@@ -12,6 +12,10 @@ import {
   restorePortfolio,
   reverseAccountingEvent
 } from "./portfolioOperationsApi";
+import {
+  announcePortfolioWorkspaceChange,
+  subscribePortfolioWorkspaceChanges
+} from "./portfolioWorkspaceEvents";
 
 export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: string }) {
   const [portfolios, setPortfolios] = useState<VirtualPortfolio[]>([]);
@@ -66,8 +70,7 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
       if (firstPosition) {
         setInstrument(firstPosition.instrument_id);
       }
-      const firstLot = loaded.projection.lots[0];
-      setLotId(firstLot?.lot_id ?? "");
+      setLotId("");
       const reversible = loaded.events.find(
         (event) => event.sequence > 1 && event.event_type !== "reversal"
       );
@@ -79,17 +82,26 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
 
   useEffect(() => {
     void reload();
+    return subscribePortfolioWorkspaceChanges("operations", (detail) => {
+      void reload(detail.portfolioId);
+    });
   }, [profileRoot]);
 
   async function selectPortfolio(targetId: string) {
     await reload(targetId);
+    announcePortfolioWorkspaceChange({
+      kind: "selection",
+      portfolioId: targetId,
+      source: "operations"
+    });
   }
 
   async function submitDisposal(event: FormEvent) {
     event.preventDefault();
     if (!profileRoot || !detail) return;
     try {
-      await recordDisposal(profileRoot, detail.portfolio.portfolio_id, {
+      const portfolioId = detail.portfolio.portfolio_id;
+      await recordDisposal(profileRoot, portfolioId, {
         instrumentId: instrument,
         quantity,
         unitPrice,
@@ -99,7 +111,8 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
         ...(lotId ? { lotAllocations: { [lotId]: quantity } } : {})
       });
       setNotice("Simulated disposal journaled. No market order was sent.");
-      await reload(detail.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -109,16 +122,18 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
     event.preventDefault();
     if (!profileRoot || !detail) return;
     try {
+      const portfolioId = detail.portfolio.portfolio_id;
       await recordDividend(
         profileRoot,
-        detail.portfolio.portfolio_id,
+        portfolioId,
         instrument,
         dividendAmount,
         detail.portfolio.base_currency,
         crypto.randomUUID()
       );
       setNotice("Dividend/distribution retained as journal evidence.");
-      await reload(detail.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -128,15 +143,17 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
     event.preventDefault();
     if (!profileRoot || !detail) return;
     try {
+      const portfolioId = detail.portfolio.portfolio_id;
       await recordSplit(
         profileRoot,
-        detail.portfolio.portfolio_id,
+        portfolioId,
         instrument,
         splitFactor,
         crypto.randomUUID()
       );
       setNotice("Split applied once through immutable corporate-action evidence.");
-      await reload(detail.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -146,7 +163,8 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
     event.preventDefault();
     if (!profileRoot || !detail) return;
     try {
-      await recordFork(profileRoot, detail.portfolio.portfolio_id, {
+      const portfolioId = detail.portfolio.portfolio_id;
+      await recordFork(profileRoot, portfolioId, {
         sourceInstrumentId: instrument,
         newInstrumentId: forkInstrument,
         newQuantity: forkQuantity,
@@ -158,7 +176,8 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
           : {})
       });
       setNotice("Fork/distribution retained with explicit source-lot book-cost evidence.");
-      await reload(detail.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -168,9 +187,10 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
     event.preventDefault();
     if (!profileRoot || !detail) return;
     try {
+      const portfolioId = detail.portfolio.portfolio_id;
       await recordFxConversion(
         profileRoot,
-        detail.portfolio.portfolio_id,
+        portfolioId,
         fromCurrency,
         fromAmount,
         toCurrency,
@@ -178,7 +198,8 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
         crypto.randomUUID()
       );
       setNotice("FX cash conversion retained as balanced multi-currency evidence.");
-      await reload(detail.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -188,15 +209,17 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
     event.preventDefault();
     if (!profileRoot || !detail || !eventId) return;
     try {
+      const portfolioId = detail.portfolio.portfolio_id;
       await reverseAccountingEvent(
         profileRoot,
-        detail.portfolio.portfolio_id,
+        portfolioId,
         eventId,
         reversalReason,
         crypto.randomUUID()
       );
       setNotice("Correction appended as a compensating reversal; original evidence was preserved.");
-      await reload(detail.portfolio.portfolio_id);
+      await reload(portfolioId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -212,6 +235,7 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
       );
       setNotice("Independent clone created with source revision lineage.");
       await reload(createdId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId: createdId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -228,6 +252,7 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
       );
       setNotice("Reset created a fresh successor; source journal remains unchanged.");
       await reload(createdId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId: createdId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -254,6 +279,7 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
       const restoredId = await restorePortfolio(profileRoot, restorePath.trim());
       setNotice("Portfolio bundle validated and restored atomically.");
       await reload(restoredId);
+      announcePortfolioWorkspaceChange({ kind: "mutation", portfolioId: restoredId, source: "operations" });
     } catch (error) {
       setNotice(message(error));
     }
@@ -299,12 +325,15 @@ export function PortfolioOperationsSurface({ profileRoot }: { profileRoot?: stri
               <label>
                 Lot allocation
                 <select value={lotId} onChange={(event) => setLotId(event.target.value)}>
-                  <option value="">No explicit lot</option>
+                  <option value="">No explicit lot — exercise fail-closed allocation</option>
                   {detail.projection.lots.filter((lot) => lot.instrument_id === instrument).map((lot) => (
                     <option key={lot.lot_id} value={lot.lot_id}>{lot.lot_id} · {lot.quantity}</option>
                   ))}
                 </select>
               </label>
+              <p className="portfolio-lab-hint">
+                Leave this as “No explicit lot” when multiple open lots can satisfy the disposal to verify that OSCA rejects the ambiguous request.
+              </p>
               <button disabled={detail.projection.positions.length === 0} type="submit">Journal disposal</button>
             </form>
           </details>
