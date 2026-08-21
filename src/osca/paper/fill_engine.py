@@ -31,7 +31,6 @@ def confirm_simulated_order(
         raise ValueError("draft assumption_id does not match execution assumptions")
     if confirmed_at.tzinfo is None or confirmed_at.utcoffset() is None:
         raise ValueError("confirmed_at must be timezone-aware")
-
     confirmation = SimulatedOrderConfirmation(
         draft_id=draft.draft_id,
         draft_version=draft.draft_version,
@@ -52,6 +51,9 @@ def confirm_simulated_order(
         paper_account_id=draft.paper_account_id,
         portfolio_id=draft.portfolio_id,
         instrument_id=draft.instrument_id,
+        timeframe=draft.timeframe,
+        currency=draft.currency,
+        dataset_revision_id=draft.dataset_revision_id,
         side=draft.side,
         order_type=draft.order_type,
         quantity=draft.quantity,
@@ -79,11 +81,9 @@ def evaluate_fill(
     blocked = _eligibility_reason(order, assumptions, market_bar, remaining_quantity)
     if blocked is not None:
         return FillDecision(can_fill=False, reason=blocked)
-
     reference_price = _reference_price(order, market_bar)
     if reference_price is None:
         return FillDecision(can_fill=False, reason="order trigger not reached on eligible bar")
-
     execution_price = _adverse_price(reference_price, order.side, assumptions)
     if order.order_type is SimulatedOrderType.LIMIT:
         assert order.limit_price is not None
@@ -97,11 +97,9 @@ def evaluate_fill(
                 can_fill=False,
                 reason="limit protection blocks execution below sell limit",
             )
-
     quantity = _fillable_quantity(remaining_quantity, assumptions, market_bar)
     if quantity <= Decimal("0"):
         return FillDecision(can_fill=False, reason="eligible bar has no permitted liquidity")
-
     fee = quantity * execution_price * assumptions.fee_bps / _BPS + assumptions.flat_fee
     return FillDecision(
         can_fill=True,
@@ -126,6 +124,13 @@ def _eligibility_reason(
         return "remaining quantity cannot exceed original order quantity"
     if market_bar.instrument_id != order.instrument_id:
         return "market evidence instrument does not match order"
+    if market_bar.timeframe != order.timeframe:
+        return "market evidence timeframe does not match order"
+    if (
+        order.dataset_revision_id is not None
+        and market_bar.dataset_revision_id != order.dataset_revision_id
+    ):
+        return "market evidence dataset revision does not match pinned order revision"
     if not market_bar.complete:
         return "incomplete market bar cannot be fill authority"
     if not market_bar.session_open:
@@ -142,7 +147,6 @@ def _eligibility_reason(
 def _reference_price(order: SimulatedOrder, market_bar: PaperMarketBar) -> Decimal | None:
     if order.order_type in {SimulatedOrderType.MARKET, SimulatedOrderType.SCHEDULED_MARKET}:
         return market_bar.open
-
     if order.order_type is SimulatedOrderType.LIMIT:
         assert order.limit_price is not None
         if order.side is OrderSide.BUY:
@@ -152,7 +156,6 @@ def _reference_price(order: SimulatedOrder, market_bar: PaperMarketBar) -> Decim
         if market_bar.high < order.limit_price:
             return None
         return market_bar.open if market_bar.open > order.limit_price else order.limit_price
-
     assert order.order_type is SimulatedOrderType.STOP
     assert order.stop_price is not None
     if order.side is OrderSide.BUY:
