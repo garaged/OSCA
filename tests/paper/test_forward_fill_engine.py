@@ -52,6 +52,9 @@ def draft(
         "source_kind": OrderSourceKind.MANUAL,
         "source_id": "manual-1",
         "instrument_id": "equity:XNAS:AAPL",
+        "timeframe": "1h",
+        "currency": "USD",
+        "dataset_revision_id": DATASET_ID,
         "side": side,
         "order_type": order_type,
         "quantity": Decimal("10"),
@@ -122,6 +125,19 @@ def test_mid_bar_activation_skips_bar_and_next_market_bar_fills_at_open() -> Non
     assert accepted.can_fill is True
     assert accepted.quantity == Decimal("10")
     assert accepted.execution_price == Decimal("100")
+
+
+def test_market_series_identity_mismatch_blocks_fill() -> None:
+    execution = assumptions()
+    _, order = confirm_simulated_order(draft(), execution, confirmed_at=at(8))
+    wrong_timeframe = bar(9).model_copy(update={"timeframe": "1d"})
+    wrong_revision = bar(9).model_copy(update={"dataset_revision_id": UUID(int=99)})
+    assert "timeframe" in evaluate_fill(
+        order, execution, wrong_timeframe, remaining_quantity=Decimal("10")
+    ).reason
+    assert "revision" in evaluate_fill(
+        order, execution, wrong_revision, remaining_quantity=Decimal("10")
+    ).reason
 
 
 def test_incomplete_or_closed_session_bar_never_fills() -> None:
