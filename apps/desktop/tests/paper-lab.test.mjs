@@ -11,6 +11,7 @@ test("D9 exposes Paper Lab as a first-class simulated research area", async () =
   assert.match(root, /Open and own a validated profile from Workspace before using simulated Paper Lab/);
   assert.match(surface, /SIMULATED ONLY/);
   assert.match(surface, /There is no broker, exchange destination, live order API, or real-capital path/);
+  assert.match(surface, /Retained M8 paper account/);
   assert.match(surface, /Confirm SIMULATED-ONLY order/);
   assert.match(surface, /It is not active until explicitly confirmed/);
   assert.match(surface, /Governed completed-bar evidence/);
@@ -18,8 +19,9 @@ test("D9 exposes Paper Lab as a first-class simulated research area", async () =
   assert.match(surface, /Descriptive only/);
 });
 
-test("D9 renderer calls only the typed desktop paper boundary", async () => {
+test("D9 renderer calls only typed desktop paper and retained-account boundaries", async () => {
   const api = await readFile(new URL("../src/paperForwardApi.ts", import.meta.url), "utf8");
+  const accountApi = await readFile(new URL("../src/paperAccountApi.ts", import.meta.url), "utf8");
   const surface = await readFile(new URL("../src/PaperForwardLab.tsx", import.meta.url), "utf8");
 
   for (const method of [
@@ -36,8 +38,15 @@ test("D9 renderer calls only the typed desktop paper boundary", async () => {
   ]) {
     assert.match(api, new RegExp(method.replaceAll(".", "\\.")));
   }
+  for (const method of [
+    "paper.account.list",
+    "paper.account.create",
+    "paper.account.control.record"
+  ]) {
+    assert.match(accountApi, new RegExp(method.replaceAll(".", "\\.")));
+  }
 
-  const combined = `${api}\n${surface}`;
+  const combined = `${api}\n${accountApi}\n${surface}`;
   assert.match(combined, /invoke<string>\("desktop_request"/);
   assert.doesNotMatch(combined, /@tauri-apps\/plugin-fs|@tauri-apps\/plugin-shell/);
   assert.doesNotMatch(combined, /fetch\s*\(|WebSocket|provider_url|broker\.submit|orders?\.submit/i);
@@ -45,6 +54,21 @@ test("D9 renderer calls only the typed desktop paper boundary", async () => {
   assert.match(api, /autonomous_execution_enabled: false/);
   assert.match(api, /live_order_execution: false/);
   assert.match(api, /real_capital_execution_enabled: false/);
+});
+
+test("D9 uses retained M8 paper accounts instead of synthesizing account identities", async () => {
+  const accountApi = await readFile(new URL("../src/paperAccountApi.ts", import.meta.url), "utf8");
+  const surface = await readFile(new URL("../src/PaperForwardLab.tsx", import.meta.url), "utf8");
+
+  assert.match(accountApi, /export async function listPaperAccounts/);
+  assert.match(accountApi, /export async function createPaperAccount/);
+  assert.match(accountApi, /export async function recordPaperControl/);
+  assert.match(surface, /await createPaperAccount/);
+  assert.match(surface, /await recordPaperControl/);
+  assert.match(surface, /Select retained paper account/);
+  assert.match(surface, /Engage simulated kill switch/);
+  assert.doesNotMatch(surface, /setPaperAccountId\(crypto\.randomUUID\(\)\)/);
+  assert.doesNotMatch(surface, /useState<string>\(\(\) => crypto\.randomUUID\(\)\).*paperAccountId/);
 });
 
 test("D9 keeps immutable draft retention separate from explicit confirmation", async () => {
