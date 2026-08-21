@@ -9,6 +9,10 @@ import {
   runPortfolioScenario,
   ScenarioReport
 } from "./portfolioAnalyticsApi";
+import {
+  announcePortfolioWorkspaceChange,
+  subscribePortfolioWorkspaceChanges
+} from "./portfolioWorkspaceEvents";
 import "./portfolioAnalytics.css";
 
 export function PortfolioAnalyticsSurface({ profileRoot }: { profileRoot?: string }) {
@@ -39,26 +43,39 @@ export function PortfolioAnalyticsSurface({ profileRoot }: { profileRoot?: strin
     }
   }
 
-  useEffect(() => {
+  async function reload(targetId?: string) {
     if (!profileRoot) {
       setPortfolios([]);
       setPortfolioId("");
       setReport(null);
       return;
     }
-    void (async () => {
-      try {
-        const listed = await listPortfolios(profileRoot);
-        setPortfolios(listed.portfolios);
-        const first = listed.portfolios[0];
-        if (first) {
-          setPortfolioId(first.portfolio_id);
-          await loadReport(first.portfolio_id);
-        }
-      } catch (error) {
-        setNotice(message(error));
+    try {
+      const listed = await listPortfolios(profileRoot);
+      setPortfolios(listed.portfolios);
+      const selected =
+        listed.portfolios.find((portfolio) => portfolio.portfolio_id === targetId) ??
+        listed.portfolios.find((portfolio) => portfolio.portfolio_id === portfolioId) ??
+        listed.portfolios[0];
+      if (!selected) {
+        setPortfolioId("");
+        setReport(null);
+        return;
       }
-    })();
+      setPortfolioId(selected.portfolio_id);
+      await loadReport(selected.portfolio_id);
+    } catch (error) {
+      setNotice(message(error));
+    }
+  }
+
+  useEffect(() => {
+    void reload();
+    return subscribePortfolioWorkspaceChanges("analytics", (detail) => {
+      setScenario(null);
+      setBenchmark(null);
+      void reload(detail.portfolioId);
+    });
   }, [profileRoot]);
 
   async function selectPortfolio(targetId: string) {
@@ -66,6 +83,11 @@ export function PortfolioAnalyticsSurface({ profileRoot }: { profileRoot?: strin
     setScenario(null);
     setBenchmark(null);
     await loadReport(targetId);
+    announcePortfolioWorkspaceChange({
+      kind: "selection",
+      portfolioId: targetId,
+      source: "analytics"
+    });
   }
 
   async function capture() {
@@ -74,6 +96,11 @@ export function PortfolioAnalyticsSurface({ profileRoot }: { profileRoot?: strin
       await captureAnalyticsSnapshot(profileRoot, portfolioId);
       setNotice("Complete valuation state captured as immutable analytical evidence.");
       await loadReport(portfolioId);
+      announcePortfolioWorkspaceChange({
+        kind: "mutation",
+        portfolioId,
+        source: "analytics"
+      });
     } catch (error) {
       setNotice(message(error));
     }
