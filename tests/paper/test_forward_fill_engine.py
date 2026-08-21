@@ -2,7 +2,7 @@ from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
-import pytest
+from pytest import raises
 
 from osca.paper.fill_engine import confirm_simulated_order, evaluate_fill
 from osca.paper.order_contracts import (
@@ -97,11 +97,11 @@ def bar(
 
 
 def test_order_contracts_reject_unsupported_field_combinations() -> None:
-    with pytest.raises(ValueError, match="market orders cannot have"):
+    with raises(ValueError, match="market orders cannot have"):
         draft(limit_price=Decimal("100"))
-    with pytest.raises(ValueError, match="limit orders require only limit_price"):
+    with raises(ValueError, match="limit orders require only limit_price"):
         draft(SimulatedOrderType.LIMIT)
-    with pytest.raises(ValueError, match="scheduled market orders require scheduled_at"):
+    with raises(ValueError, match="scheduled market orders require scheduled_at"):
         draft(SimulatedOrderType.SCHEDULED_MARKET)
 
 
