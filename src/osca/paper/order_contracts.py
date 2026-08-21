@@ -64,7 +64,6 @@ class RiskDecisionStatus(StrEnum):
 
 class PaperRunBinding(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.run-binding"] = "osca.paper.run-binding"
     version: Literal["1.0.0"] = "1.0.0"
     binding_id: UUID = Field(default_factory=uuid4)
@@ -82,7 +81,6 @@ class PaperRunBinding(BaseModel):
 
 class ExecutionAssumptions(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.execution-assumptions"] = "osca.paper.execution-assumptions"
     version: Literal["1.0.0"] = "1.0.0"
     assumption_id: UUID = Field(default_factory=uuid4)
@@ -92,11 +90,7 @@ class ExecutionAssumptions(BaseModel):
     fee_bps: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
     flat_fee: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
     latency_ms: int = Field(default=0, ge=0)
-    max_volume_participation: Decimal = Field(
-        default=Decimal("1"),
-        gt=Decimal("0"),
-        le=Decimal("1"),
-    )
+    max_volume_participation: Decimal = Field(default=Decimal("1"), gt=Decimal("0"), le=Decimal("1"))
     require_volume: bool = True
     max_order_notional: Decimal | None = Field(default=None, gt=Decimal("0"))
     max_position_notional: Decimal | None = Field(default=None, gt=Decimal("0"))
@@ -110,7 +104,6 @@ class ExecutionAssumptions(BaseModel):
 
 class SimulatedOrderDraft(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.order-draft"] = "osca.paper.order-draft"
     version: Literal["1.0.0"] = "1.0.0"
     draft_id: UUID = Field(default_factory=uuid4)
@@ -164,7 +157,6 @@ class SimulatedOrderDraft(BaseModel):
                 raise ValueError("approved strategy drafts require approved_candidate_id")
         elif self.approved_candidate_id is not None:
             raise ValueError("manual drafts cannot claim approved_candidate_id")
-
         if self.order_type is SimulatedOrderType.MARKET:
             if self.limit_price is not None or self.stop_price is not None:
                 raise ValueError("market orders cannot have limit or stop prices")
@@ -185,12 +177,14 @@ class SimulatedOrderDraft(BaseModel):
                 raise ValueError("scheduled market orders require scheduled_at")
             if self.limit_price is not None or self.stop_price is not None:
                 raise ValueError("scheduled market orders cannot have trigger prices")
-
         if self.expires_at is not None and self.expires_at <= self.created_at:
             raise ValueError("expires_at must be after created_at")
-        if self.scheduled_at is not None and self.expires_at is not None:
-            if self.expires_at <= self.scheduled_at:
-                raise ValueError("expires_at must be after scheduled_at")
+        if (
+            self.scheduled_at is not None
+            and self.expires_at is not None
+            and self.expires_at <= self.scheduled_at
+        ):
+            raise ValueError("expires_at must be after scheduled_at")
         if self.side is OrderSide.BUY and self.lot_allocations:
             raise ValueError("buy orders cannot carry disposal lot allocations")
         if sum(self.lot_allocations.values(), Decimal("0")) > self.quantity:
@@ -200,7 +194,6 @@ class SimulatedOrderDraft(BaseModel):
 
 class SimulatedOrderConfirmation(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.order-confirmation"] = "osca.paper.order-confirmation"
     version: Literal["1.0.0"] = "1.0.0"
     confirmation_id: UUID = Field(default_factory=uuid4)
@@ -220,7 +213,6 @@ class SimulatedOrderConfirmation(BaseModel):
 
 class SimulatedOrder(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.simulated-order"] = "osca.paper.simulated-order"
     version: Literal["1.0.0"] = "1.0.0"
     order_id: UUID = Field(default_factory=uuid4)
@@ -268,7 +260,6 @@ class SimulatedOrder(BaseModel):
 
 class PaperMarketBar(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.market-bar"] = "osca.paper.market-bar"
     version: Literal["1.0.0"] = "1.0.0"
     evidence_id: UUID = Field(default_factory=uuid4)
@@ -320,7 +311,6 @@ class PaperMarketBar(BaseModel):
 
 class SimulatedFill(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.simulated-fill"] = "osca.paper.simulated-fill"
     version: Literal["1.0.0"] = "1.0.0"
     fill_id: UUID = Field(default_factory=uuid4)
@@ -352,7 +342,6 @@ class SimulatedFill(BaseModel):
 
 class FillDecision(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     can_fill: bool
     reason: str
     quantity: Decimal = Decimal("0")
@@ -376,7 +365,6 @@ class FillDecision(BaseModel):
 
 class PaperRiskDecision(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.risk-decision"] = "osca.paper.risk-decision"
     version: Literal["1.0.0"] = "1.0.0"
     risk_decision_id: UUID = Field(default_factory=uuid4)
@@ -398,7 +386,6 @@ class PaperRiskDecision(BaseModel):
 
 class OrderLifecycleEvent(BaseModel):
     model_config = ConfigDict(frozen=True)
-
     family: Literal["osca.paper.order-lifecycle"] = "osca.paper.order-lifecycle"
     version: Literal["1.0.0"] = "1.0.0"
     event_id: UUID = Field(default_factory=uuid4)
