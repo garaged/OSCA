@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any
 from uuid import UUID
 
 from pydantic import ValidationError
@@ -43,8 +43,6 @@ from osca.paper.order_persistence import (
     OrderPersistenceError,
 )
 from osca.paper.services import decide_paper_control, evaluate_paper_health_gate
-
-T = TypeVar("T")
 
 
 class PaperForwardDesktopService(PortfolioAnalyticsDesktopService):
@@ -171,7 +169,7 @@ class PaperForwardDesktopService(PortfolioAnalyticsDesktopService):
                     params,
                     "max_position_notional",
                 ),
-                created_at=_optional_datetime(params, "created_at") or datetime.now().astimezone(),
+                created_at=_optional_datetime(params, "created_at") or datetime.now(UTC),
             )
         )
         with ProfileMutationLock(profile_root):
@@ -243,7 +241,10 @@ class PaperForwardDesktopService(PortfolioAnalyticsDesktopService):
             None,
         )
         if draft is None:
-            raise DesktopServiceError("paper_not_found", "retained simulated-order draft was not found")
+            raise DesktopServiceError(
+                "paper_not_found",
+                "retained simulated-order draft was not found",
+            )
         control = decide_paper_control(
             paper_account_id=draft.paper_account_id,
             account_paused=_optional_bool(params, "account_paused", False),
@@ -446,7 +447,10 @@ _BAR_FIELDS = {
 
 def _paper_service(profile_root: Path) -> ForwardPaperService:
     if not profile_root.is_dir():
-        raise DesktopServiceError("profile_not_found", f"profile directory does not exist: {profile_root}")
+        raise DesktopServiceError(
+            "profile_not_found",
+            f"profile directory does not exist: {profile_root}",
+        )
     return _paper_call(lambda: ForwardPaperService.for_profile(profile_root))
 
 
@@ -500,7 +504,7 @@ def _draft_from_params(params: dict[str, Any]) -> SimulatedOrderDraft:
             expires_at=_optional_datetime(params, "expires_at"),
             assumption_id=_required_uuid(params, "assumption_id"),
             lot_allocations=_optional_lot_allocations(params) or {},
-            created_at=_optional_datetime(params, "created_at") or datetime.now().astimezone(),
+            created_at=_optional_datetime(params, "created_at") or datetime.now(UTC),
         )
     )
 
@@ -616,7 +620,10 @@ def _uuid_list(params: dict[str, Any], name: str) -> tuple[UUID, ...]:
         try:
             result.append(UUID(item))
         except ValueError as exc:
-            raise DesktopServiceError("invalid_parameters", f"{name}[{index}] must be a UUID") from exc
+            raise DesktopServiceError(
+                "invalid_parameters",
+                f"{name}[{index}] must be a UUID",
+            ) from exc
     return tuple(result)
 
 
@@ -646,7 +653,7 @@ def _comparison_metrics(params: dict[str, Any]) -> tuple[ComparisonMetric, ...]:
         metric_params = dict(item)
         metrics.append(
             _model_call(
-                lambda metric_params=metric_params, index=index: ComparisonMetric(
+                lambda metric_params=metric_params: ComparisonMetric(
                     name=_required_text(metric_params, "name", limit=200),
                     backtest_value=_required_decimal(metric_params, "backtest_value"),
                     forward_value=_required_decimal(metric_params, "forward_value"),
