@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from decimal import Decimal
+from uuid import NAMESPACE_URL, uuid5
 
 from osca.paper.order_contracts import (
     ExecutionAssumptions,
@@ -31,7 +32,13 @@ def confirm_simulated_order(
         raise ValueError("draft assumption_id does not match execution assumptions")
     if confirmed_at.tzinfo is None or confirmed_at.utcoffset() is None:
         raise ValueError("confirmed_at must be timezone-aware")
+    confirmation_id = uuid5(
+        NAMESPACE_URL,
+        f"osca-paper-confirmation:{draft.draft_id}:{draft.draft_version}",
+    )
+    order_id = uuid5(NAMESPACE_URL, f"osca-paper-order:{confirmation_id}")
     confirmation = SimulatedOrderConfirmation(
+        confirmation_id=confirmation_id,
         draft_id=draft.draft_id,
         draft_version=draft.draft_version,
         paper_run_id=draft.paper_run_id,
@@ -44,6 +51,7 @@ def confirm_simulated_order(
         activation_floor = draft.scheduled_at
     eligible_at = activation_floor + timedelta(milliseconds=assumptions.latency_ms)
     order = SimulatedOrder(
+        order_id=order_id,
         confirmation_id=confirmation.confirmation_id,
         draft_id=draft.draft_id,
         draft_version=draft.draft_version,
