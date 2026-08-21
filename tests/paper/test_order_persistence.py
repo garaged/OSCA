@@ -15,6 +15,7 @@ from osca.paper.order_contracts import (
     OrderSourceKind,
     PaperRunBinding,
     SimulatedFill,
+    SimulatedOrder,
     SimulatedOrderDraft,
     SimulatedOrderStatus,
     SimulatedOrderType,
@@ -64,7 +65,9 @@ def draft() -> SimulatedOrderDraft:
     )
 
 
-def prepared(tmp_path: Path) -> tuple[SQLitePaperOrderStore, SimulatedOrderDraft, object]:
+def prepared(
+    tmp_path: Path,
+) -> tuple[SQLitePaperOrderStore, SimulatedOrderDraft, SimulatedOrder]:
     persistence = store(tmp_path)
     persistence.append_binding(
         PaperRunBinding(
@@ -84,7 +87,6 @@ def prepared(tmp_path: Path) -> tuple[SQLitePaperOrderStore, SimulatedOrderDraft
 def test_schema_initialization_is_idempotent_and_tables_are_append_only(tmp_path: Path) -> None:
     persistence, _, order = prepared(tmp_path)
     persistence.initialize()
-
     with sqlite3.connect(persistence.database_path) as connection:
         with pytest.raises(sqlite3.IntegrityError, match="append-only"):
             connection.execute(
@@ -108,11 +110,9 @@ def test_binding_and_draft_retries_are_idempotent_but_conflicts_fail(tmp_path: P
     )
     assert persistence.append_binding(binding) == binding
     assert persistence.append_binding(binding) == binding
-
     conflicting = binding.model_copy(update={"portfolio_id": UUID(int=9)})
     with pytest.raises(OrderConflictError, match="different content"):
         persistence.append_binding(conflicting)
-
     order_draft = draft()
     persistence.append_draft(order_draft)
     assert persistence.append_draft(order_draft) == order_draft
@@ -125,10 +125,8 @@ def test_confirmation_and_order_are_atomic_and_retriable(tmp_path: Path) -> None
     execution = persistence.append_assumptions(assumptions())
     order_draft = persistence.append_draft(draft())
     confirmation, order = confirm_simulated_order(order_draft, execution, confirmed_at=at(9))
-
     first = persistence.append_confirmation_and_order(confirmation, order)
     second = persistence.append_confirmation_and_order(confirmation, order)
-
     assert first == second
     assert persistence.get_order(order.order_id) == order
     assert persistence.list_orders(RUN_ID) == (order,)
@@ -146,7 +144,6 @@ def test_lifecycle_and_fill_sequences_are_append_only_and_source_idempotent(tmp_
     )
     assert persistence.append_lifecycle(lifecycle) == lifecycle
     assert persistence.append_lifecycle(lifecycle) == lifecycle
-
     fill = SimulatedFill(
         order_id=order.order_id,
         paper_run_id=RUN_ID,
@@ -169,7 +166,6 @@ def test_lifecycle_and_fill_sequences_are_append_only_and_source_idempotent(tmp_
     assert persistence.next_fill_sequence(order.order_id) == 2
     assert persistence.list_lifecycle(order.order_id) == (lifecycle,)
     assert persistence.list_fills(order.order_id) == (fill,)
-
     with pytest.raises(OrderConflictError, match="different content"):
         persistence.append_fill(fill.model_copy(update={"execution_price": Decimal("102")}))
 
@@ -195,5 +191,4 @@ def test_checkpoints_are_retriable_and_latest_sequence_is_recovered(tmp_path: Pa
     persistence.append_checkpoint(first)
     persistence.append_checkpoint(first)
     persistence.append_checkpoint(second)
-
     assert persistence.latest_checkpoint(RUN_ID) == second
