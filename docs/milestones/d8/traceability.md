@@ -16,4 +16,8 @@
 | REQ-0391-0392 | Python `ProfileMutationLock`, Rust broker mutation allow-list/tests, idempotent accounting schema initialization, M8 paper store left unchanged |
 | REQ-0393 | semantic `portfolio_accounting.py` / `portfolio_analytics.py`; sidecar routes through semantic services; no `d8_service.py` added |
 
-Automated evidence is implemented, but final gate status remains open until temporary diagnostic lint/type scopes are removed and hosted CI passes on the final head. `validation-evidence.md` and `exit-review.md` must only claim completed gates after hosted CI and supported-platform manual acceptance actually pass.
+## Validation closure
+
+D8 automated and manual evidence is complete. Exact-head implementation validation passed on `620e8c9cdae188ca55945689c849b73e743c008a` through Quality run #1183 and Desktop Foundation run #319, including supported macOS ARM64 and Linux x86-64 contributor/package coverage. The user completed the full supported-platform manual acceptance procedure successfully.
+
+See `validation-evidence.md` for the retained gate/manual evidence and `exit-review.md` for the accepted D8 exit decision.
