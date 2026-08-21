@@ -263,6 +263,8 @@ class ForwardPaperService:
             decision,
             assumptions,
             prior_fills=self.store.list_fills(order_id),
+            risk_source_id=f"bar:{market_bar.evidence_id}",
+            checked_at=market_bar.available_at,
         )
         self.store.append_risk_decision(risk)
         if risk.status is not RiskDecisionStatus.ALLOW:
@@ -317,6 +319,8 @@ class ForwardPaperService:
 
     def _activation_risk(self, order: SimulatedOrder) -> PaperRiskDecision:
         projection = self.accounting.project(order.portfolio_id)
+        source_id = f"activation:{order.confirmation_id}"
+        checked_at = order.confirmed_at
         if order.side is OrderSide.SELL:
             matching = [
                 lot
@@ -327,14 +331,28 @@ class ForwardPaperService:
             ]
             available = sum((lot.quantity for lot in matching), _ZERO)
             if available < order.quantity:
-                return _risk(order, RiskDecisionStatus.REJECT, "insufficient held quantity")
+                return _risk(
+                    order,
+                    RiskDecisionStatus.REJECT,
+                    "insufficient held quantity",
+                    source_id=source_id,
+                    checked_at=checked_at,
+                )
             if len(matching) > 1 and not order.lot_allocations:
                 return _risk(
                     order,
                     RiskDecisionStatus.REJECT,
                     "explicit lot allocations are required for ambiguous simulated disposal",
+                    source_id=source_id,
+                    checked_at=checked_at,
                 )
-        return _risk(order, RiskDecisionStatus.ALLOW, "activation risk controls passed")
+        return _risk(
+            order,
+            RiskDecisionStatus.ALLOW,
+            "activation risk controls passed",
+            source_id=source_id,
+            checked_at=checked_at,
+        )
 
     def _fill_risk(
         self,
@@ -343,6 +361,8 @@ class ForwardPaperService:
         assumptions: ExecutionAssumptions,
         *,
         prior_fills: tuple[SimulatedFill, ...],
+        risk_source_id: str,
+        checked_at: datetime,
     ) -> tuple[PaperRiskDecision, dict[UUID, Decimal]]:
         assert decision.execution_price is not None
         projection = self.accounting.project(order.portfolio_id)
@@ -357,6 +377,8 @@ class ForwardPaperService:
                     order,
                     RiskDecisionStatus.REJECT,
                     "maximum simulated order notional exceeded",
+                    source_id=risk_source_id,
+                    checked_at=checked_at,
                 ),
                 {},
             )
@@ -364,7 +386,16 @@ class ForwardPaperService:
             required = notional + decision.fee
             cash = projection.cash_by_currency.get(order.currency, _ZERO)
             if cash < required:
-                return _risk(order, RiskDecisionStatus.REJECT, "insufficient simulated cash"), {}
+                return (
+                    _risk(
+                        order,
+                        RiskDecisionStatus.REJECT,
+                        "insufficient simulated cash",
+                        source_id=risk_source_id,
+                        checked_at=checked_at,
+                    ),
+                    {},
+                )
             position_quantity = sum(
                 (
                     position.quantity
@@ -384,10 +415,21 @@ class ForwardPaperService:
                         order,
                         RiskDecisionStatus.REJECT,
                         "maximum simulated position notional exceeded",
+                        source_id=risk_source_id,
+                        checked_at=checked_at,
                     ),
                     {},
                 )
-            return _risk(order, RiskDecisionStatus.ALLOW, "fill risk controls passed"), {}
+            return (
+                _risk(
+                    order,
+                    RiskDecisionStatus.ALLOW,
+                    "fill risk controls passed",
+                    source_id=risk_source_id,
+                    checked_at=checked_at,
+                ),
+                {},
+            )
         try:
             allocations = _resolve_fill_allocations(
                 order,
@@ -396,8 +438,26 @@ class ForwardPaperService:
                 prior_fills,
             )
         except ForwardPaperError as exc:
-            return _risk(order, RiskDecisionStatus.REJECT, str(exc)), {}
-        return _risk(order, RiskDecisionStatus.ALLOW, "fill risk controls passed"), allocations
+            return (
+                _risk(
+                    order,
+                    RiskDecisionStatus.REJECT,
+                    str(exc),
+                    source_id=risk_source_id,
+                    checked_at=checked_at,
+                ),
+                {},
+            )
+        return (
+            _risk(
+                order,
+                RiskDecisionStatus.ALLOW,
+                "fill risk controls passed",
+                source_id=risk_source_id,
+                checked_at=checked_at,
+            ),
+            allocations,
+        )
 
     def _make_fill(
         self,
@@ -600,16 +660,19 @@ def _risk(
     order: SimulatedOrder,
     status: RiskDecisionStatus,
     reason: str,
+    *,
+    source_id: str,
+    checked_at: datetime,
 ) -> PaperRiskDecision:
     return PaperRiskDecision(
         risk_decision_id=uuid5(
             NAMESPACE_URL,
-            f"osca-paper-risk:{order.order_id}:{status}:{reason}",
+            f"osca-paper-risk:{order.order_id}:{source_id}:{status}:{reason}",
         ),
         order_id=order.order_id,
         status=status,
         reason=reason,
-        checked_at=_utc(None),
+        checked_at=_utc(checked_at),
     )
 
 
