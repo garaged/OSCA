@@ -194,7 +194,7 @@ def test_checkpoint_retry_is_idempotent_and_conflicts_fail(tmp_path: Path) -> No
 def test_restart_replays_fill_without_duplicate_accounting(tmp_path: Path) -> None:
     service, portfolio_id = prepared(tmp_path)
     confirmed = confirmed_order(service, portfolio_id)
-    market_bar = bar(10, close="100")
+    market_bar = bar(10)
     control = decide_paper_control(paper_account_id=ACCOUNT_ID)
 
     first = service.process_bar(
