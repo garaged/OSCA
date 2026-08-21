@@ -3,7 +3,7 @@ from decimal import Decimal
 from pathlib import Path
 from uuid import UUID
 
-from pytest import raises
+import pytest
 
 from osca.paper.contracts import HealthGateStatus
 from osca.paper.forward_service import ForwardPaperError, ForwardPaperService
@@ -232,7 +232,7 @@ def test_pause_and_blocked_health_fail_closed_before_forward_processing(tmp_path
         account_paused=True,
         reason="paper account paused",
     )
-    with raises(ForwardPaperError, match="paper control blocks"):
+    with pytest.raises(ForwardPaperError, match="paper control blocks"):
         service.confirm_draft(order_draft, confirmed_at=at(9), control_decision=paused)
 
     confirmed = service.confirm_draft(
@@ -245,7 +245,7 @@ def test_pause_and_blocked_health_fail_closed_before_forward_processing(tmp_path
         data_status=HealthGateStatus.BLOCKED,
         operational_status=HealthGateStatus.HEALTHY,
     )
-    with raises(ForwardPaperError, match="health gate blocks"):
+    with pytest.raises(ForwardPaperError, match="health gate blocks"):
         service.process_bar(
             confirmed.order.order_id,
             bar(10),
