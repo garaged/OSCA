@@ -28,6 +28,13 @@ def _text(value: str, name: str, *, limit: int = 200) -> str:
     return normalized
 
 
+def _currency(value: str) -> str:
+    normalized = value.strip().upper()
+    if len(normalized) != 3 or not normalized.isalpha():
+        raise ValueError("currency must be a three-letter alphabetic code")
+    return normalized
+
+
 class OrderSide(StrEnum):
     BUY = "buy"
     SELL = "sell"
@@ -119,6 +126,9 @@ class SimulatedOrderDraft(BaseModel):
     source_id: str
     approved_candidate_id: UUID | None = None
     instrument_id: str
+    timeframe: str
+    currency: str
+    dataset_revision_id: UUID | None = None
     side: OrderSide
     order_type: SimulatedOrderType
     quantity: Decimal = Field(gt=Decimal("0"))
@@ -135,10 +145,15 @@ class SimulatedOrderDraft(BaseModel):
     def validate_source_id(cls, value: str) -> str:
         return _text(value, "source_id")
 
-    @field_validator("instrument_id")
+    @field_validator("instrument_id", "timeframe")
     @classmethod
-    def validate_instrument_id(cls, value: str) -> str:
-        return _text(value, "instrument_id")
+    def validate_market_identity(cls, value: str) -> str:
+        return _text(value, "market identity")
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, value: str) -> str:
+        return _currency(value)
 
     @field_validator("scheduled_at", "expires_at", "created_at")
     @classmethod
@@ -227,6 +242,9 @@ class SimulatedOrder(BaseModel):
     paper_account_id: UUID
     portfolio_id: UUID
     instrument_id: str
+    timeframe: str
+    currency: str
+    dataset_revision_id: UUID | None = None
     side: OrderSide
     order_type: SimulatedOrderType
     quantity: Decimal = Field(gt=Decimal("0"))
@@ -240,10 +258,15 @@ class SimulatedOrder(BaseModel):
     eligible_at: datetime
     status: SimulatedOrderStatus = SimulatedOrderStatus.CONFIRMED
 
-    @field_validator("instrument_id")
+    @field_validator("instrument_id", "timeframe")
     @classmethod
-    def validate_instrument_id(cls, value: str) -> str:
-        return _text(value, "instrument_id")
+    def validate_market_identity(cls, value: str) -> str:
+        return _text(value, "market identity")
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, value: str) -> str:
+        return _currency(value)
 
     @field_validator("scheduled_at", "expires_at", "confirmed_at", "eligible_at")
     @classmethod
@@ -330,6 +353,7 @@ class SimulatedFill(BaseModel):
     quantity: Decimal = Field(gt=Decimal("0"))
     execution_price: Decimal = Field(gt=Decimal("0"))
     fee: Decimal = Field(ge=Decimal("0"))
+    lot_allocations: dict[UUID, Decimal] = Field(default_factory=dict)
     effective_at: datetime
     source_id: str
 
@@ -342,6 +366,22 @@ class SimulatedFill(BaseModel):
     @classmethod
     def validate_effective_at(cls, value: datetime) -> datetime:
         return _aware(value, "effective_at")
+
+    @field_validator("lot_allocations")
+    @classmethod
+    def validate_fill_allocations(cls, value: dict[UUID, Decimal]) -> dict[UUID, Decimal]:
+        if any(quantity <= Decimal("0") for quantity in value.values()):
+            raise ValueError("fill lot allocations must be positive")
+        return value
+
+    @model_validator(mode="after")
+    def validate_fill_allocated_quantity(self) -> Self:
+        if self.side is OrderSide.BUY and self.lot_allocations:
+            raise ValueError("buy fills cannot contain disposal lot allocations")
+        allocated = sum(self.lot_allocations.values(), Decimal("0"))
+        if allocated not in {Decimal("0"), self.quantity}:
+            raise ValueError("fill lot allocations must equal fill quantity when supplied")
+        return self
 
 
 class FillDecision(BaseModel):
