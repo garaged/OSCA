@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
 from uuid import NAMESPACE_URL, UUID, uuid5
 
@@ -24,7 +25,7 @@ def append_completed_bar_mark(
     price_currency: str,
     fx_rate_to_base: Decimal | None = None,
     fx_source: str | None = None,
-    fx_effective_at=None,
+    fx_effective_at: datetime | None = None,
 ) -> ValuationObservation:
     """Retain a replay-safe close mark from one complete governed bar.
 
@@ -35,12 +36,13 @@ def append_completed_bar_mark(
     if not market_bar.complete:
         raise ForwardEvidenceError("incomplete market bar cannot be valuation authority")
     projection = accounting.project(portfolio_id)
+    normalized_currency = price_currency.strip().upper()
     quantity = sum(
         (
             position.quantity
             for position in projection.positions
             if position.instrument_id == market_bar.instrument_id
-            and position.currency == price_currency.upper()
+            and position.currency == normalized_currency
         ),
         _ZERO,
     )
@@ -60,7 +62,7 @@ def append_completed_bar_mark(
         asset_id=market_bar.instrument_id,
         quantity=quantity,
         unit_price=market_bar.close,
-        price_currency=price_currency,
+        price_currency=normalized_currency,
         price_source=f"paper-bar:{market_bar.source_id}",
         price_effective_at=market_bar.bar_ended_at,
         fx_rate_to_base=fx_rate_to_base,
