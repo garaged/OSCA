@@ -45,7 +45,7 @@ Expected:
 2. Create a portfolio named `D9 Manual Acceptance`.
 3. Use base currency `USD` and starting cash `10000`.
 4. Return to `Paper Lab`.
-5. Select that portfolio in `Run and execution assumptions`.
+5. Select that portfolio in `Run, retained account and execution assumptions`.
 
 Expected:
 
@@ -53,25 +53,34 @@ Expected:
 - D9 does not create a second cash balance or paper-only portfolio ledger;
 - later fills must alter this D8 portfolio through normal accounting events.
 
-## 2. Retain a paper run and execution assumptions
+## 2. Create/select the retained M8 paper account and retain a run
 
-Keep the generated paper-run, paper-account, and assumption UUIDs. Start with:
+Paper Lab must use a retained M8 `PaperAccount` control identity. It must not synthesize an arbitrary paper-account UUID for a run.
 
-- spread: `0` bps;
-- slippage: `0` bps;
-- fee: `0` bps;
-- flat fee: `0`;
-- latency: `0` ms;
-- max volume participation: `1`;
-- optional notional limits empty.
-
-Select `Retain run + assumptions`.
+1. In `New paper account name`, enter `D9 Manual Acceptance Paper`.
+2. Select `Create retained paper account`.
+3. Confirm the new account is selected under `Retained M8 paper account` and shows base currency `USD` and status `active`.
+4. Record its paper-account UUID with your acceptance notes.
+5. Select `Allow simulation` and confirm the displayed retained control becomes `allow`.
+6. Keep the generated paper-run and assumption UUIDs.
+7. Start execution assumptions with:
+   - spread: `0` bps;
+   - slippage: `0` bps;
+   - fee: `0` bps;
+   - flat fee: `0`;
+   - latency: `0` ms;
+   - max volume participation: `1`;
+   - optional notional limits empty.
+8. Select `Retain run + assumptions`.
 
 Expected:
 
+- the account exists as retained M8 paper metadata and remains selectable after a refresh/restart;
+- its control decision is retained separately from D8 balances;
 - success feedback appears;
 - run inspection becomes available;
 - the retained D8 cash remains `USD 10000`;
+- the paper-account record does not duplicate cash, positions, lots, P&L, or fees;
 - no network/provider activity is required.
 
 ## 3. Verify immutable draft and explicit confirmation
@@ -107,6 +116,7 @@ Expected:
 
 - a confirmed simulated order appears;
 - confirmation is a separate action from draft retention;
+- confirmation uses the retained paper-account control decision rather than caller-provided pause/kill booleans;
 - no venue, account number, API token, broker, exchange, or external destination is requested;
 - lifecycle begins with explicit confirmation and risk evidence.
 
@@ -179,7 +189,7 @@ For any non-base-currency scenario, omit required FX evidence and confirm valuat
 
 ## 7. Deterministic partial fills and liquidity evidence
 
-Start a fresh simulated run against a fresh D8 portfolio or reset test state. Retain assumptions with:
+Start a fresh simulated run against a fresh D8 portfolio or reset test state. Reuse/select a retained active paper account and retain assumptions with:
 
 - max volume participation `0.10`;
 - volume required;
@@ -303,9 +313,9 @@ Expected:
 - only the remaining quantity is cancelled;
 - history is not rewritten.
 
-## 14. Risk gates
+## 14. Risk gates and retained paper-account controls
 
-Exercise at least these cases:
+Exercise at least these portfolio/order risk cases:
 
 - buy whose required simulated cash exceeds D8 cash;
 - sell whose requested quantity exceeds held quantity;
@@ -317,6 +327,25 @@ Expected:
 - each case rejects/fails closed with a retained reason;
 - rejected fill does not mutate D8 accounting;
 - no hidden margin/borrowing behavior appears.
+
+Now validate the retained M8 control identity:
+
+1. Retain a new draft but do not confirm it yet.
+2. Select `Pause simulation` for the selected retained paper account.
+3. Attempt `Confirm SIMULATED-ONLY order`.
+4. Confirm the order is not activated and D8 accounting is unchanged.
+5. Select `Allow simulation`, then confirm the same retained draft; confirmation should now succeed if its normal risk gates pass.
+6. Before processing a later eligible bar, select `Engage simulated kill switch`.
+7. Process the bar and confirm no fill/accounting mutation occurs.
+8. Select `Allow simulation` again and process a later eligible bar.
+
+Expected:
+
+- pause and kill-switch decisions are retained paper-control evidence;
+- confirmation and bar processing derive control state from that retained account server-side;
+- blocked controls cannot be bypassed by renderer parameters;
+- `Allow simulation` creates a later retained allow decision and permits only local simulated processing;
+- no control decision can authorize a live/external order.
 
 ## 15. Explicit lot allocation on sell
 
@@ -361,6 +390,7 @@ Restart OSCA and reopen the same profile/run.
 
 Expected:
 
+- the retained paper account and latest control decision remain selectable/inspectable;
 - retained orders/fills/lifecycle/checkpoint remain available;
 - already-posted fills are not duplicated;
 - deterministic processing can continue from later evidence.
@@ -387,13 +417,13 @@ Expected:
 
 ## 18. Profile ownership and isolation
 
-With the original profile open/owned in the first OSCA window/process, attempt a D9 write from another window/process where supported.
+With the original profile open/owned in the first OSCA window/process, attempt a D9 write from another window/process where supported, including a paper-account/control mutation.
 
 Expected:
 
 - mutation is blocked by profile ownership;
 - the first owner's retained state is not corrupted;
-- `paper.run.inspect` remains a bounded research read when the product/session boundary permits it.
+- `paper.account.list` and `paper.run.inspect` remain bounded research reads when the product/session boundary permits them.
 
 Release the original owner, then reopen from the other process and repeat a safe mutation.
 
@@ -405,13 +435,13 @@ Open a clean second profile.
 
 Expected:
 
-- no D9 run/order/fill/accounting evidence leaks across profiles.
+- no retained paper-account/control/run/order/fill/accounting evidence leaks across profiles.
 
 ## 19. Accessibility and responsive review
 
 Validate Paper Lab with keyboard only:
 
-- traverse navigation, forms, confirmation, order selection, cancellation, bar controls, checkpoint and comparison;
+- traverse navigation, retained-account creation/selection, allow/pause/kill-switch controls, forms, confirmation, order selection, cancellation, bar controls, checkpoint and comparison;
 - focus is visibly indicated;
 - all controls remain operable without pointer input.
 
@@ -450,6 +480,7 @@ Must remain absent:
 Must remain explicit:
 
 - `SIMULATED ONLY`;
+- retained paper-account/control identity;
 - local/governed evidence identity;
 - execution assumptions;
 - lifecycle/fill/accounting provenance;
