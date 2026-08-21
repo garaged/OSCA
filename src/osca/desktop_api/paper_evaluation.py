@@ -47,8 +47,7 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
         accounts = _evaluation_call(store.list_paper_accounts)
         records: list[dict[str, Any]] = []
         for account in accounts:
-            account_id = account.paper_account_id
-            controls = _evaluation_call(lambda: store.list_control_decisions(account_id))
+            controls = _list_control_decisions(store, account.paper_account_id)
             records.append(
                 {
                     "account": account.model_dump(mode="json"),
@@ -164,7 +163,7 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
         run_id = paper_forward._required_uuid(params, "paper_run_id")
         store = _evaluation_store(profile_root)
         account = _require_account(store, account_id)
-        controls = _evaluation_call(lambda: store.list_control_decisions(account_id))
+        controls = _list_control_decisions(store, account_id)
         health_gates = _evaluation_call(lambda: store.list_health_gates(run_id))
         result["paper_account"] = account.model_dump(mode="json")
         result["control_decisions"] = [item.model_dump(mode="json") for item in controls]
@@ -309,6 +308,13 @@ def _evaluation_call[T](operation: Callable[[], T]) -> T:
         raise DesktopServiceError("paper_error", f"paper metadata store failed: {exc}") from exc
 
 
+def _list_control_decisions(
+    store: SQLitePaperEvaluationStore,
+    account_id: UUID,
+) -> tuple[PaperControlDecision, ...]:
+    return _evaluation_call(lambda: store.list_control_decisions(account_id))
+
+
 def _require_account(store: SQLitePaperEvaluationStore, account_id: UUID) -> PaperAccount:
     accounts = _evaluation_call(store.list_paper_accounts)
     account = next((item for item in accounts if item.paper_account_id == account_id), None)
@@ -336,7 +342,7 @@ def _effective_control(
     account_id: UUID,
 ) -> PaperControlDecision:
     account = _require_account(store, account_id)
-    controls = _evaluation_call(lambda: store.list_control_decisions(account_id))
+    controls = _list_control_decisions(store, account_id)
     latest = controls[-1] if controls else None
     if account.status is PaperAccountStatus.CLOSED:
         if latest is not None and latest.action is PaperControlAction.PAUSE:
