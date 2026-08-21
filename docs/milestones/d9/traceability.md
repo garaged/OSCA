@@ -1,20 +1,26 @@
 # D9 Traceability — Forward Paper Evaluation and Simulated Orders
 
-| Authority / requirement | Planned implementation evidence |
+| Authority / requirement | Implemented evidence |
 |---|---|
-| D-027, D-028 | shared event-driven paper domain; immutable simulated order/fill events; D8 journal posting |
-| ADR-0046 | Python fill/risk/accounting authority; typed desktop adapter; Rust profile ownership only |
-| REQ-0394 | paper-account to D8-portfolio binding contracts/persistence/tests |
-| REQ-0395-0397 | immutable order drafts/versions, confirmation, order-type validation tests |
-| REQ-0398-0400 | point-in-time eligibility and deterministic market/limit/stop golden fill tests |
-| REQ-0401-0403 | volume participation/partial fills, explicit assumptions, market-calendar and 24/7 tests |
-| REQ-0404-0405 | append-only lifecycle/idempotency/cancel/expiry/rejection state-machine tests |
-| REQ-0406 | deterministic pre-activation/pre-fill risk-gate tests |
-| REQ-0407 | checkpoint/crash/restart/recovery and no-duplicate-fill tests |
-| REQ-0408 | D8 acquisition/disposal posting and explicit ambiguous-lot allocation tests |
-| REQ-0409-0411 | mark provenance/degraded evidence, local deterministic stepping, descriptive backtest comparison tests |
-| REQ-0412 | semantic desktop paper-evaluation API and Paper Lab frontend/accessibility tests |
-| REQ-0413 | Rust broker mutation allow-list + Python profile mutation lock tests |
-| REQ-0414 | source/boundary tests proving absence of broker/exchange/live/real-capital/arbitrary-code paths |
+| D-027, D-028 | `src/osca/paper/order_contracts.py`, `order_persistence.py`, `forward_service.py`; immutable simulated order/fill evidence and D8 journal posting |
+| ADR-0046 | Python fill/risk/accounting authority in `src/osca/paper`; semantic desktop adapter in `src/osca/desktop_api/paper_forward.py`; Rust retains profile-ownership/broker boundary only |
+| REQ-0394 | `PaperRunBinding`, SQLite paper-order store, `ForwardPaperService.bind_run`; desktop `paper.run.bind`; persistence/service/desktop tests |
+| REQ-0395-0397 | immutable `SimulatedOrderDraft` versions, separate confirmation, order-type validation, retained lifecycle; fill-engine/service/desktop tests |
+| REQ-0398-0400 | `fill_engine.py` point-in-time eligibility and conservative market/limit/stop/scheduled-market bar semantics; golden tests in `tests/paper/test_forward_fill_engine.py` |
+| REQ-0401-0403 | explicit volume participation/partial fills plus retained spread, slippage, fees, latency and session/calendar evidence; fill-engine/service tests |
+| REQ-0404-0405 | append-only lifecycle/idempotency, cancellation, expiry, rejection and replay-safe terminal behavior; persistence/service/recovery tests |
+| REQ-0406 | pre-activation and pre-fill risk gates in `forward_service.py`; insufficient cash/holdings and notional/exposure limits fail closed |
+| REQ-0407 | replay-safe checkpoints, deterministic confirmation/order/fill/risk identities, process-restart replay and exact-once accounting tests in `test_forward_evidence_recovery.py` |
+| REQ-0408 | D8 acquisition/disposal posting from retained fills plus explicit ambiguous-lot allocation; `forward_service.py` and service tests |
+| REQ-0409 | `forward_evidence.py` retains completed-bar close as separate D8 valuation evidence with dataset/bar/source/effective/available provenance; missing evidence degrades/fails closed |
+| REQ-0410 | local deterministic `process_bar` stepping and explicit governed-bar desktop input; no implicit provider/network fetch |
+| REQ-0411 | `forward_comparison.py` and desktop comparison method retain distinct backtest/forward windows, assumption identity, methodology differences and Decimal deltas; descriptive/research-only |
+| REQ-0412 | semantic `PaperForwardDesktopService`, first-class `PaperForwardLabSurface`, typed `paperForwardApi.ts`, responsive/accessibility CSS and frontend source-contract tests |
+| REQ-0413 | `ProfileMutationLock` around Python D9 writes plus Rust `is_profile_mutation` ownership allow-list and `d9_paper_writes_require_profile_ownership` test |
+| REQ-0414 | Python/renderer result safety flags and source-contract tests prove no broker/exchange destination, credentials, provider fetch, live/real-capital execution, recommendation-to-order shortcut or arbitrary-code path |
 
-This document records planned evidence while implementation is in progress. `validation-evidence.md` and `exit-review.md` will only be added after hosted CI and supported-platform manual acceptance pass.
+## Validation state
+
+The domain/core gate reached a fully green hosted Quality run before desktop composition. The semantic Python desktop boundary also reached green Ruff, strict mypy and desktop protocol tests before the Paper Lab renderer was added. Final exact-head Quality and Desktop Foundation validation remains required after the complete renderer/Rust/documentation head is stable.
+
+Manual supported-platform acceptance remains intentionally outstanding. `validation-evidence.md` and `exit-review.md` must not claim D9 PASS until that acceptance is recorded.
