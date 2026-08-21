@@ -157,7 +157,7 @@ def test_incomplete_bar_or_missing_position_cannot_be_silently_marked(tmp_path: 
         )
 
 
-def test_checkpoint_retry_returns_retained_record_and_conflicting_retry_fails(tmp_path: Path) -> None:
+def test_checkpoint_retry_is_idempotent_and_conflicts_fail(tmp_path: Path) -> None:
     service, _ = prepared(tmp_path)
     source_ids = (UUID(int=501), UUID(int=502))
 
@@ -191,7 +191,7 @@ def test_checkpoint_retry_returns_retained_record_and_conflicting_retry_fails(tm
         )
 
 
-def test_new_service_instance_replays_retained_fill_without_duplicate_accounting(tmp_path: Path) -> None:
+def test_restart_replays_fill_without_duplicate_accounting(tmp_path: Path) -> None:
     service, portfolio_id = prepared(tmp_path)
     confirmed = confirmed_order(service, portfolio_id)
     market_bar = bar(10, close="100")
