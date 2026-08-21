@@ -4,28 +4,79 @@
 }
 
 .portfolio-operations-grid {
+  align-items: start;
   display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 0.75rem;
+  grid-auto-flow: dense;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
 }
 
 .portfolio-operations-grid details {
+  align-self: start;
   border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
   border-radius: 0.65rem;
-  padding: 0.75rem;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+}
+
+.portfolio-operations-grid details[open] {
+  grid-column: 1 / -1;
+  padding: 0.8rem;
 }
 
 .portfolio-operations-grid summary {
   cursor: pointer;
   font-weight: 700;
-  margin: -0.25rem 0 0.65rem;
-  padding: 0.25rem;
+  line-height: 1.25;
+  margin: 0;
+  padding: 0.2rem;
+}
+
+.portfolio-operations-grid details[open] summary {
+  margin-bottom: 0.8rem;
+}
+
+.portfolio-operations-grid details[open] .portfolio-lab-form {
+  align-items: end;
+  display: grid;
+  gap: 0.7rem 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.portfolio-operations-grid details[open] .portfolio-lab-form > p,
+.portfolio-operations-grid details[open] .portfolio-lab-hint,
+.portfolio-operations-grid details[open] .portfolio-path {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.portfolio-operations-grid details[open] .portfolio-lab-form > button {
+  justify-self: start;
+  min-width: 11rem;
 }
 
 .portfolio-path {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.82rem;
   overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .portfolio-operations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-operations-grid details[open] {
+    grid-column: auto;
+  }
+
+  .portfolio-operations-grid details[open] .portfolio-lab-form {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-operations-grid details[open] .portfolio-lab-form > button {
+    justify-self: stretch;
+  }
 }
 
 @media (forced-colors: active) {
