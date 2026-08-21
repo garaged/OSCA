@@ -483,6 +483,23 @@ class SQLitePaperOrderStore:
             label="forward checkpoint",
         )
 
+    def get_checkpoint_by_key(
+        self,
+        paper_run_id: UUID,
+        idempotency_key: str,
+    ) -> PaperRunCheckpoint | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                """
+                SELECT payload_json FROM forward_checkpoints
+                WHERE paper_run_id = ? AND idempotency_key = ?
+                """,
+                (str(paper_run_id), idempotency_key),
+            ).fetchone()
+        if row is None:
+            return None
+        return PaperRunCheckpoint.model_validate_json(str(row[0]))
+
     def latest_checkpoint(self, paper_run_id: UUID) -> PaperRunCheckpoint | None:
         with self._connect() as connection:
             row = connection.execute(
