@@ -10,5 +10,5 @@
 - [x] Implement performance/drawdown snapshots, attribution, descriptive benchmark comparison, and non-mutating scenarios.
 - [x] Implement semantic desktop accounting/analytics services and Rust mutation ownership.
 - [x] Implement Portfolio Lab and frontend accessibility coverage.
-- [ ] Run final automated validation and hosted CI with temporary diagnostic lint/type scopes removed.
-- [ ] Complete supported-platform manual acceptance and exit review.
+- [x] Run final automated validation and hosted CI with temporary diagnostic lint/type scopes removed.
+- [x] Complete supported-platform manual acceptance and exit review.
