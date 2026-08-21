@@ -90,7 +90,11 @@ class ExecutionAssumptions(BaseModel):
     fee_bps: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
     flat_fee: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
     latency_ms: int = Field(default=0, ge=0)
-    max_volume_participation: Decimal = Field(default=Decimal("1"), gt=Decimal("0"), le=Decimal("1"))
+    max_volume_participation: Decimal = Field(
+        default=Decimal("1"),
+        gt=Decimal("0"),
+        le=Decimal("1"),
+    )
     require_volume: bool = True
     max_order_notional: Decimal | None = Field(default=None, gt=Decimal("0"))
     max_position_notional: Decimal | None = Field(default=None, gt=Decimal("0"))
