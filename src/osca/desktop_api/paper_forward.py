@@ -643,6 +643,18 @@ def _text_list(params: dict[str, Any], name: str, limit: int) -> tuple[str, ...]
     return tuple(result)
 
 
+def _build_comparison_metric(metric_params: dict[str, Any]) -> ComparisonMetric:
+    return _model_call(
+        lambda: ComparisonMetric(
+            name=_required_text(metric_params, "name", limit=200),
+            backtest_value=_required_decimal(metric_params, "backtest_value"),
+            forward_value=_required_decimal(metric_params, "forward_value"),
+            unit=_required_text(metric_params, "unit", limit=80),
+            methodology=_required_text(metric_params, "methodology", limit=300),
+        )
+    )
+
+
 def _comparison_metrics(params: dict[str, Any]) -> tuple[ComparisonMetric, ...]:
     value = params.get("metrics")
     if not isinstance(value, list) or not value:
@@ -651,16 +663,5 @@ def _comparison_metrics(params: dict[str, Any]) -> tuple[ComparisonMetric, ...]:
     for index, item in enumerate(value):
         if not isinstance(item, dict):
             raise DesktopServiceError("invalid_parameters", f"metrics[{index}] must be an object")
-        metric_params = dict(item)
-        metrics.append(
-            _model_call(
-                lambda metric_params=metric_params: ComparisonMetric(
-                    name=_required_text(metric_params, "name", limit=200),
-                    backtest_value=_required_decimal(metric_params, "backtest_value"),
-                    forward_value=_required_decimal(metric_params, "forward_value"),
-                    unit=_required_text(metric_params, "unit", limit=80),
-                    methodology=_required_text(metric_params, "methodology", limit=300),
-                )
-            )
-        )
+        metrics.append(_build_comparison_metric(dict(item)))
     return tuple(metrics)
