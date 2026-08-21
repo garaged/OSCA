@@ -7,6 +7,7 @@
 - Use a D8 virtual portfolio with known starting cash.
 - Do not configure broker/exchange credentials; D9 must not require or expose them.
 - Complete automated validation and hosted CI before final acceptance.
+- Execute the detailed [D9 Paper Lab manual acceptance runbook](../../testing/d9-paper-lab-manual-acceptance.md) on each supported platform.
 
 ## Acceptance flow
 
