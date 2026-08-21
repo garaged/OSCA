@@ -2,8 +2,8 @@ from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from osca.paper.fill_engine import confirm_simulated_order, evaluate_fill
 from osca.paper.order_contracts import (
@@ -97,10 +97,8 @@ def bar(
 def test_order_contracts_reject_unsupported_field_combinations() -> None:
     with pytest.raises(ValidationError, match="market orders cannot have"):
         draft(limit_price=Decimal("100"))
-
     with pytest.raises(ValidationError, match="limit orders require only limit_price"):
         draft(SimulatedOrderType.LIMIT)
-
     with pytest.raises(ValidationError, match="scheduled market orders require scheduled_at"):
         draft(SimulatedOrderType.SCHEDULED_MARKET)
 
@@ -108,11 +106,8 @@ def test_order_contracts_reject_unsupported_field_combinations() -> None:
 def test_confirmation_applies_latency_and_is_simulated_only() -> None:
     execution = assumptions(latency_ms=1500)
     confirmation, order = confirm_simulated_order(
-        draft(),
-        execution,
-        confirmed_at=at(9, 30),
+        draft(), execution, confirmed_at=at(9, 30)
     )
-
     assert confirmation.simulated_only is True
     assert order.eligible_at == at(9, 30) + timedelta(milliseconds=1500)
     assert order.confirmation_id == confirmation.confirmation_id
@@ -121,10 +116,8 @@ def test_confirmation_applies_latency_and_is_simulated_only() -> None:
 def test_mid_bar_activation_skips_bar_and_next_market_bar_fills_at_open() -> None:
     execution = assumptions()
     _, order = confirm_simulated_order(draft(), execution, confirmed_at=at(9, 30))
-
     skipped = evaluate_fill(order, execution, bar(9), remaining_quantity=Decimal("10"))
     accepted = evaluate_fill(order, execution, bar(10), remaining_quantity=Decimal("10"))
-
     assert skipped.can_fill is False
     assert "before bar start" in skipped.reason
     assert accepted.can_fill is True
@@ -135,7 +128,6 @@ def test_mid_bar_activation_skips_bar_and_next_market_bar_fills_at_open() -> Non
 def test_incomplete_or_closed_session_bar_never_fills() -> None:
     execution = assumptions()
     _, order = confirm_simulated_order(draft(), execution, confirmed_at=at(8))
-
     assert evaluate_fill(
         order,
         execution,
@@ -151,29 +143,28 @@ def test_incomplete_or_closed_session_bar_never_fills() -> None:
 
 
 def test_limit_uses_better_open_but_never_violates_limit_after_adjustment() -> None:
-    buy_execution = assumptions(spread_bps=Decimal("10"), slippage_bps=Decimal("10"))
+    execution = assumptions(spread_bps=Decimal("10"), slippage_bps=Decimal("10"))
     _, gap_buy = confirm_simulated_order(
         draft(SimulatedOrderType.LIMIT, limit_price=Decimal("100")),
-        buy_execution,
+        execution,
         confirmed_at=at(8),
     )
     better = evaluate_fill(
         gap_buy,
-        buy_execution,
+        execution,
         bar(9, open_price="98", high="102", low="97", close="101"),
         remaining_quantity=Decimal("10"),
     )
     assert better.can_fill is True
     assert better.execution_price == Decimal("98.196")
-
     _, at_limit = confirm_simulated_order(
         draft(SimulatedOrderType.LIMIT, limit_price=Decimal("100")),
-        buy_execution,
+        execution,
         confirmed_at=at(8),
     )
     blocked = evaluate_fill(
         at_limit,
-        buy_execution,
+        execution,
         bar(9, open_price="101", high="102", low="99", close="100"),
         remaining_quantity=Decimal("10"),
     )
@@ -200,7 +191,6 @@ def test_sell_limit_and_stop_apply_directional_rules() -> None:
     )
     assert limit_fill.can_fill is True
     assert limit_fill.execution_price == Decimal("102.897")
-
     _, stop_order = confirm_simulated_order(
         draft(
             SimulatedOrderType.STOP,
@@ -233,7 +223,6 @@ def test_stop_gap_uses_open_and_can_fill_worse_than_stop() -> None:
         bar(9, open_price="105", high="108", low="103", close="106"),
         remaining_quantity=Decimal("10"),
     )
-
     assert decision.can_fill is True
     assert decision.execution_price == Decimal("105.525")
     assert decision.execution_price > Decimal("100")
@@ -242,9 +231,7 @@ def test_stop_gap_uses_open_and_can_fill_worse_than_stop() -> None:
 def test_volume_participation_creates_deterministic_partial_fill() -> None:
     execution = assumptions(max_volume_participation=Decimal("0.10"))
     _, order = confirm_simulated_order(
-        draft(quantity=Decimal("20")),
-        execution,
-        confirmed_at=at(8),
+        draft(quantity=Decimal("20")), execution, confirmed_at=at(8)
     )
     decision = evaluate_fill(
         order,
@@ -252,7 +239,6 @@ def test_volume_participation_creates_deterministic_partial_fill() -> None:
         bar(9, volume="50"),
         remaining_quantity=Decimal("20"),
     )
-
     assert decision.can_fill is True
     assert decision.quantity == Decimal("5.0")
 
@@ -266,7 +252,6 @@ def test_missing_required_volume_blocks_without_unlimited_liquidity() -> None:
         bar(9, volume=None),
         remaining_quantity=Decimal("10"),
     )
-
     assert decision.can_fill is False
     assert "volume evidence" in decision.reason
 
@@ -278,14 +263,15 @@ def test_fees_and_adverse_adjustments_are_decimal_safe() -> None:
         fee_bps=Decimal("20"),
         flat_fee=Decimal("1.25"),
     )
-    _, order = confirm_simulated_order(draft(quantity=Decimal("2")), execution, confirmed_at=at(8))
+    _, order = confirm_simulated_order(
+        draft(quantity=Decimal("2")), execution, confirmed_at=at(8)
+    )
     decision = evaluate_fill(
         order,
         execution,
         bar(9, open_price="100", high="101", low="99", close="100"),
         remaining_quantity=Decimal("2"),
     )
-
     assert decision.execution_price == Decimal("100.1500")
     assert decision.fee == Decimal("1.6506000")
 
@@ -293,14 +279,10 @@ def test_fees_and_adverse_adjustments_are_decimal_safe() -> None:
 def test_scheduled_order_waits_for_schedule_and_latency() -> None:
     execution = assumptions(latency_ms=60_000)
     _, order = confirm_simulated_order(
-        draft(
-            SimulatedOrderType.SCHEDULED_MARKET,
-            scheduled_at=at(10),
-        ),
+        draft(SimulatedOrderType.SCHEDULED_MARKET, scheduled_at=at(10)),
         execution,
         confirmed_at=at(8),
     )
-
     assert order.eligible_at == at(10, 1)
     assert evaluate_fill(
         order,
