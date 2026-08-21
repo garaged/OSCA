@@ -4,7 +4,7 @@ from decimal import Decimal
 from pathlib import Path
 from uuid import UUID
 
-import pytest
+from pytest import raises
 
 from osca.paper.contracts import PaperRunCheckpoint
 from osca.paper.fill_engine import confirm_simulated_order
@@ -91,12 +91,12 @@ def test_schema_initialization_is_idempotent_and_tables_are_append_only(tmp_path
     persistence, _, order = prepared(tmp_path)
     persistence.initialize()
     with sqlite3.connect(persistence.database_path) as connection:
-        with pytest.raises(sqlite3.IntegrityError, match="append-only"):
+        with raises(sqlite3.IntegrityError, match="append-only"):
             connection.execute(
                 "UPDATE simulated_orders SET paper_run_id = ? WHERE order_id = ?",
                 (str(UUID(int=0)), str(order.order_id)),
             )
-        with pytest.raises(sqlite3.IntegrityError, match="append-only"):
+        with raises(sqlite3.IntegrityError, match="append-only"):
             connection.execute(
                 "DELETE FROM simulated_orders WHERE order_id = ?",
                 (str(order.order_id),),
@@ -114,12 +114,12 @@ def test_binding_and_draft_retries_are_idempotent_but_conflicts_fail(tmp_path: P
     assert persistence.append_binding(binding) == binding
     assert persistence.append_binding(binding) == binding
     conflicting = binding.model_copy(update={"portfolio_id": UUID(int=9)})
-    with pytest.raises(OrderConflictError, match="different content"):
+    with raises(OrderConflictError, match="different content"):
         persistence.append_binding(conflicting)
     order_draft = draft()
     persistence.append_draft(order_draft)
     assert persistence.append_draft(order_draft) == order_draft
-    with pytest.raises(OrderConflictError, match="different content"):
+    with raises(OrderConflictError, match="different content"):
         persistence.append_draft(order_draft.model_copy(update={"quantity": Decimal("11")}))
 
 
@@ -169,7 +169,7 @@ def test_lifecycle_and_fill_sequences_are_append_only_and_source_idempotent(tmp_
     assert persistence.next_fill_sequence(order.order_id) == 2
     assert persistence.list_lifecycle(order.order_id) == (lifecycle,)
     assert persistence.list_fills(order.order_id) == (fill,)
-    with pytest.raises(OrderConflictError, match="different content"):
+    with raises(OrderConflictError, match="different content"):
         persistence.append_fill(fill.model_copy(update={"execution_price": Decimal("102")}))
 
 
