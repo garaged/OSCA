@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { App } from "./App";
 import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
+import { DesktopAreaGuidance, menuHint } from "./DesktopGuidance";
 import { MarketsSurface } from "./Markets";
 import { PaperForwardLabSurface } from "./PaperForwardLab";
 import { PortfolioAnalyticsSurface } from "./PortfolioAnalytics";
@@ -102,18 +103,23 @@ export function D3Root() {
             onClick={() => setView(item)}
             type="button"
           >
-            {viewLabel(item)}
+            <span className="d3-mode-label">{viewLabel(item)}</span>
+            <span className="d3-mode-description">{menuHint(item)}</span>
           </button>
         ))}
       </nav>
 
       {view === "workspace" ? (
-        <App />
+        <>
+          <DesktopAreaGuidance view={view} />
+          <App />
+        </>
       ) : (
         <main className="d3-data-sources-main">
           <h1 className="visually-hidden" ref={headingRef} tabIndex={-1}>
             {viewLabel(view)}
           </h1>
+          <DesktopAreaGuidance view={view} />
           {profile.kind === "loading" ? (
             <p className="d3-context-state" role="status">
               Loading the selected profile context…
