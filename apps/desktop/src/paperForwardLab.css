@@ -1,0 +1,266 @@
+.paper-lab {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.paper-lab-header,
+.paper-lab-card-heading,
+.paper-lab-actions,
+.paper-lab-order-select,
+.paper-lab-projection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.paper-lab-header h2,
+.paper-lab-card h3 {
+  margin: 0;
+}
+
+.paper-lab-eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.paper-lab-safety {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.9rem 1rem;
+  border: 2px solid currentColor;
+  border-radius: 0.75rem;
+}
+
+.paper-lab-safety strong {
+  white-space: nowrap;
+}
+
+.paper-lab-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: 0.9rem;
+  min-width: 0;
+}
+
+.paper-lab-card-heading > span {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.paper-lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.paper-lab-grid label {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.paper-lab input,
+.paper-lab select,
+.paper-lab button {
+  min-height: 44px;
+  font: inherit;
+}
+
+.paper-lab input,
+.paper-lab select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.65rem;
+}
+
+.paper-lab button {
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.paper-lab button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.paper-lab button:focus-visible,
+.paper-lab input:focus-visible,
+.paper-lab select:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.paper-lab-confirm {
+  font-weight: 800;
+  border-width: 2px;
+}
+
+.paper-lab-feedback {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 0.7rem;
+}
+
+.paper-lab-feedback.success {
+  border-style: solid;
+}
+
+.paper-lab-feedback.error {
+  border-style: double;
+  border-width: 3px;
+}
+
+.paper-lab-help {
+  margin: 0;
+  max-width: 75ch;
+}
+
+.paper-lab-checkbox {
+  display: flex !important;
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: center;
+  gap: 0.5rem !important;
+  min-height: 44px;
+}
+
+.paper-lab-checkbox input {
+  width: auto;
+  min-height: auto;
+}
+
+.paper-lab-order-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.paper-lab-order {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 0.75rem;
+  min-width: 0;
+}
+
+.paper-lab-order[data-selected="true"] {
+  border-width: 3px;
+}
+
+.paper-lab-order-select {
+  width: 100%;
+  text-align: left;
+}
+
+.paper-lab-order dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.paper-lab-order dl div {
+  min-width: 0;
+}
+
+.paper-lab-order dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.paper-lab-order dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.paper-lab-timeline {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.paper-lab-fill {
+  margin: 0;
+  padding: 0.6rem;
+  border-left: 3px solid currentColor;
+  overflow-wrap: anywhere;
+}
+
+.paper-lab-projection {
+  padding-top: 0.8rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.paper-lab-comparison {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 0.6rem;
+}
+
+@media (max-width: 700px) {
+  .paper-lab {
+    padding: 0.6rem;
+  }
+
+  .paper-lab-safety {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .paper-lab-header,
+  .paper-lab-card-heading,
+  .paper-lab-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .paper-lab-actions > button,
+  .paper-lab-card-heading > button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-lab *,
+  .paper-lab *::before,
+  .paper-lab *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .paper-lab-card,
+  .paper-lab-order,
+  .paper-lab-feedback,
+  .paper-lab-safety {
+    border-color: CanvasText;
+  }
+
+  .paper-lab button:focus-visible,
+  .paper-lab input:focus-visible,
+  .paper-lab select:focus-visible {
+    outline-color: Highlight;
+  }
+}

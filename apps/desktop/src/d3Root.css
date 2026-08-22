@@ -3,32 +3,48 @@
 }
 
 .d3-mode-navigation {
-  position: fixed;
-  inset-block-start: 0.75rem;
-  inset-inline-end: 1rem;
+  position: sticky;
+  inset-block-start: 0;
   z-index: 20;
   display: flex;
   gap: 0.35rem;
-  padding: 0.35rem;
-  border: 1px solid var(--border, #516173);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface, #101820) 92%, transparent);
+  padding: 0.5rem;
+  overflow-x: auto;
+  border-block-end: 1px solid var(--border, #516173);
+  background: color-mix(in srgb, var(--surface, #101820) 96%, transparent);
   backdrop-filter: blur(12px);
 }
 
 .d3-root .app-header {
-  padding-inline-end: 18rem;
+  padding-inline-end: var(--space-8, 2rem);
 }
 
 .d3-mode-button {
-  min-height: 2.5rem;
-  padding: 0.5rem 0.85rem;
+  display: flex;
+  flex: 0 0 9.5rem;
+  min-height: 3.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.45rem 0.65rem;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 0.75rem;
   background: transparent;
   color: inherit;
   font: inherit;
+  text-align: start;
   cursor: pointer;
+}
+
+.d3-mode-label {
+  font-weight: 700;
+}
+
+.d3-mode-description {
+  font-size: 0.74rem;
+  line-height: 1.2;
+  opacity: 0.78;
 }
 
 .d3-mode-button[data-active="true"] {
@@ -36,22 +52,61 @@
   background: var(--surface-elevated, #263444);
 }
 
-.d3-mode-button:focus-visible {
+.d3-mode-button:focus-visible,
+.desktop-area-help summary:focus-visible {
   outline: 3px solid currentColor;
   outline-offset: 2px;
 }
 
 .d3-data-sources-main {
   min-height: 100vh;
-  padding-block-start: 4.75rem;
+  padding-block-start: 1rem;
 }
 
-.d3-context-state {
+.d3-context-state,
+.desktop-area-guidance {
   max-width: 72rem;
   margin: 1rem auto;
   padding: 1rem;
   border: 1px solid var(--border, #516173);
   border-radius: 0.75rem;
+}
+
+.desktop-area-guidance {
+  background: color-mix(in srgb, var(--surface-elevated, #263444) 65%, transparent);
+}
+
+.desktop-area-purpose {
+  margin: 0;
+  font-weight: 600;
+}
+
+.desktop-area-help {
+  margin-block-start: 0.75rem;
+}
+
+.desktop-area-help summary {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.desktop-area-help ol {
+  margin-block: 0.65rem 0;
+  padding-inline-start: 1.35rem;
+}
+
+.desktop-area-help li + li {
+  margin-block-start: 0.4rem;
+}
+
+.desktop-area-note {
+  margin-block-end: 0;
+  padding: 0.75rem;
+  border-inline-start: 3px solid currentColor;
+  opacity: 0.9;
 }
 
 .visually-hidden {
@@ -66,34 +121,14 @@
   border: 0;
 }
 
-@media (max-width: 1100px) {
-  .d3-mode-navigation {
-    position: sticky;
-    inset-block-start: 0;
-    inset-inline-end: auto;
-    justify-content: flex-end;
-    margin: 0;
-    border-width: 0 0 1px;
-    border-radius: 0;
-  }
-
-  .d3-root .app-header {
-    padding-inline-end: var(--space-8, 2rem);
-  }
-
-  .d3-data-sources-main {
-    padding-block-start: 1rem;
-  }
-}
-
-@media (max-width: 520px) {
-  .d3-mode-navigation {
-    justify-content: stretch;
-    padding-inline: 0.5rem;
-  }
-
+@media (max-width: 700px) {
   .d3-mode-button {
-    flex: 1;
+    flex-basis: 8.5rem;
+  }
+
+  .d3-context-state,
+  .desktop-area-guidance {
+    margin-inline: 0.5rem;
   }
 }
 
@@ -106,7 +141,8 @@
 @media (forced-colors: active) {
   .d3-mode-navigation,
   .d3-mode-button[data-active="true"],
-  .d3-context-state {
+  .d3-context-state,
+  .desktop-area-guidance {
     border-color: CanvasText;
   }
 }
