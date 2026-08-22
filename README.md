@@ -10,18 +10,19 @@ Recommendations, live model serving, automatic promotion, brokers, autonomous ex
 
 ## Start here
 
-1. [U11 canonical first-run quickstart](docs/milestones/u11/quickstart.md)
-2. [U12 packaging and lifecycle status](docs/milestones/u12/README.md)
-3. [U13 release-candidate notes](docs/milestones/u13/release-notes.md)
-4. [U14 contributor and extension readiness](docs/milestones/u14/README.md)
-5. [Contributor guide](CONTRIBUTING.md)
-6. [Trusted-local extension development](docs/contributing/extension-development.md)
-7. [Manual testing and usage](docs/testing/manual-testing.md)
-8. [Architecture status](ARCHITECTURE_STATUS.md)
-9. [Product requirements](docs/product-requirements.md)
-10. [Architecture decisions](docs/decisions/README.md)
-11. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
-12. [Requirements catalog](docs/governance/requirements-catalog.md)
+1. [Desktop menu and recommended workflow guide](docs/product/desktop-user-guide.md)
+2. [U11 canonical first-run quickstart](docs/milestones/u11/quickstart.md)
+3. [U12 packaging and lifecycle status](docs/milestones/u12/README.md)
+4. [U13 release-candidate notes](docs/milestones/u13/release-notes.md)
+5. [U14 contributor and extension readiness](docs/milestones/u14/README.md)
+6. [Contributor guide](CONTRIBUTING.md)
+7. [Trusted-local extension development](docs/contributing/extension-development.md)
+8. [Manual testing and usage](docs/testing/manual-testing.md)
+9. [Architecture status](ARCHITECTURE_STATUS.md)
+10. [Product requirements](docs/product-requirements.md)
+11. [Architecture decisions](docs/decisions/README.md)
+12. [U9-U14 usable release roadmap](docs/milestones/usable-release-roadmap.md)
+13. [Requirements catalog](docs/governance/requirements-catalog.md)
 
 ## Packaged installation
 
