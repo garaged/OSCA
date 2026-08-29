@@ -93,6 +93,17 @@ test("D9 new bar evidence inherits draft series identity", async () => {
   assert.match(surface, /New bars inherit the draft instrument/);
 });
 
+test("D9 renderer surfaces authoritative no-fill decisions instead of generic success", async () => {
+  const api = await readFile(new URL("../src/paperForwardApi.ts", import.meta.url), "utf8");
+
+  assert.match(api, /object\(record\.step, "step"\)/);
+  assert.match(api, /object\(step\.decision, "step\.decision"\)/);
+  assert.match(api, /decision\.can_fill/);
+  assert.match(api, /code: "paper_no_fill"/);
+  assert.match(api, /No simulated fill:/);
+  assert.match(api, /step\.decision\.reason/);
+});
+
 test("D9 Paper Lab accessibility and responsive safeguards are explicit", async () => {
   const css = await readFile(new URL("../src/paperForwardLab.css", import.meta.url), "utf8");
   const surface = await readFile(new URL("../src/PaperForwardLab.tsx", import.meta.url), "utf8");
