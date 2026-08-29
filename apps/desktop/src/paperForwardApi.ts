@@ -326,7 +326,18 @@ export async function processPaperBar(
     data_status: "healthy",
     operational_status: "healthy",
     ...barParams(input)
-  }, (record) => ({ ...record, ...parseSafety(record) }));
+  }, (record) => {
+    const step = object(record.step, "step");
+    const decision = object(step.decision, "step.decision");
+    if (!boolean(decision.can_fill, "step.decision.can_fill")) {
+      throw new DesktopClientError({
+        code: "paper_no_fill",
+        message: `No simulated fill: ${string(decision.reason, "step.decision.reason")}`,
+        retryable: true
+      });
+    }
+    return { ...record, ...parseSafety(record) };
+  });
 }
 
 export async function appendPaperMark(
