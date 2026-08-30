@@ -48,3 +48,9 @@ Status: Accepted and inherited by D1-D19
 ## Documentation and verification
 
 Every milestone updates applicable user guidance, methodology, provider documentation, troubleshooting, architecture status, OpenSpec, traceability, manual acceptance, migrations, and known limitations. Automated checks must cover Python, TypeScript, Rust, IPC, architecture, security, accessibility, and relevant domain invariants.
+
+Every new or materially changed top-level desktop area must also update `docs/product/desktop-user-guide.md` before milestone closeout. The guide must explain the area in plain language for a user who is not assumed to be finance-specialized, including its purpose, prerequisites, what it is and is not for, important domain terminology, failure/degraded-state interpretation where relevant, and at least one recommended workflow showing how it connects to the rest of OSCA.
+
+Top-level desktop navigation must expose a concise plain-language purpose for each area. Complex research areas must provide in-app progressive disclosure such as a keyboard-accessible `What do I do here?` guide that explains the recommended order of operations and prerequisite dependencies without duplicating domain calculations.
+
+If a user-visible workflow cannot be explained clearly enough to satisfy that guide, treat the difficulty as product-usability evidence. Prefer simplifying the workflow, improving labels or prerequisites, or adding progressive disclosure rather than documenting accidental complexity as permanent behavior.

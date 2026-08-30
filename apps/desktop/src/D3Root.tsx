@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { App } from "./App";
 import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
+import { DesktopAreaGuidance, menuHint } from "./DesktopGuidance";
 import { MarketsSurface } from "./Markets";
+import { PaperForwardLabSurface } from "./PaperForwardLab";
 import { PortfolioAnalyticsSurface } from "./PortfolioAnalytics";
 import { PortfolioLabSurface } from "./PortfolioLab";
 import { PortfolioOperationsSurface } from "./PortfolioOperations";
@@ -19,6 +21,7 @@ type RootView =
   | "projects"
   | "strategy-lab"
   | "portfolio-lab"
+  | "paper-lab"
   | "data-sources";
 type ProfileState =
   | { kind: "loading" }
@@ -32,6 +35,7 @@ const views: RootView[] = [
   "projects",
   "strategy-lab",
   "portfolio-lab",
+  "paper-lab",
   "data-sources"
 ];
 
@@ -39,6 +43,7 @@ function viewLabel(view: RootView): string {
   if (view === "data-sources") return "Data Sources";
   if (view === "strategy-lab") return "Strategy Lab";
   if (view === "portfolio-lab") return "Portfolio Lab";
+  if (view === "paper-lab") return "Paper Lab";
   return view[0].toUpperCase() + view.slice(1);
 }
 
@@ -98,18 +103,23 @@ export function D3Root() {
             onClick={() => setView(item)}
             type="button"
           >
-            {viewLabel(item)}
+            <span className="d3-mode-label">{viewLabel(item)}</span>
+            <span className="d3-mode-description">{menuHint(item)}</span>
           </button>
         ))}
       </nav>
 
       {view === "workspace" ? (
-        <App />
+        <>
+          <DesktopAreaGuidance view={view} />
+          <App />
+        </>
       ) : (
         <main className="d3-data-sources-main">
           <h1 className="visually-hidden" ref={headingRef} tabIndex={-1}>
             {viewLabel(view)}
           </h1>
+          <DesktopAreaGuidance view={view} />
           {profile.kind === "loading" ? (
             <p className="d3-context-state" role="status">
               Loading the selected profile context…
@@ -137,7 +147,9 @@ export function D3Root() {
                           ? "Open a validated profile from Workspace before using Strategy Lab."
                           : view === "portfolio-lab"
                             ? "Open a validated profile from Workspace before using Portfolio Lab."
-                            : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
+                            : view === "paper-lab"
+                              ? "Open and own a validated profile from Workspace before using simulated Paper Lab."
+                              : "Provider policy and credential state remain inspectable, but import, acquisition, and retained evidence require a validated profile selected from Workspace."}
                 </aside>
               ) : null}
               {view === "markets" ? (
@@ -154,6 +166,8 @@ export function D3Root() {
                   <PortfolioOperationsSurface profileRoot={profile.profileRoot} />
                   <PortfolioAnalyticsSurface profileRoot={profile.profileRoot} />
                 </>
+              ) : view === "paper-lab" ? (
+                <PaperForwardLabSurface profileRoot={profile.profileRoot} />
               ) : (
                 <DataSourcesSurface profileRoot={profile.profileRoot} />
               )}
