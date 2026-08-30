@@ -7,12 +7,12 @@ CARGO ?= cargo
 PYTHON ?= $(UV) run python
 DESKTOP_DIR := apps/desktop
 TAURI_DIR := $(DESKTOP_DIR)/src-tauri
-ACCEPTANCE_ROOT ?= $(CURDIR)/.osca/d6-manual-acceptance
+ACCEPTANCE_ROOT ?= $(CURDIR)/.osca/desktop-acceptance
 ACCEPTANCE_STATE_ROOT ?= $(ACCEPTANCE_ROOT)/state
 ACCEPTANCE_PROFILE ?= $(ACCEPTANCE_ROOT)/profile
 ACCEPTANCE_EVIDENCE ?= $(ACCEPTANCE_ROOT)/evidence
 
-.PHONY: help tools setup sync frontend-install run run-clean acceptance-prepare acceptance-reset acceptance-run acceptance-check acceptance-info build package frontend-build test test-python test-desktop test-frontend test-rust lint typecheck format-check check clean clean-desktop clean-python clean-all status
+.PHONY: help tools setup sync frontend-install run run-clean acceptance-prepare acceptance-reset acceptance-seed acceptance-run acceptance-check acceptance-info build package frontend-build test test-python test-desktop test-frontend test-rust lint typecheck format-check check clean clean-desktop clean-python clean-all status
 
 help: ## Show available targets.
 	@printf '%s\n' 'OSCA developer and desktop commands'
@@ -22,8 +22,8 @@ help: ## Show available targets.
 	@printf '%s\n' 'Common flows:'
 	@printf '%s\n' '  make setup              Install locked Python and desktop dependencies'
 	@printf '%s\n' '  make run                Launch the desktop app in development mode'
-	@printf '%s\n' '  make run-clean          Reset isolated state and launch manual testing'
-	@printf '%s\n' '  make acceptance-check   Run focused tests and print evidence metadata'
+	@printf '%s\n' '  make run-clean          Rebuild deterministic acceptance data and launch the app'
+	@printf '%s\n' '  make acceptance-check   Run automated D5-D8 acceptance baseline'
 	@printf '%s\n' '  make build              Build the native desktop package'
 	@printf '%s\n' '  make check              Run the canonical contributor validation'
 
@@ -57,25 +57,27 @@ frontend-install: ## Install locked desktop frontend dependencies.
 run: setup ## Launch the Tauri desktop app in development mode.
 	$(PYTHON) scripts/run_desktop.py
 
-run-clean: ## Reset isolated acceptance state and launch manual testing in a deterministic order.
-	$(MAKE) acceptance-reset
+run-clean: ## Rebuild deterministic acceptance data and launch the short human-review smoke test.
+	$(MAKE) acceptance-seed
 	$(MAKE) acceptance-run
 
-acceptance-prepare: setup ## Create isolated state and evidence directories for manual acceptance.
+acceptance-prepare: setup ## Create isolated state and evidence directories for desktop acceptance.
 	@mkdir -p "$(ACCEPTANCE_STATE_ROOT)" "$(ACCEPTANCE_EVIDENCE)"
-	@printf '%s\n' 'Manual acceptance environment prepared:'
+	@printf '%s\n' 'Desktop acceptance environment prepared:'
 	@printf '  state:    %s\n' "$(ACCEPTANCE_STATE_ROOT)"
 	@printf '  profile:  %s\n' "$(ACCEPTANCE_PROFILE)"
 	@printf '  evidence: %s\n' "$(ACCEPTANCE_EVIDENCE)"
 
-acceptance-reset: ## Remove and recreate isolated manual-acceptance state; does not touch normal OSCA profiles.
-	rm -rf "$(ACCEPTANCE_ROOT)"
-	@mkdir -p "$(ACCEPTANCE_STATE_ROOT)" "$(ACCEPTANCE_EVIDENCE)"
 
-acceptance-run: acceptance-prepare ## Launch the app with isolated state for D6 manual acceptance.
+acceptance-reset: ## Remove and recreate the isolated acceptance root; does not touch normal OSCA profiles.
+	$(PYTHON) scripts/prepare_desktop_acceptance.py --root "$(ACCEPTANCE_ROOT)" --reset
+
+acceptance-seed: acceptance-reset ## Exercise D5-D7 API workflow and retain a deterministic profile/manifest.
+
+acceptance-run: acceptance-prepare ## Launch the app with the deterministic desktop acceptance profile.
 	OSCA_DESKTOP_STATE_ROOT="$(ACCEPTANCE_STATE_ROOT)" $(PYTHON) scripts/run_desktop.py
 
-acceptance-check: test-desktop acceptance-info ## Run focused desktop tests and print evidence metadata.
+acceptance-check: test-desktop acceptance-info ## Run automated D5-D8 desktop acceptance baseline and print evidence metadata.
 
 acceptance-info: ## Print paths and source identity to record in manual-test evidence.
 	@printf 'source commit: '; git rev-parse HEAD
@@ -112,8 +114,8 @@ test: test-python test-frontend test-rust ## Run Python, frontend, and Rust desk
 test-python: sync ## Run the complete Python test suite.
 	$(UV) run pytest
 
-test-desktop: sync frontend-install ## Run focused D1-D6 desktop API, launcher, Makefile, and frontend tests.
-	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_d4_*.py tests/test_d5_*.py tests/test_d6_*.py tests/test_desktop_launcher.py tests/test_desktop_packaging.py tests/test_makefile.py
+test-desktop: sync frontend-install ## Run focused D1-D8 desktop API, acceptance, launcher, packaging, Makefile, and frontend tests.
+	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_d4_*.py tests/test_d5_*.py tests/test_d6_*.py tests/test_d7_*.py tests/test_d8_*.py tests/test_desktop_acceptance_prepare.py tests/test_desktop_launcher.py tests/test_desktop_packaging.py tests/test_makefile.py
 	cd $(DESKTOP_DIR) && $(NPM) test
 
 test-frontend: frontend-install ## Run desktop frontend tests.
