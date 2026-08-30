@@ -2,7 +2,7 @@
 
 - **Status:** Active from M8
 - **First covered milestone:** M8 F3 paper evaluation and automation foundation
-- **Current coverage:** Through U11 first-run and unified operator experience
+- **Current coverage:** Through D8 virtual-portfolio accounting and the desktop acceptance automation foundation
 - **Audience:** Maintainers and early operators
 - **Purpose:** Keep executable reality checks for user- and operator-visible behavior while preserving safety boundaries.
 - **Last reviewed:** 2026-08-02
@@ -25,6 +25,32 @@ uv run pytest
 ```
 
 Use disposable storage such as `.osca/manual-test`. `.osca/` is ignored by Git. Do not configure broker/exchange credentials or real-capital accounts. Start provider workflows with deterministic fixtures.
+
+## Desktop acceptance automation and human-review smoke test
+
+Repeated desktop acceptance is automated by a deterministic, disposable D5--D7 profile. It uses only bundled synthetic AAPL/MSFT daily data, the typed desktop application-service boundary, and local profile storage. It never enables network access, provider credentials, recommendations, broker connections, autonomous execution, or real-capital operations.
+
+Run the automated baseline and create the review-ready profile:
+
+```bash
+make acceptance-check
+make acceptance-seed
+make acceptance-run
+```
+
+`make acceptance-seed` intentionally resets only `.osca/desktop-acceptance`, then retains `evidence/acceptance-manifest.json`. The manifest records the two imported samples, D5 comparison, D7 strategy/backtest/sensitivity/walk-forward results, and D6 project pin. It is the reproducible evidence source for checks that previously required repetitive manual setup.
+
+For a normal desktop milestone, human review is limited to this 5--10 minute smoke test:
+
+1. Open the deterministic profile shown by `make acceptance-info`.
+2. In Workbench, inspect the AAPL/MSFT comparison and confirm chart/table readability, selection feedback, and no visual clipping at the target platform's normal and large text size.
+3. In Projects and Strategy Lab, confirm the seeded project/pin, backtest result, and evaluation disclosures are understandable and visually coherent.
+4. Check keyboard focus, pointer interaction, and permanent safety disclosures for the changed surface only.
+5. Record only PASS/FAIL and a screenshot or concise finding for human-judgment issues.
+
+Do not replay the historical D5--D7 procedures unless the change touches their behavior. Re-run their automated coverage instead. Full exploratory/platform acceptance remains required for release candidates, migrations, desktop-shell changes, packaging changes, or a material interaction redesign.
+
+Manual-test steps must be classified as one of: **automated** (asserted by a deterministic test), **human judgment** (visual/usability/accessibility quality), or **exploratory** (a risk-focused probe). A normal milestone's human-judgment path must fit the ten-minute budget; promote repeated steps to automation before the next milestone.
 
 ## Historical coverage
 
