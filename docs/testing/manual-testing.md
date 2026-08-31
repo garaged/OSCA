@@ -26,7 +26,7 @@ uv run pytest
 
 Use disposable storage such as `.osca/manual-test`. `.osca/` is ignored by Git. Do not configure broker/exchange credentials or real-capital accounts. Start provider workflows with deterministic fixtures.
 
-## Desktop acceptance automation and human-review smoke test
+## Desktop acceptance policy and human-review smoke test
 
 Repeated desktop acceptance is automated by a deterministic, disposable D5--D7 profile. It uses only bundled synthetic AAPL/MSFT daily data, the typed desktop application-service boundary, and local profile storage. It never enables network access, provider credentials, recommendations, broker connections, autonomous execution, or real-capital operations.
 
@@ -50,7 +50,13 @@ For a normal desktop milestone, human review is limited to this 5--10 minute smo
 
 Do not replay the historical D5--D7 procedures unless the change touches their behavior. Re-run their automated coverage instead. Full exploratory/platform acceptance remains required for release candidates, migrations, desktop-shell changes, packaging changes, or a material interaction redesign.
 
-Manual-test steps must be classified as one of: **automated** (asserted by a deterministic test), **human judgment** (visual/usability/accessibility quality), or **exploratory** (a risk-focused probe). A normal milestone's human-judgment path must fit the ten-minute budget; promote repeated steps to automation before the next milestone.
+Every milestone acceptance plan must classify each check as one of:
+
+- **Automated** — deterministic invariant, error case, persistence/replay result, export, protocol, or source-boundary behavior. It must name its test/gate and is not re-performed manually when that gate is green.
+- **Human judgment** — visual hierarchy, copy, discoverability, chart/table readability, keyboard focus, pointer behavior, and platform rendering. This is the normal 5--10 minute changed-surface smoke path.
+- **Exploratory** — a deliberately selected risk probe such as migration/recovery, platform packaging, concurrency, or a material interaction redesign. It is required only when its trigger applies.
+
+The acceptance record must state the exact source revision, platform, automated gates, human-judgment PASS/FAIL, exploratory triggers exercised or waived, findings, and retained screenshots only when they add evidence. A repeated manual step must be promoted to deterministic coverage before the next milestone rather than copied forward as release ritual.
 
 ## Historical coverage
 

@@ -2,6 +2,18 @@
 
 This runbook validates D9 Forward Paper Evaluation and Simulated Orders through the desktop product surface. It is acceptance evidence, not a trading guide. All orders are simulated research evidence only.
 
+## Acceptance classification
+
+This is not a twenty-section mandatory regression script. The exact-head automated suite is authoritative for deterministic fill arithmetic, order lifecycle, risk rejection, replay/idempotency, persistence, protocol boundaries, and source restrictions. The reviewer performs the **required human path** below on each supported platform, then adds only the **exploratory probes** whose triggers apply.
+
+| Coverage | D9 cases | Evidence source |
+|---|---|---|
+| Automated | Draft versioning, eligibility, market/limit/stop/scheduled fills, partial fills, fees/latency, calendar behavior, cancellation, risk gates, retained controls, explicit lots, checkpoint/recovery, comparison, ownership, source boundaries | `tests/paper/test_forward_*.py`, `tests/test_d9_desktop_*.py`, frontend and Rust broker tests, hosted Quality/Desktop Foundation |
+| Required human path | Paper Lab discoverability, simulated-only disclosure, account/run/draft/fill feedback, provenance readability, D8 effect visibility, keyboard/focus, zoom/narrow width, contrast/status meaning | Sections 0--4 and 19--20 below |
+| Exploratory | restart/recovery, second-process ownership, package smoke, an order type or risk/degraded path materially changed by the PR, platform-specific rendering defect | Sections 5--18, only when triggered below |
+
+Record the exact head and automated gate results once. Do not repeat a deterministic case manually merely because it appears in an older runbook.
+
 ## Supported acceptance platforms
 
 Run the complete acceptance flow on:
@@ -11,23 +23,15 @@ Run the complete acceptance flow on:
 
 Use a disposable OSCA profile and local/synthetic governed evidence. Do not configure brokerage or exchange credentials.
 
-## 0. Build and launch
+## Required human path
+
+### 0. Automated baseline, build and launch
 
 From a clean checkout of the exact PR head:
 
 ```bash
-uv sync --locked
-uv run ruff check .
-uv run mypy
-uv run pytest
-cd apps/desktop
-npm ci
-npm run build
-npm test
-cd src-tauri
-cargo fmt --check
-cargo test
-cargo clippy --all-targets --all-features -- -D warnings
+make acceptance-check
+make acceptance-seed
 ```
 
 Launch the desktop app using the repository's documented desktop launcher. In Workspace, create or open a disposable validated profile and keep that window as the profile owner.
@@ -39,7 +43,7 @@ Expected:
 - no broker, exchange, or credential setup is required;
 - the Paper Lab header prominently states `SIMULATED ONLY` and that no real-capital path exists.
 
-## 1. Prepare a D8 virtual portfolio
+### 1. Prepare a D8 virtual portfolio
 
 1. Open `Portfolio Lab`.
 2. Create a portfolio named `D9 Manual Acceptance`.
@@ -53,7 +57,7 @@ Expected:
 - D9 does not create a second cash balance or paper-only portfolio ledger;
 - later fills must alter this D8 portfolio through normal accounting events.
 
-## 2. Create/select the retained M8 paper account and retain a run
+### 2. Create/select the retained M8 paper account and retain a run
 
 Paper Lab must use a retained M8 `PaperAccount` control identity. It must not synthesize an arbitrary paper-account UUID for a run.
 
@@ -83,7 +87,7 @@ Expected:
 - the paper-account record does not duplicate cash, positions, lots, P&L, or fees;
 - no network/provider activity is required.
 
-## 3. Verify immutable draft and explicit confirmation
+### 3. Confirm one draft and inspect the visible safety/evidence feedback
 
 Create a market-buy draft using:
 
@@ -120,7 +124,7 @@ Expected:
 - no venue, account number, API token, broker, exchange, or external destination is requested;
 - lifecycle begins with explicit confirmation and risk evidence.
 
-## 4. Point-in-time market-order eligibility
+### 4. Process one eligible local bar and inspect the D8 accounting effect
 
 Immediately after confirmation, inspect the current bar timestamps in `Governed completed-bar evidence`.
 
@@ -155,7 +159,11 @@ Expected:
 - D8 accounting revision advances once;
 - position quantity is reflected in the linked D8 portfolio.
 
-## 5. Replay the same governed bar
+## Exploratory probes — run only when triggered
+
+Run a probe when the PR changes that behavior, a defect/regression indicates the risk, a migration/recovery/package change occurred, or a supported platform renders it materially differently. Otherwise cite the automated evidence in the acceptance record.
+
+### 5. Replay the same governed bar
 
 Without changing the bar evidence UUID, process the same bar again. Refresh run inspection, then restart the desktop app and inspect the same paper run again if the UI retains the run IDs in your test notes.
 
@@ -437,7 +445,9 @@ Expected:
 
 - no retained paper-account/control/run/order/fill/accounting evidence leaks across profiles.
 
-## 19. Accessibility and responsive review
+## Required completion review
+
+### 19. Accessibility and responsive review
 
 Validate Paper Lab with keyboard only:
 
@@ -461,7 +471,7 @@ Expected:
 - focus remains visible;
 - no required animation remains.
 
-## 20. Universal safety boundary
+### 20. Universal safety boundary
 
 Before signing off, inspect the rendered Paper Lab and source/product behavior for all of the following.
 
@@ -493,7 +503,8 @@ For each supported platform, record:
 - exact D9 commit SHA;
 - OS/architecture;
 - package/app build used;
-- PASS/FAIL for sections 0–20;
+- automated baseline result and required human-path PASS/FAIL;
+- exploratory sections exercised, including their trigger, or explicitly waived as covered by the named automated gate;
 - any screenshots/logs retained locally as evidence;
 - accepted limitations or defects discovered.
 
