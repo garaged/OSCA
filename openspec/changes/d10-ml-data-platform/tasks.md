@@ -10,6 +10,6 @@
 - [x] Implement ML Lab catalog, builder, experiment registry, and evidence inspection.
 - [x] Add D6 ML experiment pin type and project UI option.
 - [x] Extend deterministic acceptance profile with sufficient D10 data and retained ML evidence.
-- [ ] Complete Python/frontend/Rust, migration, recovery, boundary, and OpenSpec validation.
+- [x] Complete Python/frontend/Rust, migration, recovery, boundary, and OpenSpec validation.
 - [x] Synchronize user guidance, manual acceptance, architecture status, navigation, and traceability.
 - [ ] Retain validation evidence, complete supported-platform acceptance, and finalize exit review.

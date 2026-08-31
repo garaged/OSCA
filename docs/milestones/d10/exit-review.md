@@ -18,7 +18,6 @@
 
 ## Remaining gates
 
-- exact-head hosted Quality and Desktop Foundation checks;
 - macOS ARM64 changed-surface human acceptance;
 - Linux x86-64 changed-surface human acceptance;
 - documentation closeout against the accepted exact head.
