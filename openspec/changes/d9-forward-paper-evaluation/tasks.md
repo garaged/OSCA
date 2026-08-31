@@ -14,4 +14,4 @@
 - [x] Synchronize usage/manual-testing documentation and traceability.
 - [x] Run final automated validation and hosted CI.
 - [x] Complete supported-platform manual acceptance.
-- [ ] Run exact-head documentation CI and finalize the exit review.
+- [x] Run exact-head documentation CI and finalize the exit review.

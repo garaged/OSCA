@@ -2,7 +2,7 @@
 
 ## Decision
 
-**Manual acceptance PASS — exact-head documentation CI pending.**
+**PASS — ready for PR review and squash merge.**
 
 D9 delivers local, deterministic forward simulated-order evidence that posts exactly once into D8 virtual-portfolio accounting. It remains a research simulator, not a broker or live-execution capability.
 
@@ -22,7 +22,7 @@ D9 delivers local, deterministic forward simulated-order evidence that posts exa
 
 ## Validation
 
-The behavior/documentation reconciliation head `5f6f7ccb212fe02c461d6f3e58c913297004a44d` passed Quality #1277 and Desktop Foundation #370. The focused risk-based human acceptance passed on macOS ARM64 and Linux x86-64. The documentation closeout commit requires its own exact-head hosted CI before the PR may be marked ready or merged. See [validation evidence](validation-evidence.md).
+The behavior/documentation reconciliation head `5f6f7ccb212fe02c461d6f3e58c913297004a44d` passed Quality #1277 and Desktop Foundation #370. The documentation closeout head `15529cd36599b28a2480004246ba8235679385df` passed Quality #1278 and Desktop Foundation #371. The focused risk-based human acceptance passed on macOS ARM64 and Linux x86-64. See [validation evidence](validation-evidence.md).
 
 ## Remaining boundaries
 

@@ -11,4 +11,4 @@ D9 follows D8 Virtual-Portfolio Accounting Foundation on the desktop-product cri
 - [Validation evidence](validation-evidence.md)
 - [Exit review](exit-review.md)
 
-**Status: manual acceptance PASS; exact-head documentation CI pending.**
+**Status: PASS — ready for PR review and squash merge.**
