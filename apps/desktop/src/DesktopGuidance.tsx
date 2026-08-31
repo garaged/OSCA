@@ -4,6 +4,7 @@ type RootView =
   | "workbench"
   | "projects"
   | "strategy-lab"
+  | "ml-lab"
   | "portfolio-lab"
   | "paper-lab"
   | "data-sources";
@@ -62,6 +63,17 @@ const guidance: Record<RootView, Guidance> = {
       "Use Portfolio Lab or Paper Lab only after you understand the historical evidence."
     ],
     note: "A strong backtest is evidence about the past, not proof that the strategy will work in the future."
+  },
+  "ml-lab": {
+    short: "Run governed ML experiments",
+    purpose: "Build leakage-resistant datasets and compare bounded local models with simple baselines.",
+    steps: [
+      "Inspect the versioned feature and label definitions.",
+      "Retain an experiment plan that pins the dataset revision, policies, splits, and resource budget.",
+      "Run the bounded experiment and compare test evidence with the mandatory baseline.",
+      "Treat every result as research evidence pending separate D11 review and approval."
+    ],
+    note: "ML Lab does not promote models, produce recommendations, or connect results to order execution."
   },
   "portfolio-lab": {
     short: "Model virtual holdings",

@@ -358,6 +358,10 @@ function ProjectDetail({
                 <option value="dataset_revision">Dataset revision</option>
                 <option value="workbench_view">Workbench view</option>
                 <option value="workbench_export">Workbench export</option>
+                <option value="strategy">Strategy</option>
+                <option value="strategy_version">Strategy version</option>
+                <option value="backtest_result">Backtest result</option>
+                <option value="ml_experiment">ML experiment</option>
                 <option value="report">Report</option>
                 <option value="external_reference">External reference</option>
               </select>

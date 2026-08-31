@@ -6,6 +6,8 @@ The M0-M12 architecture and lifecycle roadmap is complete. P1-P15 delivered prov
 
 U8 reconciled the retained research workflow into the primary CLI. U9 added governed no-cost Kraken acquisition and fail-closed equity fallback. U10 added complete read-only research-evidence navigation and governed export. U11 provides one canonical first-run operator path. U12 provides isolated wheel installation, release checksums/SBOM/provenance, compatibility inspection, verified backup and restore, and failed-upgrade recovery. U13 accepted and tagged `v0.1.0rc1`. U14 adds reproducible contributor validation and strict non-importing trusted-local extension conformance.
 
+The desktop-product path is complete through D9 and D10 is implementing a first-class ML Lab for immutable governed datasets, versioned features/labels, bounded local experiments, chronological validation, mandatory baselines, and retained reproducibility evidence. Model approval, explainability, and drift remain D11 scope.
+
 Recommendations, live model serving, automatic promotion, brokers, autonomous execution, real-capital orders, untrusted extension execution, remote extension installation, automatic extension updates, and a public extension marketplace remain disabled.
 
 ## Start here

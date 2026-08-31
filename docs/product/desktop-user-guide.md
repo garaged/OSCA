@@ -1,6 +1,6 @@
 # OSCA Desktop User Guide
 
-Status: Active end-user guidance for the desktop application through D9.
+Status: Active end-user guidance for the desktop application through D10.
 
 Audience: Users who want to perform market research and simulated evaluation without needing to understand OSCA's internal milestone structure or finance-specific implementation terminology.
 
@@ -18,8 +18,9 @@ A useful way to think about the desktop application is:
 4. **Workbench** — inspect the actual time series, charts, tables, ranges, and comparisons.
 5. **Projects** — save a coherent research investigation so related evidence stays together.
 6. **Strategy Lab** — define a rule-based strategy and test it on historical evidence.
-7. **Portfolio Lab** — model cash, holdings, lots, transactions, valuation, and portfolio analytics.
-8. **Paper Lab** — take a retained strategy/research idea forward through simulated orders using new governed evidence.
+7. **ML Lab** — construct leakage-resistant datasets and compare bounded local models with simple baselines.
+8. **Portfolio Lab** — model cash, holdings, lots, transactions, valuation, and portfolio analytics.
+9. **Paper Lab** — take a retained strategy/research idea forward through simulated orders using new governed evidence.
 
 For most users the normal path is not "use the menu from left to right every time." Use only the areas required for the question you are trying to answer.
 
@@ -32,6 +33,7 @@ For most users the normal path is not "use the menu from left to right every tim
 | **Workbench** | Explore governed market data visually and numerically. | You want to inspect price history, ranges, charts, tables, or compare series. | Markets or Data Sources. |
 | **Projects** | Group related research evidence and pinned artifacts. | A question is becoming more than a quick one-off inspection. | Workbench, Strategy Lab, or Portfolio Lab. |
 | **Strategy Lab** | Define and backtest deterministic strategies. | You want to test "what would have happened if I followed these rules?" | Workbench/data readiness. |
+| **ML Lab** | Plan and run bounded local ML experiments. | You want to evaluate point-in-time features and time-aware model evidence against a baseline. | Workbench/data readiness; optionally Projects. |
 | **Portfolio Lab** | Maintain a virtual portfolio and accounting evidence. | You want to model cash, holdings, lots, P&L, valuation, or scenarios. | Workspace; optionally Strategy Lab. |
 | **Paper Lab** | Simulate future order behavior against governed forward evidence. | You want to evaluate a retained idea after historical backtesting, without real trading. | Portfolio Lab and usually Strategy Lab. |
 | **Data Sources** | Inspect provider policy and import/acquire governed data. | Data is missing, stale, blocked, or you need to understand where it came from. | Workspace. |
@@ -168,6 +170,31 @@ The core question is: **"If these exact rules had been applied to this historica
 ### Common misunderstanding
 
 A profitable backtest is not a recommendation and is not proof that a strategy will work in the future.
+
+## ML Lab
+
+### What it is
+
+ML Lab turns one retained governed market dataset into reproducible local experiment evidence. It exposes the exact feature and label revisions, time-aware partitions, data policies, model settings, resource budget, findings, and digests used for each run.
+
+### Recommended workflow
+
+1. Make sure the selected asset has enough retained history; the bundled D10 acceptance sample has 220 daily bars.
+2. Inspect the built-in feature catalog. All initial features use completed bars only and fail closed on missing inputs.
+3. Choose regression or classification, label horizon, trailing feature window, embargo, and a bounded model.
+4. Retain the experiment plan before running it. This pins the dataset revision and payload digest.
+5. Run the plan and inspect chronological train/validation/test ranges.
+6. Compare model test metrics with the mandatory simple baseline. A worse-than-baseline result remains useful negative evidence.
+7. Pin the experiment identity in Projects when it belongs to a longer investigation.
+
+### Important interpretation
+
+- **Purge** removes observations whose future label horizon would overlap a partition boundary.
+- **Embargo** adds a deliberate gap between partitions.
+- **Training-only scaling** means validation and test observations do not influence fitted normalization.
+- **Review required** is not approval. D11 owns later validation, explainability, approval, and drift behavior.
+
+ML Lab does not execute arbitrary feature code, use network providers implicitly, promote a model, generate a recommendation, or connect model output to simulated or real orders.
 
 ## Portfolio Lab
 

@@ -23,7 +23,7 @@ help: ## Show available targets.
 	@printf '%s\n' '  make setup              Install locked Python and desktop dependencies'
 	@printf '%s\n' '  make run                Launch the desktop app in development mode'
 	@printf '%s\n' '  make run-clean          Rebuild deterministic acceptance data and launch the app'
-	@printf '%s\n' '  make acceptance-check   Run automated D5-D8 acceptance baseline'
+	@printf '%s\n' '  make acceptance-check   Run automated D5-D10 acceptance baseline'
 	@printf '%s\n' '  make build              Build the native desktop package'
 	@printf '%s\n' '  make check              Run the canonical contributor validation'
 
@@ -72,12 +72,12 @@ acceptance-prepare: setup ## Create isolated state and evidence directories for 
 acceptance-reset: ## Remove and recreate the isolated acceptance root; does not touch normal OSCA profiles.
 	$(PYTHON) scripts/prepare_desktop_acceptance.py --root "$(ACCEPTANCE_ROOT)" --reset
 
-acceptance-seed: acceptance-reset ## Exercise D5-D7 API workflow and retain a deterministic profile/manifest.
+acceptance-seed: acceptance-reset ## Exercise the D5-D10 critical workflow and retain a deterministic profile/manifest.
 
 acceptance-run: acceptance-prepare ## Launch the app with the deterministic desktop acceptance profile.
 	OSCA_DESKTOP_STATE_ROOT="$(ACCEPTANCE_STATE_ROOT)" $(PYTHON) scripts/run_desktop.py
 
-acceptance-check: test-desktop acceptance-info ## Run automated D5-D8 desktop acceptance baseline and print evidence metadata.
+acceptance-check: test-desktop acceptance-info ## Run automated D5-D10 desktop acceptance baseline and print evidence metadata.
 
 acceptance-info: ## Print paths and source identity to record in manual-test evidence.
 	@printf 'source commit: '; git rev-parse HEAD
@@ -114,8 +114,8 @@ test: test-python test-frontend test-rust ## Run Python, frontend, and Rust desk
 test-python: sync ## Run the complete Python test suite.
 	$(UV) run pytest
 
-test-desktop: sync frontend-install ## Run focused D1-D8 desktop API, acceptance, launcher, packaging, Makefile, and frontend tests.
-	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_d4_*.py tests/test_d5_*.py tests/test_d6_*.py tests/test_d7_*.py tests/test_d8_*.py tests/test_desktop_acceptance_prepare.py tests/test_desktop_launcher.py tests/test_desktop_packaging.py tests/test_makefile.py
+test-desktop: sync frontend-install ## Run focused D1-D10 desktop API, acceptance, launcher, packaging, Makefile, and frontend tests.
+	$(UV) run pytest tests/test_d1_desktop_api.py tests/test_d2_desktop_api.py tests/test_d3_desktop_*.py tests/test_d4_*.py tests/test_d5_*.py tests/test_d6_*.py tests/test_d7_*.py tests/test_d8_*.py tests/test_d9_*.py tests/test_d10_*.py tests/test_desktop_acceptance_prepare.py tests/test_desktop_launcher.py tests/test_desktop_packaging.py tests/test_makefile.py
 	cd $(DESKTOP_DIR) && $(NPM) test
 
 test-frontend: frontend-install ## Run desktop frontend tests.

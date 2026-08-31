@@ -5,8 +5,8 @@
 - **Product baseline:** Approved
 - **M0-M12 governed foundation roadmap:** Complete
 - **P1-P15 governed analyst, ingestion, operations, and extension path:** Complete
-- **Current activity:** P16 live-order readiness study
-- **Live-order decision:** NO-GO through ADR-0044
+- **Current activity:** D10 ML data platform, feature catalog, and experiment UX
+- **Live-order decision:** NO-GO through ADR-0044; D10 adds no execution authority
 - **Freeze point:** Foundational ADR freeze remains in effect; semantic changes require governed supersession
 
 ## P16 decision boundary

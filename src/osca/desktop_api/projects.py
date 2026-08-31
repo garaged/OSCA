@@ -23,6 +23,7 @@ _PIN_TYPES = {
     "strategy",
     "strategy_version",
     "backtest_result",
+    "ml_experiment",
     "report",
     "external_reference",
 }
@@ -42,8 +43,7 @@ def create_project(
     with _connect(profile_root) as connection:
         try:
             cursor = connection.execute(
-                "INSERT INTO projects(project_uuid, name, objective, horizon) "
-                "VALUES (?, ?, ?, ?)",
+                "INSERT INTO projects(project_uuid, name, objective, horizon) VALUES (?, ?, ?, ?)",
                 (
                     project_uuid,
                     normalized_name,
@@ -81,8 +81,7 @@ def list_projects(
     placeholders = ",".join("?" for _ in statuses)
     with _connect(profile_root) as connection:
         rows = connection.execute(
-            "SELECT * FROM projects "
-            f"WHERE status IN ({placeholders}) ORDER BY lower(name), id",
+            f"SELECT * FROM projects WHERE status IN ({placeholders}) ORDER BY lower(name), id",
             tuple(statuses),
         ).fetchall()
         projects = [_project_summary(cast(sqlite3.Row, row)) for row in rows]
@@ -213,8 +212,7 @@ def clone_project(profile_root: Path, *, project_id: int, name: str) -> dict[str
             (project_id,),
         ):
             connection.execute(
-                "INSERT INTO project_workspaces(project_id, name, config_json) "
-                "VALUES (?, ?, ?)",
+                "INSERT INTO project_workspaces(project_id, name, config_json) VALUES (?, ?, ?)",
                 (clone_id, workspace["name"], workspace["config_json"]),
             )
         _append_event(
@@ -380,8 +378,7 @@ def save_workspace(
         ).fetchone()
         if row is None:
             cursor = connection.execute(
-                "INSERT INTO project_workspaces(project_id, name, config_json) "
-                "VALUES (?, ?, ?)",
+                "INSERT INTO project_workspaces(project_id, name, config_json) VALUES (?, ?, ?)",
                 (project_id, normalized_name, encoded),
             )
             assert cursor.lastrowid is not None
@@ -752,8 +749,7 @@ def _append_event(
     details: dict[str, Any],
 ) -> None:
     connection.execute(
-        "INSERT INTO project_timeline(project_id, event_type, details_json) "
-        "VALUES (?, ?, ?)",
+        "INSERT INTO project_timeline(project_id, event_type, details_json) VALUES (?, ?, ?)",
         (project_id, event_type, _json(details)),
     )
 
@@ -820,9 +816,7 @@ def _safe_json_object(value: dict[str, Any], field: str, *, limit: int) -> dict[
     sensitive_fragments = ("password", "api_key", "private_key")
     for key in _walk_keys(value):
         lowered = key.lower()
-        if lowered in forbidden or any(
-            fragment in lowered for fragment in sensitive_fragments
-        ):
+        if lowered in forbidden or any(fragment in lowered for fragment in sensitive_fragments):
             raise DesktopServiceError(
                 "invalid_parameters",
                 f"{field} contains forbidden field: {key}",
