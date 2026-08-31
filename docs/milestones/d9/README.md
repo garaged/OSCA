@@ -8,5 +8,7 @@ D9 follows D8 Virtual-Portfolio Accounting Foundation on the desktop-product cri
 - [Specification](specification.md)
 - [Traceability](traceability.md)
 - [Manual acceptance](manual-acceptance.md)
+- [Validation evidence](validation-evidence.md)
+- [Exit review](exit-review.md)
 
-Completion evidence will be added only after implementation and validation gates pass.
+**Status: manual acceptance PASS; exact-head documentation CI pending.**

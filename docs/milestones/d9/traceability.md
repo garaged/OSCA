@@ -25,4 +25,4 @@ Hosted Quality #1258 passed Ruff, strict mypy, the full tests/contracts/migratio
 
 Desktop Foundation #352 passed the semantic Python desktop boundary, strict desktop mypy, desktop API/launcher tests, wheel sample verification, frontend build/tests, Rust formatting, Rust unit tests and Clippy on the same implementation head.
 
-A final exact-head validation pass is required after this documentation/OpenSpec reconciliation. Manual supported-platform acceptance remains intentionally outstanding. `validation-evidence.md` and `exit-review.md` must not claim D9 PASS until that acceptance is recorded.
+Exact-head Quality #1277 and Desktop Foundation #370 passed on `5f6f7ccb212fe02c461d6f3e58c913297004a44d`. The focused required human acceptance passed on macOS ARM64 and Linux x86-64. See `validation-evidence.md` and `exit-review.md`.
