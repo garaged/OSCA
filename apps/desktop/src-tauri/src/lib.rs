@@ -278,6 +278,9 @@ fn is_profile_mutation(method: &str) -> bool {
             | "paper.order.cancel"
             | "paper.order.process_bar"
             | "paper.mark.append"
+            | "ml.experiment.create"
+            | "ml.experiment.run"
+            | "ml.experiment.cancel"
             | "paper.checkpoint.record"
     )
 }
@@ -652,6 +655,23 @@ mod tests {
         assert!(!is_profile_mutation("paper.account.list"));
         assert!(!is_profile_mutation("paper.run.inspect"));
         assert!(!is_profile_mutation("paper.comparison.build"));
+    }
+
+    #[test]
+    fn d10_ml_writes_require_profile_ownership() {
+        for method in [
+            "ml.experiment.create",
+            "ml.experiment.run",
+            "ml.experiment.cancel",
+        ] {
+            assert!(
+                is_profile_mutation(method),
+                "{method} should require profile ownership"
+            );
+        }
+        assert!(!is_profile_mutation("ml.catalog.list"));
+        assert!(!is_profile_mutation("ml.experiment.list"));
+        assert!(!is_profile_mutation("ml.experiment.get"));
     }
 
     #[test]

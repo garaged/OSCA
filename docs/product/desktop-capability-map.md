@@ -1,6 +1,6 @@
 # Desktop Capability Map
 
-Status: Active implementation authority through D6 specification baseline
+Status: Active implementation authority through D10
 
 Legend: **current** exists in the retained Python/U14 product; **foundation** is implemented as reusable desktop infrastructure; **planned** belongs to a future milestone; **gated** requires separate evidence or user enablement; **prohibited** must not be implemented.
 
@@ -21,11 +21,11 @@ Legend: **current** exists in the retained Python/U14 product; **foundation** is
 | Provider and credential setup UX | planned/gated | D3; provider and credential policy evidence |
 | Asset discovery and watchlists | foundation | D4 |
 | Interactive charts and quantitative workbench | foundation | D5 |
-| Research projects and saved workspaces | active implementation | D6 |
-| Strategy builder and backtesting lab | planned | D7 |
-| Multiple virtual portfolios and double-entry accounting | planned | D8 |
-| Simulated orders and forward paper evaluation | planned | D9 |
-| Point-in-time ML datasets and feature catalog | planned | D10 |
+| Research projects and saved workspaces | current | D6 |
+| Strategy builder and backtesting lab | current | D7 |
+| Multiple virtual portfolios and double-entry accounting | current | D8 |
+| Simulated orders and forward paper evaluation | current | D9 |
+| Point-in-time ML datasets and feature catalog | active implementation | D10 |
 | Model registry, approval, explainability, and drift | planned | D11 |
 | Evidence-backed recommendations | gated | D12; explicit user enablement |
 | Local generative-AI assistant | gated | D13; user-managed runtime |

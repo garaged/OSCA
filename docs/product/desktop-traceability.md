@@ -1,6 +1,6 @@
 # Desktop Product Traceability
 
-Status: Active implementation baseline through D6 specification baseline
+Status: Active implementation baseline through D10
 
 | Product intent | Governing milestones | Required evidence | Current disposition |
 |---|---|---|---|
@@ -8,9 +8,9 @@ Status: Active implementation baseline through D6 specification baseline
 | Provide usable desktop onboarding and system diagnostics | D1-D3 | Clean-profile manual acceptance and failure-state tests | D2 implemented; cross-platform manual evidence pending |
 | Preserve free/offline foundational functionality | D2-D19 | Offline acceptance path without paid provider credentials | D2 bundled deterministic synthetic import implemented |
 | Provide governed asset discovery, analysis, and visualization | D4-D6 | Data lineage, numerical golden tests, chart accessibility evidence | D4 and D5 implemented; D6 specification baseline active |
-| Provide reproducible strategy research | D7 | Versioned strategy definitions, fidelity disclosures, benchmark and sensitivity evidence | Planned |
-| Provide auditable virtual portfolios and simulated orders | D8-D9 | Double-entry invariants, deterministic replay, fill-assumption evidence, recovery tests | Planned |
-| Provide leakage-resistant ML experimentation | D10-D11 | Point-in-time datasets, time-aware validation, baseline comparisons, approval and drift evidence | Planned |
+| Provide reproducible strategy research | D7 | Versioned strategy definitions, fidelity disclosures, benchmark and sensitivity evidence | D7 accepted |
+| Provide auditable virtual portfolios and simulated orders | D8-D9 | Double-entry invariants, deterministic replay, fill-assumption evidence, recovery tests | D8-D9 accepted |
+| Provide leakage-resistant ML experimentation | D10-D11 | Point-in-time datasets, time-aware validation, baseline comparisons, approval and drift evidence | D10 active; D11 planned |
 | Provide explainable, fail-closed recommendations | D12 | Structured recommendation records, contradictory evidence, policy and lineage tests | Gated and unavailable in D2 |
 | Provide bounded AI assistance downstream of evidence | D13 | Grounding, tool authorization, injection resistance, budget, and provider tests | Gated and unavailable in D2 |
 | Provide reliable automation without arbitrary-command scheduling | D14 | Typed workflow schemas, recovery, alert, and secure personal-server evidence | Planned |

@@ -1,20 +1,23 @@
 """Build the disposable, deterministic desktop acceptance profile.
 
 This is deliberately an application-service client rather than a second data path.
-It exercises the D5--D7 critical workflow with the same typed methods used by the
+It exercises the D5--D10 critical workflow with the same typed methods used by the
 desktop sidecar, then leaves the profile ready for a short visual review.
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import math
 import shutil
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 from osca.desktop_api.contracts import DesktopRequest, DesktopResponse
-from osca.desktop_api.portfolio_analytics import PortfolioAnalyticsDesktopService
+from osca.desktop_api.paper_evaluation import PaperEvaluationDesktopService
 
 DSL: dict[str, Any] = {
     "family": "osca.strategy.dsl",
@@ -28,7 +31,7 @@ DSL: dict[str, Any] = {
 
 
 def call(
-    service: PortfolioAnalyticsDesktopService,
+    service: PaperEvaluationDesktopService,
     method: str,
     params: dict[str, Any],
 ) -> dict[str, Any]:
@@ -42,7 +45,7 @@ def call(
 
 
 def prepare(root: Path, *, reset: bool) -> dict[str, Any]:
-    """Create the profile and retain a machine-readable D5--D7 smoke manifest."""
+    """Create the profile and retain a machine-readable D5--D10 smoke manifest."""
 
     root = root.resolve()
     if root.name != "desktop-acceptance" or ".osca" not in root.parts:
@@ -52,11 +55,41 @@ def prepare(root: Path, *, reset: bool) -> dict[str, Any]:
     profile_root = root / "profile"
     evidence_root = root / "evidence"
     evidence_root.mkdir(parents=True, exist_ok=True)
-    service = PortfolioAnalyticsDesktopService(state_root=root / "state")
+    service = PaperEvaluationDesktopService(state_root=root / "state")
     profile = str(profile_root)
 
     call(service, "profile.create", {"profile_root": profile})
     imported = call(service, "sample.import", {"profile_root": profile})
+    ml_source = evidence_root / "d10-synthetic-aapl-daily.csv"
+    _write_ml_sample(ml_source, phase=0.0)
+    ml_import = call(
+        service,
+        "local.import",
+        {
+            "profile_root": profile,
+            "input_path": str(ml_source),
+            "symbol": "AAPL-SYNTHETIC",
+            "timeframe": "1d",
+            "source_uri": "bundled-synthetic://osca/d10/aapl-daily-v1",
+            "revision_salt": "d10-acceptance-aapl-220-bars",
+            "calendar_assumption": "synthetic-daily-sequence",
+        },
+    )
+    comparison_source = evidence_root / "d10-synthetic-msft-daily.csv"
+    _write_ml_sample(comparison_source, phase=1.5)
+    call(
+        service,
+        "local.import",
+        {
+            "profile_root": profile,
+            "input_path": str(comparison_source),
+            "symbol": "MSFT-SYNTHETIC",
+            "timeframe": "1d",
+            "source_uri": "bundled-synthetic://osca/d10/msft-daily-v1",
+            "revision_salt": "d10-acceptance-msft-220-bars",
+            "calendar_assumption": "synthetic-daily-sequence",
+        },
+    )
     comparison = call(
         service,
         "workbench.comparison.get",
@@ -134,6 +167,41 @@ def prepare(root: Path, *, reset: bool) -> dict[str, Any]:
             "metadata": {"result_digest": backtest["result_digest"]},
         },
     )["pin"]
+    ml_plan = call(
+        service,
+        "ml.experiment.create",
+        {
+            "profile_root": profile,
+            "name": "Acceptance AAPL ridge baseline",
+            "asset_id": "equity:XNAS:AAPL",
+            "timeframe": "1d",
+            "task": "regression",
+            "model": "ridge_regression",
+            "horizon": 2,
+            "feature_window": 8,
+            "train_fraction": 0.6,
+            "validation_fraction": 0.2,
+            "embargo": 1,
+            "iterations": 300,
+        },
+    )["experiment"]
+    ml_experiment = call(
+        service,
+        "ml.experiment.run",
+        {"profile_root": profile, "experiment_id": ml_plan["experiment_id"]},
+    )["experiment"]
+    ml_pin = call(
+        service,
+        "project.pin.add",
+        {
+            "profile_root": profile,
+            "project_id": project["project_id"],
+            "pin_type": "ml_experiment",
+            "source_id": f"ml-experiment:{ml_experiment['experiment_id']}",
+            "label": "Acceptance AAPL ridge experiment",
+            "metadata": {"output_digest": ml_experiment["output_digest"]},
+        },
+    )["pin"]
     manifest = {
         "family": "osca.desktop-acceptance.manifest",
         "version": "1.0.0",
@@ -142,6 +210,10 @@ def prepare(root: Path, *, reset: bool) -> dict[str, Any]:
         "recommendations_enabled": False,
         "real_capital_execution_enabled": False,
         "sample_import": {"symbols": [item["symbol"] for item in imported["imports"]]},
+        "ml_sample_import": {
+            "dataset_revision_id": ml_import["import"]["dataset_revision_id"],
+            "canonical_row_count": ml_import["import"]["row_count"],
+        },
         "workbench": {"aligned_return_count": comparison["aligned_return_count"]},
         "strategy": {"strategy_id": strategy["strategy_id"], "version_id": version_id},
         "backtest": {
@@ -153,12 +225,45 @@ def prepare(root: Path, *, reset: bool) -> dict[str, Any]:
             "sensitivity_id": sensitivity["evaluation_id"],
             "walkforward_id": walkforward["evaluation_id"],
         },
-        "project": {"project_id": project["project_id"], "pin_id": pin["pin_id"]},
+        "project": {
+            "project_id": project["project_id"],
+            "pin_id": pin["pin_id"],
+            "ml_pin_id": ml_pin["pin_id"],
+        },
+        "ml_experiment": {
+            "experiment_id": ml_experiment["experiment_id"],
+            "status": ml_experiment["status"],
+            "output_digest": ml_experiment["output_digest"],
+            "automatic_promotion_enabled": False,
+        },
     }
     (evidence_root / "acceptance-manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
     return manifest
+
+
+def _write_ml_sample(path: Path, *, phase: float) -> None:
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    close = 100.0
+    with path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(
+            stream,
+            fieldnames=("timestamp", "open", "high", "low", "close", "volume"),
+        )
+        writer.writeheader()
+        for index in range(220):
+            close *= 1.0 + 0.002 * math.sin(index / 7 + phase) + 0.0004
+            writer.writerow(
+                {
+                    "timestamp": (start + timedelta(days=index)).isoformat(),
+                    "open": close - 0.2,
+                    "high": close + 0.8,
+                    "low": close - 0.8,
+                    "close": close,
+                    "volume": 10_000 + index,
+                }
+            )
 
 
 def main() -> int:

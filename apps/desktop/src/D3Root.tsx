@@ -4,6 +4,7 @@ import { bootstrapDesktop, DesktopClientError } from "./api";
 import { DataSourcesSurface } from "./DataSources";
 import { DesktopAreaGuidance, menuHint } from "./DesktopGuidance";
 import { MarketsSurface } from "./Markets";
+import { MLLabSurface } from "./MLLab";
 import { PaperForwardLabSurface } from "./PaperForwardLab";
 import { PortfolioAnalyticsSurface } from "./PortfolioAnalytics";
 import { PortfolioLabSurface } from "./PortfolioLab";
@@ -20,6 +21,7 @@ type RootView =
   | "workbench"
   | "projects"
   | "strategy-lab"
+  | "ml-lab"
   | "portfolio-lab"
   | "paper-lab"
   | "data-sources";
@@ -34,6 +36,7 @@ const views: RootView[] = [
   "workbench",
   "projects",
   "strategy-lab",
+  "ml-lab",
   "portfolio-lab",
   "paper-lab",
   "data-sources"
@@ -42,6 +45,7 @@ const views: RootView[] = [
 function viewLabel(view: RootView): string {
   if (view === "data-sources") return "Data Sources";
   if (view === "strategy-lab") return "Strategy Lab";
+  if (view === "ml-lab") return "ML Lab";
   if (view === "portfolio-lab") return "Portfolio Lab";
   if (view === "paper-lab") return "Paper Lab";
   return view[0].toUpperCase() + view.slice(1);
@@ -145,6 +149,8 @@ export function D3Root() {
                         ? "Open a validated profile from Workspace before creating research projects."
                         : view === "strategy-lab"
                           ? "Open a validated profile from Workspace before using Strategy Lab."
+                          : view === "ml-lab"
+                            ? "Open a validated profile from Workspace before using ML Lab."
                           : view === "portfolio-lab"
                             ? "Open a validated profile from Workspace before using Portfolio Lab."
                             : view === "paper-lab"
@@ -160,6 +166,8 @@ export function D3Root() {
                 <ProjectsSurface profileRoot={profile.profileRoot} />
               ) : view === "strategy-lab" ? (
                 <StrategyLabSurface profileRoot={profile.profileRoot} />
+              ) : view === "ml-lab" ? (
+                <MLLabSurface profileRoot={profile.profileRoot} />
               ) : view === "portfolio-lab" ? (
                 <>
                   <PortfolioLabSurface profileRoot={profile.profileRoot} />

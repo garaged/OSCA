@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from osca.desktop_api import paper_forward
+from osca.desktop_api import ml_lab, paper_forward
 from osca.desktop_api.portfolio_accounting import (
     _allowed,
     _optional_datetime,
@@ -44,6 +44,12 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
                 "paper.run.inspect": self._run_inspect,
                 "paper.order.confirm": self._order_confirm,
                 "paper.order.process_bar": self._order_process_bar,
+                "ml.catalog.list": ml_lab.list_catalog,
+                "ml.experiment.create": ml_lab.create_experiment,
+                "ml.experiment.run": ml_lab.execute_experiment,
+                "ml.experiment.list": ml_lab.list_experiments,
+                "ml.experiment.get": ml_lab.get_experiment,
+                "ml.experiment.cancel": ml_lab.cancel_experiment,
             }
         )
 
@@ -58,9 +64,7 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
             records.append(
                 {
                     "account": account.model_dump(mode="json"),
-                    "latest_control": (
-                        controls[-1].model_dump(mode="json") if controls else None
-                    ),
+                    "latest_control": (controls[-1].model_dump(mode="json") if controls else None),
                 }
             )
         return paper_forward._safe_result(
@@ -83,8 +87,7 @@ class PaperEvaluationDesktopService(paper_forward.PaperForwardDesktopService):
                     "base_currency",
                     limit=3,
                 ).upper(),
-                created_at=_optional_datetime(params, "created_at")
-                or datetime.now().astimezone(),
+                created_at=_optional_datetime(params, "created_at") or datetime.now().astimezone(),
             )
         )
         store = _evaluation_store(profile_root)

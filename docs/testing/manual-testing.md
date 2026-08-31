@@ -304,6 +304,10 @@ Verify `/health`, `/`, `/api/workspace`, `/api/evidence`, one detail endpoint, r
 | Unconfigured source | `provider_unavailable` or `policy_blocked` according to admission state. |
 | Other catalog providers | Retain P1-P5 dispositions and evidence gates. |
 
+## D10 ML Lab changed-surface acceptance
+
+Use [D10 ML Lab manual acceptance](d10-ml-lab-manual-acceptance.md). D10 uses the deterministic acceptance profile and limits required human effort to feature/policy readability, experiment planning/execution feedback, baseline interpretation, restart visibility, accessibility, and the permanent research-only boundary. Do not replay automated leakage, cancellation, recovery, or resource-limit cases unless the changed-risk trigger applies.
+
 ## Universal deferred-boundary check
 
 After every workflow, confirm no output or documentation claims that OSCA currently provides:
