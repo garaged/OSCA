@@ -269,6 +269,16 @@ fn is_profile_mutation(method: &str) -> bool {
             | "portfolio.export.prepare"
             | "portfolio.restore"
             | "portfolio.analytics.snapshot.capture"
+            | "paper.account.create"
+            | "paper.account.control.record"
+            | "paper.run.bind"
+            | "paper.assumptions.retain"
+            | "paper.order.draft.retain"
+            | "paper.order.confirm"
+            | "paper.order.cancel"
+            | "paper.order.process_bar"
+            | "paper.mark.append"
+            | "paper.checkpoint.record"
     )
 }
 
@@ -618,6 +628,30 @@ mod tests {
         assert!(!is_profile_mutation("portfolio.analytics.report"));
         assert!(!is_profile_mutation("portfolio.analytics.scenario"));
         assert!(!is_profile_mutation("portfolio.analytics.benchmark"));
+    }
+
+    #[test]
+    fn d9_paper_writes_require_profile_ownership() {
+        for method in [
+            "paper.account.create",
+            "paper.account.control.record",
+            "paper.run.bind",
+            "paper.assumptions.retain",
+            "paper.order.draft.retain",
+            "paper.order.confirm",
+            "paper.order.cancel",
+            "paper.order.process_bar",
+            "paper.mark.append",
+            "paper.checkpoint.record",
+        ] {
+            assert!(
+                is_profile_mutation(method),
+                "{method} should require profile ownership"
+            );
+        }
+        assert!(!is_profile_mutation("paper.account.list"));
+        assert!(!is_profile_mutation("paper.run.inspect"));
+        assert!(!is_profile_mutation("paper.comparison.build"));
     }
 
     #[test]
